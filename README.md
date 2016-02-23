@@ -27,4 +27,19 @@ This module and its submodules adds functionality to support:
 * ...
 
 
+## Installation
+
+### Dependencies
+The Sites functionality is build upon [Organic Groups][link-og].
+
+Following modules are required to use the Sites functionality:
+
+* [Organic Groups][link-og]
+
+
+## Usage
+
+
+
+
 [link-og]: https://www.drupal.org/project/og
