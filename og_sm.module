@@ -1,0 +1,145 @@
+<?php
+/**
+ * @file
+ * Base module for the Organic Groups Sites functionality.
+ */
+
+// Variable names to store the Site enabled group types.
+define('OG_SM_VARIABLE_GROUP_TYPES', 'og_sm_node_types');
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds setting to indicate a content type as being a Site type.
+ * Uses hook_form_alter() as we want to add our settings to the OG part of the
+ * node form and OG is only available trough hook_form_alter().
+ */
+function og_sm_form_node_type_form_alter(&$form, &$form_state, $form_id) {
+  // Get the default is Site state of the node_type.
+  $node_type = isset($form['#node_type']->type)
+    ? $form['#node_type']->type
+    : NULL;
+  $enabled = ($node_type && og_sm_is_site_type($node_type));
+
+  $description = array(
+    t('Make this content type a Site type.'),
+    t('All nodes of this type will be recognized as being a Site.'),
+    '<p><strong>' . t('WARNING: The content type needs also to be a Group type!') . '</strong></p>',
+  );
+
+  $form['og_sm'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Site Manager'),
+    '#collapsible' => TRUE,
+    '#group' => 'additional_settings',
+  );
+  $form['og_sm']['og_sm_node_type'] = array(
+    '#title' => t('Site type'),
+    '#type' => 'checkbox',
+    '#return_value' => 1,
+    '#default_value' => (int) $enabled,
+    '#element_validate' => array('og_sm_node_type_form_field_validate'),
+    '#description' => implode(PHP_EOL, $description),
+  );
+  $form['#submit'][] = 'og_sm_node_type_form_field_submit';
+}
+
+/**
+ * Validation of the posted og_sm_node_type field value.
+ *
+ * This will check if the node type is also a group type.
+ */
+function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
+  $values = $form_state['values'];
+
+  if ((bool) $values['og_sm_node_type'] && !(bool) $values['og_group_type']) {
+    form_set_error(
+      'og_sm_node_type',
+      t('A content type can only be a Site if it also a Group type.')
+    );
+  }
+
+  $form_state['og_sm_node_type'] = (bool) $values['og_sm_node_type'];
+  unset($form_state['values']['og_sm_node_type']);
+}
+
+/**
+ * Store or remove the node type into the Site content types.
+ */
+function og_sm_node_type_form_field_submit($form, $form_state) {
+  $type = $form_state['values']['type'];
+  if ((bool) $form_state['og_sm_node_type']) {
+    og_sm_add_site_type($type);
+  }
+  else {
+    og_sm_remove_site_type($type);
+  }
+}
+
+
+/**
+ * Check if the given node is a Site type.
+ *
+ * @param object $site
+ *   The site node.
+ *
+ * @return bool
+ *   Is a Site node.
+ */
+function og_sm_is_site($site) {
+  return og_sm_is_site_type($site->type);
+}
+
+/**
+ * Check if a given node type is a Site type.
+ *
+ * @param string $type
+ *   The type to check.
+ *
+ * @return bool
+ *   Is Site type.
+ */
+function og_sm_is_site_type($type) {
+  $types = variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
+  return (og_is_group_type('node', $type) && in_array($type, $types));
+}
+
+/**
+ * Add a type to the array of Site content types.
+ *
+ * @param string $type
+ *   The content type to add.
+ */
+function og_sm_add_site_type($type) {
+  $types = variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
+
+  if (!in_array($type, $types)) {
+    $types[$type] = $type;
+    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+  }
+}
+
+/**
+ * Remove a type from the array of Site content types.
+ *
+ * @param string $type
+ *   The content type to remove.
+ */
+function og_sm_remove_site_type($type) {
+  $types = variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
+
+  if (in_array($type, $types)) {
+    unset($types[$type]);
+    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+  }
+}
+
+/**
+ * Implements hook_node_type_delete().
+ *
+ * Removes the type from the Site content types (only when it is a Site type).
+ */
+function og_sm_node_type_delete($info) {
+  og_sm_remove_site_type($info->type);
+}
