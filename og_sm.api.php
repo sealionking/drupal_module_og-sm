@@ -21,6 +21,8 @@
  *   The view mode for the Site node.
  * @param string $langcode
  *   The language code.
+ *
+ * @see hook_node_view()
  */
 function hook_og_sm_site_view($site, $view_mode, $langcode) {
 
@@ -34,6 +36,8 @@ function hook_og_sm_site_view($site, $view_mode, $langcode) {
  *
  * @param object $site
  *   The Site node object.
+ *
+ * @see hook_node_presave()
  */
 function hook_og_sm_site_presave($site) {
 
@@ -47,6 +51,8 @@ function hook_og_sm_site_presave($site) {
  *
  * @param object $site
  *   The Site node object.
+ *
+ * @see hook_node_prepare()
  */
 function hook_og_sm_site_prepare($site) {
 
@@ -60,6 +66,8 @@ function hook_og_sm_site_prepare($site) {
  *
  * @param object $site
  *   The Site node object.
+ *
+ * @see hook_node_insert()
  */
 function hook_og_sm_site_insert($site) {
 
@@ -73,6 +81,8 @@ function hook_og_sm_site_insert($site) {
  *
  * @param object $site
  *   The Site node object.
+ *
+ * @see hook_node_update()
  */
 function hook_og_sm_site_update($site) {
 
@@ -86,6 +96,8 @@ function hook_og_sm_site_update($site) {
  *
  * @param object $site
  *   The Site node object.
+ *
+ * @see hook_node_delete()
  */
 function hook_og_sm_site_delete($site) {
 
