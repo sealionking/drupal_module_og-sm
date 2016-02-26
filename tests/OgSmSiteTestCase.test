@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Tests about the Configuration screen(s).
+ * Tests about the Site nodes.
  */
 
 /**
@@ -32,7 +32,7 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
    * Test Site helpers.
    */
   public function testSite() {
-    $type_group = $this->ogSmCreateIsGroupNodeType();
+    $type_group = $this->ogSmCreateGroupNodeType();
     $node = $this->drupalCreateNode();
     $group = $this->ogSmCreateGroup($type_group);
 

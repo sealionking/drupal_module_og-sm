@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * base class to test og_em functionality.
+ * Base class to test og_em functionality.
  */
 
 /**
@@ -11,16 +11,20 @@ class OgSmWebTestCase extends DrupalWebTestCase {
   /**
    * Node types to use in the test.
    */
-  const TYPE_NOT_GROUP = 'og_sm_node_type_not_group';
+  const TYPE_DEFAULT = 'og_sm_node_type_not_group';
   const TYPE_IS_GROUP = 'og_sm_node_type_is_group';
+  const TYPE_IS_GROUP_CONTENT = 'og_sm_node_type_is_group_content';
 
   /**
    * Helper to create a content type.
    *
    * @param string $name
    *   Content type name.
+   *
+   * @return string
+   *   The node type machine name.
    */
-  protected function ogSmCreateNodeType($name) {
+  protected function ogSmCreateNodeType($name = self::TYPE_DEFAULT) {
     // Create the content type.
     $info = (object) array(
       'name' => $name,
@@ -37,33 +41,36 @@ class OgSmWebTestCase extends DrupalWebTestCase {
       'orig_type' => $name,
     );
     $this->assertEqual(SAVED_NEW, node_type_save($info));
+
+    return $name;
   }
 
   /**
-   * Create a content type that is not a group.
+   * Create a Group node type.
    *
    * @return string
    *   The content type name.
    */
-  public function ogSmCreateNotGroupNodeType() {
-    $this->ogSmCreateNodeType(self::TYPE_NOT_GROUP);
-    return self::TYPE_NOT_GROUP;
-  }
-
-  /**
-   * Create a group content type.
-   *
-   * @return string
-   *   The content type name.
-   */
-  public function ogSmCreateIsGroupNodeType() {
+  public function ogSmCreateGroupNodeType() {
     $this->ogSmCreateNodeType(self::TYPE_IS_GROUP);
     og_create_field(OG_GROUP_FIELD, 'node', self::TYPE_IS_GROUP);
     return self::TYPE_IS_GROUP;
   }
 
   /**
-   * Create a group content type.
+   * Create a Group Content node type.
+   *
+   * @return string
+   *   The content type name.
+   */
+  public function ogSmCreateGroupContentNodeType() {
+    $this->ogSmCreateNodeType(self::TYPE_IS_GROUP_CONTENT);
+    og_create_field(OG_AUDIENCE_FIELD, 'node', self::TYPE_IS_GROUP_CONTENT);
+    return self::TYPE_IS_GROUP_CONTENT;
+  }
+
+  /**
+   * Create a Group node.
    *
    * @param string $node_type
    *   The node type to create the group for.
@@ -73,10 +80,31 @@ class OgSmWebTestCase extends DrupalWebTestCase {
    */
   public function ogSmCreateGroup($node_type) {
     $settings = array('type' => $node_type);
+    $settings[OG_GROUP_FIELD][LANGUAGE_NONE][0]['value'] = 1;
     $group = $this->drupalCreateNode($settings);
     $this->assertEqual($node_type, $group->type);
-
     return $group;
+  }
+
+  /**
+   * Create a Group Content node.
+   *
+   * @param string $node_type
+   *   The node type to create the group for.
+   * @param object $group
+   *   (optional) The group the node is member of.
+   *
+   * @return object
+   *   The created group content node.
+   */
+  public function ogSmCreateGroupContent($node_type, $group = NULL) {
+    $settings = array('type' => $node_type);
+    if ($group) {
+      $settings[OG_AUDIENCE_FIELD][LANGUAGE_NONE][0]['value'] = $group->nid;
+    }
+    $node = $this->drupalCreateNode($settings);
+    $this->assertEqual($node_type, $node->type);
+    return $node;
   }
 
 }

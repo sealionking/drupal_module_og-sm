@@ -152,6 +152,36 @@ function og_sm_is_site_type($type) {
   return (og_is_group_type('node', $type) && in_array($type, $types));
 }
 
+/**
+ * Add a type to the array of Site content types.
+ *
+ * @param string $type
+ *   The content type to add.
+ */
+function og_sm_add_site_type($type) {
+  $types = og_sm_get_site_types();
+
+  if (!in_array($type, $types)) {
+    $types[$type] = $type;
+    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+  }
+}
+
+/**
+ * Remove a type from the array of Site content types.
+ *
+ * @param string $type
+ *   The content type to remove.
+ */
+function og_sm_remove_site_type($type) {
+  $types = og_sm_get_site_types();
+
+  if (in_array($type, $types)) {
+    unset($types[$type]);
+    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+  }
+}
+
 
 /**
  * Get all the Sites a node belongs to.
@@ -216,6 +246,7 @@ function og_sm_content_is_site_member($node, $site) {
   return !empty($sites[$site->nid]);
 }
 
+
 /**
  * Get all the sites a User belongs to.
  *
@@ -246,6 +277,7 @@ function og_sm_user_is_member_of_site($account, $site) {
   return !empty($sites[$site->nid]);
 }
 
+
 /**
  * Helper function to get a list of Site objects from a list of group id's.
  *
@@ -275,35 +307,6 @@ function _og_sm_filter_sites_from_groups(array $groups) {
   return $sites;
 }
 
-/**
- * Add a type to the array of Site content types.
- *
- * @param string $type
- *   The content type to add.
- */
-function og_sm_add_site_type($type) {
-  $types = og_sm_get_site_types();
-
-  if (!in_array($type, $types)) {
-    $types[$type] = $type;
-    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
-  }
-}
-
-/**
- * Remove a type from the array of Site content types.
- *
- * @param string $type
- *   The content type to remove.
- */
-function og_sm_remove_site_type($type) {
-  $types = og_sm_get_site_types();
-
-  if (in_array($type, $types)) {
-    unset($types[$type]);
-    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
-  }
-}
 
 /**
  * Implements hook_node_type_delete().
@@ -312,7 +315,6 @@ function og_sm_node_type_delete($info) {
   // Remove the content type from the list of Site types.
   og_sm_remove_site_type($info->type);
 }
-
 
 /**
  * Implements hook_node_view().
