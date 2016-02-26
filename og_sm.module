@@ -79,6 +79,28 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
 
 
 /**
+ * Load a Site node by its Node ID.
+ *
+ * This will only return a node object if:
+ * - The node exists.
+ * - The node is a Site node.
+ *
+ * @param int $site_nid
+ *   The Site Node ID.
+ *
+ * @return object|NULL
+ *   The Site Node (if any).
+ */
+function og_sm_site_load($site_nid) {
+  $site = node_load($site_nid);
+  if (!og_sm_is_site($site)) {
+    return NULL;
+  }
+
+  return $site;
+}
+
+/**
  * Get the currently active Site.
  *
  * @return object|NULL
@@ -90,12 +112,7 @@ function og_sm_current_site() {
     return NULL;
   }
 
-  $site = node_load($context['gid']);
-  if (!og_sm_is_site($site)) {
-    return NULL;
-  }
-
-  return $site;
+  return og_sm_site_load($context['gid']);
 }
 
 /**
@@ -236,9 +253,9 @@ function _og_sm_filter_sites_from_groups(array $groups) {
 
   // Filter out only Site groups.
   $sites = array();
-  foreach ($groups['node'] as $nid) {
-    $site = node_load($nid);
-    if (!og_sm_is_site($site)) {
+  foreach ($groups['node'] as $site_nid) {
+    $site = og_sm_site_load($site_nid);
+    if (!$site) {
       continue;
     }
 

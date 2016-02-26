@@ -48,6 +48,13 @@ Following modules are required to use the Sites functionality:
 
 ## API
 
+### Load a Site node
+Get a Site node by its Node ID (nid). Will only return the node object if the
+node exists and it is a Site node type.
+```php
+$site = og_sm_site_load($site_nid);
+```
+
 ### Current Site context
 A lot of code depends if we are currently in an active Site context.
 
