@@ -9,3 +9,4 @@ dependencies[] = og
 ; Tests.
 files[] = tests/OgSmWebTestCase.test
 files[] = tests/OgSmNodeTypeConfigTestCase.test
+files[] = tests/OgSmSiteTestCase.test

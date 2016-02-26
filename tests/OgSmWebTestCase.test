@@ -62,4 +62,21 @@ class OgSmWebTestCase extends DrupalWebTestCase {
     return self::TYPE_IS_GROUP;
   }
 
+  /**
+   * Create a group content type.
+   *
+   * @param string $node_type
+   *   The node type to create the group for.
+   *
+   * @return object
+   *   The created group node.
+   */
+  public function ogSmCreateGroup($node_type) {
+    $settings = array('type' => $node_type);
+    $group = $this->drupalCreateNode($settings);
+    $this->assertEqual($node_type, $group->type);
+
+    return $group;
+  }
+
 }

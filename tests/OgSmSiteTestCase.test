@@ -1,0 +1,52 @@
+<?php
+/**
+ * @file
+ * Tests about the Configuration screen(s).
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmSiteTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site node helpers.'),
+      'description' => t('Tests Site node types.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og', 'og_ui', 'og_sm');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test Site helpers.
+   */
+  public function testSite() {
+    $type_group = $this->ogSmCreateIsGroupNodeType();
+    $node = $this->drupalCreateNode();
+    $group = $this->ogSmCreateGroup($type_group);
+
+    // Test og_sm_is_site.
+    $this->assertFalse(og_sm_is_site($node));
+    $this->assertFalse(og_sm_is_site($group));
+    og_sm_add_site_type($type_group);
+    $this->assertTrue(og_sm_is_site($group));
+
+    // Test og_sm_site_load.
+    $site = og_sm_site_load($group->nid);
+    $this->assertEqual($group->title, $site->title);
+    og_sm_remove_site_type($type_group);
+    $this->assertNull(og_sm_site_load($group->nid));
+  }
+
+}
