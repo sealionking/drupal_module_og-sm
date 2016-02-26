@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Views handler to check the access to the current group context.
+ * Views handler to check the access to the currently active Site.
  */
 
 // @codingStandardsIgnoreStart
