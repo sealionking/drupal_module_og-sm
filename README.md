@@ -5,6 +5,7 @@ based on [Organic Groups][link-og] (OG) functionality.
 The usage of OG allows to share users between sites.
 
 
+
 ## Functionality
 This module and its submodules adds functionality to support:
 
@@ -27,6 +28,7 @@ This module and its submodules adds functionality to support:
 * ...
 
 
+
 ## Installation
 Enable the Organic Groups Site Manager module.
 
@@ -46,32 +48,90 @@ Following modules are required to use the Sites functionality:
 
 ## API
 
+### Current Site context
+A lot of code depends if we are currently in an active Site context.
+
+A helper function is available to get the currently active Site node.
+This is a wrapper around the og_context() function + loading the node.
+
+Get the currently active Site node:
+```php
+$site = og_sm_current_site();
+```
+
+### Site types
+Get a list of node types that are Site node types:
+```php
+$site_types = og_sm_get_site_types();
+```
+
 ### Check if content is a Site
 The module provides helper functions to detect is a node or node type is a Site
 node type:
 
-* og_sm_is_site($node) : Check if the given node is a Site type.
-* og_sm_is_site_type($node_type) : Check if the given node type is a Site type.
+Check if the given node is a Site type:
+```php
+$is_site = og_sm_is_site($node);
+```
+
+Check if the given node type is a Site type:
+```php
+$is_site_type = og_sm_is_site_type($node_type);
+```
+
+### Check if content belongs to a Site
+Helper functions to get the Site (if any) of a given content item (node) belongs
+to.
+
+Get all the Site nodes a node belongs to.
+```php
+$sites = og_sm_content_get_sites($node);
+```
+
+Get the Site node object from a given node object.
+If a node belongs to multiple Sites only the first Site will be returned.
+
+```php
+$site = og_sm_content_get_site($node);
+```
+
+Check if the given node belongs to a Site:
+```php
+$is_site_content = og_sm_content_is_site_content($node);
+```
+
+Check if the given node is a member of the given Site:
+```php
+$is_member = og_sm_content_is_site_member($node, $site);
+```
+
+### Check if user is member of a Site
+Helper functions about the Sites a user is member of.
+
+Get the Site nodes a given user belongs to:
+```php
+$sites = og_sm_user_get_sites($account);
+```
+
+Check if a user is member of the given site:
+```php
+$is_member = og_sm_user_is_member_of_site($account, $site);
+```
 
 
 ### Site action hooks
 The module watches actions taken place on Site nodes and triggers its own hooks
 when an action happens:
 
-* hook_og_sm_site_prepare($site) : Site node being prepared to being shown on a
+* `hook_og_sm_site_prepare($site)` : Site node being prepared to being shown on a
   node add/edit form.
-* hook_og_sm_site_presave($site) : Site node being prepared to be inserted or
+* `hook_og_sm_site_presave($site)` : Site node being prepared to be inserted or
   updated in the database.
-* hook_og_sm_site_view($site, $view_mode, $langcode) : Site node being prepared
-  to being shown on the screen.
-* hook_og_sm_site_insert($site) : Site node being inserted.
-* hook_og_sm_site_update($site) : Site node being updated.
-* hook_og_sm_site_delete($site) : Site node being deleted.
-
-
-
-
-## Usage
+* `hook_og_sm_site_view($site, $view_mode, $langcode)` : Site node being
+  prepared to being shown on the screen.
+* `hook_og_sm_site_insert($site)` : Site node being inserted.
+* `hook_og_sm_site_update($site)` : Site node being updated.
+* `hook_og_sm_site_delete($site)` : Site node being deleted.
 
 
 
