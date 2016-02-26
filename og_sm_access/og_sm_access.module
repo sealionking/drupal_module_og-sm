@@ -54,6 +54,26 @@ function og_sm_access_callback($account = NULL) {
 }
 
 /**
+ * Page Access callback to validate access of the user by the given Site nid.
+ *
+ * @param int $site_nid
+ *   The Site Node Id.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Access TRUE/FALSE
+ */
+function og_sm_access_site_nid_callback($site_nid, $account = NULL) {
+  $site = og_sm_site_load($site_nid);
+  if (!$site) {
+    return FALSE;
+  }
+
+  return node_access('view', $site, $account);
+}
+
+/**
  * Implements hook_node_access_records().
  */
 function og_sm_access_node_access_records($node) {
