@@ -351,7 +351,7 @@ function og_sm_node_insert($node) {
  * Implements hook_node_update().
  */
 function og_sm_node_update($node) {
-  og_sm_hook_site('insert', $node);
+  og_sm_hook_site('update', $node);
 }
 
 /**
