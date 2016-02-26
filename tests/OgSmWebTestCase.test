@@ -1,0 +1,65 @@
+<?php
+/**
+ * @file
+ * base class to test og_em functionality.
+ */
+
+/**
+ * Base class to test OG Site Manager functionality.
+ */
+class OgSmWebTestCase extends DrupalWebTestCase {
+  /**
+   * Node types to use in the test.
+   */
+  const TYPE_NOT_GROUP = 'og_sm_node_type_not_group';
+  const TYPE_IS_GROUP = 'og_sm_node_type_is_group';
+
+  /**
+   * Helper to create a content type.
+   *
+   * @param string $name
+   *   Content type name.
+   */
+  protected function ogSmCreateNodeType($name) {
+    // Create the content type.
+    $info = (object) array(
+      'name' => $name,
+      'type' => $name,
+      'base' => 'node_content',
+      'module' => 'node',
+      'description' => t('Test content type for og_sm tests.'),
+      'has_title' => 1,
+      'title_label' => t('Title'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+      'disabled' => 0,
+      'orig_type' => $name,
+    );
+    $this->assertEqual(SAVED_NEW, node_type_save($info));
+  }
+
+  /**
+   * Create a content type that is not a group.
+   *
+   * @return string
+   *   The content type name.
+   */
+  public function ogSmCreateNotGroupNodeType() {
+    $this->ogSmCreateNodeType(self::TYPE_NOT_GROUP);
+    return self::TYPE_NOT_GROUP;
+  }
+
+  /**
+   * Create a group content type.
+   *
+   * @return string
+   *   The content type name.
+   */
+  public function ogSmCreateIsGroupNodeType() {
+    $this->ogSmCreateNodeType(self::TYPE_IS_GROUP);
+    og_create_field(OG_GROUP_FIELD, 'node', self::TYPE_IS_GROUP);
+    return self::TYPE_IS_GROUP;
+  }
+
+}

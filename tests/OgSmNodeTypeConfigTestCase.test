@@ -1,0 +1,89 @@
+<?php
+/**
+ * @file
+ * Tests about the Configuration screen(s).
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Configure node type.'),
+      'description' => t('Tests configuring a node type as being a Site type.'),
+      'group' => t('SiteManager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    //$this->profile = 'digipolis';
+
+    // Enable required modules.
+    $modules = array('og', 'og_ui', 'og_sm');
+    parent::setUp($modules);
+
+    // Create a user with node_type edit permissions.
+    $permissions = array(
+      'administer content types',
+      'administer nodes',
+      'administer modules',
+    );
+    $user = $this->drupalCreateUser($permissions);
+    $this->drupalLogin($user);
+
+    $this->drupalGet('admin/modules');
+  }
+
+  /**
+   * Test config form.
+   */
+  public function testNodeTypeForm() {
+    $type_not_group = $this->ogSmCreateNotGroupNodeType();
+    $type_is_group = $this->ogSmCreateIsGroupNodeType();
+
+    $url_not_group = 'admin/structure/types/manage/' . $type_not_group;
+    $url_is_group = 'admin/structure/types/manage/' . $type_is_group;
+
+    // Form elements.
+    $submit = t('Save content type');
+
+    // Default no nodes as site.
+    $this->assertEqual(array(), og_sm_get_site_types());
+
+    // Check if the Site Manager field is in the form.
+    $this->drupalGet($url_not_group);
+    $this->assertFieldById('edit-og-sm-node-type');
+
+    // Post the form with Site settings enabled for a non Group, this should
+    // result in an error on screen.
+    $this->drupalPost($url_not_group, array('og_sm_node_type' => TRUE), $submit);
+    $this->assertText(t('A content type can only be a Site if it also a Group type.'));
+    $this->assertEqual(array(), og_sm_get_site_types());
+
+    // Post it for a Group node should be successful.
+    $this->drupalPost($url_is_group, array('og_sm_node_type' => TRUE), $submit);
+    $this->assertText(t('The content type !type has been updated.', array('!type' => self::TYPE_IS_GROUP)));
+    $this->assertEqual(array(self::TYPE_IS_GROUP => self::TYPE_IS_GROUP), og_sm_get_site_types());
+
+    // Check if the checkbox is active.
+    $this->drupalGet($url_is_group);
+    $this->assertFieldById('edit-og-sm-node-type', 1);
+
+    // Remove a node type from the Site types.
+    $this->drupalPost($url_is_group, array('og_sm_node_type' => FALSE), $submit);
+    $this->assertText(t('The content type !type has been updated.', array('!type' => self::TYPE_IS_GROUP)));
+    $this->assertEqual(array(), og_sm_get_site_types());
+
+    // Check if the checkbox is no longer active.
+    $this->drupalGet($url_is_group);
+    $this->assertFieldById('edit-og-sm-node-type');
+  }
+
+}
