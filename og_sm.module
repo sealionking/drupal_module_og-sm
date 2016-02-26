@@ -79,6 +79,43 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
 
 
 /**
+ * Load a Site node by its Node ID.
+ *
+ * This will only return a node object if:
+ * - The node exists.
+ * - The node is a Site node.
+ *
+ * @param int $site_nid
+ *   The Site Node ID.
+ *
+ * @return object|NULL
+ *   The Site Node (if any).
+ */
+function og_sm_site_load($site_nid) {
+  $site = node_load($site_nid);
+  if (!og_sm_is_site($site)) {
+    return NULL;
+  }
+
+  return $site;
+}
+
+/**
+ * Get the currently active Site.
+ *
+ * @return object|NULL
+ *   The active Site node (if any).
+ */
+function og_sm_current_site() {
+  $context = og_context('node');
+  if (!$context) {
+    return NULL;
+  }
+
+  return og_sm_site_load($context['gid']);
+}
+
+/**
  * Check if the given node is a Site type.
  *
  * @param object $site
@@ -101,8 +138,141 @@ function og_sm_is_site($site) {
  *   Is Site type.
  */
 function og_sm_is_site_type($type) {
-  $types = variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
+  $types = og_sm_get_site_types();
   return (og_is_group_type('node', $type) && in_array($type, $types));
+}
+
+
+/**
+ * Get all the Sites a node belongs to.
+ *
+ * @param object $node
+ *   The site content.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_content_get_sites($node) {
+  $groups = og_get_entity_groups('node', $node);
+  return _og_sm_filter_sites_from_groups($groups);
+}
+
+/**
+ * Get the Site object the Site content node belongs to.
+ *
+ * Is a node belongs to multiple Sites, only the first will be returned.
+ *
+ * @param object $node
+ *   The site content.
+ *
+ * @return object|NULL
+ *   The site node (if any).
+ */
+function og_sm_content_get_site($node) {
+  $sites = og_sm_content_get_sites($node);
+  if (empty($sites)) {
+    return NULL;
+  }
+
+  return reset($sites);
+}
+
+/**
+ * Check if a given node is content within a Site.
+ *
+ * @param object $node
+ *   The node to check.
+ *
+ * @return bool
+ *   Is Site content.
+ */
+function og_sm_content_is_site_content($node) {
+  return (bool) og_sm_content_get_site($node);
+}
+
+/**
+ * Check if a given node is member of the given Site.
+ *
+ * @param object $node
+ *   The node to check.
+ * @param object $site
+ *   The site node.
+ *
+ * @return bool
+ *   Is Site member.
+ */
+function og_sm_content_is_site_member($node, $site) {
+  $sites = og_sm_content_get_sites($node);
+  return !empty($sites[$site->nid]);
+}
+
+/**
+ * Get all the sites a User belongs to.
+ *
+ * @param object $account
+ *   The user object.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_user_get_sites($account) {
+  $groups = og_get_entity_groups('user', $account);
+  return _og_sm_filter_sites_from_groups($groups);
+}
+
+/**
+ * Check if a given account is member of the given Site.
+ *
+ * @param object $account
+ *   The user object.
+ * @param object $site
+ *   The Site node object.
+ *
+ * @return bool
+ *   Is site member.
+ */
+function og_sm_user_is_member_of_site($account, $site) {
+  $sites = og_sm_user_get_sites($account);
+  return !empty($sites[$site->nid]);
+}
+
+/**
+ * Helper function to get a list of Site objects from a list of group id's.
+ *
+ * @param array $groups
+ *   Group info as returned by og_get_entity_groups().
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function _og_sm_filter_sites_from_groups(array $groups) {
+  $sites = array();
+  if (empty($groups['node'])) {
+    return $sites;
+  }
+
+  // Filter out only Site groups.
+  $sites = array();
+  foreach ($groups['node'] as $site_nid) {
+    $site = og_sm_site_load($site_nid);
+    if (!$site) {
+      continue;
+    }
+
+    $sites[$site->nid] = $site;
+  }
+
+  return $sites;
+}
+
+/**
+ * Get a list of Site node types.
+ *
+ * @return array
+ *   List of node types that are Sites.
+ */
+function og_sm_get_site_types() {
+  return variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
 }
 
 /**
@@ -112,7 +282,7 @@ function og_sm_is_site_type($type) {
  *   The content type to add.
  */
 function og_sm_add_site_type($type) {
-  $types = variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
+  $types = og_sm_get_site_types();
 
   if (!in_array($type, $types)) {
     $types[$type] = $type;
@@ -127,7 +297,7 @@ function og_sm_add_site_type($type) {
  *   The content type to remove.
  */
 function og_sm_remove_site_type($type) {
-  $types = variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
+  $types = og_sm_get_site_types();
 
   if (in_array($type, $types)) {
     unset($types[$type]);
@@ -181,7 +351,7 @@ function og_sm_node_insert($node) {
  * Implements hook_node_update().
  */
 function og_sm_node_update($node) {
-  og_sm_hook_site('insert', $node);
+  og_sm_hook_site('update', $node);
 }
 
 /**
@@ -194,7 +364,7 @@ function og_sm_node_delete($node) {
 /**
  * Trigger a hook_og_sm_site_ACTION for Site changes.
  *
- * This is used to let other modules know that an action was performend on a
+ * This is used to let other modules know that an action was performed on a
  * node that is a Site type. This reduces the code module maintainers need to
  * write to detect if something changed on a Site node type.
  *

@@ -1,0 +1,9 @@
+name = Site Access
+description = "Access control on Sites and their content based on the published status of the Site node."
+package = "Organic Groups Site Manager"
+version = "7.x-1.x-dev"
+core = 7.x
+
+dependencies[] = og_sm
+
+files[] = plugins/views/og_sm_access_site_plugin.inc
