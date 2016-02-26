@@ -7,6 +7,6 @@ core = 7.x
 dependencies[] = og
 
 ; Tests.
-files[] = tests/OgSmWebTestCase.test
-files[] = tests/OgSmNodeTypeConfigTestCase.test
 files[] = tests/OgSmSiteTestCase.test
+files[] = tests/OgSmSiteTypeTestCase.test
+files[] = tests/OgSmWebTestCase.test

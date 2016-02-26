@@ -13,9 +13,9 @@ class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Configure node type.'),
-      'description' => t('Tests configuring a node type as being a Site type.'),
-      'group' => t('SiteManager'),
+      'name' => t('Site type.'),
+      'description' => t('Tests about configuring Site types and Site type helpers.'),
+      'group' => t('Site Manager'),
     );
   }
 
@@ -23,8 +23,6 @@ class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
    * {@inheritdoc}
    */
   public function setUp() {
-    //$this->profile = 'digipolis';
-
     // Enable required modules.
     $modules = array('og', 'og_ui', 'og_sm');
     parent::setUp($modules);
@@ -39,6 +37,27 @@ class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
     $this->drupalLogin($user);
 
     $this->drupalGet('admin/modules');
+  }
+
+  /**
+   * Test Site type helpers.
+   */
+  public function testSiteType() {
+    $type_is_group = $this->ogSmCreateIsGroupNodeType();
+
+    // Default no site types.
+    $this->assertEqual(array(), og_sm_get_site_types());
+    $this->assertFalse(og_sm_is_site_type($type_is_group));
+
+    // Add the type.
+    og_sm_add_site_type($type_is_group);
+    $this->assertTrue(og_sm_is_site_type($type_is_group));
+    $this->assertEqual(array(self::TYPE_IS_GROUP => self::TYPE_IS_GROUP), og_sm_get_site_types());
+
+    // Remove the type.
+    og_sm_remove_site_type($type_is_group);
+    $this->assertFalse(og_sm_is_site_type($type_is_group));
+    $this->assertEqual(array(), og_sm_get_site_types());
   }
 
   /**

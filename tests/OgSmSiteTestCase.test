@@ -13,8 +13,8 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site node helpers.'),
-      'description' => t('Tests Site node types.'),
+      'name' => t('Site node'),
+      'description' => t('Tests Site nodes and helpers.'),
       'group' => t('Site Manager'),
     );
   }
