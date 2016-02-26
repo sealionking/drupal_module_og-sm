@@ -28,6 +28,12 @@ This module and its submodules adds functionality to support:
 
 
 ## Installation
+Enable the Organic Groups Site Manager module.
+
+Edit the node type settings of the types that should be Site types.
+Enable:
+* The Organic Groups > Group checkbox
+* And the Site Manager > Site Type checkbox.
 
 ### Dependencies
 The Sites functionality is build upon [Organic Groups][link-og].
@@ -35,6 +41,34 @@ The Sites functionality is build upon [Organic Groups][link-og].
 Following modules are required to use the Sites functionality:
 
 * [Organic Groups][link-og]
+
+
+
+## API
+
+### Check if content is a Site
+The module provides helper functions to detect is a node or node type is a Site
+node type:
+
+* og_sm_is_site($node) : Check if the given node is a Site type.
+* og_sm_is_site_type($node_type) : Check if the given node type is a Site type.
+
+
+### Site action hooks
+The module watches actions taken place on Site nodes and triggers its own hooks
+when an action happens:
+
+* hook_og_sm_site_prepare($site) : Site node being prepared to being shown on a
+  node add/edit form.
+* hook_og_sm_site_presave($site) : Site node being prepared to be inserted or
+  updated in the database.
+* hook_og_sm_site_view($site, $view_mode, $langcode) : Site node being prepared
+  to being shown on the screen.
+* hook_og_sm_site_insert($site) : Site node being inserted.
+* hook_og_sm_site_update($site) : Site node being updated.
+* hook_og_sm_site_delete($site) : Site node being deleted.
+
+
 
 
 ## Usage
