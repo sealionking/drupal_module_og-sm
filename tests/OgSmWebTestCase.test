@@ -19,7 +19,8 @@ class OgSmWebTestCase extends DrupalWebTestCase {
    * Helper to create a content type.
    *
    * @param string $name
-   *   Content type name.
+   *   (optional) Content type name.
+   *   Default OgSmWebTestCase::TYPE_DEFAULT.
    *
    * @return string
    *   The node type machine name.
@@ -48,25 +49,33 @@ class OgSmWebTestCase extends DrupalWebTestCase {
   /**
    * Create a Group node type.
    *
+   * @param string $name
+   *   (optional) Content type name.
+   *   Default OgSmWebTestCase::TYPE_IS_GROUP.
+   *
    * @return string
    *   The content type name.
    */
-  public function ogSmCreateGroupNodeType() {
-    $this->ogSmCreateNodeType(self::TYPE_IS_GROUP);
-    og_create_field(OG_GROUP_FIELD, 'node', self::TYPE_IS_GROUP);
-    return self::TYPE_IS_GROUP;
+  public function ogSmCreateGroupNodeType($name = self::TYPE_IS_GROUP) {
+    $this->ogSmCreateNodeType($name);
+    og_create_field(OG_GROUP_FIELD, 'node', $name);
+    return $name;
   }
 
   /**
    * Create a Group Content node type.
    *
+   * @param string $name
+   *   (optional) Content type name.
+   *   Default OgSmWebTestCase::TYPE_IS_GROUP_CONTENT.
+   *
    * @return string
    *   The content type name.
    */
-  public function ogSmCreateGroupContentNodeType() {
-    $this->ogSmCreateNodeType(self::TYPE_IS_GROUP_CONTENT);
-    og_create_field(OG_AUDIENCE_FIELD, 'node', self::TYPE_IS_GROUP_CONTENT);
-    return self::TYPE_IS_GROUP_CONTENT;
+  public function ogSmCreateGroupContentNodeType($name = self::TYPE_IS_GROUP_CONTENT) {
+    $this->ogSmCreateNodeType($name);
+    og_create_field(OG_AUDIENCE_FIELD, 'node', $name);
+    return $name;
   }
 
   /**
@@ -82,8 +91,7 @@ class OgSmWebTestCase extends DrupalWebTestCase {
     $settings = array('type' => $node_type);
     $settings[OG_GROUP_FIELD][LANGUAGE_NONE][0]['value'] = 1;
     $group = $this->drupalCreateNode($settings);
-    $this->assertEqual($node_type, $group->type);
-    return $group;
+    return node_load($group->nid);
   }
 
   /**
@@ -91,20 +99,31 @@ class OgSmWebTestCase extends DrupalWebTestCase {
    *
    * @param string $node_type
    *   The node type to create the group for.
-   * @param object $group
-   *   (optional) The group the node is member of.
+   * @param array $groups
+   *   (optional) Array of groups the node is member of.
    *
    * @return object
    *   The created group content node.
    */
-  public function ogSmCreateGroupContent($node_type, $group = NULL) {
+  public function ogSmCreateGroupContent($node_type, $groups = array()) {
     $settings = array('type' => $node_type);
-    if ($group) {
-      $settings[OG_AUDIENCE_FIELD][LANGUAGE_NONE][0]['value'] = $group->nid;
-    }
     $node = $this->drupalCreateNode($settings);
-    $this->assertEqual($node_type, $node->type);
-    return $node;
+
+    // Add the group memberships (if any).
+    foreach ($groups as $group) {
+      og_group(
+        'node',
+        $group->nid,
+        array(
+          'entity_type' => 'node',
+          'entity' => $node,
+          'field_name' => OG_AUDIENCE_FIELD,
+        )
+      );
+    }
+
+    // Load the node so we get the group references.
+    return node_load($node->nid);
   }
 
 }
