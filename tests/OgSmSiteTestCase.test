@@ -1,0 +1,70 @@
+<?php
+/**
+ * @file
+ * Tests about the Site nodes.
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmSiteTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site node'),
+      'description' => t('Tests Site nodes and helpers.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og', 'og_ui', 'og_sm');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test Site helpers.
+   */
+  public function testSite() {
+    $type_group = $this->ogSmCreateGroupNodeType();
+    $node = $this->drupalCreateNode();
+    $group = $this->ogSmCreateGroup($type_group);
+
+    // Test og_sm_is_site.
+    $this->assertFalse(og_sm_is_site($node));
+    $this->assertFalse(og_sm_is_site($group));
+    og_sm_add_site_type($type_group);
+    $this->assertTrue(og_sm_is_site($group));
+
+    // Test og_sm_site_load.
+    $site = og_sm_site_load($group->nid);
+    $this->assertEqual($group->title, $site->title);
+    og_sm_remove_site_type($type_group);
+    $this->assertNull(og_sm_site_load($group->nid));
+  }
+
+  /**
+   * Test filtering an array of groups by only sites.
+   */
+  public function testFilterSitesFromGroups() {
+    $type_is_group = $this->ogSmCreateGroupNodeType();
+    $type_not_group = $this->ogSmCreateNodeType();
+    og_sm_add_site_type(self::TYPE_IS_GROUP);
+
+    $group1 = $this->ogSmCreateGroup($type_is_group);
+    $group2 = $this->ogSmCreateGroup($type_is_group);
+    $group3 = $this->ogSmCreateGroup($type_not_group);
+    $groups = array('node' => array($group3->nid, $group2->nid, $group1->nid));
+
+    $expected = array($group2->nid => $group2, $group1->nid => $group1);
+    $sites = _og_sm_filter_sites_from_groups($groups);
+    $this->assertEqual($expected, $sites);
+  }
+
+}

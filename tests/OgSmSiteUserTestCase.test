@@ -1,0 +1,67 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Users.
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmSiteUserTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site User'),
+      'description' => t('Tests Site User and helpers.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test Site helpers.
+   */
+  public function testSiteUser() {
+    $type_group = $this->ogSmCreateGroupNodeType();
+    $type_group_no_site = $this->ogSmCreateGroupContentNodeType('not_a_site_type');
+    $type_group_content = $this->ogSmCreateGroupContentNodeType();
+
+    $group1 = $this->ogSmCreateGroup($type_group);
+    $group2 = $this->ogSmCreateGroup($type_group);
+    $group3 = $this->ogSmCreateGroup($type_group_no_site);
+    $groups = array($group3, $group2, $group1);
+
+    // Create group users.
+    $user_no_groups = $this->ogSmCreateGroupUser();
+    $user_with_groups = $this->ogSmCreateGroupUser(array(), $groups);
+
+    // Default no Site groups.
+    $this->assertEqual(array(), og_sm_user_get_sites($user_no_groups));
+    $this->assertEqual(array(), og_sm_user_get_sites($user_with_groups));
+
+    // Make the group type a Site type.
+    og_sm_add_site_type($type_group);
+
+    // Get all sites a user belongs to.
+    $sites = og_sm_user_get_sites($user_with_groups);
+    $this->assertEqual(2, count($sites));
+
+    // User should be a member of both groups.
+    $this->assertTrue(og_sm_user_is_member_of_site($user_with_groups, $group1));
+    $this->assertTrue(og_sm_user_is_member_of_site($user_with_groups, $group2));
+
+    // No Site group types are ignored.
+    $this->assertFalse(og_sm_user_is_member_of_site($user_with_groups, $group3));
+  }
+
+}

@@ -1,0 +1,158 @@
+<?php
+/**
+ * @file
+ * Base class to test og_em functionality.
+ */
+
+/**
+ * Base class to test OG Site Manager functionality.
+ */
+class OgSmWebTestCase extends DrupalWebTestCase {
+  /**
+   * Node types to use in the test.
+   */
+  const TYPE_DEFAULT = 'og_sm_node_type_not_group';
+  const TYPE_IS_GROUP = 'og_sm_node_type_is_group';
+  const TYPE_IS_GROUP_CONTENT = 'og_sm_node_type_is_group_content';
+
+  /**
+   * Helper to create a content type.
+   *
+   * @param string $name
+   *   (optional) Content type name.
+   *   Default OgSmWebTestCase::TYPE_DEFAULT.
+   *
+   * @return string
+   *   The node type machine name.
+   */
+  protected function ogSmCreateNodeType($name = self::TYPE_DEFAULT) {
+    // Create the content type.
+    $info = (object) array(
+      'name' => $name,
+      'type' => $name,
+      'base' => 'node_content',
+      'module' => 'node',
+      'description' => t('Test content type for og_sm tests.'),
+      'has_title' => 1,
+      'title_label' => t('Title'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+      'disabled' => 0,
+      'orig_type' => $name,
+    );
+    $this->assertEqual(SAVED_NEW, node_type_save($info));
+
+    return $name;
+  }
+
+  /**
+   * Create a Group node type.
+   *
+   * @param string $name
+   *   (optional) Content type name.
+   *   Default OgSmWebTestCase::TYPE_IS_GROUP.
+   *
+   * @return string
+   *   The content type name.
+   */
+  public function ogSmCreateGroupNodeType($name = self::TYPE_IS_GROUP) {
+    $this->ogSmCreateNodeType($name);
+    og_create_field(OG_GROUP_FIELD, 'node', $name);
+    return $name;
+  }
+
+  /**
+   * Create a Group Content node type.
+   *
+   * @param string $name
+   *   (optional) Content type name.
+   *   Default OgSmWebTestCase::TYPE_IS_GROUP_CONTENT.
+   *
+   * @return string
+   *   The content type name.
+   */
+  public function ogSmCreateGroupContentNodeType($name = self::TYPE_IS_GROUP_CONTENT) {
+    $this->ogSmCreateNodeType($name);
+    og_create_field(OG_AUDIENCE_FIELD, 'node', $name);
+    return $name;
+  }
+
+  /**
+   * Create a Group node.
+   *
+   * @param string $node_type
+   *   The node type to create the group for.
+   *
+   * @return object
+   *   The created group node.
+   */
+  public function ogSmCreateGroup($node_type) {
+    $settings = array('type' => $node_type);
+    $settings[OG_GROUP_FIELD][LANGUAGE_NONE][0]['value'] = 1;
+    $group = $this->drupalCreateNode($settings);
+    return node_load($group->nid);
+  }
+
+  /**
+   * Create a Group Content node.
+   *
+   * @param string $node_type
+   *   The node type to create the group for.
+   * @param array $groups
+   *   (optional) Array of groups the node is member of.
+   *
+   * @return object
+   *   The created group content node.
+   */
+  public function ogSmCreateGroupContent($node_type, $groups = array()) {
+    $settings = array('type' => $node_type);
+    $node = $this->drupalCreateNode($settings);
+
+    // Add the group memberships (if any).
+    foreach ($groups as $group) {
+      og_group(
+        'node',
+        $group->nid,
+        array(
+          'entity_type' => 'node',
+          'entity' => $node,
+          'field_name' => OG_AUDIENCE_FIELD,
+        )
+      );
+    }
+
+    // Load the node so we get the group references.
+    return node_load($node->nid);
+  }
+
+  /**
+   * Create a user that is member of one or more Groups.
+   *
+   * @param array $permissions
+   *   (optional) Array of permissions for this user.
+   * @param array $groups
+   *   (optional) Array of groups the node is member of.
+   *
+   * @return object
+   *   The user object.
+   */
+  public function ogSmCreateGroupUser($permissions = array(), $groups = array()) {
+    $account = $this->drupalCreateUser($permissions);
+
+    // Add the group memberships (if any).
+    foreach ($groups as $group) {
+      og_group(
+        'node',
+        $group->nid,
+        array(
+          'entity_type' => 'user',
+          'entity' => $account,
+        )
+      );
+    }
+
+    return user_load($account->uid);
+  }
+
+}
