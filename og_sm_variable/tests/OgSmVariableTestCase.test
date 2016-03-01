@@ -1,0 +1,193 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Variables.
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmVariableTestCase extends DrupalWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Variable'),
+      'description' => t('Tests Site Variables.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_variable');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test DB operations.
+   */
+  public function testDbCrud() {
+    $site_nid = 10;
+
+    // By default no variables.
+    $this->assertEqual(array(), _og_sm_variable_load_all($site_nid));
+
+    // Store some variables.
+    $var1 = TRUE;
+    $var2 = NULL;
+    $var3 = 123;
+    $var4 = '123';
+    $var5 = array();
+    $var6 = array(123, 'test123', 'key' => 'value');
+
+    $this->assertEqual(MergeQuery::STATUS_INSERT, _og_sm_variable_save($site_nid, 'var3', $var3));
+    $this->assertEqual(MergeQuery::STATUS_INSERT, _og_sm_variable_save($site_nid, 'var1', $var1));
+    $this->assertEqual(MergeQuery::STATUS_INSERT, _og_sm_variable_save($site_nid, 'var5', $var5));
+    $this->assertEqual(MergeQuery::STATUS_INSERT, _og_sm_variable_save($site_nid, 'var2', $var2));
+    $this->assertEqual(MergeQuery::STATUS_INSERT, _og_sm_variable_save($site_nid, 'var6', $var6));
+    $this->assertEqual(MergeQuery::STATUS_INSERT, _og_sm_variable_save($site_nid, 'var4', $var4));
+
+    // Update variable.
+    $var4 = '321';
+    $this->assertEqual(MergeQuery::STATUS_UPDATE, _og_sm_variable_save($site_nid, 'var4', $var4));
+
+    // Get all variables (expected ordered by name).
+    $expected = array(
+      'var1' => $var1,
+      'var2' => $var2,
+      'var3' => $var3,
+      'var4' => $var4,
+      'var5' => $var5,
+      'var6' => $var6,
+    );
+    $this->assertEqual($expected, _og_sm_variable_load_all($site_nid));
+
+    // Delete a variable.
+    _og_sm_variable_delete($site_nid, 'var4');
+    $expected = array(
+      'var1' => $var1,
+      'var2' => $var2,
+      'var3' => $var3,
+      'var5' => $var5,
+      'var6' => $var6,
+    );
+    $this->assertEqual($expected, _og_sm_variable_load_all($site_nid));
+
+    // Delete all variables.
+    _og_sm_variable_delete_all($site_nid);
+    $this->assertEqual(array(), _og_sm_variable_load_all($site_nid));
+  }
+
+  /**
+   * Test the variable functions.
+   */
+  public function testOperations() {
+    $site_nid = 11;
+    $cid = OG_SM_VARIABLE_CID . $site_nid;
+
+    // Store some values in the DB.
+    $var1 = TRUE;
+    $var2 = 2;
+    $var3 = array(1 => 'test1', 'two' => 'test two');
+    _og_sm_variable_save($site_nid, 'var1', $var1);
+    _og_sm_variable_save($site_nid, 'var2', $var2);
+    _og_sm_variable_save($site_nid, 'var3', $var3);
+
+    // Get the variables.
+    $expected = array('var1' => $var1, 'var2' => $var2, 'var3' => $var3);
+    $variables = og_sm_variable_get_all($site_nid);
+    $this->assertEqual($expected, $variables);
+
+    // Get non existing variable.
+    $this->assertNull(og_sm_variable_get($site_nid, 'non_existing'));
+    $default = array(1, 2, 3);
+    $this->assertEqual($default, og_sm_variable_get($site_nid, 'non_existing', $default));
+
+    // Get single existing variable.
+    $this->assertEqual($var2, og_sm_variable_get($site_nid, 'var2'));
+
+    // Set a variable.
+    $var4 = 'test var 4';
+    og_sm_variable_set($site_nid, 'var4', $var4);
+    $expected = array(
+      'var1' => $var1,
+      'var2' => $var2,
+      'var3' => $var3,
+      'var4' => $var4,
+    );
+    $this->assertEqual($expected, og_sm_variable_get_all($site_nid));
+
+    // Delete a variable.
+    og_sm_variable_delete($site_nid, 'var2');
+    $expected = array('var1' => $var1, 'var3' => $var3, 'var4' => $var4);
+    $this->assertEqual($expected, og_sm_variable_get_all($site_nid));
+
+    // Delete all variables.
+    og_sm_variable_delete_all($site_nid);
+    $this->assertEqual(array(), og_sm_variable_get_all($site_nid));
+  }
+
+  /**
+   * Test the caching layer.
+   */
+  public function testCaching() {
+    $site_nid1 = 21;
+    $site_nid2 = 22;
+    $cid1 = OG_SM_VARIABLE_CID . $site_nid1;
+    $cid2 = OG_SM_VARIABLE_CID . $site_nid2;
+
+    // Store some variables in the DB.
+    $var11 = TRUE;
+    $var12 = 2;
+    $var13 = array(1 => 'test1', 'two' => 'test two');
+    _og_sm_variable_save($site_nid1, 'var11', $var11);
+    _og_sm_variable_save($site_nid1, 'var12', $var12);
+    _og_sm_variable_save($site_nid1, 'var13', $var13);
+    $vars1 = array('var11' => $var11, 'var12' => $var12, 'var13' => $var13);
+
+    $var21 = FALSE;
+    $var22 = (object) array('test' => 1, 'foo' => 'bar');
+    _og_sm_variable_save($site_nid2, 'var21', $var21);
+    _og_sm_variable_save($site_nid2, 'var22', $var22);
+    $vars2 = array('var21' => $var21, 'var22' => $var22);
+
+    // Check the empty cache first.
+    $this->assertFalse(cache_get($cid1, 'cache_og_sm_variable'));
+    $this->assertFalse(cache_get($cid2, 'cache_og_sm_variable'));
+
+    // Get all variables for site 1, this should store them in the cache.
+    og_sm_variable_get_all($site_nid1);
+    $cache1 = cache_get($cid1, 'cache_og_sm_variable');
+    $this->assertEqual($vars1, $cache1->data);
+
+    // Get a single variables for site 2, this should also load all in cache.
+    $this->assertFalse(cache_get($cid2));
+    og_sm_variable_get($site_nid2, 'var22');
+    $cache2 = cache_get($cid2, 'cache_og_sm_variable');
+    $this->assertEqual($vars2, $cache2->data);
+
+    // Cache of first not altered.
+    $cache1 = cache_get($cid1, 'cache_og_sm_variable');
+    $this->assertEqual($vars1, $cache1->data);
+
+    // Delete the cache for 1 Site.
+    _og_sm_variable_cache_clear($site_nid1);
+    $this->assertFalse(cache_get($cid1, 'cache_og_sm_variable'));
+    $cache2 = cache_get($cid2, 'cache_og_sm_variable');
+    $this->assertEqual($vars2, $cache2->data);
+
+    // Delete all caches, should also clear the variables cache.
+    og_sm_variable_get_all($site_nid1);
+    og_sm_variable_get_all($site_nid2);
+
+    drupal_flush_all_caches();
+    $this->assertFalse(cache_get($cid1, 'cache_og_sm_variable'));
+    $this->assertFalse(cache_get($cid2, 'cache_og_sm_variable'));
+  }
+
+}
