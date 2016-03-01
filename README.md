@@ -1,4 +1,4 @@
-# Organic Groups : Sites
+# Organic Groups : Site Manager
 This module provides support to setup a platform supporting multiple (sub)sites
 based on [Organic Groups][link-og] (OG) functionality.
 
