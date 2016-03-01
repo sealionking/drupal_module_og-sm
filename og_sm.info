@@ -10,4 +10,5 @@ dependencies[] = og
 files[] = tests/OgSmSiteContentTestCase.test
 files[] = tests/OgSmSiteTestCase.test
 files[] = tests/OgSmSiteTypeTestCase.test
+files[] = tests/OgSmSiteUserTestCase.test
 files[] = tests/OgSmWebTestCase.test

@@ -126,4 +126,33 @@ class OgSmWebTestCase extends DrupalWebTestCase {
     return node_load($node->nid);
   }
 
+  /**
+   * Create a user that is member of one or more Groups.
+   *
+   * @param array $permissions
+   *   (optional) Array of permissions for this user.
+   * @param array $groups
+   *   (optional) Array of groups the node is member of.
+   *
+   * @return object
+   *   The user object.
+   */
+  public function ogSmCreateGroupUser($permissions = array(), $groups = array()) {
+    $account = $this->drupalCreateUser($permissions);
+
+    // Add the group memberships (if any).
+    foreach ($groups as $group) {
+      og_group(
+        'node',
+        $group->nid,
+        array(
+          'entity_type' => 'user',
+          'entity' => $account,
+        )
+      );
+    }
+
+    return user_load($account->uid);
+  }
+
 }
