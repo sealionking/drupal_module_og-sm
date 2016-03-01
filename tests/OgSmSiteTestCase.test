@@ -49,4 +49,22 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     $this->assertNull(og_sm_site_load($group->nid));
   }
 
+  /**
+   * Test filtering an array of groups by only sites.
+   */
+  public function testFilterSitesFromGroups() {
+    $type_is_group = $this->ogSmCreateGroupNodeType();
+    $type_not_group = $this->ogSmCreateNodeType();
+    og_sm_add_site_type(self::TYPE_IS_GROUP);
+
+    $group1 = $this->ogSmCreateGroup($type_is_group);
+    $group2 = $this->ogSmCreateGroup($type_is_group);
+    $group3 = $this->ogSmCreateGroup($type_not_group);
+    $groups = array('node' => array($group3->nid, $group2->nid, $group1->nid));
+
+    $expected = array($group2->nid => $group2, $group1->nid => $group1);
+    $sites = _og_sm_filter_sites_from_groups($groups);
+    $this->assertEqual($expected, $sites);
+  }
+
 }
