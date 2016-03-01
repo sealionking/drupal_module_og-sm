@@ -105,4 +105,17 @@ class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
     $this->assertFieldById('edit-og-sm-node-type');
   }
 
+  /**
+   * Test deleting a site type.
+   */
+  public function testDeleteSiteNodeType() {
+    $type_is_group = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($type_is_group);
+    $this->assertEqual(array($type_is_group => $type_is_group), og_sm_get_site_types());
+
+    $url_delete = 'admin/structure/types/manage/' . self::TYPE_IS_GROUP . '/delete';
+    $this->drupalPost($url_delete, array(), t('Delete'));
+    $this->assertEqual(array(), og_sm_get_site_types());
+  }
+
 }
