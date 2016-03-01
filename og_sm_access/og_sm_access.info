@@ -10,4 +10,5 @@ dependencies[] = og_sm
 files[] = plugins/views/og_sm_access_site_plugin.inc
 
 ; Tests.
+files[] = tests/OgSmAccessGrantsTestCase.test
 files[] = tests/OgSmAccessRecordsTestCase.test

@@ -168,6 +168,12 @@ function og_sm_access_node_grants($account, $op) {
   // Specific for Sites the user is member of.
   $sites = og_sm_user_get_sites($account);
   foreach ($sites as $site) {
+    // We only need to return the grant for not-published Sites.
+    if ($site->status > 0) {
+      continue;
+    }
+
+    // Only grant access when the user has the proper permissions.
     if (!og_user_access('node', $site->nid, OG_SM_ACCESS_PERMISSION, $account)) {
       continue;
     }
