@@ -101,6 +101,28 @@ function og_sm_site_load($site_nid) {
 }
 
 /**
+ * Get an array of all Site Node ID's.
+ *
+ * WARNING: There is no node_access check on this function!
+ *
+ * @return array
+ *   Array of all Site Node ID's.
+ */
+function og_sm_site_all_nids() {
+  $site_types = og_sm_get_site_types();
+  if (!$site_types) {
+    return array();
+  }
+
+  $query = db_select('node', 'n');
+  $query->addField('n', 'nid');
+  $query->condition('n.type', $site_types);
+  $query->orderBy('n.nid', 'ASC');
+
+  return $query->execute()->fetchAllKeyed(0, 0);
+}
+
+/**
  * Get the currently active Site.
  *
  * @return object|NULL
