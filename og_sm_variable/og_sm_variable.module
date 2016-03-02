@@ -18,7 +18,14 @@ function og_sm_variable_flush_caches() {
   return array(OG_SM_VARIABLE_CACHE_BIN);
 }
 
-// TODO: delete variables if Site is deleted!
+/**
+ * Implements hook_node_delete().
+ *
+ * No need to use hook_og_sm_site_delete() here.
+ */
+function og_sm_variable_node_delete($node) {
+  og_sm_variable_delete_all($node->nid);
+}
 
 /**
  * Get all the variables for the given group.

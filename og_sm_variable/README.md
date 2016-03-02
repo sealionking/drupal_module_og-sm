@@ -9,8 +9,9 @@ variables.
 
 ## Functionality
 This module provides:
-* API to set and get variables per Site.
+* API to set and get a single variable per Site.
 * Get all variables at once for a Site.
+* Get for all sites the values of a specific variable name.
 * Delete all variables at once for a Site.
 * Caching to speed up variable access.
 
@@ -65,4 +66,12 @@ Delete all variables belonging to a Site at once.
 
 ```php
 og_sm_variable_delete_all($site_nid);
+```
+
+### Get variable values for all sites
+This will get an array of all values set for a specific variable name keyed by
+the Site node id.
+
+```php
+$values = og_sm_variable_get_all_sites($name);
 ```

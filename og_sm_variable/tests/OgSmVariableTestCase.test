@@ -7,7 +7,7 @@
 /**
  * Tests about the node type settings.
  */
-class OgSmVariableTestCase extends DrupalWebTestCase {
+class OgSmVariableTestCase extends OgSmWebTestCase {
   /**
    * {@inheritdoc}
    */
@@ -238,6 +238,24 @@ class OgSmVariableTestCase extends DrupalWebTestCase {
     drupal_flush_all_caches();
     $this->assertFalse(cache_get($cid1, 'cache_og_sm_variable'));
     $this->assertFalse(cache_get($cid2, 'cache_og_sm_variable'));
+  }
+
+  /**
+   * Check if the variables are deleted when the site is deleted.
+   */
+  public function testVariablesDeleteOnSiteDelete() {
+    $content_type = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($content_type);
+    $site = $this->ogSmCreateGroup($content_type);
+    $site_nid = $site->nid;
+
+    og_sm_variable_set($site_nid, 'var1', 'foo');
+    og_sm_variable_set($site_nid, 'var2', 'bar');
+    $expected = array('var1' => 'foo', 'var2' => 'bar');
+    $this->assertEqual($expected, og_sm_variable_get_all($site_nid));
+
+    node_delete($site->nid);
+    $this->assertEqual(array(), og_sm_variable_get_all($site_nid));
   }
 
 }
