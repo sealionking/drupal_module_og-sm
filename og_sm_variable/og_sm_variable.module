@@ -5,7 +5,8 @@
  */
 
 // The base cache ID for variables.
-define('OG_SM_VARIABLE_CID', 'og_sm_variable:');
+define('OG_SM_VARIABLE_CID_SITE', 'site:');
+define('OG_SM_VARIABLE_CID_NAME', 'name:');
 
 // The cache bin for Site variables.
 define('OG_SM_VARIABLE_CACHE_BIN', 'cache_og_sm_variable');
@@ -17,6 +18,8 @@ function og_sm_variable_flush_caches() {
   return array(OG_SM_VARIABLE_CACHE_BIN);
 }
 
+// TODO: delete variables if Site is deleted!
+
 /**
  * Get all the variables for the given group.
  *
@@ -27,7 +30,7 @@ function og_sm_variable_flush_caches() {
  *   The arrays as retrieved from the DB.
  */
 function og_sm_variable_get_all($site_nid) {
-  $cid = OG_SM_VARIABLE_CID . $site_nid;
+  $cid = OG_SM_VARIABLE_CID_SITE . $site_nid;
 
   // Try to get from cache first.
   $cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN);
@@ -37,6 +40,29 @@ function og_sm_variable_get_all($site_nid) {
 
   // Get from DB and store in the cache?
   $variables = _og_sm_variable_load_all($site_nid);
+  cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
+  return $variables;
+}
+
+/**
+ * Get all the values for all sites by the variable name.
+ *
+ * @param string $name
+ *   The variable name to get the vaues for.
+ *
+ * @return array
+ *   Array of variables keyed by the Site Node ID.
+ */
+function og_sm_variable_get_all_sites($name) {
+  $cid = OG_SM_VARIABLE_CID_NAME . $name;
+
+  // Try to get from cache first.
+  $cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN);
+  if ($cache && !empty($cache->data)) {
+    return $cache->data;
+  }
+
+  $variables = _og_sm_variable_load_all_sites($name);
   cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
   return $variables;
 }
@@ -77,7 +103,8 @@ function og_sm_variable_get($site_nid, $name, $default = NULL) {
  */
 function og_sm_variable_set($site_nid, $name, $value) {
   _og_sm_variable_save($site_nid, $name, $value);
-  _og_sm_variable_cache_clear($site_nid);
+  _og_sm_variable_cache_clear_site($site_nid);
+  _og_sm_variable_cache_clear_name($name);
 }
 
 /**
@@ -90,7 +117,8 @@ function og_sm_variable_set($site_nid, $name, $value) {
  */
 function og_sm_variable_delete($site_nid, $name) {
   _og_sm_variable_delete($site_nid, $name);
-  _og_sm_variable_cache_clear($site_nid);
+  _og_sm_variable_cache_clear_site($site_nid);
+  _og_sm_variable_cache_clear_name($name);
 }
 
 /**
@@ -101,7 +129,8 @@ function og_sm_variable_delete($site_nid, $name) {
  */
 function og_sm_variable_delete_all($site_nid) {
   _og_sm_variable_delete_all($site_nid);
-  _og_sm_variable_cache_clear($site_nid);
+  _og_sm_variable_cache_clear_site($site_nid);
+  _og_sm_variable_cache_clear_name_all();
 }
 
 /**
@@ -127,6 +156,37 @@ function _og_sm_variable_load_all($site_nid) {
 
   foreach ($results as $row) {
     $variables[$row->name] = unserialize($row->value);
+  }
+
+  return $variables;
+}
+
+/**
+ * Helper to load a variable for all Sites.
+ *
+ * This will return an array with the values keyed by the Site nid they belong
+ * to.
+ *
+ * @param string $name
+ *   The variable name to get the values for.
+ *
+ * @return array
+ *   The values keyed by the group they belong to.
+ */
+function _og_sm_variable_load_all_sites($name) {
+  $query = db_select('og_sm_variable', 'vars');
+  $query->fields('vars');
+  $query->condition('name', $name);
+  $query->orderBy('site_nid', 'ASC');
+
+  $variables = array();
+  $results = $query->execute();
+  if (!$results) {
+    return $variables;
+  }
+
+  foreach ($results as $row) {
+    $variables[$row->site_nid] = unserialize($row->value);
   }
 
   return $variables;
@@ -187,6 +247,23 @@ function _og_sm_variable_delete_all($site_nid) {
  * @param int $site_nid
  *   The Site Node ID to clear the cache for.
  */
-function _og_sm_variable_cache_clear($site_nid) {
-  cache_clear_all(OG_SM_VARIABLE_CID . $site_nid, OG_SM_VARIABLE_CACHE_BIN);
+function _og_sm_variable_cache_clear_site($site_nid) {
+  cache_clear_all(OG_SM_VARIABLE_CID_SITE . $site_nid, OG_SM_VARIABLE_CACHE_BIN);
+}
+
+/**
+ * Helper to clear the cache for the given Variable name.
+ *
+ * @param string $name
+ *   The variable name to clear the cache for.
+ */
+function _og_sm_variable_cache_clear_name($name) {
+  cache_clear_all(OG_SM_VARIABLE_CID_NAME . $name, OG_SM_VARIABLE_CACHE_BIN);
+}
+
+/**
+ * Helper to clear all variable name caches.
+ */
+function _og_sm_variable_cache_clear_name_all() {
+  cache_clear_all(OG_SM_VARIABLE_CID_NAME, OG_SM_VARIABLE_CACHE_BIN, TRUE);
 }

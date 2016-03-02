@@ -6,6 +6,7 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 ### Added
 - DMOGSM-7 : Identify node (types) as being a Site node/type.
 - DMOGSM-9 : Site Access based on Site published status.
+- DMOGSM-14 : Site variable module to store Site specific configuration.
 
 
 
