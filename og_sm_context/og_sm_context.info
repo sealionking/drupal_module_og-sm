@@ -1,5 +1,5 @@
 name = Site Context
-description = "Context detection based on the Site path."
+description = "Context detection based on the fact that the current URL starts with the path alias of a Site node."
 package = "Organic Groups Site Manager"
 version = "7.x-1.x-dev"
 core = 7.x

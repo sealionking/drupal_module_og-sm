@@ -14,7 +14,7 @@ function og_sm_context_og_context_negotiation_info() {
 
   $providers['og_sm_context'] = array(
     'name' => t('Site Manager'),
-    'description' => t('Determine context based on the Site node path alias.'),
+    'description' => t('Determine group context based on the fact that the current URL starts with the path alias of a Site node.'),
     'callback' => 'og_sm_context_handler',
   );
 
