@@ -1,0 +1,62 @@
+<?php
+/**
+ * @file
+ * Functionality to support setting and detecting Site Context.
+ */
+
+/**
+ * Implements hook_og_context_negotiation_info().
+ *
+ * Add context negotiation info based on the path alias.
+ */
+function og_sm_context_og_context_negotiation_info() {
+  $providers = array();
+
+  $providers['og_sm_context'] = array(
+    'name' => t('Site Manager'),
+    'description' => t('Determine context based on the Site node path alias.'),
+    'callback' => 'og_sm_context_handler',
+  );
+
+  return $providers;
+}
+
+/**
+ * Tries to get the context based on the first part of the URL.
+ *
+ * If the first part is the alias of a Site, that Site becomes the active
+ * context.
+ *
+ * @return array
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_negotiation_info
+ */
+function og_sm_context_handler() {
+  $context = array();
+
+  // Get the alias of the current URL.
+  $page_alias = drupal_get_path_alias(current_path());
+  $parts = explode('/', $page_alias);
+  $site_alias = reset($parts);
+
+  // Get the normal path by the possible Site alias.
+  $site_path = drupal_get_normal_path($site_alias);
+  if (!$site_path) {
+    return $context;
+  }
+
+  // Get the site_nid from the path.
+  preg_match_all('/^node\/([0-9]+)$/', $site_path, $parts);
+  if (empty($parts[1][0])) {
+    return $context;
+  }
+
+  // Get the Site.
+  $site = og_sm_site_load($parts[1][0]);
+  if (!$site) {
+    return $context;
+  }
+
+  return array('node' => array((int) $site->nid));
+}

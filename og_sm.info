@@ -5,6 +5,7 @@ version = "7.x-1.x-dev"
 core = 7.x
 
 dependencies[] = og
+dependencies[] = og_context
 
 ; Tests.
 files[] = tests/OgSmSiteContentTestCase.test
