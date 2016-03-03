@@ -6,6 +6,7 @@ core = 7.x
 
 dependencies[] = og
 dependencies[] = og_context
+dependencies[] = pathauto
 
 ; Tests.
 files[] = tests/OgSmSiteContentTestCase.test
