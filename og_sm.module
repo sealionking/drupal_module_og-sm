@@ -7,6 +7,23 @@
 // Variable names to store the Site enabled group types.
 define('OG_SM_VARIABLE_GROUP_TYPES', 'og_sm_node_types');
 
+// Permission to get access to Site administration.
+define('OG_SM_PERMISSION_SITE_ADMIN', 'administer site');
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_og_permission() {
+  return array(
+    OG_SM_PERMISSION_SITE_ADMIN => array(
+      'title' => t('Administer Site'),
+      'description' => t('View the Site administration pages.'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_ADMINISTRATOR_ROLE),
+    ),
+  );
+}
+
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -166,6 +183,62 @@ function og_sm_site_all_nids() {
   $query->orderBy('n.nid', 'ASC');
 
   return $query->execute()->fetchAllKeyed(0, 0);
+}
+
+/**
+ * Check access to a OG permission for a Site.
+ *
+ * @param object $site
+ *   The Site node.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_permission_access($site, $permission, $account = NULL) {
+  return og_sm_site_nid_permission_access($site->nid, $permission, $account);
+}
+
+/**
+ * Check access to a OG permission for a Site Node ID.
+ *
+ * @param int $site_nid
+ *   The Site Node ID.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_nid_permission_access($site_nid, $permission, $account = NULL) {
+  return og_user_access('node', $site_nid, $permission, $account);
+}
+
+/**
+ * Check access to a OG permission for a Site Path alias.
+ *
+ * @param string $site_path
+ *   The Site path.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_path_permission_access($site_path, $permission, $account = NULL) {
+  $site = og_sm_site_load_by_path($site_path);
+  if (!$site) {
+    return FALSE;
+  }
+
+  return og_sm_site_permission_access($site, $permission, $account);
 }
 
 /**

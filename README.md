@@ -132,6 +132,21 @@ Check if a user is member of the given site:
 $is_member = og_sm_user_is_member_of_site($account, $site);
 ```
 
+### Check access to Site permission
+The OG module provides functionality to grant Site specific permissions.
+
+The Site Manager module has wrappers around this functionality to check
+permission acces for a site.
+
+These functions can be used in Menu items ($account is optional):
+
+* `og_sm_site_permission_access($site, $permission, $account)` : Check by Site
+  node and permission name.
+* `og_sm_site_nid_permission_access($site_nid, $permission, $account)` : Check
+  by Site node id and permission name.
+* `og_sm_site_path_permission_access($site_path, $permission, $accont)` : Check
+  by Site path alias and permission name.
+
 
 ### Site action hooks
 The module watches actions taken place on Site nodes and triggers its own hooks
