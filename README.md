@@ -55,7 +55,14 @@ node exists and it is a Site node type.
 $site = og_sm_site_load($site_nid);
 ```
 
-### Current Site context
+### Get the Site path alias
+Get the path alias of the given Site. This will use the language of the Site to
+get the correct path.
+```php
+$path = og_sm_site_path($site);
+```
+
+### Currently active Site
 A lot of code depends if we are currently in an active Site context.
 
 A helper function is available to get the currently active Site node.

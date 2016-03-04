@@ -101,6 +101,23 @@ function og_sm_site_load($site_nid) {
 }
 
 /**
+ * Get the path alias of a Site node.
+ *
+ * This is a wrapper around the drupal_get_path_alias() function.
+ * It uses the language of the Site to get the proper path.
+ *
+ * @param object $site
+ *   The Site node to get the path alias for.
+ *
+ * @return string
+ *   The alias.
+ */
+function og_sm_site_path($site) {
+  $language = entity_language('node', $site);
+  return drupal_get_path_alias('node/' . $site->nid, $language);
+}
+
+/**
  * Get an array of all Site Node ID's.
  *
  * WARNING: There is no node_access check on this function!

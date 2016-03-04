@@ -1,0 +1,80 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_context module.
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmVariableTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Context'),
+      'description' => t('Tests Site Context functionality.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_context');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test the context callback.
+   */
+  public function testOgContextProviderCallback() {
+    $site_type = $this->ogSmCreateGroupNodeType();
+    $site_content_type = $this->ogSmCreateGroupContentNodeType();
+
+    // Create non Site content.
+    $content = $this->drupalCreateNode();
+
+    // Set the auto path for Site node type.
+    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
+
+    // Create a Site node.
+    $site = $this->ogSmCreateGroup($site_type);
+    $site_path = drupal_get_path_alias('node/' . $site->nid);
+
+    // Set the auto path for Site Content type.
+    variable_set('pathauto_node_' . $site_content_type . '_pattern', $site_path . '/[node:title]');
+
+    // Create Site Content.
+    $site_content = $this->ogSmCreateGroupContent($site_content_type, array($site));
+
+    // The Group node type is not yet a site.
+    $_GET['q'] = 'node/' . $content->nid;
+    $this->assertEqual(array(), og_sm_context_handler());
+    $_GET['q'] = 'node/' . $site->nid;
+    $this->assertEqual(array(), og_sm_context_handler());
+    $_GET['q'] = 'node/' . $site_content->nid;
+    $this->assertEqual(array(), og_sm_context_handler());
+
+    // Make it a Site node type.
+    og_sm_add_site_type($site_type);
+    $expected = array('node' => array((int) $site->nid));
+
+    $_GET['q'] = 'node/' . $content->nid;
+    $this->assertEqual(array(), og_sm_context_handler());
+    $_GET['q'] = 'node/' . $site->nid;
+    $this->assertEqual($expected, og_sm_context_handler());
+    $_GET['q'] = 'node/' . $site_content->nid;
+    $this->assertEqual($expected, og_sm_context_handler());
+
+    // Test with custom paths.
+    $_GET['q'] = 'whatever/foo/bar/biz/baz';
+    $this->assertEqual(array(), og_sm_context_handler());
+    $_GET['q'] = $site_path . '/whatever/foo/bar/biz/baz';
+    $this->assertEqual($expected, og_sm_context_handler());
+  }
+
+}

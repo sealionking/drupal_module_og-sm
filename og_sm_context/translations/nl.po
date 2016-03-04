@@ -1,0 +1,33 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-03-03 13:05+0100\n"
+"PO-Revision-Date: 2016-03-03 13:05+0100\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.6\n"
+
+#: og_sm_context.module:16
+msgid "Site Manager"
+msgstr "Site Beheer"
+
+#: og_sm_context.module:17
+msgid "Determine group context based on the fact that the current URL starts with the path alias of a Site node."
+msgstr "Bepaal de groep context op basis van het feit dat de huidige URL start met de pad alias van een Site node."
+
+#: og_sm_context.info:0
+msgid "Site Context"
+msgstr "Site Context"
+
+#: og_sm_context.info:0
+msgid "Context detection based on the fact that the current URL starts with the path alias of a Site node."
+msgstr "Context detectie op basis van het feit dat de huidige URL start met de pad alias van een Site node."
+
+#: og_sm_context.info:0
+msgid "Organic Groups Site Manager"
+msgstr ""
+
