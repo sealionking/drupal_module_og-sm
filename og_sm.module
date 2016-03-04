@@ -118,6 +118,35 @@ function og_sm_site_path($site) {
 }
 
 /**
+ * Load a Site node by it's path.
+ *
+ * Is also used in hook_menu as %site_path wildcard.
+ *
+ * @param string $path
+ *   The path to load the site for.
+ *
+ * @return object|FALSE
+ *   The Site node (if any).
+ */
+function og_sm_site_load_by_path($path) {
+  $path = drupal_lookup_path('source', $path);
+  if (!$path) {
+    return FALSE;
+  }
+
+  $site = menu_get_object('node', 1, $path);
+  if (!$site) {
+    return FALSE;
+  }
+
+  if (!og_sm_is_site($site)) {
+    return FALSE;
+  }
+
+  return $site;
+}
+
+/**
  * Get an array of all Site Node ID's.
  *
  * WARNING: There is no node_access check on this function!

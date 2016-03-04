@@ -108,4 +108,25 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     $this->assertEqual($expected, og_sm_tokens($type, $tokens, $data));
   }
 
+  /**
+   * Test loading the site by its path.
+   */
+  public function testSiteLoadByPath() {
+    module_load_include('inc', 'og_sm', 'og_sm.tokens');
+
+    $site_type = $this->ogSmCreateGroupNodeType();
+
+    // Set the auto path for Site node type.
+    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
+    $site = $this->ogSmCreateGroup($site_type);
+    $path = drupal_get_path_alias('node/' . $site->nid);
+
+    // Site node type is not yet a Site type.
+    $this->assertFalse(og_sm_site_load_by_path($path));
+
+    // Site node type is in the Site types.
+    og_sm_add_site_type($site_type);
+    $site_by_path = og_sm_site_load_by_path($path);
+    $this->assertEqual($site->nid, $site_by_path->nid);
+  }
 }
