@@ -88,13 +88,13 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
  * @param int $site_nid
  *   The Site Node ID.
  *
- * @return object|NULL
+ * @return object|FALSE
  *   The Site Node (if any).
  */
 function og_sm_site_load($site_nid) {
   $site = node_load($site_nid);
   if (!og_sm_is_site($site)) {
-    return NULL;
+    return FALSE;
   }
 
   return $site;
@@ -148,7 +148,7 @@ function og_sm_site_all_nids() {
 function og_sm_current_site() {
   $context = og_context('node');
   if (!$context) {
-    return NULL;
+    return FALSE;
   }
 
   return og_sm_site_load($context['gid']);
@@ -250,7 +250,7 @@ function og_sm_content_get_sites($node) {
 function og_sm_content_get_site($node) {
   $sites = og_sm_content_get_sites($node);
   if (empty($sites)) {
-    return NULL;
+    return FALSE;
   }
 
   return reset($sites);
