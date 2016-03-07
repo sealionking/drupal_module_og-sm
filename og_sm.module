@@ -495,6 +495,19 @@ function og_sm_node_insert($node) {
  */
 function og_sm_node_update($node) {
   og_sm_hook_site('update', $node);
+
+  if ((int) $node->path['pathauto'] > 0) {
+    // Path defined by title.
+    if ($node->title !== $node->original->title) {
+      og_sm_hook_site('update_alias', $node);
+    }
+  }
+  else {
+    // Path set manually.
+    if ($node->path['alias'] !== $node->path['original']['alias']) {
+      og_sm_hook_site('update_alias', $node);
+    }
+  }
 }
 
 /**

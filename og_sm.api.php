@@ -89,6 +89,21 @@ function hook_og_sm_site_update($site) {
 }
 
 /**
+ * Act on a Site node alias being changed.
+ *
+ * Will only be triggered when the node_update hook is triggered for a node type
+ * that is a Site type & the path alias will change (auto or manually).
+ *
+ * @param object $site
+ *   The Site node object.
+ *
+ * @see hook_node_update()
+ */
+function hook_og_sm_site_update_alias($site) {
+
+}
+
+/**
  * Act on a Site node being deleted.
  *
  * Will only be triggered when the node_delete hook is triggered for a node type

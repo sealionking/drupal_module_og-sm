@@ -160,6 +160,7 @@ when an action happens:
   prepared to being shown on the screen.
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
+* `hook_og_sm_site_update_alias($site)` : Site node alias is updated.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
 

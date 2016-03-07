@@ -83,7 +83,10 @@ function _og_sm_tokens_node(array $tokens, array $data, array $options) {
  *   Token string if any.
  */
 function _og_sm_tokens_site_path($node, $sanitize) {
-  $site = og_sm_content_get_site($node);
+  $site = (og_sm_is_site($node))
+    ? $node
+    : og_sm_content_get_site($node);
+
   if (!$site) {
     return NULL;
   }
