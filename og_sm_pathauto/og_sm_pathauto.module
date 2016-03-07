@@ -35,6 +35,7 @@ function og_sm_pathauto_og_sm_site_delete($site) {
  */
 function og_sm_pathauto_modules_enabled($modules) {
   // Update aliases to be sure that new paths, provided by modules are aliased.
+  module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.batch');
   og_sm_pathauto_bulk_update_batch();
 }
 
