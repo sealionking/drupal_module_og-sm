@@ -5,12 +5,32 @@
  */
 
 /**
+ * Create a batch to update all admin aliases for all Sites.
+ */
+function og_sm_pathauto_bulk_update_batch() {
+  $file = drupal_get_path('module', 'og_sm_pathauto') . '/og_sm_pathauto.batch.inc';
+
+  $batch = array(
+    'title' => t('Update all Site administration aliases.'),
+    'operations' => array(
+      array('og_sm_pathauto_bulk_update_batch_process'),
+    ),
+    'file' => $file,
+  );
+
+  batch_set($batch);
+}
+
+/**
  * Batch processing callback; Generate aliases for Site administration pages.
  *
  * This will process all administration pages for all Sites.
  *
  * @param array $context
  *   The process context.
+ *
+ * @see og_sm_pathauto_bulk_update_batch
+ * @see og_sm_pathauto_pathauto
  */
 function og_sm_pathauto_bulk_update_batch_process(&$context) {
   if (!isset($context['sandbox']['sites'])) {
@@ -67,8 +87,12 @@ function og_sm_pathauto_site_alias_update_batch($site) {
  * This will create/update aliases for all administration pages of a single
  * Site.
  *
+ * @param int $site_nid
+ *   The Site Node ID to run the process for.
  * @param array $context
  *   The process context.
+ *
+ * @see og_sm_pathauto_site_alias_update_batch
  */
 function og_sm_pathauto_site_alias_update_admin_process($site_nid, &$context) {
   $site = og_sm_site_load($site_nid);
@@ -87,8 +111,12 @@ function og_sm_pathauto_site_alias_update_admin_process($site_nid, &$context) {
  *
  * This will create/update aliases for all content pages of a single Site.
  *
+ * @param int $site_nid
+ *   The Site Node ID to run the process for.
  * @param array $context
  *   The process context.
+ *
+ * @see og_sm_pathauto_site_alias_update_batch
  */
 function og_sm_pathauto_site_alias_update_content_process($site_nid, &$context) {
   $site = og_sm_site_load($site_nid);
@@ -131,6 +159,8 @@ function og_sm_pathauto_site_alias_update_content_process($site_nid, &$context) 
  *   The Site node id.
  * @param array $context
  *   Batch API context.
+ *
+ * @see og_sm_pathauto_site_alias_update_content_process
  */
 function _og_sm_pathauto_site_alias_update_content_init($site_nid, &$context) {
   // Initiate the batch.
@@ -160,6 +190,8 @@ function _og_sm_pathauto_site_alias_update_content_init($site_nid, &$context) {
  *
  * @return array[OgMembership]
  *   Array of OgMembership objects.
+ *
+ * @see og_sm_pathauto_site_alias_update_content_process
  */
 function _og_sm_pathauto_site_alias_update_content_get_memberships($site_nid, &$context) {
   $limit = 50;

@@ -31,6 +31,14 @@ function og_sm_pathauto_og_sm_site_delete($site) {
 }
 
 /**
+ * Implements hook_modules_enabled().
+ */
+function og_sm_pathauto_modules_enabled($modules) {
+  // Update aliases to be sure that new paths, provided by modules are aliased.
+  og_sm_pathauto_bulk_update_batch();
+}
+
+/**
  * Create/Update administration aliases for the Site paths (multiple).
  *
  * @param object $site

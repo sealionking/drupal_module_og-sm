@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-03-07 14:53+0100\n"
-"PO-Revision-Date: 2016-03-07 14:53+0100\n"
+"PO-Revision-Date: 2016-03-07 15:28+0100\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -11,39 +11,33 @@ msgstr ""
 "Language: nl\n"
 "X-Generator: Poedit 1.8.6\n"
 
-#: og_sm_pathauto.batch.inc:32
+msgid "Update all Site administration aliases."
+msgstr "Alle Site beheer aliassen aanpassen."
+
 msgid "Updated aliases for site @name."
 msgstr "Aliassen aangepast voor @name."
 
-#: og_sm_pathauto.batch.inc:53
 msgid "Update Site pages & content aliases"
 msgstr "Aanpassen Site pagina's en inhoud aliassen"
 
-#: og_sm_pathauto.batch.inc:79
 msgid "Updated administration page aliases for %site."
 msgstr "Beheer pagina aliassen aangepast voor %site."
 
-#: og_sm_pathauto.batch.inc:111
 msgid "Updated %count of %total content aliases for %site."
 msgstr "%count aliassen van %total aangepast voor %site."
 
-#: og_sm_pathauto.pathauto.inc:12;26
 msgid "Site administration paths"
 msgstr "Site beheer paden"
 
-#: og_sm_pathauto.pathauto.inc:27
 msgid "Path pattern that will replace the <em>group/node/%nid</em> part of the Site administration paths."
 msgstr "Pad pattern dat het <em>group/node/%nid</em> van Site beheer pagina's zal vervangen."
 
-#: og_sm_pathauto.info:0
 msgid "Site Pathauto"
 msgstr "Site Pathauto"
 
-#: og_sm_pathauto.info:0
 msgid "Pathauto functionality to create aliases for all Site related pages that are not content."
 msgstr "Pathauto functionaliteit om aliassen aan te maken voor alle Site pagina's die geen inhoud zijn."
 
-#: og_sm_pathauto.info:0
 msgid "Organic Groups Site Manager"
 msgstr ""
 
