@@ -495,19 +495,36 @@ function og_sm_node_insert($node) {
  */
 function og_sm_node_update($node) {
   og_sm_hook_site('update', $node);
+  if (_og_sm_node_update_alias_will_change($node)) {
+    og_sm_hook_site('update_alias', $node);
+  }
+}
 
-  if ((int) $node->path['pathauto'] > 0) {
-    // Path defined by title.
-    if ($node->title !== $node->original->title) {
-      og_sm_hook_site('update_alias', $node);
-    }
+/**
+ * Helper do identify if the node alias of a Site will change due to update.
+ *
+ * @param object $node
+ *   The node being updated.
+ *
+ * @return TRUE
+ *   The alias will be changed.
+ */
+function _og_sm_node_update_alias_will_change($node) {
+  $pathauto_new = (bool) $node->path['pathauto'];
+  $pathauto_old = (bool) $node->original->path['pathauto'];
+
+  // Auto alias.
+  if ($pathauto_new && $pathauto_old) {
+    return ($node->title !== $node->original->title);
   }
-  else {
-    // Path set manually.
-    if ($node->path['alias'] !== $node->path['original']['alias']) {
-      og_sm_hook_site('update_alias', $node);
-    }
+
+  // Manual alias.
+  if (!$pathauto_new && !$pathauto_old) {
+    return ($node->path['alias'] !== $node->path['original']['alias']);
   }
+
+  // Switching between auto & manual.
+  return TRUE;
 }
 
 /**
