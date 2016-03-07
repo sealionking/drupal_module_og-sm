@@ -44,7 +44,7 @@ function og_sm_pathauto_pathauto($op) {
  * => Pattern will be: [node:site-path]/admin/people.
  */
 function og_sm_pathauto_pathauto_pattern_alter(&$pattern, array $context) {
-  if ($context['module'] !== 'node') {
+  if ($context['module'] !== 'og_sm') {
     return;
   }
 

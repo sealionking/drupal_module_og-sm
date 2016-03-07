@@ -5,20 +5,33 @@
  */
 
 /**
- * Implements hook_og_sm_site_update().
+ * Implements hook_og_sm_site_insert().
  */
-function og_sm_pathauto_og_sm_site_update($site) {
+function og_sm_pathauto_og_sm_site_insert($site) {
+  // Make sure that the administration pages have aliases.
+  module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.batch');
+  og_sm_pathauto_site_alias_update_batch($site);
+}
+
+/**
+ * Implements hook_og_sm_site_update_alias().
+ */
+function og_sm_pathauto_og_sm_site_update_alias($site) {
+  // Update all aliases for the Site when its alias changes.
+  module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.batch');
+  og_sm_pathauto_site_alias_update_batch($site);
 }
 
 /**
  * Implements hook_og_sm_site_delete().
  */
 function og_sm_pathauto_og_sm_site_delete($site) {
+  // Delete all aliases for a site when it is deleted.
   og_sm_pathauto_site_delete_aliases($site);
 }
 
 /**
- * Create/Update aliases for the Site paths (multiple).
+ * Create/Update administration aliases for the Site paths (multiple).
  *
  * @param object $site
  *   The Site to create the aliases for.
@@ -29,12 +42,13 @@ function og_sm_pathauto_og_sm_site_delete($site) {
  * @return int
  *   The number of created aliases.
  */
-function og_sm_pathauto_site_paths_update_aliases($site, $op) {
+function og_sm_pathauto_site_path_update_admin_aliases($site, $op) {
   $count = 0;
 
+  // Create/Update the aliases.
   $paths = og_sm_pathauto_get_site_paths();
   foreach ($paths as $path) {
-    $count += (int) og_sm_pathauto_site_path_update_alias($site, $path, $op);
+    $count += (int) og_sm_pathauto_site_path_update_admin_alias($site, $path, $op);
   }
 
   return $count;
@@ -54,7 +68,7 @@ function og_sm_pathauto_site_paths_update_aliases($site, $op) {
  * @return bool
  *   Created or updated.
  */
-function og_sm_pathauto_site_path_update_alias($site, $path, $op) {
+function og_sm_pathauto_site_path_update_admin_alias($site, $path, $op) {
   $options = array('language' => pathauto_entity_language('node', $site));
 
   // Skip processing if there is no pattern available.
@@ -67,11 +81,11 @@ function og_sm_pathauto_site_path_update_alias($site, $path, $op) {
 
   module_load_include('inc', 'pathauto');
   return pathauto_create_alias(
-    'node',
+    'og_sm',
     $op,
     $src,
     array('node' => $site, 'og_sm_site_path' => $path),
-    $site->type,
+    '',
     $options['language']
   );
 }
@@ -86,6 +100,16 @@ function og_sm_pathauto_site_delete_aliases($site) {
   $site_path = og_sm_site_path($site);
   db_delete('url_alias')
     ->condition('alias', db_like($site_path) . '/%', 'LIKE')
+    ->execute();
+}
+
+/**
+ * Delete only the admin aliases for a Site.
+ */
+function og_sm_pathauto_site_delete_admin_aliases($site) {
+  $source = 'group/node/' . $site->nid;
+  db_delete('url_alias')
+    ->condition('source', db_like($source) . '/%', 'LIKE')
     ->execute();
 }
 
