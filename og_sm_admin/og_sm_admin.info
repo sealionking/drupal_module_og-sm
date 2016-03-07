@@ -1,0 +1,7 @@
+name = Site Administration
+description = "Site Adminisitration interface to let Site users, with the proper permissions, administration Site configuration."
+package = "Organic Groups Site Manager"
+version = "7.x-1.x-dev"
+core = 7.x
+
+dependencies[] = og_sm

@@ -1,0 +1,40 @@
+<?php
+/**
+ * @file
+ * Site Manager Administration module.
+ */
+
+// Permission to get access to Site administration.
+define('OG_SM_ADMIN_PERMISSION', 'administer site');
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_admin_og_permission() {
+  return array(
+    OG_SM_ADMIN_PERMISSION => array(
+      'title' => t('Administer Site'),
+      'description' => t('View the Site administration pages.'),
+      'roles' => array(OG_SM_ADMIN_PERMISSION),
+      'default role' => array(OG_SM_ADMIN_PERMISSION),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_admin_menu() {
+  $items = array();
+  $items['group/%/%/admin'] = array(
+    'title' => 'Administer Site',
+    'type' => MENU_CALLBACK,
+    'file' => 'og_sm_admin.pages.inc',
+    'page callback' => 'og_sm_admin_overview_all',
+    'page arguments' => array(2, 'root'),
+    'access callback' => 'og_sm_site_nid_permission_access',
+    'access arguments' => array(2, OG_SM_ADMIN_PERMISSION),
+  );
+
+  return $items;
+}
