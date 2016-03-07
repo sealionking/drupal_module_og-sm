@@ -3,3 +3,109 @@
  * @file
  * Module to automatically create aliases for Site related paths.
  */
+
+/**
+ * Implements hook_og_sm_site_update().
+ */
+function og_sm_pathauto_og_sm_site_update($site) {
+}
+
+/**
+ * Implements hook_og_sm_site_delete().
+ */
+function og_sm_pathauto_og_sm_site_delete($site) {
+  og_sm_pathauto_site_delete_aliases($site);
+}
+
+/**
+ * Create/Update aliases for the Site paths (multiple).
+ *
+ * @param object $site
+ *   The Site to create the aliases for.
+ * @param string $op
+ *   Operation being performed on the Site paths
+ *   ('insert', 'update', 'return', or 'bulkupdate').
+ *
+ * @return int
+ *   The number of created aliases.
+ */
+function og_sm_pathauto_site_paths_update_aliases($site, $op) {
+  $count = 0;
+
+  $paths = og_sm_pathauto_get_site_paths();
+  foreach ($paths as $path) {
+    $count += (int) og_sm_pathauto_site_path_update_alias($site, $path, $op);
+  }
+
+  return $count;
+}
+
+/**
+ * Create/Update an alias for a Site path (single).
+ *
+ * @param object $site
+ *   The Site node.
+ * @param string $path
+ *   The source to create an alias for.
+ * @param string $op
+ *   Operation being performed on the Site paths
+ *   ('insert', 'update', 'return', or 'bulkupdate').
+ *
+ * @return bool
+ *   Created or updated.
+ */
+function og_sm_pathauto_site_path_update_alias($site, $path, $op) {
+  $options = array('language' => pathauto_entity_language('node', $site));
+
+  // Skip processing if there is no pattern available.
+  if (!pathauto_pattern_load_by_entity('og_sm', '', $options['language'])) {
+    return FALSE;
+  }
+
+  // Create the source path.
+  $src = preg_replace('#^group/%/%#', 'group/node/' . $site->nid, $path);
+
+  module_load_include('inc', 'pathauto');
+  return pathauto_create_alias(
+    'node',
+    $op,
+    $src,
+    array('node' => $site, 'og_sm_site_path' => $path),
+    $site->type,
+    $options['language']
+  );
+}
+
+/**
+ * Delete all aliases for the given Site.
+ *
+ * @param object $site
+ *   The Site node to delete the aliases for.
+ */
+function og_sm_pathauto_site_delete_aliases($site) {
+  $site_path = og_sm_site_path($site);
+  db_delete('url_alias')
+    ->condition('alias', db_like($site_path) . '/%', 'LIKE')
+    ->execute();
+}
+
+/**
+ * Get all the Site paths to create aliases for.
+ *
+ * @return array
+ *   The paths to create aliases for.
+ */
+function og_sm_pathauto_get_site_paths() {
+  static $paths = array();
+
+  if (empty($paths)) {
+    $query = db_select('menu_router', 'mr');
+    $query->addField('mr', 'path');
+    $query->condition('mr.path', db_like('group/%/') . '%', 'LIKE');
+    $query->orderBy('mr.path', 'ASC');
+
+    $paths = $query->execute()->fetchAllKeyed(0, 0);
+  }
+
+  return $paths;
+}

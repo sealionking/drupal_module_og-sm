@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_context module.
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmPathautoTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Pathauto'),
+      'description' => t('Tests Site Pathauto functionality.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_pathauto');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test the pathauto pattern alter hook.
+   */
+  public function testPathautoPatternAlter() {
+    $site_type = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($site_type);
+    $site = $this->ogSmCreateGroup($site_type);
+
+    $pattern = '[node:site-path]';
+    $context = array(
+      'data' => array(
+        'node' => $site,
+        'og_sm_site_path' => 'group/%/%/admin/test',
+      ),
+      'module' => 'node',
+    );
+
+    module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.pathauto');
+
+    og_sm_pathauto_pathauto_pattern_alter($pattern, $context);
+    $this->assertEqual('[node:site-path]/admin/test', $pattern);
+  }
+
+}
