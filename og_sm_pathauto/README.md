@@ -28,4 +28,4 @@ alias of the Site changes.
    admin/config/search/path/patterns.
 
 ### Dependencies
-* Organic Groups
+* Organic Groups Site Manager

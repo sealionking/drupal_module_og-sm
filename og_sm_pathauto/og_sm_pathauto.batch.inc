@@ -76,7 +76,10 @@ function og_sm_pathauto_site_alias_update_admin_process($site_nid, &$context) {
   og_sm_pathauto_site_path_update_admin_aliases($site, 'bulkupdate');
 
   $context['finished'] = 1;
-  $context['message'] = t('Updated administration page aliases for %site', array('%site' => $site->title));
+  $context['message'] = t(
+    'Updated administration page aliases for %site.',
+    array('%site' => $site->title)
+  );
 }
 
 /**
@@ -109,7 +112,7 @@ function og_sm_pathauto_site_alias_update_content_process($site_nid, &$context) 
 
   // Show some feedback.
   $context['message'] = t(
-    'Updated %count of %total content aliases for %site',
+    'Updated %count of %total content aliases for %site.',
     array(
       '%count' => $context['sandbox']['progress'],
       '%total' => $context['sandbox']['total'],
