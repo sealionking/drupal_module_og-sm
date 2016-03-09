@@ -1,0 +1,470 @@
+<?php
+/**
+ * @file
+ * Site Manager Administration module.
+ */
+
+// Menu name.
+define('OG_SM_ADMIN_MENU_NAME_PREFIX', 'og-sm-admin-menu');
+
+// Placeholder path for dynamic menu items.
+define('OG_SM_ADMIN_MENU_PLACEHOLDER', 'og-sm-admin-menu');
+
+
+/**
+ * Implements hook_hook_info().
+ */
+function og_sm_admin_menu_hook_info() {
+  $hooks = array(
+    'og_sm_admin_menu' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_admin_menu_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function og_sm_admin_menu_admin_paths() {
+  $paths = array(
+    'group/*/*/admin' => TRUE,
+    'group/*/*/admin/*' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_admin_menu_menu() {
+  $items = array();
+
+  $file = 'og_sm_admin_menu.pages.inc';
+
+  // Dummy item to use in dynamic menu items.
+  $items[OG_SM_ADMIN_MENU_PLACEHOLDER . '/%'] = array(
+    'title' => 'OG Site Admin placeholder',
+    'page callback' => 'og_sm_admin_menu_placeholder',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'file' => $file,
+  );
+
+  // Site administration overview pages.
+  $items['group/%/%og_sm_site/admin'] = array(
+    'title callback' => 'og_sm_admin_menu_title',
+    'title arguments' => array('Administer @site_title', 2),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'og_sm_admin_menu_overview',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'file' => $file,
+  );
+  $items['group/%/%og_sm_site/admin/structure'] = array(
+    'title callback' => 'og_sm_admin_menu_title',
+    'title arguments' => array('Administer @site_title structure', 2),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'og_sm_admin_menu_overview',
+    'page arguments' => array(2, 'structure'),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'file' => $file,
+  );
+
+  return $items;
+}
+
+/**
+ * Title callback for the overview pages.
+ *
+ * @param string $title
+ *   The Title to use.
+ * @param object $site
+ *   The Site Node ID to use to add the Site name to the title.
+ *
+ * @return string
+ *   The personalized title.
+ */
+function og_sm_admin_menu_title($title, $site) {
+  // @codingStandardsIgnoreStart
+  return t($title, array('@site_title' => $site->title));
+  // @codingStandardsIgnoreEnd
+}
+
+/**
+ * Create the admin menu(s) based on the implemented hooks.
+ */
+function og_sm_admin_menu_rebuild() {
+  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+
+  // Get/Create the menus.
+  $menus = og_sm_admin_menu_build_menus();
+
+  // Create new menu items.
+  $items = og_sm_admin_menu_items();
+
+  // Fill the menus with items.
+  foreach ($menus as $language => $menu) {
+    // Delete first all existing links.
+    menu_delete_links($menu['menu_name']);
+
+    // Repopulate the menu.
+    og_sm_admin_menu_build_items($menu, $language, $items);
+  }
+}
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ *
+ * This will replace the dynamic menu placeholders with the actual values.
+ */
+function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
+  // Should we replace the path?
+  if (!isset($item['options']['og_sm_admin_menu_path'])) {
+    return;
+  }
+
+  // Are we in a Site context?
+  $site = og_sm_current_site();
+  if (!$site) {
+    $item['access'] = FALSE;
+    return;
+  }
+
+  // Create the actual Link.
+  $url = preg_replace(
+    '/\[site:nid\]/',
+    $site->nid,
+    $item['options']['og_sm_admin_menu_path']
+  );
+
+  // Update link.
+  $item['href'] = $item['link_path'] = url($url);
+  $item['router_path'] = $url;
+  $item['title'] = $item['link_title'];
+  $item['title_callback'] = FALSE;
+
+  // Load menu item and check access.
+  if ($menu_item = menu_get_item($url)) {
+    $item['access'] = $menu_item['access'];
+    return;
+  }
+
+  // Access fallback.
+  $item['access'] = FALSE;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds extra options to the Plugins.
+ */
+function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_state, $form_id) {
+  $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.platform'] = t('Platform Administration menu');
+  $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.site'] = t('Site Administration menu');
+  $form['plugins']['admin_menu_components']['#description'] = t(
+    'Disable the "%admin_menu" when using "%site_admin" and/or "%platform_admin" plugins to improve page speed.',
+    array(
+      '%admin_menu' => t('Administration menu'),
+      '%site_admin' => t('Site Administration menu'),
+      '%platform_admin' => t('Platform Administration menu'),
+    )
+  );
+}
+
+/**
+ * Implements hook_admin_menu_output_build().
+ */
+function og_sm_admin_menu_admin_menu_output_build(&$content) {
+  $site = og_sm_current_site();
+
+  // Add the Site Administration menu when we are in a Site context.
+  if ($site && !empty($content['#components']['og_sm_admin_menu.site'])) {
+    module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+    $content['og_sm_admin_menu'] = og_sm_admin_menu_load_site();
+  }
+
+  // Add the Platform menu when we are not in a Site context.
+  if (!$site && !empty($content['#components']['og_sm_admin_menu.platform'])) {
+    module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+    $content['og_sm_admin_menu'] = og_sm_admin_menu_load_platform();
+  }
+}
+
+/**
+ * Implements hook_admin_menu_output_alter().
+ */
+function og_sm_admin_menu_admin_menu_output_alter(&$content) {
+  // Remove the Admin menu when we are using the menu-platform menu.
+  if (!empty($content['og_sm_admin_menu'])) {
+    if (isset($content['menu'])) {
+      unset($content['menu']);
+    }
+
+    // Make the 'menu' key the custom menu.
+    $content['menu'] = $content['og_sm_admin_menu'];
+    unset($content['og_sm_admin_menu']);
+  }
+
+  // Alter the home link when in a Site context.
+  if (!empty($content['icon']) && $site = og_sm_current_site()) {
+    $content['icon']['icon']['#href'] = 'node/' . $site->nid;
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_admin_menu_module_implements_alter(&$implementations, $hook) {
+  // Replace the admin_menu_page_build() hook, by our own hook.
+  if ($hook == 'page_build' && isset($implementations['admin_menu'])) {
+    unset($implementations['admin_menu']);
+
+    $group = $implementations['og_sm_admin_menu'];
+    unset($implementations['og_sm_admin_menu']);
+    $implementations['og_sm_admin_menu'] = $group;
+  }
+}
+
+/**
+ * Implements hook_page_build().
+ *
+ * Copy from admin_menu_page_build(); We need to cache the menu:
+ * - Per Site.
+ * - Per User.
+ * - Per language.
+ */
+function og_sm_admin_menu_page_build(&$page) {
+  if (!user_access('access administration menu') || admin_menu_suppress(FALSE)) {
+    return;
+  }
+
+  // Performance: Skip this entirely for AJAX requests.
+  if (strpos($_GET['q'], 'js/') === 0) {
+    return;
+  }
+
+  global $user, $language;
+  $path = drupal_get_path('module', 'admin_menu');
+
+  $page['page_bottom']['admin_menu'] = array(
+    '#attached' => array(),
+  );
+  $attached = &$page['page_bottom']['admin_menu']['#attached'];
+  $options = array('every_page' => TRUE);
+
+  $attached['css'][$path . '/admin_menu.css'] = $options;
+  if ($user->uid == 1) {
+    $attached['css'][$path . '/admin_menu.uid1.css'] = $options;
+  }
+  // Previous versions used the 'defer' attribute to increase browser rendering
+  // performance. At least starting with Firefox 3.6, deferred .js files are
+  // loaded, but Drupal.behaviors are not contained in the DOM when drupal.js
+  // executes Drupal.attachBehaviors().
+  $attached['js'][$path . '/admin_menu.js'] = $options;
+
+  // Destination query strings are applied via JS.
+  $settings['destination'] = drupal_http_build_query(drupal_get_destination());
+
+  // Determine whether we need to show all components and disable all caches.
+  $complete = FALSE;
+  if (current_path() == 'admin/config/administration/admin_menu' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $complete = TRUE;
+  }
+
+  // If the client supports JavaScript and we have a cached menu for the current
+  // user, only output the hash for the client-side HTTP cache callback URL.
+  $cid = og_sm_admin_menu_create_cid();
+
+  if (!$complete && !empty($_COOKIE['has_js']) && ($hash = admin_menu_cache_get($cid))) {
+    $settings['hash'] = $hash;
+    // The base path to use for cache requests depends on whether clean URLs
+    // are enabled, whether Drupal runs in a sub-directory, and on the language
+    // system configuration. url() already provides us the proper path and also
+    // invokes potentially existing custom_url_rewrite() functions, which may
+    // add further required components to the URL to provide context. Due to
+    // those components, and since url('') returns only base_path() when clean
+    // URLs are disabled, we need to use a replacement token as path.  Yuck.
+    $settings['basePath'] = url('admin_menu');
+  }
+  // Otherwise, add the full menu to the page.
+  else {
+    $page['page_bottom']['admin_menu']['#markup'] = og_sm_admin_menu_output($complete);
+  }
+
+  $replacements = module_invoke_all('admin_menu_replacements', $complete);
+  if (!empty($replacements)) {
+    $settings['replacements'] = $replacements;
+  }
+
+  if ($setting = variable_get('admin_menu_margin_top', 1)) {
+    $settings['margin_top'] = $setting;
+    // @todo Drupal.behaviors.adminMenuMarginTop is obsolete, but
+    //   hook_page_build() does not allow to set a CSS class on the body yet.
+    // @see http://drupal.org/node/1473548, http://drupal.org/node/1194528
+    //$page['#attributes']['class'][] = 'admin-menu';
+  }
+  if ($setting = variable_get('admin_menu_position_fixed', 1)) {
+    $settings['position_fixed'] = $setting;
+
+    // In fixed positioning, supply a callback function for tableheader.js to
+    // allow it to determine the top viewport offset.
+    // @see admin_menu.js, toolbar.js
+    $attached['js'][] = array(
+      'data' => array('tableHeaderOffset' => 'Drupal.admin.height'),
+      'type' => 'setting',
+    );
+  }
+  if ($setting = variable_get('admin_menu_tweak_tabs', 0)) {
+    $settings['tweak_tabs'] = $setting;
+  }
+  if ($_GET['q'] == 'admin/modules' || strpos($_GET['q'], 'admin/modules/list') === 0) {
+    $settings['tweak_modules'] = variable_get('admin_menu_tweak_modules', 0);
+  }
+  if ($_GET['q'] == 'admin/people/permissions' || $_GET['q'] == 'admin/people/permissions/list') {
+    $settings['tweak_permissions'] = variable_get('admin_menu_tweak_permissions', 0);
+  }
+
+  $attached['js'][] = array(
+    'data' => array('admin_menu' => $settings),
+    'type' => 'setting',
+  );
+}
+
+/**
+ * Build the administration menu output.
+ *
+ * @param bool $complete
+ *   (optional) Whether to build to the complete menu including all components
+ *   and ignore the cache. Defaults to FALSE. Internally used for the settings
+ *   page.
+ */
+function og_sm_admin_menu_output($complete = FALSE) {
+  global $user, $language;
+
+  $cache_server_enabled = !$complete && variable_get('admin_menu_cache_server', TRUE);
+  $cid = og_sm_admin_menu_create_cid();
+
+  // Try to load and output administration menu from server-side cache.
+  // @todo Duplicates the page cache? Page cache ID contains the hash that is
+  //   generated at the bottom of this function, which is based on $content,
+  //   but logically identical to the $cid. Investigate whether not only the
+  //   cache_menu but also the cache_admin_menu could be dropped; the
+  //   client-side HTTP cache hash check could be based on a cid lookup in
+  //   cache_page instead? (i.e., one cache to rule them all) However,
+  //   cache_page is cleared very often.
+  if ($cache_server_enabled) {
+    $cache = cache_get($cid, 'cache_menu');
+    if ($cache && isset($cache->data)) {
+      $content = $cache->data;
+    }
+  }
+
+  // Rebuild the output.
+  if (!isset($content)) {
+    // Retrieve enabled components to display and make them available for others.
+    $components = variable_get('admin_menu_components', array());
+    $components += array(
+      'admin_menu.menu' => TRUE,
+      'admin_menu.icon' => TRUE,
+      'admin_menu.account' => TRUE,
+    );
+    $content['#components'] = $components;
+    $content['#complete'] = $complete;
+
+    // Add site name as CSS class for development/staging theming purposes. We
+    // leverage the cookie domain instead of HTTP_HOST to account for many (but
+    // not all) multi-domain setups (e.g. language-based sub-domains).
+    $classes = 'admin-menu-site' . drupal_strtolower(preg_replace('/[^a-zA-Z0-9-]/', '-', $GLOBALS['cookie_domain']));
+    // Displace overlay.
+    // @see Drupal.overlay.create
+    // @see toolbar_preprocess_toolbar()
+    if (module_exists('overlay')) {
+      $classes .= ' overlay-displace-top';
+    }
+    // @todo Always output container to harden JS-less support.
+    $content['#prefix'] = '<div id="admin-menu" class="' . $classes . '"><div id="admin-menu-wrapper">';
+    $content['#suffix'] = '</div></div>';
+
+    // Load menu builder functions.
+    module_load_include('inc', 'admin_menu');
+
+    // @todo Move the below callbacks into hook_admin_menu_build()
+    //   implementations (and $module.admin_menu.inc).
+
+    // Add administration menu.
+    if (!empty($components['admin_menu.menu']) || $complete) {
+      $content['menu'] = admin_menu_links_menu(admin_menu_tree('management'));
+      $content['menu']['#theme'] = 'admin_menu_links';
+      $content['menu']['#wrapper_attributes']['id'] = 'admin-menu-menu';
+      // Ensure the menu tree is rendered between the icon and user links.
+      $content['menu']['#weight'] = 0;
+    }
+
+    // Add menu additions.
+    if (!empty($components['admin_menu.icon']) || $complete) {
+      $content['icon'] = admin_menu_links_icon();
+    }
+    if (!empty($components['admin_menu.account']) || $complete) {
+      $content['account'] = admin_menu_links_account();
+    }
+    if (!empty($components['admin_menu.users']) || $complete) {
+      $content['users'] = admin_menu_links_users();
+    }
+    if (!empty($components['admin_menu.search']) || $complete) {
+      $content['search'] = admin_menu_links_search();
+    }
+
+    // Allow modules to enhance the menu.
+    // Uses '_output' suffix for consistency with the alter hook (see below).
+    foreach (module_implements('admin_menu_output_build') as $module) {
+      $function = $module . '_admin_menu_output_build';
+      $function($content);
+    }
+
+    // Allow modules to alter the output.
+    // The '_output' suffix is required to prevent hook implementation function
+    // name clashes with the contributed Admin module.
+    drupal_alter('admin_menu_output', $content);
+
+    $content = drupal_render($content);
+
+    // Cache the menu for this user.
+    if ($cache_server_enabled) {
+      cache_set($cid, $content, 'cache_menu');
+    }
+  }
+
+  // Store the new hash for this user.
+  if (!empty($_COOKIE['has_js']) && !$complete) {
+    admin_menu_cache_set($cid, md5($content));
+  }
+
+  return $content;
+}
+
+/**
+ * Create a admin_menu cache id.
+ *
+ * @return string
+ *   The cache id specific for site, user, session & language.
+ */
+function og_sm_admin_menu_create_cid() {
+  global $user, $language;
+  $site = og_sm_current_site();
+
+  $cid = implode(':', array(
+    'admin_menu',
+    ($site) ? $site->nid : 0,
+    $user->uid,
+    session_id(),
+    $language->language
+  ));
+  return $cid;
+}
