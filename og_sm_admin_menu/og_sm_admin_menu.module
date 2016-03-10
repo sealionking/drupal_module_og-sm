@@ -98,6 +98,43 @@ function og_sm_admin_menu_title($title, $site) {
 }
 
 /**
+ * Implements hook_theme().
+ */
+function og_sm_admin_menu_theme($existing, $type, $theme, $path) {
+  $file_path = $path . '/templates';
+
+  return array(
+    'og_sm_admin_menu_overview' => array(
+      'variables' => array(
+        'left' => array(),
+        'right' => array(),
+      ),
+      'template' => 'og-sm-admin-menu-overview',
+      'path' => $file_path,
+    ),
+    'og_sm_admin_menu_overview_group' => array(
+      'variables' => array(
+        'title' => NULL,
+        'items' => array(),
+        'class' => NULL,
+      ),
+      'template' => 'og-sm-admin-menu-overview-group',
+      'path' => $file_path,
+    ),
+    'og_sm_admin_menu_overview_group_item' => array(
+      'variables' => array(
+        'url' => NULL,
+        'title' => NULL,
+        'description' => NULL,
+        'class' => NULL,
+      ),
+      'template' => 'og-sm-admin-menu-overview-group-item',
+      'path' => $file_path,
+    ),
+  );
+}
+
+/**
  * Create the admin menu(s) based on the implemented hooks.
  */
 function og_sm_admin_menu_rebuild() {
@@ -138,11 +175,7 @@ function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
   }
 
   // Create the actual Link.
-  $url = preg_replace(
-    '/\[site:nid\]/',
-    $site->nid,
-    $item['options']['og_sm_admin_menu_path']
-  );
+  $url = og_sm_admin_menu_router_path_from_admin_path($site, $item['options']['og_sm_admin_menu_path']);
 
   // Update link.
   $item['href'] = $item['link_path'] = url($url);
@@ -161,6 +194,23 @@ function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
 }
 
 /**
+ * Helper to fill in the Site nid in an admin_path.
+ *
+ * This will replace [site:nid] by the nid of the Site.
+ *
+ * @param object $site
+ *   The Site to get the nid from.
+ * @param string $admin_path
+ *   The admin path to fill in.
+ *
+ * @return string
+ *   The router path.
+ */
+function og_sm_admin_menu_router_path_from_admin_path($site, $admin_path) {
+  return preg_replace('/\[site:nid\]/', $site->nid, $admin_path);
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_state, $form_id) {
@@ -172,18 +222,10 @@ function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_st
  * Implements hook_admin_menu_output_build().
  */
 function og_sm_admin_menu_admin_menu_output_build(&$content) {
-  $site = og_sm_current_site();
-
   // Replace the menu with the Site menu when in site context.
-  if ($site && !empty($content['#components']['og_sm_admin_menu.site'])) {
+  if (og_sm_current_site() && !empty($content['#components']['og_sm_admin_menu.site'])) {
     module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
     $content['menu'] = og_sm_admin_menu_load_site();
-  }
-
-  // Add the Platform menu when we are not in a Site context.
-  if (!$site && !empty($content['#components']['og_sm_admin_menu.platform'])) {
-    module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
-    $content['og_sm_admin_menu'] = og_sm_admin_menu_load_platform();
   }
 }
 

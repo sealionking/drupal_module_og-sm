@@ -5,23 +5,6 @@
  */
 
 /**
- * Load the Platform Administration menu to show in the admin_menu bar.
- *
- * @return array
- *   The og_sm_admin menu structure.
- */
-function og_sm_admin_menu_load_platform() {
-  $menu_data = menu_tree_all_data('management');
-
-  $menu = admin_menu_links_menu($menu_data);
-  $menu['#theme'] = 'admin_menu_links';
-  $menu['#wrapper_attributes']['id'] = 'admin-menu-menu';
-  $menu['#weight'] = 0;
-
-  return $menu;
-}
-
-/**
  * Load the Site Administration menu to show in the admin_menu bar.
  *
  * @return array
@@ -29,6 +12,8 @@ function og_sm_admin_menu_load_platform() {
  */
 function og_sm_admin_menu_load_site() {
   global $language;
+
+  module_load_include('inc', 'admin_menu', 'admin_menu');
 
   $menu_name = _og_sm_admin_menu_build_menu_name($language->language);
   $menu_data = menu_tree_all_data($menu_name);
@@ -110,7 +95,7 @@ function og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NULL
     ? $router->path
     : 'group/%/%/' . $item['href'];
   $link_path = _og_sm_admin_menu_build_item_link_placeholder();
-  $admin_path = preg_replace('#group/%/%/#', 'group/node/[site:nid]/', $router->path);
+  $admin_path = $item['admin_path'];
   $t_options = array('language' => $language);
 
   // Item structure.
@@ -125,6 +110,11 @@ function og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NULL
       'og_sm_admin_menu_router' => $router_path,
       'og_sm_admin_menu_path' => $admin_path,
       'og_sm_admin_menu_uuid' => $link_path,
+      'og_sm_admin_menu_item_column' => !empty($item['column']) ? $item['column'] : FALSE,
+      'og_sm_admin_menu_item_description' => !empty($item['description']) ? $item['description'] : FALSE,
+      'og_sm_admin_menu_item_exclude_menu' => !empty($item['exclude_menu']),
+      'og_sm_admin_menu_item_exclude_overview' => !empty($item['exclude_overview']),
+      'og_sm_admin_menu_item_path' => $item['path'],
       'alter' => TRUE,
     ),
     'plid' => $plid,
@@ -271,7 +261,11 @@ function _og_sm_admin_menu_item_add_child(array &$items, $path_parent, $path, ar
  */
 function _og_sm_admin_menu_item_info($item) {
   if (!empty($item['href'])) {
-    $item['router'] = _og_sm_admin_menu_items_load_router_item($item['href']);
+    $router = _og_sm_admin_menu_items_load_router_item($item['href']);
+    $item['router'] = $router;
+    $item['admin_path'] = $router
+      ? preg_replace('#group/%/%/#', 'group/node/[site:nid]/', $router->path)
+      : NULL;
   }
   return $item;
 }
