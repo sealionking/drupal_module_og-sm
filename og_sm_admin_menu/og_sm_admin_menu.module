@@ -162,20 +162,10 @@ function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
 
 /**
  * Implements hook_form_FORM_ID_alter().
- *
- * Adds extra options to the Plugins.
  */
 function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_state, $form_id) {
-  $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.platform'] = t('Platform Administration menu');
+  // Add the Site Administration menu as extra menu option.
   $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.site'] = t('Site Administration menu');
-  $form['plugins']['admin_menu_components']['#description'] = t(
-    'Disable the "%admin_menu" when using "%site_admin" and/or "%platform_admin" plugins to improve page speed.',
-    array(
-      '%admin_menu' => t('Administration menu'),
-      '%site_admin' => t('Site Administration menu'),
-      '%platform_admin' => t('Platform Administration menu'),
-    )
-  );
 }
 
 /**
@@ -184,10 +174,10 @@ function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_st
 function og_sm_admin_menu_admin_menu_output_build(&$content) {
   $site = og_sm_current_site();
 
-  // Add the Site Administration menu when we are in a Site context.
+  // Replace the menu with the Site menu when in site context.
   if ($site && !empty($content['#components']['og_sm_admin_menu.site'])) {
     module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
-    $content['og_sm_admin_menu'] = og_sm_admin_menu_load_site();
+    $content['menu'] = og_sm_admin_menu_load_site();
   }
 
   // Add the Platform menu when we are not in a Site context.
@@ -201,19 +191,20 @@ function og_sm_admin_menu_admin_menu_output_build(&$content) {
  * Implements hook_admin_menu_output_alter().
  */
 function og_sm_admin_menu_admin_menu_output_alter(&$content) {
-  // Remove the Admin menu when we are using the menu-platform menu.
-  if (!empty($content['og_sm_admin_menu'])) {
-    if (isset($content['menu'])) {
-      unset($content['menu']);
-    }
+  $site = og_sm_current_site();
 
-    // Make the 'menu' key the custom menu.
-    $content['menu'] = $content['og_sm_admin_menu'];
-    unset($content['og_sm_admin_menu']);
+  // Only if there is an active Site.
+  if (!$site || empty($content['#components']['og_sm_admin_menu.site'])) {
+    return;
   }
 
-  // Alter the home link when in a Site context.
-  if (!empty($content['icon']) && $site = og_sm_current_site()) {
+  // Clear out the empty item when showing Site menu.
+  if (!empty($content['responsive-menu']['admin/index'])) {
+    unset($content['responsive-menu']['admin/index']);
+  }
+
+  // Alter the home link to the homepage of the current Site.
+  if (!empty($content['icon'])) {
     $content['icon']['icon']['#href'] = 'node/' . $site->nid;
   }
 }
