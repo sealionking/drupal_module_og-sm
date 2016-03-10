@@ -207,6 +207,40 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
   if (!empty($content['icon'])) {
     $content['icon']['icon']['#href'] = 'node/' . $site->nid;
   }
+
+  // Alter the add content links.
+  if (!empty($content['menu']['node/add'])) {
+    $query = array('og_group_ref' => $site->nid);
+
+    foreach ($content['menu']['node/add'] as $key => $item) {
+      // Add the query to the root element.
+      if ($key === '#options') {
+        $content['menu']['node/add'][$key]['query'] = $query;
+        continue;
+      }
+
+      // Only for child elements.
+      if (!preg_match('#node/add/#', $key)) {
+        continue;
+      }
+
+      // Get the content type.
+      preg_match('#node/add/(.*)#', $key, $matches);
+      $node_type = $matches[1];
+
+      // Exclude Site types.
+      if (og_sm_is_site_type($node_type)) {
+        unset($content['menu']['node/add'][$key]);
+      }
+
+      // Exclude non-group content types.
+      if (!og_is_group_content_type('node', $node_type)) {
+        unset($content['menu']['node/add'][$key]);
+      }
+
+      $content['menu']['node/add'][$key]['#options']['query'] = $query;
+    }
+  }
 }
 
 /**
