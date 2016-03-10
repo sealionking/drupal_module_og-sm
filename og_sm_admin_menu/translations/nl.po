@@ -1,0 +1,78 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-03-10 15:50+0100\n"
+"PO-Revision-Date: 2016-03-11 08:28+0100\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.6\n"
+
+msgid "Site Administration menu (@language)"
+msgstr "Site Beheer menu (@language)"
+
+msgid "Menu to manage Site configuration."
+msgstr "Menu on Site configuratie te beheren."
+
+msgid "Site Administration menu"
+msgstr "Site Beheer menu"
+
+msgid "OG Site Admin menu item placeholder"
+msgstr "OG Site Beheeer menu item placeholder"
+
+msgid "Administer @site_title"
+msgstr "Beheer @site_title"
+
+msgid "Administer @site_title structure"
+msgstr "Beheer @site_title structuur"
+
+msgid "People"
+msgstr "Personen"
+
+msgid "Manage Site members"
+msgstr "Beheer Site leden"
+
+msgid "Add people"
+msgstr "Personen toevoegen"
+
+msgid "Add Site members."
+msgstr "Site leden toevoegen"
+
+msgid "Roles"
+msgstr "Rollen"
+
+msgid "View Site roles."
+msgstr "Bekijk Site rollen"
+
+msgid "Permissions"
+msgstr "Toegangsrechten"
+
+msgid "View Site permissions."
+msgstr "Site toegangsrechten bekijken."
+
+msgid "Structure"
+msgstr "Structuur"
+
+msgid "Menus"
+msgstr "Menu's"
+
+msgid "Manage Site menus and their content."
+msgstr "Beheer Site menu's en hun inhoud."
+
+msgid "You do not have any administrative items."
+msgstr "U heeft geen administratieve items."
+
+msgid "Site Administration Menu"
+msgstr "Site Beheer menu"
+
+msgid "Replaces the administrative menu with Site specific tasks."
+msgstr "Vervangt het beheer menu met Site specifieke taken."
+
+msgid "Token : @token"
+msgstr "Token : @token"
+
+msgid "Organic Groups Site Manager"
+msgstr ""
