@@ -104,12 +104,19 @@ function og_sm_admin_menu_theme($existing, $type, $theme, $path) {
   $file_path = $path . '/templates';
 
   return array(
-    'og_sm_admin_menu_overview' => array(
+    'og_sm_admin_menu_overview_all' => array(
       'variables' => array(
         'left' => array(),
         'right' => array(),
       ),
-      'template' => 'og-sm-admin-menu-overview',
+      'template' => 'og-sm-admin-menu-overview-all',
+      'path' => $file_path,
+    ),
+    'og_sm_admin_menu_overview_sub' => array(
+      'variables' => array(
+        'items' => array(),
+      ),
+      'template' => 'og-sm-admin-menu-overview-sub',
       'path' => $file_path,
     ),
     'og_sm_admin_menu_overview_group' => array(

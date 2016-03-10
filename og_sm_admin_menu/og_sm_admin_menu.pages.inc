@@ -27,6 +27,29 @@ function og_sm_admin_menu_overview($site, $part = NULL) {
   module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
   $items = og_sm_admin_menu_items();
 
+  if (empty($part)) {
+    return _og_sm_admin_menu_overview_all($site, $items);
+  }
+
+  if (isset($items[$part])) {
+    return _og_sm_admin_menu_overview_sub($site, $items[$part]);
+  }
+
+  drupal_not_found();
+}
+
+/**
+ * Create the full overview.
+ *
+ * @param object $site
+ *   The site to create the overview for.
+ * @param array $items
+ *   The items to create the overview from.
+ *
+ * @return string
+ *   The rendered overview.
+ */
+function _og_sm_admin_menu_overview_all($site, array $items) {
   $groups = array('left' => array(), 'right' => array());
   foreach ($items as $item) {
     $column = (!empty($item['column'])) ? $item['column'] : 'right';
@@ -47,7 +70,32 @@ function og_sm_admin_menu_overview($site, $part = NULL) {
     );
   }
 
-  return theme('og_sm_admin_menu_overview', $groups);
+  if (!empty($groups['left']) || !empty($groups['right'])) {
+    return theme('og_sm_admin_menu_overview_all', $groups);
+  }
+
+  return t('You do not have any administrative items.');
+}
+
+/**
+ * Create the overview for a sub page.
+ *
+ * @param object $site
+ *   The site to generate the overview for.
+ * @param array $items
+ *   The item to generate the overview from.
+ *
+ * @return string
+ *   The rendered output.
+ */
+function _og_sm_admin_menu_overview_sub($site, array $item) {
+  $items = _og_sm_admin_menu_overview_group_items($site, $item);
+
+  if ($items) {
+    return theme('og_sm_admin_menu_overview_sub', array('items' => $items));
+  }
+
+  return t('You do not have any administrative items.');
 }
 
 /**
