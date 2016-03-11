@@ -96,7 +96,7 @@ function og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NULL
     : 'group/%/%/' . $item['href'];
   $link_path = _og_sm_admin_menu_build_item_link_placeholder();
   $admin_path = $item['admin_path'];
-  $t_options = array('language' => $language);
+  $t_options = array('langcode' => $language);
 
   // Item structure.
   $menu_item = array(
