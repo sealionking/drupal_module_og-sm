@@ -321,6 +321,11 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
       $content['menu']['node/add'][$key]['#options']['query'] = $query;
     }
   }
+
+  // Remove the shortcuts.
+  if (isset($content['shortcut'])) {
+    unset($content['shortcut']);
+  }
 }
 
 /**
