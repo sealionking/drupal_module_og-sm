@@ -23,7 +23,7 @@ function _og_sm_admin_menu_rebuild() {
  * Create/Get the Administration menu records.
  */
 function _og_sm_admin_menu_build_menu() {
-  $menu_name = OG_SM_ADMIN_MENU_NAME_PREFIX;
+  $menu_name = OG_SM_ADMIN_MENU_NAME;
   $menu = menu_load($menu_name);
 
   if (!$menu) {
@@ -116,7 +116,7 @@ function _og_sm_admin_menu_build_item($menu, array $item, $plid = NULL) {
  *   The placeholder.
  */
 function _og_sm_admin_menu_build_item_link_placeholder() {
-  return OG_SM_ADMIN_MENU_PLACEHOLDER . '/' . uniqid(NULL, TRUE);
+  return OG_SM_ADMIN_MENU_NAME . '/' . uniqid(NULL, TRUE);
 }
 
 
