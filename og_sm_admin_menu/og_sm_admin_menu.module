@@ -150,7 +150,10 @@ function og_sm_admin_menu_rebuild() {
  * Force the menu to be rebuild on the next time it is required.
  */
 function og_sm_admin_menu_needs_rebuild() {
-  menu_delete(OG_SM_ADMIN_MENU_NAME);
+  $menu = menu_load(OG_SM_ADMIN_MENU_NAME);
+  if ($menu) {
+    menu_delete($menu);
+  }
 }
 
 /**
@@ -330,6 +333,9 @@ function og_sm_admin_menu_admin_menu_cache_id_alter(&$cid) {
   }
 }
 
+/**
+ * Implements hook_menu_alter().
+ */
 /**
  * Implements hook_menu_alter().
  */
