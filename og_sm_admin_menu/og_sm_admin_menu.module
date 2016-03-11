@@ -146,21 +146,18 @@ function og_sm_admin_menu_theme($existing, $type, $theme, $path) {
  */
 function og_sm_admin_menu_rebuild() {
   module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+  _og_sm_admin_menu_rebuild();
+}
 
-  // Get/Create the menus.
-  $menus = og_sm_admin_menu_build_menus();
-
-  // Create new menu items.
-  $items = og_sm_admin_menu_items();
-
-  // Fill the menus with items.
-  foreach ($menus as $language => $menu) {
-    // Delete first all existing links.
-    menu_delete_links($menu['menu_name']);
-
-    // Repopulate the menu.
-    og_sm_admin_menu_build_items($menu, $language, $items);
-  }
+/**
+ * Get the menu structure as defined in the hooks.
+ *
+ * @return array
+ *   The menu including the information from the menu_router table.
+ */
+function og_sm_admin_menu_items() {
+  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+  return _og_sm_admin_menu_items();
 }
 
 /**
@@ -231,9 +228,46 @@ function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_st
 function og_sm_admin_menu_admin_menu_output_build(&$content) {
   // Replace the menu with the Site menu when in site context.
   if (og_sm_current_site() && !empty($content['#components']['og_sm_admin_menu.site'])) {
-    module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
     $content['menu'] = og_sm_admin_menu_load_site();
   }
+}
+
+/**
+ * Load the Site Administration menu to show in the admin_menu bar.
+ *
+ * @return array
+ *   The og_sm_admin menu structure.
+ */
+function og_sm_admin_menu_load_site() {
+  global $language;
+  $menu_name = og_sm_admin_menu_name($language->language);
+
+  // (Re)build the modules if the module does not exists yet.
+  if (!menu_load($menu_name)) {
+    og_sm_admin_menu_rebuild();
+  }
+
+  $menu_data = menu_tree_all_data($menu_name);
+  $menu = admin_menu_links_menu($menu_data);
+
+  $menu['#theme'] = 'admin_menu_links';
+  $menu['#wrapper_attributes']['id'] = 'admin-menu-menu';
+  $menu['#weight'] = 0;
+
+  return $menu;
+}
+
+/**
+ * Helper to create a menu name based on the language.
+ *
+ * @param string $language
+ *   The language to create the menu for.
+ *
+ * @return string
+ *   The menu name.
+ */
+function og_sm_admin_menu_name($language) {
+  return OG_SM_ADMIN_MENU_NAME_PREFIX . '-' . $language;
 }
 
 /**

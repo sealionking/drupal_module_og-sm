@@ -8,7 +8,7 @@
  * Placeholder for dynamic menu items.
  */
 function og_sm_admin_menu_placeholder($token) {
-  return $token;
+  return t('Token : @token', array('@token' => $token));
 }
 
 /**
@@ -24,7 +24,6 @@ function og_sm_admin_menu_placeholder($token) {
  *   The rendered output.
  */
 function og_sm_admin_menu_overview($site, $part = NULL) {
-  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
   $items = og_sm_admin_menu_items();
 
   if (empty($part)) {
@@ -82,8 +81,8 @@ function _og_sm_admin_menu_overview_all($site, array $items) {
  *
  * @param object $site
  *   The site to generate the overview for.
- * @param array $items
- *   The item to generate the overview from.
+ * @param array $item
+ *   The item to generate the overview for.
  *
  * @return string
  *   The rendered output.

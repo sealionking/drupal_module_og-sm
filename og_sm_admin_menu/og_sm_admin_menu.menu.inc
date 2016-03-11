@@ -5,40 +5,38 @@
  */
 
 /**
- * Load the Site Administration menu to show in the admin_menu bar.
- *
- * @return array
- *   The og_sm_admin menu structure.
+ * Create the admin menu(s) based on the implemented hooks.
  */
-function og_sm_admin_menu_load_site() {
-  global $language;
+function _og_sm_admin_menu_rebuild() {
+  // Get/Create the menus.
+  $menus = _og_sm_admin_menu_build_menus();
 
-  module_load_include('inc', 'admin_menu', 'admin_menu');
+  // Create new menu items.
+  $items = og_sm_admin_menu_items();
 
-  $menu_name = _og_sm_admin_menu_build_menu_name($language->language);
-  $menu_data = menu_tree_all_data($menu_name);
-  $menu = admin_menu_links_menu($menu_data);
+  // Fill the menus with items.
+  foreach ($menus as $language => $menu) {
+    // Delete first all existing links.
+    menu_delete_links($menu['menu_name']);
 
-  $menu['#theme'] = 'admin_menu_links';
-  $menu['#wrapper_attributes']['id'] = 'admin-menu-menu';
-  $menu['#weight'] = 0;
-
-  return $menu;
+    // Repopulate the menu.
+    _og_sm_admin_menu_build_items($menu, $language, $items);
+  }
 }
 
 /**
  * Create/Get the Administration menu records.
  */
-function og_sm_admin_menu_build_menus() {
+function _og_sm_admin_menu_build_menus() {
   $menus = array();
 
   // Create menu for each language.
   $languages = array_keys(language_list());
   foreach ($languages as $language) {
-    $menu_name = _og_sm_admin_menu_build_menu_name($language);
+    $menu_name = og_sm_admin_menu_name($language);
     $menu = menu_load($menu_name);
     if (!$menu) {
-      $t_options = array('language' => $language);
+      $t_options = array('langcode' => $language);
       $t_args = array('@language' => $language);
       $menu = array(
         'menu_name' => $menu_name,
@@ -64,10 +62,10 @@ function og_sm_admin_menu_build_menus() {
  * @param array $items
  *   Array of menu items to create.
  */
-function og_sm_admin_menu_build_items($menu, $language, array $items) {
+function _og_sm_admin_menu_build_items($menu, $language, array $items) {
   // Add the items.
   foreach ($items as $item) {
-    og_sm_admin_menu_build_item($menu, $language, $item);
+    _og_sm_admin_menu_build_item($menu, $language, $item);
   }
 }
 
@@ -83,7 +81,7 @@ function og_sm_admin_menu_build_items($menu, $language, array $items) {
  * @param int $plid
  *   (optional) Parent menu link id.
  */
-function og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NULL) {
+function _og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NULL) {
   // Exclude from menu?
   if (!empty($item['exclude_menu'])) {
     return;
@@ -127,22 +125,9 @@ function og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NULL
   // Add the children (if any).
   if (!empty($item['children'])) {
     foreach ($item['children'] as $child) {
-      og_sm_admin_menu_build_item($menu, $language, $child, $mlid);
+      _og_sm_admin_menu_build_item($menu, $language, $child, $mlid);
     }
   }
-}
-
-/**
- * Helper to create a menu name based on the language.
- *
- * @param string $language
- *   The language to create the menu for.
- *
- * @return string
- *   The menu name.
- */
-function _og_sm_admin_menu_build_menu_name($language) {
-  return OG_SM_ADMIN_MENU_NAME_PREFIX . '-' . $language;
 }
 
 /**
@@ -162,7 +147,7 @@ function _og_sm_admin_menu_build_item_link_placeholder() {
  * @return array
  *   The menu including the information from the menu_router table.
  */
-function og_sm_admin_menu_items() {
+function _og_sm_admin_menu_items() {
   $items = array();
 
   // Convert hook information to menu structure.
