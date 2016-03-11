@@ -9,47 +9,33 @@
  */
 function _og_sm_admin_menu_rebuild() {
   // Get/Create the menus.
-  $menus = _og_sm_admin_menu_build_menus();
+  $menu = _og_sm_admin_menu_build_menu();
 
-  // Create new menu items.
+  // Delete first all existing links.
+  menu_delete_links($menu['menu_name']);
+
+  // Build the menu items.
   $items = og_sm_admin_menu_items();
-
-  // Fill the menus with items.
-  foreach ($menus as $language => $menu) {
-    // Delete first all existing links.
-    menu_delete_links($menu['menu_name']);
-
-    // Repopulate the menu.
-    _og_sm_admin_menu_build_items($menu, $language, $items);
-  }
+  _og_sm_admin_menu_build_items($menu, $items);
 }
 
 /**
  * Create/Get the Administration menu records.
  */
-function _og_sm_admin_menu_build_menus() {
-  $menus = array();
+function _og_sm_admin_menu_build_menu() {
+  $menu_name = OG_SM_ADMIN_MENU_NAME_PREFIX;
+  $menu = menu_load($menu_name);
 
-  // Create menu for each language.
-  $languages = array_keys(language_list());
-  foreach ($languages as $language) {
-    $menu_name = og_sm_admin_menu_name($language);
-    $menu = menu_load($menu_name);
-    if (!$menu) {
-      $t_options = array('langcode' => $language);
-      $t_args = array('@language' => $language);
-      $menu = array(
-        'menu_name' => $menu_name,
-        'title' => t('Site Administration menu (@language)', $t_args, $t_options),
-        'description' => t('Menu to manage Site configuration.', $t_args, $t_options),
-      );
-      menu_save($menu);
-    }
-
-    $menus[$language] = $menu;
+  if (!$menu) {
+    $menu = array(
+      'menu_name' => $menu_name,
+      'title' => 'Site Administration menu',
+      'description' => 'Menu to manage Site configuration.',
+    );
+    menu_save($menu);
   }
 
-  return $menus;
+  return $menu;
 }
 
 /**
@@ -57,15 +43,13 @@ function _og_sm_admin_menu_build_menus() {
  *
  * @param object $menu
  *   The menus to create the item for.
- * @param string $language
- *   The menu language.
  * @param array $items
  *   Array of menu items to create.
  */
-function _og_sm_admin_menu_build_items($menu, $language, array $items) {
+function _og_sm_admin_menu_build_items($menu, array $items) {
   // Add the items.
   foreach ($items as $item) {
-    _og_sm_admin_menu_build_item($menu, $language, $item);
+    _og_sm_admin_menu_build_item($menu, $item);
   }
 }
 
@@ -74,14 +58,12 @@ function _og_sm_admin_menu_build_items($menu, $language, array $items) {
  *
  * @param object $menu
  *   The menu to create the item for.
- * @param string $language
- *   The menu language.
  * @param array $item
  *   The menu item.
  * @param int $plid
  *   (optional) Parent menu link id.
  */
-function _og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NULL) {
+function _og_sm_admin_menu_build_item($menu, array $item, $plid = NULL) {
   // Exclude from menu?
   if (!empty($item['exclude_menu'])) {
     return;
@@ -94,14 +76,11 @@ function _og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NUL
     : 'group/%/%/' . $item['href'];
   $link_path = _og_sm_admin_menu_build_item_link_placeholder();
   $admin_path = $item['admin_path'];
-  $t_options = array('langcode' => $language);
 
   // Item structure.
   $menu_item = array(
     'link_path' => $link_path,
-    // @codingStandardsIgnoreStart
-    'link_title' => t($item['title'], array(), $t_options),
-    // @codingStandardsIgnoreEnd
+    'link_title' => $item['title'],
     'menu_name' => $menu['menu_name'],
     'weight' => $item['weight'],
     'options' => array(
@@ -125,7 +104,7 @@ function _og_sm_admin_menu_build_item($menu, $language, array $item, $plid = NUL
   // Add the children (if any).
   if (!empty($item['children'])) {
     foreach ($item['children'] as $child) {
-      _og_sm_admin_menu_build_item($menu, $language, $child, $mlid);
+      _og_sm_admin_menu_build_item($menu, $child, $mlid);
     }
   }
 }

@@ -185,7 +185,12 @@ function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
   $item['href'] = $item['link_path'] = url($url);
   $item['router_path'] = $url;
   $item['title'] = $item['link_title'];
-  $item['title_callback'] = FALSE;
+  $item['title_callback'] = 't';
+
+  // @codingStandardsIgnoreStart
+  // Menu is always English, we need to translate the items here.
+  $item['title'] = t($item['title']);
+  // @codingStandardsIgnoreEnd
 
   // Load menu item and check access.
   if ($menu_item = menu_get_item($url)) {
@@ -239,8 +244,7 @@ function og_sm_admin_menu_admin_menu_output_build(&$content) {
  *   The og_sm_admin menu structure.
  */
 function og_sm_admin_menu_load_site() {
-  global $language;
-  $menu_name = og_sm_admin_menu_name($language->language);
+  $menu_name = OG_SM_ADMIN_MENU_NAME_PREFIX;
 
   // (Re)build the modules if the module does not exists yet.
   if (!menu_load($menu_name)) {
@@ -255,19 +259,6 @@ function og_sm_admin_menu_load_site() {
   $menu['#weight'] = 0;
 
   return $menu;
-}
-
-/**
- * Helper to create a menu name based on the language.
- *
- * @param string $language
- *   The language to create the menu for.
- *
- * @return string
- *   The menu name.
- */
-function og_sm_admin_menu_name($language) {
-  return OG_SM_ADMIN_MENU_NAME_PREFIX . '-' . $language;
 }
 
 /**
