@@ -48,7 +48,7 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
     // Create group content.
     $this->assertEqual(array(), og_sm_content_get_sites($content_no_groups));
     $this->assertEqual(array(), og_sm_content_get_sites($content_with_groups));
-    $this->assertNull(og_sm_content_get_site($content_with_groups));
+    $this->assertFalse(og_sm_content_get_site($content_with_groups));
     $this->assertFalse(og_sm_content_is_site_content($content_with_groups));
     $this->assertFalse(og_sm_content_is_site_member($content_with_groups, $group1));
 

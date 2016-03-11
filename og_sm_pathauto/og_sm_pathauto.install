@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file
+ * Install, Update and Uninstall hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function og_sm_pathauto_install() {
+  variable_set('pathauto_og_sm_pattern', '[node:site-path]');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function og_sm_pathauto_uninstall() {
+  variable_del('pathauto_og_sm_pattern');
+}

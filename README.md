@@ -9,23 +9,29 @@ The usage of OG allows to share users between sites.
 ## Functionality
 This module and its submodules adds functionality to support:
 
+### Included
 * Support for Group types to become sites enabled (Site).
 * Support for Group Content types (Site Content).
-* Support for User profile & settings per Site (Site User).
-* Theme settings per Site (different theme or same theme with different
-  settings).
-* Taxonomy terms per Site.
+* Support for Group Users (Site Users).
 * Automatic path aliasing with the Site alias as staring point.
 * Access to Site content based on the publication status of the Site they
   belong to.
 * Site settings.
 * Site administration.
+* Site administration menu that replaces the default admin toolbar when the user
+  is in a
+
+
+### Todo
+* Support for User profile & settings per Site (Site User).
+* Theme settings per Site (different theme or same theme with different
+  settings).
+* Taxonomy terms per Site.
 * Site features: enable functionality per site (eg. Site A has blogs, Site B
   not).
 * Site Content settings per Site (eg. Site A enables commenting on Blog posts,
   Site B not).
 * Rename Site Content types per site.
-* ...
 
 
 
@@ -36,6 +42,7 @@ Edit the node type settings of the types that should be Site types.
 Enable:
 * The Organic Groups > Group checkbox
 * And the Site Manager > Site Type checkbox.
+
 
 ### Dependencies
 The Sites functionality is build upon [Organic Groups][link-og].
@@ -132,6 +139,21 @@ Check if a user is member of the given site:
 $is_member = og_sm_user_is_member_of_site($account, $site);
 ```
 
+### Check access to Site permission
+The OG module provides functionality to grant Site specific permissions.
+
+The Site Manager module has wrappers around this functionality to check
+permission acces for a site.
+
+These functions can be used in Menu items ($account is optional):
+
+* `og_sm_site_permission_access($site, $permission, $account)` : Check by Site
+  node and permission name.
+* `og_sm_site_nid_permission_access($site_nid, $permission, $account)` : Check
+  by Site node id and permission name.
+* `og_sm_site_path_permission_access($site_path, $permission, $accont)` : Check
+  by Site path alias and permission name.
+
 
 ### Site action hooks
 The module watches actions taken place on Site nodes and triggers its own hooks
@@ -145,6 +167,7 @@ when an action happens:
   prepared to being shown on the screen.
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
+* `hook_og_sm_site_update_alias($site)` : Site node alias is updated.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
 

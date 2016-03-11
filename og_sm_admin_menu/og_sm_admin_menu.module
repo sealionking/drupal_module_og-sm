@@ -1,0 +1,350 @@
+<?php
+/**
+ * @file
+ * Site Manager Administration module.
+ */
+
+// Menu name.
+define('OG_SM_ADMIN_MENU_NAME', 'og-sm-admin-menu');
+
+
+/**
+ * Implements hook_hook_info().
+ */
+function og_sm_admin_menu_hook_info() {
+  $hooks = array(
+    'og_sm_admin_menu' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_admin_menu_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function og_sm_admin_menu_admin_paths() {
+  $paths = array(
+    'group/*/*/admin' => TRUE,
+    'group/*/*/admin/*' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_admin_menu_menu() {
+  $items = array();
+
+  $file = 'og_sm_admin_menu.pages.inc';
+
+  // Dummy item to use in dynamic menu items.
+  $items[OG_SM_ADMIN_MENU_NAME . '/%'] = array(
+    'title' => 'OG Site Admin placeholder',
+    'page callback' => 'og_sm_admin_menu_placeholder',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'file' => $file,
+  );
+
+  // Site administration overview pages.
+  $items['group/%/%og_sm_site/admin'] = array(
+    'title callback' => 'og_sm_admin_menu_title',
+    'title arguments' => array('Administer @site_title', 2),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'og_sm_admin_menu_overview',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'file' => $file,
+  );
+  $items['group/%/%og_sm_site/admin/structure'] = array(
+    'title callback' => 'og_sm_admin_menu_title',
+    'title arguments' => array('Administer @site_title structure', 2),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'og_sm_admin_menu_overview',
+    'page arguments' => array(2, 'structure'),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'file' => $file,
+  );
+
+  return $items;
+}
+
+/**
+ * Title callback for the overview pages.
+ *
+ * @param string $title
+ *   The Title to use.
+ * @param object $site
+ *   The Site Node ID to use to add the Site name to the title.
+ *
+ * @return string
+ *   The personalized title.
+ */
+function og_sm_admin_menu_title($title, $site) {
+  // @codingStandardsIgnoreStart
+  return t($title, array('@site_title' => $site->title));
+  // @codingStandardsIgnoreEnd
+}
+
+/**
+ * Implements hook_theme().
+ */
+function og_sm_admin_menu_theme($existing, $type, $theme, $path) {
+  $file_path = $path . '/templates';
+
+  return array(
+    'og_sm_admin_menu_overview_all' => array(
+      'variables' => array(
+        'left' => array(),
+        'right' => array(),
+      ),
+      'template' => 'og-sm-admin-menu-overview-all',
+      'path' => $file_path,
+    ),
+    'og_sm_admin_menu_overview_sub' => array(
+      'variables' => array(
+        'items' => array(),
+      ),
+      'template' => 'og-sm-admin-menu-overview-sub',
+      'path' => $file_path,
+    ),
+    'og_sm_admin_menu_overview_group' => array(
+      'variables' => array(
+        'title' => NULL,
+        'items' => array(),
+        'class' => NULL,
+      ),
+      'template' => 'og-sm-admin-menu-overview-group',
+      'path' => $file_path,
+    ),
+    'og_sm_admin_menu_overview_group_item' => array(
+      'variables' => array(
+        'url' => NULL,
+        'title' => NULL,
+        'description' => NULL,
+        'class' => NULL,
+      ),
+      'template' => 'og-sm-admin-menu-overview-group-item',
+      'path' => $file_path,
+    ),
+  );
+}
+
+/**
+ * Create the admin menu(s) based on the implemented hooks.
+ */
+function og_sm_admin_menu_rebuild() {
+  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+  _og_sm_admin_menu_rebuild();
+}
+
+/**
+ * Force the menu to be rebuild on the next time it is required.
+ */
+function og_sm_admin_menu_needs_rebuild() {
+  $menu = menu_load(OG_SM_ADMIN_MENU_NAME);
+  if ($menu) {
+    menu_delete($menu);
+  }
+}
+
+/**
+ * Get the menu structure as defined in the hooks.
+ *
+ * @return array
+ *   The menu including the information from the menu_router table.
+ */
+function og_sm_admin_menu_items() {
+  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+  return _og_sm_admin_menu_items();
+}
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ *
+ * This will replace the dynamic menu placeholders with the actual values.
+ */
+function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
+  // Should we replace the path?
+  if (!isset($item['options']['og_sm_admin_menu_path'])) {
+    return;
+  }
+
+  // Are we in a Site context?
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Create the actual Link.
+  $url = og_sm_admin_menu_router_path_from_admin_path($site, $item['options']['og_sm_admin_menu_path']);
+
+  // Update link.
+  $item['href'] = $item['link_path'] = url($url);
+  $item['router_path'] = $url;
+  $item['title'] = $item['link_title'];
+  $item['title_callback'] = 't';
+
+  // @codingStandardsIgnoreStart
+  // Menu is always English, we need to translate the items here.
+  $item['title'] = t($item['title']);
+  // @codingStandardsIgnoreEnd
+
+  // Load menu item and check access.
+  if ($menu_item = menu_get_item($url)) {
+    $item['access'] = $menu_item['access'];
+    return;
+  }
+
+  // Access fallback.
+  $item['access'] = FALSE;
+}
+
+/**
+ * Helper to fill in the Site nid in an admin_path.
+ *
+ * This will replace [site:nid] by the nid of the Site.
+ *
+ * @param object $site
+ *   The Site to get the nid from.
+ * @param string $admin_path
+ *   The admin path to fill in.
+ *
+ * @return string
+ *   The router path.
+ */
+function og_sm_admin_menu_router_path_from_admin_path($site, $admin_path) {
+  return preg_replace('/\[site:nid\]/', $site->nid, $admin_path);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_state, $form_id) {
+  // Add the Site Administration menu as extra menu option.
+  $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.site'] = t('Site Administration menu');
+}
+
+/**
+ * Implements hook_admin_menu_output_build().
+ */
+function og_sm_admin_menu_admin_menu_output_build(&$content) {
+  // Replace the menu with the Site menu when in site context.
+  if (og_sm_current_site() && !empty($content['#components']['og_sm_admin_menu.site'])) {
+    $content['menu'] = og_sm_admin_menu_load_site();
+  }
+}
+
+/**
+ * Load the Site Administration menu to show in the admin_menu bar.
+ *
+ * @return array
+ *   The og_sm_admin menu structure.
+ */
+function og_sm_admin_menu_load_site() {
+  $menu_name = OG_SM_ADMIN_MENU_NAME;
+
+  // (Re)build the modules if the module does not exists yet.
+  if (!menu_load($menu_name)) {
+    og_sm_admin_menu_rebuild();
+  }
+
+  $menu_data = menu_tree_all_data($menu_name);
+  $menu = admin_menu_links_menu($menu_data);
+
+  $menu['#theme'] = 'admin_menu_links';
+  $menu['#wrapper_attributes']['id'] = 'admin-menu-menu';
+  $menu['#weight'] = 0;
+
+  return $menu;
+}
+
+/**
+ * Implements hook_admin_menu_output_alter().
+ */
+function og_sm_admin_menu_admin_menu_output_alter(&$content) {
+  $site = og_sm_current_site();
+
+  // Only if there is an active Site.
+  if (!$site || empty($content['#components']['og_sm_admin_menu.site'])) {
+    return;
+  }
+
+  // Clear out the empty item when showing Site menu.
+  if (!empty($content['responsive-menu']['admin/index'])) {
+    unset($content['responsive-menu']['admin/index']);
+  }
+
+  // Alter the home link to the homepage of the current Site.
+  if (!empty($content['icon'])) {
+    $content['icon']['icon']['#href'] = 'node/' . $site->nid;
+  }
+
+  // Alter the add content links.
+  if (!empty($content['menu']['node/add'])) {
+    $query = array('og_group_ref' => $site->nid);
+
+    foreach ($content['menu']['node/add'] as $key => $item) {
+      // Add the query to the root element.
+      if ($key === '#options') {
+        $content['menu']['node/add'][$key]['query'] = $query;
+        continue;
+      }
+
+      // Only for child elements.
+      if (!preg_match('#node/add/#', $key)) {
+        continue;
+      }
+
+      // Get the content type.
+      preg_match('#node/add/(.*)#', $key, $matches);
+      $node_type = $matches[1];
+
+      // Exclude Site types.
+      if (og_sm_is_site_type($node_type)) {
+        unset($content['menu']['node/add'][$key]);
+      }
+
+      // Exclude non-group content types.
+      if (!og_is_group_content_type('node', $node_type)) {
+        unset($content['menu']['node/add'][$key]);
+      }
+
+      $content['menu']['node/add'][$key]['#options']['query'] = $query;
+    }
+  }
+
+  // Remove the shortcuts.
+  if (isset($content['shortcut'])) {
+    unset($content['shortcut']);
+  }
+}
+
+/**
+ * Implements hook_admin_menu_cache_id_alter().
+ */
+function og_sm_admin_menu_admin_menu_cache_id_alter(&$cid) {
+  $site = og_sm_current_site();
+  if ($site) {
+    $cid .= ':' . $site->nid;
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+/**
+ * Implements hook_menu_alter().
+ */
+function og_sm_admin_menu_menu_alter(&$items) {
+  // Mark the admin menu to be rebuild every time the menu system is rebuild.
+  og_sm_admin_menu_needs_rebuild();
+}

@@ -5,9 +5,9 @@
  */
 
 /**
- * Tests about the node type settings.
+ * Tests about the OG context provider.
  */
-class OgSmVariableTestCase extends OgSmWebTestCase {
+class OgSmContextTestCase extends OgSmWebTestCase {
   /**
    * {@inheritdoc}
    */

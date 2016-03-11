@@ -46,7 +46,7 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     $site = og_sm_site_load($group->nid);
     $this->assertEqual($group->title, $site->title);
     og_sm_remove_site_type($type_group);
-    $this->assertNull(og_sm_site_load($group->nid));
+    $this->assertFalse(og_sm_site_load($group->nid));
 
     // Test getting all site Nodes ID's.
     $group2 = $this->ogSmCreateGroup($type_group);
@@ -106,6 +106,71 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     og_sm_add_site_type($site_type);
     $expected = array('site-path' => $site_path);
     $this->assertEqual($expected, og_sm_tokens($type, $tokens, $data));
+  }
+
+  /**
+   * Test loading the site by its path.
+   */
+  public function testSiteLoadByPath() {
+    module_load_include('inc', 'og_sm', 'og_sm.tokens');
+
+    $site_type = $this->ogSmCreateGroupNodeType();
+
+    // Set the auto path for Site node type.
+    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
+    $site = $this->ogSmCreateGroup($site_type);
+    $path = drupal_get_path_alias('node/' . $site->nid);
+
+    // Site node type is not yet a Site type.
+    $this->assertFalse(og_sm_site_load_by_path($path));
+
+    // Site node type is in the Site types.
+    og_sm_add_site_type($site_type);
+    $site_by_path = og_sm_site_load_by_path($path);
+    $this->assertEqual($site->nid, $site_by_path->nid);
+  }
+
+  /**
+   * Test Site access callbacks.
+   */
+  public function testSiteAccessCallbacks() {
+    $site_type = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($site_type);
+
+    // Path Auto support.
+    module_load_include('inc', 'og_sm', 'og_sm.tokens');
+    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
+
+    // Create the Site.
+    $site = $this->ogSmCreateGroup($site_type);
+    $sites = array($site);
+    $site_path = drupal_get_path_alias('node/' . $site->nid);
+
+    // Create group role.
+    $role_manager = og_role_create('role_group_manager', 'node', 0, $site_type);
+    og_role_save($role_manager);
+    og_role_grant_permissions($role_manager->rid, array(OG_SM_PERMISSION_SITE_ADMIN));
+
+    // Create users.
+    $user = $this->drupalCreateUser();
+    $site_user = $this->ogSmCreateGroupUser(array(), $sites);
+    $site_manager = $this->ogSmCreateGroupUser(array(), $sites);
+    og_role_grant('node', $site->nid, $site_manager->uid, $role_manager->rid);
+
+    // No access for non site member.
+    $this->assertFalse(og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $user));
+    $this->assertFalse(og_sm_site_nid_permission_access($site->nid, OG_SM_PERMISSION_SITE_ADMIN, $user));
+    $this->assertFalse(og_sm_site_path_permission_access($site_path, OG_SM_PERMISSION_SITE_ADMIN, $user));
+
+    // No access for site members who has not the proper role(s).
+    $this->assertFalse(og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $site_user));
+    $this->assertFalse(og_sm_site_nid_permission_access($site->nid, OG_SM_PERMISSION_SITE_ADMIN, $site_user));
+    $this->assertFalse(og_sm_site_path_permission_access($site_path, OG_SM_PERMISSION_SITE_ADMIN, $site_user));
+
+    // Access for site members with the proper role(s).
+    $this->assertTrue(og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $site_manager));
+    $this->assertTrue(og_sm_site_nid_permission_access($site->nid, OG_SM_PERMISSION_SITE_ADMIN, $site_manager));
+    $this->assertTrue(og_sm_site_path_permission_access($site_path, OG_SM_PERMISSION_SITE_ADMIN, $site_manager));
   }
 
 }

@@ -7,6 +7,23 @@
 // Variable names to store the Site enabled group types.
 define('OG_SM_VARIABLE_GROUP_TYPES', 'og_sm_node_types');
 
+// Permission to get access to Site administration.
+define('OG_SM_PERMISSION_SITE_ADMIN', 'administer site');
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_og_permission() {
+  return array(
+    OG_SM_PERMISSION_SITE_ADMIN => array(
+      'title' => t('Administer Site'),
+      'description' => t('View the Site administration pages.'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_ADMINISTRATOR_ROLE),
+    ),
+  );
+}
+
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -88,13 +105,13 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
  * @param int $site_nid
  *   The Site Node ID.
  *
- * @return object|NULL
+ * @return object|FALSE
  *   The Site Node (if any).
  */
 function og_sm_site_load($site_nid) {
   $site = node_load($site_nid);
   if (!og_sm_is_site($site)) {
-    return NULL;
+    return FALSE;
   }
 
   return $site;
@@ -115,6 +132,35 @@ function og_sm_site_load($site_nid) {
 function og_sm_site_path($site) {
   $language = entity_language('node', $site);
   return drupal_get_path_alias('node/' . $site->nid, $language);
+}
+
+/**
+ * Load a Site node by it's path.
+ *
+ * Is also used in hook_menu as %site_path wildcard.
+ *
+ * @param string $path
+ *   The path to load the site for.
+ *
+ * @return object|FALSE
+ *   The Site node (if any).
+ */
+function og_sm_site_load_by_path($path) {
+  $path = drupal_lookup_path('source', $path);
+  if (!$path) {
+    return FALSE;
+  }
+
+  $site = menu_get_object('node', 1, $path);
+  if (!$site) {
+    return FALSE;
+  }
+
+  if (!og_sm_is_site($site)) {
+    return FALSE;
+  }
+
+  return $site;
 }
 
 /**
@@ -140,6 +186,62 @@ function og_sm_site_all_nids() {
 }
 
 /**
+ * Check access to a OG permission for a Site.
+ *
+ * @param object $site
+ *   The Site node.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_permission_access($site, $permission, $account = NULL) {
+  return og_sm_site_nid_permission_access($site->nid, $permission, $account);
+}
+
+/**
+ * Check access to a OG permission for a Site Node ID.
+ *
+ * @param int $site_nid
+ *   The Site Node ID.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_nid_permission_access($site_nid, $permission, $account = NULL) {
+  return og_user_access('node', $site_nid, $permission, $account);
+}
+
+/**
+ * Check access to a OG permission for a Site Path alias.
+ *
+ * @param string $site_path
+ *   The Site path.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_path_permission_access($site_path, $permission, $account = NULL) {
+  $site = og_sm_site_load_by_path($site_path);
+  if (!$site) {
+    return FALSE;
+  }
+
+  return og_sm_site_permission_access($site, $permission, $account);
+}
+
+/**
  * Get the currently active Site.
  *
  * @return object|NULL
@@ -148,7 +250,7 @@ function og_sm_site_all_nids() {
 function og_sm_current_site() {
   $context = og_context('node');
   if (!$context) {
-    return NULL;
+    return FALSE;
   }
 
   return og_sm_site_load($context['gid']);
@@ -250,7 +352,7 @@ function og_sm_content_get_sites($node) {
 function og_sm_content_get_site($node) {
   $sites = og_sm_content_get_sites($node);
   if (empty($sites)) {
-    return NULL;
+    return FALSE;
   }
 
   return reset($sites);
@@ -393,6 +495,36 @@ function og_sm_node_insert($node) {
  */
 function og_sm_node_update($node) {
   og_sm_hook_site('update', $node);
+  if (_og_sm_node_update_alias_will_change($node)) {
+    og_sm_hook_site('update_alias', $node);
+  }
+}
+
+/**
+ * Helper do identify if the node alias of a Site will change due to update.
+ *
+ * @param object $node
+ *   The node being updated.
+ *
+ * @return TRUE
+ *   The alias will be changed.
+ */
+function _og_sm_node_update_alias_will_change($node) {
+  $pathauto_new = (bool) $node->path['pathauto'];
+  $pathauto_old = (bool) $node->original->path['pathauto'];
+
+  // Auto alias.
+  if ($pathauto_new && $pathauto_old) {
+    return ($node->title !== $node->original->title);
+  }
+
+  // Manual alias.
+  if (!$pathauto_new && !$pathauto_old) {
+    return ($node->path['alias'] !== $node->path['original']['alias']);
+  }
+
+  // Switching between auto & manual.
+  return TRUE;
 }
 
 /**
