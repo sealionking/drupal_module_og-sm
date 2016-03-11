@@ -1,0 +1,89 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Access Grants.
+ */
+
+/**
+ * Tests about the Site access grants hook.
+ */
+class OgSmAccessGrantsTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Access Grants'),
+      'description' => t('Tests Site Access grants hook.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_access');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test the Site Access grants hook implementation.
+   */
+  public function testAccessGrants() {
+    // Content types.
+    $group_type = $this->ogSmCreateGroupNodeType();
+
+    // Create group.
+    $group = $this->ogSmCreateGroup($group_type);
+    $groups = array($group);
+
+    // Create group role.
+    $role_manager = og_role_create('role_group_manager', 'node', 0, $group_type);
+    og_role_save($role_manager);
+    og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION));
+
+    // Create users.
+    $anonymous = user_load(0);
+    $user = $this->drupalCreateUser();
+    $group_user = $this->ogSmCreateGroupUser(array(), $groups);
+    $group_manager = $this->ogSmCreateGroupUser(array(), $groups);
+    og_role_grant('node', $group->nid, $group_manager->uid, $role_manager->rid);
+
+    // Grants only for op = view.
+    $this->assertNull(og_sm_access_node_grants($group_manager, 'edit'));
+
+    // Default grants.
+    $grants = array(OG_SM_ACCESS_REALM_SITE => array(OG_SM_ACCESS_GRANT_ALL));
+
+    // Only default grants if user is not member of a Site group.
+    $this->assertEqual($grants, og_sm_access_node_grants($anonymous, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($user, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($group_user, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($group_manager, 'view'));
+
+    // Make group a Site type.
+    og_sm_add_site_type($group_type);
+
+    // Group is published, grants should be default.
+    $this->assertEqual($grants, og_sm_access_node_grants($anonymous, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($user, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($group_user, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($group_manager, 'view'));
+
+    // Unpublish the site, grants should change for users with proper group
+    // permissions.
+    $group->status = 0;
+    node_save($group);
+
+    $this->assertEqual($grants, og_sm_access_node_grants($anonymous, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($user, 'view'));
+    $this->assertEqual($grants, og_sm_access_node_grants($group_user, 'view'));
+
+    $expected = $grants;
+    $expected[OG_SM_ACCESS_REALM_SITE][] = $group->nid;
+    $this->assertEqual($expected, og_sm_access_node_grants($group_manager, 'view'));
+  }
+
+}

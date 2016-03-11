@@ -1,0 +1,557 @@
+<?php
+/**
+ * @file
+ * Base module for the Organic Groups Sites functionality.
+ */
+
+// Variable names to store the Site enabled group types.
+define('OG_SM_VARIABLE_GROUP_TYPES', 'og_sm_node_types');
+
+// Permission to get access to Site administration.
+define('OG_SM_PERMISSION_SITE_ADMIN', 'administer site');
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_og_permission() {
+  return array(
+    OG_SM_PERMISSION_SITE_ADMIN => array(
+      'title' => t('Administer Site'),
+      'description' => t('View the Site administration pages.'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_ADMINISTRATOR_ROLE),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds setting to indicate a content type as being a Site type.
+ * Uses hook_form_alter() as we want to add our settings to the OG part of the
+ * node form and OG is only available trough hook_form_alter().
+ */
+function og_sm_form_node_type_form_alter(&$form, &$form_state, $form_id) {
+  // Get the default is Site state of the node_type.
+  $node_type = isset($form['#node_type']->type)
+    ? $form['#node_type']->type
+    : NULL;
+  $enabled = ($node_type && og_sm_is_site_type($node_type));
+
+  $description = array(
+    t('Make this content type a Site type.'),
+    t('All nodes of this type will be recognized as being a Site.'),
+    '<p><strong>' . t('WARNING: The content type needs also to be a Group type!') . '</strong></p>',
+  );
+
+  $form['og_sm'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Site Manager'),
+    '#collapsible' => TRUE,
+    '#group' => 'additional_settings',
+  );
+  $form['og_sm']['og_sm_node_type'] = array(
+    '#title' => t('Site type'),
+    '#type' => 'checkbox',
+    '#return_value' => 1,
+    '#default_value' => (int) $enabled,
+    '#element_validate' => array('og_sm_node_type_form_field_validate'),
+    '#description' => implode(PHP_EOL, $description),
+  );
+  $form['#submit'][] = 'og_sm_node_type_form_field_submit';
+}
+
+/**
+ * Validation of the posted og_sm_node_type field value.
+ *
+ * This will check if the node type is also a group type.
+ */
+function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
+  $values = $form_state['values'];
+
+  if ((bool) $values['og_sm_node_type'] && !(bool) $values['og_group_type']) {
+    form_set_error(
+      'og_sm_node_type',
+      t('A content type can only be a Site if it also a Group type.')
+    );
+  }
+
+  $form_state['og_sm_node_type'] = (bool) $values['og_sm_node_type'];
+  unset($form_state['values']['og_sm_node_type']);
+}
+
+/**
+ * Store or remove the node type into the Site content types.
+ */
+function og_sm_node_type_form_field_submit($form, $form_state) {
+  $type = $form_state['values']['type'];
+  if ((bool) $form_state['og_sm_node_type']) {
+    og_sm_add_site_type($type);
+  }
+  else {
+    og_sm_remove_site_type($type);
+  }
+}
+
+
+/**
+ * Load a Site node by its Node ID.
+ *
+ * This will only return a node object if:
+ * - The node exists.
+ * - The node is a Site node.
+ *
+ * @param int $site_nid
+ *   The Site Node ID.
+ *
+ * @return object|FALSE
+ *   The Site Node (if any).
+ */
+function og_sm_site_load($site_nid) {
+  $site = node_load($site_nid);
+  if (!og_sm_is_site($site)) {
+    return FALSE;
+  }
+
+  return $site;
+}
+
+/**
+ * Get the path alias of a Site node.
+ *
+ * This is a wrapper around the drupal_get_path_alias() function.
+ * It uses the language of the Site to get the proper path.
+ *
+ * @param object $site
+ *   The Site node to get the path alias for.
+ *
+ * @return string
+ *   The alias.
+ */
+function og_sm_site_path($site) {
+  $language = entity_language('node', $site);
+  return drupal_get_path_alias('node/' . $site->nid, $language);
+}
+
+/**
+ * Load a Site node by it's path.
+ *
+ * Is also used in hook_menu as %site_path wildcard.
+ *
+ * @param string $path
+ *   The path to load the site for.
+ *
+ * @return object|FALSE
+ *   The Site node (if any).
+ */
+function og_sm_site_load_by_path($path) {
+  $path = drupal_lookup_path('source', $path);
+  if (!$path) {
+    return FALSE;
+  }
+
+  $site = menu_get_object('node', 1, $path);
+  if (!$site) {
+    return FALSE;
+  }
+
+  if (!og_sm_is_site($site)) {
+    return FALSE;
+  }
+
+  return $site;
+}
+
+/**
+ * Get an array of all Site Node ID's.
+ *
+ * WARNING: There is no node_access check on this function!
+ *
+ * @return array
+ *   Array of all Site Node ID's.
+ */
+function og_sm_site_all_nids() {
+  $site_types = og_sm_get_site_types();
+  if (!$site_types) {
+    return array();
+  }
+
+  $query = db_select('node', 'n');
+  $query->addField('n', 'nid');
+  $query->condition('n.type', $site_types);
+  $query->orderBy('n.nid', 'ASC');
+
+  return $query->execute()->fetchAllKeyed(0, 0);
+}
+
+/**
+ * Check access to a OG permission for a Site.
+ *
+ * @param object $site
+ *   The Site node.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_permission_access($site, $permission, $account = NULL) {
+  return og_sm_site_nid_permission_access($site->nid, $permission, $account);
+}
+
+/**
+ * Check access to a OG permission for a Site Node ID.
+ *
+ * @param int $site_nid
+ *   The Site Node ID.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_nid_permission_access($site_nid, $permission, $account = NULL) {
+  return og_user_access('node', $site_nid, $permission, $account);
+}
+
+/**
+ * Check access to a OG permission for a Site Path alias.
+ *
+ * @param string $site_path
+ *   The Site path.
+ * @param string $permission
+ *   The permission name.
+ * @param object $account
+ *   The optional account to check for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_path_permission_access($site_path, $permission, $account = NULL) {
+  $site = og_sm_site_load_by_path($site_path);
+  if (!$site) {
+    return FALSE;
+  }
+
+  return og_sm_site_permission_access($site, $permission, $account);
+}
+
+/**
+ * Get the currently active Site.
+ *
+ * @return object|NULL
+ *   The active Site node (if any).
+ */
+function og_sm_current_site() {
+  $context = og_context('node');
+  if (!$context) {
+    return FALSE;
+  }
+
+  return og_sm_site_load($context['gid']);
+}
+
+/**
+ * Check if the given node is a Site type.
+ *
+ * @param object $site
+ *   The site node.
+ *
+ * @return bool
+ *   Is a Site node.
+ */
+function og_sm_is_site($site) {
+  return og_sm_is_site_type($site->type);
+}
+
+/**
+ * Get a list of Site node types.
+ *
+ * @return array
+ *   List of node types that are Sites.
+ */
+function og_sm_get_site_types() {
+  return variable_get(OG_SM_VARIABLE_GROUP_TYPES, array());
+}
+
+/**
+ * Check if a given node type is a Site type.
+ *
+ * @param string $type
+ *   The type to check.
+ *
+ * @return bool
+ *   Is Site type.
+ */
+function og_sm_is_site_type($type) {
+  $types = og_sm_get_site_types();
+  return (og_is_group_type('node', $type) && in_array($type, $types));
+}
+
+/**
+ * Add a type to the array of Site content types.
+ *
+ * @param string $type
+ *   The content type to add.
+ */
+function og_sm_add_site_type($type) {
+  $types = og_sm_get_site_types();
+
+  if (!in_array($type, $types)) {
+    $types[$type] = $type;
+    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+  }
+}
+
+/**
+ * Remove a type from the array of Site content types.
+ *
+ * @param string $type
+ *   The content type to remove.
+ */
+function og_sm_remove_site_type($type) {
+  $types = og_sm_get_site_types();
+
+  if (in_array($type, $types)) {
+    unset($types[$type]);
+    variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+  }
+}
+
+
+/**
+ * Get all the Sites a node belongs to.
+ *
+ * @param object $node
+ *   The site content.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_content_get_sites($node) {
+  $groups = og_get_entity_groups('node', $node);
+  return _og_sm_filter_sites_from_groups($groups);
+}
+
+/**
+ * Get the Site object the Site content node belongs to.
+ *
+ * Is a node belongs to multiple Sites, only the first will be returned.
+ *
+ * @param object $node
+ *   The site content.
+ *
+ * @return object|NULL
+ *   The site node (if any).
+ */
+function og_sm_content_get_site($node) {
+  $sites = og_sm_content_get_sites($node);
+  if (empty($sites)) {
+    return FALSE;
+  }
+
+  return reset($sites);
+}
+
+/**
+ * Check if a given node is content within a Site.
+ *
+ * @param object $node
+ *   The node to check.
+ *
+ * @return bool
+ *   Is Site content.
+ */
+function og_sm_content_is_site_content($node) {
+  return (bool) og_sm_content_get_site($node);
+}
+
+/**
+ * Check if a given node is member of the given Site.
+ *
+ * @param object $node
+ *   The node to check.
+ * @param object $site
+ *   The site node.
+ *
+ * @return bool
+ *   Is Site member.
+ */
+function og_sm_content_is_site_member($node, $site) {
+  $sites = og_sm_content_get_sites($node);
+  return !empty($sites[$site->nid]);
+}
+
+
+/**
+ * Get all the sites a User belongs to.
+ *
+ * @param object $account
+ *   The user object.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_user_get_sites($account) {
+  $groups = og_get_entity_groups('user', $account);
+  return _og_sm_filter_sites_from_groups($groups);
+}
+
+/**
+ * Check if a given account is member of the given Site.
+ *
+ * @param object $account
+ *   The user object.
+ * @param object $site
+ *   The Site node object.
+ *
+ * @return bool
+ *   Is site member.
+ */
+function og_sm_user_is_member_of_site($account, $site) {
+  $sites = og_sm_user_get_sites($account);
+  return !empty($sites[$site->nid]);
+}
+
+
+/**
+ * Helper function to get a list of Site objects from a list of group id's.
+ *
+ * @param array $groups
+ *   Group info as returned by og_get_entity_groups().
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function _og_sm_filter_sites_from_groups(array $groups) {
+  $sites = array();
+  if (empty($groups['node'])) {
+    return $sites;
+  }
+
+  // Filter out only Site groups.
+  $sites = array();
+  foreach ($groups['node'] as $site_nid) {
+    $site = og_sm_site_load($site_nid);
+    if (!$site) {
+      continue;
+    }
+
+    $sites[$site->nid] = $site;
+  }
+
+  return $sites;
+}
+
+
+/**
+ * Implements hook_node_type_delete().
+ */
+function og_sm_node_type_delete($info) {
+  // Remove the content type from the list of Site types.
+  og_sm_remove_site_type($info->type);
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function hook_node_view($node, $view_mode, $langcode) {
+  // Only for Site node types.
+  if (!og_sm_is_site($node)) {
+    return;
+  }
+
+  module_invoke_all('og_sm_site_view', $node, $view_mode, $langcode);
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function og_sm_node_presave($node) {
+  og_sm_hook_site('presave', $node);
+}
+
+/**
+ * Implements hook_node_prepare().
+ */
+function og_sm_node_prepare($node) {
+  og_sm_hook_site('prepare', $node);
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function og_sm_node_insert($node) {
+  og_sm_hook_site('insert', $node);
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function og_sm_node_update($node) {
+  og_sm_hook_site('update', $node);
+  if (_og_sm_node_update_alias_will_change($node)) {
+    og_sm_hook_site('update_alias', $node);
+  }
+}
+
+/**
+ * Helper do identify if the node alias of a Site will change due to update.
+ *
+ * @param object $node
+ *   The node being updated.
+ *
+ * @return TRUE
+ *   The alias will be changed.
+ */
+function _og_sm_node_update_alias_will_change($node) {
+  $pathauto_new = (bool) $node->path['pathauto'];
+  $pathauto_old = (bool) $node->original->path['pathauto'];
+
+  // Auto alias.
+  if ($pathauto_new && $pathauto_old) {
+    return ($node->title !== $node->original->title);
+  }
+
+  // Manual alias.
+  if (!$pathauto_new && !$pathauto_old) {
+    return ($node->path['alias'] !== $node->path['original']['alias']);
+  }
+
+  // Switching between auto & manual.
+  return TRUE;
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function og_sm_node_delete($node) {
+  og_sm_hook_site('delete', $node);
+}
+
+/**
+ * Trigger a hook_og_sm_site_ACTION for Site changes.
+ *
+ * This is used to let other modules know that an action was performed on a
+ * node that is a Site type. This reduces the code module maintainers need to
+ * write to detect if something changed on a Site node type.
+ *
+ * @param string $action
+ *   Action that is triggered.
+ * @param object $node
+ *   The node for who to trigger the hook.
+ */
+function og_sm_hook_site($action, $node) {
+  // Only for Site node types.
+  if (!og_sm_is_site($node)) {
+    return;
+  }
+
+  $hook = 'og_sm_site_' . $action;
+  module_invoke_all($hook, $node);
+}

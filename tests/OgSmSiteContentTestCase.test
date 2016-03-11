@@ -1,0 +1,77 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Content.
+ */
+
+/**
+ * Tests about the node type settings.
+ */
+class OgSmSiteContentTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Content'),
+      'description' => t('Tests Site Content nodes and helpers.'),
+      'group' => t('Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test Site helpers.
+   */
+  public function testSiteContent() {
+    $type_group = $this->ogSmCreateGroupNodeType();
+    $type_group_no_site = $this->ogSmCreateGroupContentNodeType('not_a_site_type');
+    $type_group_content = $this->ogSmCreateGroupContentNodeType();
+
+    $group1 = $this->ogSmCreateGroup($type_group);
+    $group2 = $this->ogSmCreateGroup($type_group);
+    $group3 = $this->ogSmCreateGroup($type_group_no_site);
+    $groups = array($group3, $group2, $group1);
+
+    // Test getting the groups from a site.
+    $content_no_groups = $this->ogSmCreateGroupContent($type_group_content);
+    $content_with_groups = $this->ogSmCreateGroupContent($type_group_content, $groups);
+
+    // Create group content.
+    $this->assertEqual(array(), og_sm_content_get_sites($content_no_groups));
+    $this->assertEqual(array(), og_sm_content_get_sites($content_with_groups));
+    $this->assertFalse(og_sm_content_get_site($content_with_groups));
+    $this->assertFalse(og_sm_content_is_site_content($content_with_groups));
+    $this->assertFalse(og_sm_content_is_site_member($content_with_groups, $group1));
+
+    // Make the group type a Site type.
+    og_sm_add_site_type($type_group);
+
+    // Get all sites a node belongs to.
+    $sites = og_sm_content_get_sites($content_with_groups);
+    $this->assertEqual(2, count($sites));
+
+    // Get a site (first membership).
+    $site = og_sm_content_get_site($content_with_groups);
+    $this->assertEqual($group2->nid, $site->nid);
+
+    // Content should be Site content.
+    $this->assertTrue(og_sm_content_is_site_content($content_with_groups));
+
+    // Content should be a member of both groups.
+    $this->assertTrue(og_sm_content_is_site_member($content_with_groups, $group1));
+    $this->assertTrue(og_sm_content_is_site_member($content_with_groups, $group2));
+
+    // No Site group types are ignored.
+    $this->assertFalse(og_sm_content_is_site_member($content_with_groups, $group3));
+  }
+
+}

@@ -1,0 +1,144 @@
+<?php
+/**
+ * @file
+ * Module to automatically create aliases for Site related paths.
+ */
+
+/**
+ * Implements hook_og_sm_site_insert().
+ */
+function og_sm_pathauto_og_sm_site_insert($site) {
+  // Make sure that the administration pages have aliases.
+  module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.batch');
+  og_sm_pathauto_site_alias_update_batch($site);
+}
+
+/**
+ * Implements hook_og_sm_site_update_alias().
+ */
+function og_sm_pathauto_og_sm_site_update_alias($site) {
+  // Update all aliases for the Site when its alias changes.
+  module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.batch');
+  og_sm_pathauto_site_alias_update_batch($site);
+}
+
+/**
+ * Implements hook_og_sm_site_delete().
+ */
+function og_sm_pathauto_og_sm_site_delete($site) {
+  // Delete all aliases for a site when it is deleted.
+  og_sm_pathauto_site_delete_aliases($site);
+}
+
+/**
+ * Implements hook_modules_enabled().
+ */
+function og_sm_pathauto_modules_enabled($modules) {
+  // Update aliases to be sure that new paths, provided by modules are aliased.
+  module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.batch');
+  og_sm_pathauto_bulk_update_batch();
+}
+
+/**
+ * Create/Update administration aliases for the Site paths (multiple).
+ *
+ * @param object $site
+ *   The Site to create the aliases for.
+ * @param string $op
+ *   Operation being performed on the Site paths
+ *   ('insert', 'update', 'return', or 'bulkupdate').
+ *
+ * @return int
+ *   The number of created aliases.
+ */
+function og_sm_pathauto_site_path_update_admin_aliases($site, $op) {
+  $count = 0;
+
+  // Create/Update the aliases.
+  $paths = og_sm_pathauto_get_site_paths();
+  foreach ($paths as $path) {
+    $count += (int) og_sm_pathauto_site_path_update_admin_alias($site, $path, $op);
+  }
+
+  return $count;
+}
+
+/**
+ * Create/Update an alias for a Site path (single).
+ *
+ * @param object $site
+ *   The Site node.
+ * @param string $path
+ *   The source to create an alias for.
+ * @param string $op
+ *   Operation being performed on the Site paths
+ *   ('insert', 'update', 'return', or 'bulkupdate').
+ *
+ * @return bool
+ *   Created or updated.
+ */
+function og_sm_pathauto_site_path_update_admin_alias($site, $path, $op) {
+  $options = array('language' => pathauto_entity_language('node', $site));
+
+  // Skip processing if there is no pattern available.
+  if (!pathauto_pattern_load_by_entity('og_sm', '', $options['language'])) {
+    return FALSE;
+  }
+
+  // Create the source path.
+  $src = preg_replace('#^group/%/%#', 'group/node/' . $site->nid, $path);
+
+  module_load_include('inc', 'pathauto');
+  return pathauto_create_alias(
+    'og_sm',
+    $op,
+    $src,
+    array('node' => $site, 'og_sm_site_path' => $path),
+    '',
+    $options['language']
+  );
+}
+
+/**
+ * Delete all aliases for the given Site.
+ *
+ * @param object $site
+ *   The Site node to delete the aliases for.
+ */
+function og_sm_pathauto_site_delete_aliases($site) {
+  $site_path = og_sm_site_path($site);
+  db_delete('url_alias')
+    ->condition('alias', db_like($site_path) . '/%', 'LIKE')
+    ->execute();
+}
+
+/**
+ * Delete only the admin aliases for a Site.
+ */
+function og_sm_pathauto_site_delete_admin_aliases($site) {
+  $source = 'group/node/' . $site->nid;
+  db_delete('url_alias')
+    ->condition('source', db_like($source) . '/%', 'LIKE')
+    ->execute();
+}
+
+/**
+ * Get all the Site paths to create aliases for.
+ *
+ * @return array
+ *   The paths to create aliases for.
+ */
+function og_sm_pathauto_get_site_paths() {
+  static $paths = array();
+
+  if (empty($paths)) {
+    $query = db_select('menu_router', 'mr');
+    $query->addField('mr', 'path');
+    $query->condition('mr.path', db_like('group/%/') . '%', 'LIKE');
+    $query->orderBy('mr.path', 'ASC');
+
+    $paths = $query->execute()->fetchAllKeyed(0, 0);
+  }
+
+  return $paths;
+}

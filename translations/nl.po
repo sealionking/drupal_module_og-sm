@@ -1,0 +1,52 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-03-03 15:13+0100\n"
+"PO-Revision-Date: 2016-03-03 15:13+0100\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.6\n"
+
+#: og_sm.tokens.inc:13
+msgid "Site Path"
+msgstr "Site pad"
+
+#: og_sm.tokens.inc:14
+msgid "The path alias of the Site the node belongs to."
+msgstr "De pad alias van de Site waar de node deel van uitmaakt."
+
+#: og_sm.module:26
+msgid "Make this content type a Site type."
+msgstr "Maak van dit inhoud type een Site type."
+
+#: og_sm.module:27
+msgid "All nodes of this type will be recognized as being a Site."
+msgstr "Alle nodes van dit type zullen herkend worden als zijnde een Site."
+
+#: og_sm.module:28
+msgid "WARNING: The content type needs also to be a Group type!"
+msgstr "WAARSCHUWING: Het inhoud type moet ook een Groep type zijn!"
+
+#: og_sm.module:33 og_sm.info:0
+msgid "Site Manager"
+msgstr "Site Beheerder"
+
+#: og_sm.module:38
+msgid "Site type"
+msgstr "Site type"
+
+#: og_sm.module:59
+msgid "A content type can only be a Site if it also a Group type."
+msgstr "Een inhoud type kan enkel een Site zijn als het ook een Groep type is."
+
+#: og_sm.info:0
+msgid "Support to setup a platform supporting multiple (sub)sites using Organic Groups."
+msgstr "Ondersteuning om op een platform meerdere (sub)sites te bouwen op basis van Organic Groups."
+
+#: og_sm.info:0
+msgid "Organic Groups Site Manager"
+msgstr "Organic Groups Site Beheerder"
