@@ -12,11 +12,17 @@
 function og_sm_context_og_context_negotiation_info() {
   $providers = array();
 
-  $providers['og_sm_context'] = array(
-    'name' => t('Site Manager'),
+  $providers['og_sm_context_alias'] = array(
+    'name' => t('Site Manager Site Alias'),
     'description' => t('Determine group context based on the fact that the current URL starts with the path alias of a Site node.'),
-    'callback' => 'og_sm_context_handler',
+    'callback' => 'og_sm_context_handler_alias',
   );
+  $providers['og_sm_context_admin'] = array(
+    'name' => t('Site Manager Admin pages'),
+    'description' => t('Determine group context based on the fact that we are on a Site administration page.'),
+    'callback' => 'og_sm_context_handler_admin',
+  );
+
 
   return $providers;
 }
@@ -27,14 +33,12 @@ function og_sm_context_og_context_negotiation_info() {
  * If the first part is the alias of a Site, that Site becomes the active
  * context.
  *
- * @return array
+ * @return array|NULL
  *   Contexts grouped by the entity type.
  *
  * @see og_sm_context_negotiation_info
  */
-function og_sm_context_handler() {
-  $context = array();
-
+function og_sm_context_handler_alias() {
   // Get the alias of the current URL.
   $page_alias = drupal_get_path_alias(current_path());
   $parts = explode('/', $page_alias);
@@ -43,19 +47,48 @@ function og_sm_context_handler() {
   // Get the normal path by the possible Site alias.
   $site_path = drupal_get_normal_path($site_alias);
   if (!$site_path) {
-    return $context;
+    return NULL;
   }
 
   // Get the site_nid from the path.
-  preg_match_all('/^node\/([0-9]+)$/', $site_path, $parts);
-  if (empty($parts[1][0])) {
-    return $context;
+  preg_match('/^node\/([0-9]+)$/', $site_path, $parts);
+  if (empty($parts[1])) {
+    return NULL;
   }
 
   // Get the Site.
-  $site = og_sm_site_load($parts[1][0]);
+  $site = og_sm_site_load($parts[1]);
   if (!$site) {
-    return $context;
+    return NULL;
+  }
+
+  return array('node' => array((int) $site->nid));
+}
+
+/**
+ * Tries to get the context based on the fact that we are on a site admin page.
+ *
+ * Will check if:
+ * - The path starts with group/node/[nid]
+ * - If the group is a Site node type.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_negotiation_info
+ */
+function og_sm_context_handler_admin() {
+  // Get nid from the current URL.
+  $path = current_path();
+  preg_match('#^group/node/([0-9]+)/#', $path, $parts);
+  if (empty($parts[1])) {
+    return NULL;
+  }
+
+  // Get the Site.
+  $site = og_sm_site_load($parts[1]);
+  if (!$site) {
+    return NULL;
   }
 
   return array('node' => array((int) $site->nid));
