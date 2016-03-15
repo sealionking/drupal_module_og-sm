@@ -48,6 +48,9 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     og_sm_remove_site_type($type_group);
     $this->assertFalse(og_sm_site_load($group->nid));
 
+    // Test og_sm_site_load with non-existing node id.
+    $this->assertFalse(og_sm_site_load(9877654321));
+
     // Test getting all site Nodes ID's.
     $group2 = $this->ogSmCreateGroup($type_group);
     $group3 = $this->ogSmCreateGroup($type_group);
