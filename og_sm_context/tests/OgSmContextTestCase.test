@@ -53,28 +53,28 @@ class OgSmContextTestCase extends OgSmWebTestCase {
 
     // The Group node type is not yet a site.
     $_GET['q'] = 'node/' . $content->nid;
-    $this->assertEqual(array(), og_sm_context_handler());
+    $this->assertEqual(array(), og_sm_context_handler_alias());
     $_GET['q'] = 'node/' . $site->nid;
-    $this->assertEqual(array(), og_sm_context_handler());
+    $this->assertEqual(array(), og_sm_context_handler_alias());
     $_GET['q'] = 'node/' . $site_content->nid;
-    $this->assertEqual(array(), og_sm_context_handler());
+    $this->assertEqual(array(), og_sm_context_handler_alias());
 
     // Make it a Site node type.
     og_sm_add_site_type($site_type);
     $expected = array('node' => array((int) $site->nid));
 
     $_GET['q'] = 'node/' . $content->nid;
-    $this->assertEqual(array(), og_sm_context_handler());
+    $this->assertEqual(array(), og_sm_context_handler_alias());
     $_GET['q'] = 'node/' . $site->nid;
-    $this->assertEqual($expected, og_sm_context_handler());
+    $this->assertEqual($expected, og_sm_context_handler_alias());
     $_GET['q'] = 'node/' . $site_content->nid;
-    $this->assertEqual($expected, og_sm_context_handler());
+    $this->assertEqual($expected, og_sm_context_handler_alias());
 
     // Test with custom paths.
     $_GET['q'] = 'whatever/foo/bar/biz/baz';
-    $this->assertEqual(array(), og_sm_context_handler());
+    $this->assertEqual(array(), og_sm_context_handler_alias());
     $_GET['q'] = $site_path . '/whatever/foo/bar/biz/baz';
-    $this->assertEqual($expected, og_sm_context_handler());
+    $this->assertEqual($expected, og_sm_context_handler_alias());
   }
 
 }
