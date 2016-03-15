@@ -510,8 +510,8 @@ function og_sm_node_update($node) {
  *   The alias will be changed.
  */
 function _og_sm_node_update_alias_will_change($node) {
-  $pathauto_new = (bool) $node->path['pathauto'];
-  $pathauto_old = (bool) $node->original->path['pathauto'];
+  $pathauto_new = (!empty($node->path['pathauto']));
+  $pathauto_old = (!empty($node->original->path['pathauto']));
 
   // Auto alias.
   if ($pathauto_new && $pathauto_old) {
@@ -520,7 +520,14 @@ function _og_sm_node_update_alias_will_change($node) {
 
   // Manual alias.
   if (!$pathauto_new && !$pathauto_old) {
-    return ($node->path['alias'] !== $node->path['original']['alias']);
+    $alias_new = (!empty($node->path['alias']))
+      ? $node->path['alias']
+      : NULL;
+    $alias_old = (!empty($node->path['original']['alias']))
+      ? $node->path['original']['alias']
+      : NULL;
+
+    return ($alias_new !== $alias_old);
   }
 
   // Switching between auto & manual.
