@@ -110,7 +110,7 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
  */
 function og_sm_site_load($site_nid) {
   $site = node_load($site_nid);
-  if (!og_sm_is_site($site)) {
+  if (!$site || !og_sm_is_site($site)) {
     return FALSE;
   }
 
