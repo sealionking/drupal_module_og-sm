@@ -23,7 +23,6 @@ function og_sm_context_og_context_negotiation_info() {
     'callback' => 'og_sm_context_handler_admin',
   );
 
-
   return $providers;
 }
 
@@ -80,7 +79,7 @@ function og_sm_context_handler_alias() {
 function og_sm_context_handler_admin() {
   // Get nid from the current URL.
   $path = current_path();
-  preg_match('#^group/node/([0-9]+)/#', $path, $parts);
+  preg_match('#^group/node/([0-9]+)#', $path, $parts);
   if (empty($parts[1])) {
     return NULL;
   }

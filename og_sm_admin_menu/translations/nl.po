@@ -76,3 +76,6 @@ msgstr "Token : @token"
 
 msgid "Organic Groups Site Manager"
 msgstr ""
+
+msgid "Tests the Site Administration Menu functionality."
+msgstr "Testen voor de Site Beheer Menu functionaliteit."

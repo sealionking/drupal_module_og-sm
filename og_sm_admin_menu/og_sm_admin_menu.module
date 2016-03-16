@@ -222,6 +222,7 @@ function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
  *   The router path.
  */
 function og_sm_admin_menu_router_path_from_admin_path($site, $admin_path) {
+  $admin_path = ltrim($admin_path, '/');
   return preg_replace('/\[site:nid\]/', $site->nid, $admin_path);
 }
 
@@ -304,18 +305,20 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
         continue;
       }
 
-      // Get the content type.
+      // Get the content type name.
       preg_match('#node/add/(.*)#', $key, $matches);
-      $node_type = $matches[1];
+      $node_type = preg_replace('/-/', '_', $matches[1]);
 
       // Exclude Site types.
       if (og_sm_is_site_type($node_type)) {
         unset($content['menu']['node/add'][$key]);
+        continue;
       }
 
       // Exclude non-group content types.
       if (!og_is_group_content_type('node', $node_type)) {
         unset($content['menu']['node/add'][$key]);
+        continue;
       }
 
       $content['menu']['node/add'][$key]['#options']['query'] = $query;

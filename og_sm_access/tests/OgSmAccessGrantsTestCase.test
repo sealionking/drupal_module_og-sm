@@ -15,7 +15,7 @@ class OgSmAccessGrantsTestCase extends OgSmWebTestCase {
     return array(
       'name' => t('Site Access Grants'),
       'description' => t('Tests Site Access grants hook.'),
-      'group' => t('Site Manager'),
+      'group' => t('Organic Groups Site Manager'),
     );
   }
 
