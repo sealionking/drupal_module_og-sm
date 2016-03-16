@@ -1,0 +1,175 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_content module.
+ */
+
+/**
+ * Tests about the OG SM Content functionality.
+ */
+class OgSmContentTestCase extends OgSmWebTestCase {
+  /**
+   * Test artifacts.
+   */
+  protected $userAdmin;
+  protected $userDefault;
+
+  protected $site;
+  protected $siteType;
+
+  protected $siteUserPageArticle;
+  protected $siteUserArticle;
+
+  protected $siteContentTypeNamePage = 'og_sm_site_content_type_page';
+  protected $siteContentTypePage;
+  protected $siteContentTypeNameArticle = 'og_sm_site_content_type_article';
+  protected $siteContentTypeArticle;
+
+  protected $permissionCreatePage = 'create og_sm_site_content_type_page content';
+  protected $permissionCreateArticle = 'create og_sm_site_content_type_article content';
+
+  protected $roleTypesPageArticle;
+  protected $roleTypesArticle;
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Content management'),
+      'description' => t('Tests the Site Content management functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_content');
+    parent::setUp($modules);
+
+    // Create the site.
+    $this->siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($this->siteType);
+    $this->site = $this->ogSmCreateGroup($this->siteType);
+
+    // Create site content types.
+    $this->siteContentTypePage = node_type_load(
+      $this->ogSmCreateGroupContentNodeType($this->siteContentTypeNamePage)
+    );
+    $this->siteContentTypeArticle = node_type_load(
+      $this->ogSmCreateGroupContentNodeType($this->siteContentTypeNameArticle)
+    );
+
+    // Create site roles.
+    $this->roleTypesPageArticle = og_role_create('role1', 'node', 0, $this->siteType);
+    og_role_save($this->roleTypesPageArticle);
+    $this->roleTypesArticle = og_role_create('role2', 'node', 0, $this->siteType);
+    og_role_save($this->roleTypesArticle);
+
+    // Grant permissions to the roles.
+    og_role_grant_permissions(
+      $this->roleTypesPageArticle->rid,
+      array($this->permissionCreatePage, $this->permissionCreateArticle)
+    );
+    og_role_grant_permissions(
+      $this->roleTypesArticle->rid,
+      array($this->permissionCreateArticle)
+    );
+
+    // Create users.
+    $this->userAdmin = $this->ogSmCreateAdminUser();
+    $this->userDefault = $this->drupalCreateUser();
+    $this->siteUserPageArticle = $this->ogSmCreateGroupUser(array(), array($this->site));
+    $this->siteUserArticle = $this->ogSmCreateGroupUser(array(), array($this->site));
+
+    // Grant permissions.
+    og_role_grant('node', $this->site->nid, $this->siteUserPageArticle->uid, $this->roleTypesPageArticle->rid);
+    og_role_grant('node', $this->site->nid, $this->siteUserArticle->uid, $this->roleTypesArticle->rid);
+  }
+
+  /**
+   * Tests the helper to get all Site content types a user can create.
+   */
+  public function testGetTypesBySite() {
+    // Test for default user.
+    $this->assertEqual(array(), og_sm_content_get_types_by_site($this->site, $this->userDefault));
+
+    // Test getting the types for an admin user.
+    $expected = array(
+      $this->siteContentTypeNamePage => $this->siteContentTypePage,
+      $this->siteContentTypeNameArticle => $this->siteContentTypeArticle,
+    );
+    $this->assertEqual($expected, og_sm_content_get_types_by_site($this->site, $this->userAdmin));
+
+    // Test for user 1.
+    $this->assertEqual($expected, og_sm_content_get_types_by_site($this->site, $this->siteUserPageArticle));
+
+    // Test for user 2.
+    $expected = array(
+      $this->siteContentTypeNameArticle => $this->siteContentTypeArticle,
+    );
+    $this->assertEqual($expected, og_sm_content_get_types_by_site($this->site, $this->siteUserArticle));
+  }
+
+  /**
+   * Test the access callbacks.
+   */
+  public function testAccessCallbacks() {
+    $path_overview = 'group/node/' . $this->site->nid . '/content/add';
+    $path_add_page = $path_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNamePage);
+    $path_add_article = $path_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
+
+    // Not logged in.
+    $this->drupalGet($path_overview);
+    $this->assertResponse(403, 'User is not allowed to view the node/add page.');
+    $this->drupalGet($path_add_page);
+    $this->assertResponse(403, 'User is not allowed to add Page content.');
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(403, 'User is not allowed to add Article content.');
+
+    // Default user.
+    $this->verbose('Log in as Default user.');
+    $this->drupalLogin($this->userDefault);
+    $this->drupalGet($path_overview);
+    $this->assertResponse(403, 'User is not allowed to view the node/add page.');
+    $this->drupalGet($path_add_page);
+    $this->assertResponse(403, 'User is not allowed to add Page content.');
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(403, 'User is not allowed to add Article content.');
+
+    // Admin user.
+    $this->verbose('Log in as Admin user.');
+    $this->drupalLogin($this->userAdmin);
+    $this->drupalGet($path_overview);
+    $this->assertResponse(200, 'User is allowed to view the node/add page.');
+    $this->drupalGet($path_add_page);
+    $this->assertResponse(200, 'User is allowed to add Page content.');
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(200, 'User is allowed to add Article content.');
+
+    // User with access to all content.
+    $this->verbose('Log in as user who can create pages & articles.');
+    $this->drupalLogin($this->siteUserPageArticle);
+    $this->drupalGet($path_overview);
+    $this->assertResponse(200, 'User is allowed to view the node/add page.');
+    $this->drupalGet($path_add_page);
+    $this->assertResponse(200, 'User is allowed to add Page content.');
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(200, 'User is allowed to add Article content.');
+
+    // User with access to only articles.
+    $this->verbose('Log in as user who can create only articles.');
+    $this->drupalLogin($this->siteUserArticle);
+    $this->drupalGet($path_overview);
+    $this->assertResponse(200, 'User is allowed to view the node/add page.');
+    $this->drupalGet($path_add_page);
+    $this->assertResponse(403, 'User is not allowed to add Page content.');
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(200, 'User is allowed to add Article content.');
+  }
+
+}

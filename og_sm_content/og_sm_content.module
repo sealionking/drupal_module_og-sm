@@ -1,0 +1,153 @@
+<?php
+/**
+ * @file
+ * Site content creation and administration functionality.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_content_menu() {
+  $items = array();
+  $file = 'og_sm_content.pages.inc';
+
+  $items['group/%/%og_sm_site/admin/content'] = array(
+    'title' => 'Administer content',
+    'page callback' => 'og_sm_content_admin_overview',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'weight' => 11,
+    'file' => $file,
+  );
+
+  $items['group/%/%og_sm_site/admin/content/node'] = array(
+    'title' => 'All content',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  $items['group/%/%og_sm_site/admin/content/my'] = array(
+    'title' => 'My content',
+    'page callback' => 'og_sm_content_admin_overview_my',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'weight' => 10,
+    'file' => $file,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['group/%/%og_sm_site/admin/content/add'] = array(
+    'title' => 'Add content',
+    'page callback' => 'og_sm_content_admin_add_content',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_content_add_access',
+    'access arguments' => array(2),
+    'weight' => 11,
+    'file' => $file,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['group/%/%og_sm_site/content/add'] = array(
+    'title' => 'Add content',
+    'page callback' => 'og_sm_content_add_overview',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_content_add_overview_access',
+    'access arguments' => array(2),
+    'weight' => 11,
+    'file' => $file,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  // Add menu callbacks for all the Site content types.
+  $base_path = 'group/%/%og_sm_site/content/add/';
+  $types = og_sm_content_get_types();
+  foreach ($types as $type) {
+    $type_url_str = str_replace('_', '-', $type->type);
+    $items[$base_path . $type_url_str] = array(
+      'title' => $type->name,
+      'title callback' => 'check_plain',
+      'page callback' => 'og_sm_content_add_content',
+      'page arguments' => array(2, $type->type),
+      'access callback' => 'og_sm_content_add_content_access',
+      'access arguments' => array(2, $type->type),
+      'weight' => 11,
+      'file' => $file,
+      'type' => MENU_LOCAL_TASK,
+    );
+  }
+
+  return $items;
+}
+
+/**
+ * Menu access callback for the admin/content/add page.
+ *
+ * This will check if the user has at least access to one Site content type.
+ *
+ * @param object $site
+ *   The Site to check the access for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_content_add_overview_access($site) {
+  $types = og_sm_content_get_types_by_site($site);
+  return !empty($types);
+}
+
+/**
+ * Menu access callback for the admin/content/add/[type] page.
+ *
+ * This will check if the user has create access to the content type.
+ *
+ * @param object $site
+ *   The Site to check the access for.
+ * @param string $node_type
+ *   The node type to check access for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_content_add_content_access($site, $node_type) {
+  $types = array_keys(og_sm_content_get_types_by_site($site));
+  return in_array($node_type, $types);
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function og_sm_content_views_api() {
+  return array("api" => "3.0");
+}
+
+/**
+ * Get a list of Site content types by Site & (optional) Account.
+ *
+ * This will reduce the list of content types by the given site and the content
+ * creation permissions of the given/current user account.
+ *
+ * @param object $site
+ *   The Site node.
+ * @param object $account
+ *   (optional) User account to check access for.
+ *
+ * @return string
+ *   The page content.
+ */
+function og_sm_content_get_types_by_site($site, $account = NULL) {
+  $types = array();
+
+  $site_content_types = og_sm_content_get_types();
+  foreach ($site_content_types as $site_content_type) {
+    $permission = 'create ' . $site_content_type->type . ' content';
+    if (!og_sm_site_permission_access($site, $permission, $account)) {
+      continue;
+    }
+
+    $types[$site_content_type->type] = $site_content_type;
+  }
+
+  return $types;
+}
