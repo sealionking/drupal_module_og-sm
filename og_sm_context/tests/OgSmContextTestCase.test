@@ -15,7 +15,7 @@ class OgSmContextTestCase extends OgSmWebTestCase {
     return array(
       'name' => t('Site Context'),
       'description' => t('Tests Site Context functionality.'),
-      'group' => t('Site Manager'),
+      'group' => t('Organic Groups Site Manager'),
     );
   }
 

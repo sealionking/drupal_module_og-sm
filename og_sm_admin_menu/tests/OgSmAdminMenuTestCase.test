@@ -15,7 +15,7 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
     return array(
       'name' => t('Site Administration menu'),
       'description' => t('Tests the Site Administration Menu functionality.'),
-      'group' => t('OG Site Manager'),
+      'group' => t('Organic Groups Site Manager'),
     );
   }
 

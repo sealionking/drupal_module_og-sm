@@ -15,7 +15,7 @@ class OgSmVariableTestCase extends OgSmWebTestCase {
     return array(
       'name' => t('Site Variable'),
       'description' => t('Tests Site Variables.'),
-      'group' => t('Site Manager'),
+      'group' => t('Organic Groups Site Manager'),
     );
   }
 

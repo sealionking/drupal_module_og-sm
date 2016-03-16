@@ -15,7 +15,7 @@ class OgSmPathautoTestCase extends OgSmWebTestCase {
     return array(
       'name' => t('Site Pathauto'),
       'description' => t('Tests Site Pathauto functionality.'),
-      'group' => t('Site Manager'),
+      'group' => t('Organic Groups Site Manager'),
     );
   }
 
