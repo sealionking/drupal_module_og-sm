@@ -1,0 +1,123 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_admin_menu module.
+ */
+
+/**
+ * Tests about the OG SM Administration Menu.
+ */
+class OgSmAdminMenuTestCase extends OgSmWebTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Administration menu'),
+      'description' => t('Tests the Site Administration Menu functionality.'),
+      'group' => t('OG Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_admin_menu');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test the hook_admin_menu_output_alter() implementation.
+   */
+  public function testAdminMenuOutputAlter() {
+    $node_type = $this->drupalCreateContentType()->type;
+    $group_type = $this->ogSmCreateGroupNodeType('test_normal_group_type');
+
+    $site_type = $this->ogSmCreateGroupNodeType();
+    $site_content_type = $this->ogSmCreateGroupContentNodeType();
+
+    og_sm_add_site_type($site_type);
+    $site = $this->ogSmCreateGroup($site_type);
+
+    // Create a menu content array.
+    $content = array(
+      '#components' => array(
+        'og_sm_admin_menu.site' => TRUE,
+      ),
+      'responsive-menu' => array(
+        'admin/index' => array('foo' => 'bar'),
+      ),
+      'icon' => array(
+        'icon' => array(
+          '#href' => '<front>',
+        ),
+      ),
+      'menu' => array(
+        'node/add' => array(
+          '#options' => array(),
+          'node/add/' . str_replace('_', '-', $site_type) => array(
+            '#options' => array(),
+          ),
+          'node/add/' . str_replace('_', '-', $site_content_type) => array(
+            '#options' => array(),
+          ),
+          'node/add/' . str_replace('_', '-', $group_type) => array(
+            '#options' => array(),
+          ),
+          'node/add/' . str_replace('_', '-', $node_type) => array(
+            '#options' => array(),
+          ),
+        ),
+      ),
+      'shortcut' => array(),
+    );
+
+    // Create the expected content array.
+    $expected = array(
+      '#components' => array(
+        'og_sm_admin_menu.site' => TRUE,
+      ),
+      'responsive-menu' => array(),
+      'icon' => array(
+        'icon' => array(
+          '#href' => 'node/' . $site->nid,
+        ),
+      ),
+      'menu' => array(
+        'node/add' => array(
+          '#options' => array(
+            'query' => array('og_group_ref' => $site->nid),
+          ),
+          'node/add/' . str_replace('_', '-', $site_content_type) => array(
+            '#options' => array(
+              'query' => array('og_group_ref' => $site->nid),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // No changes when not in Site context.
+    $content_test1 = $content;
+    og_sm_admin_menu_admin_menu_output_alter($content_test1);
+    $this->assertEqual($content, $content_test1);
+
+    // Set the site context.
+    $this->ogSmSetOgContextToGroup($site);
+
+    // Changed when in Site context.
+    $content_test2 = $content;
+    og_sm_admin_menu_admin_menu_output_alter($content_test2);
+    $this->assertEqual($expected, $content_test2);
+
+    // No changes when site menu plugin is not enabled.
+    $content_test3 = $content;
+    unset($content_test3['#components']['og_sm_admin_menu.site']);
+    $original = $content_test3;
+    og_sm_admin_menu_admin_menu_output_alter($content_test3);
+    $this->assertEqual($original, $content_test3);
+  }
+
+}

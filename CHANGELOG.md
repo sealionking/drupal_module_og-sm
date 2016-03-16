@@ -7,6 +7,8 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 - DMOGSM-7 : Broken tests due to changed context detection callback name.
 - DMOGSM-7 : Broken tests due to notices when testing with non-existing node
   ID's'.
+- DMOGSM-8 : Content types with "-" in machine name where always filtered in the
+  Site menu.
 
 
 
