@@ -15,7 +15,7 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     return array(
       'name' => t('Site node'),
       'description' => t('Tests Site nodes and helpers.'),
-      'group' => t('Site Manager'),
+      'group' => t('Organic Groups Site Manager'),
     );
   }
 

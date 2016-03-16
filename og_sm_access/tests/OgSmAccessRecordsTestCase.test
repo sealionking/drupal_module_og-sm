@@ -15,7 +15,7 @@ class OgSmAccessRecordsTestCase extends OgSmWebTestCase {
     return array(
       'name' => t('Site Access Records'),
       'description' => t('Tests Site Access records hook.'),
-      'group' => t('Site Manager'),
+      'group' => t('Organic Groups Site Manager'),
     );
   }
 

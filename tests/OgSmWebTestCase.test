@@ -155,4 +155,29 @@ class OgSmWebTestCase extends DrupalWebTestCase {
     return user_load($account->uid);
   }
 
+  /**
+   * Set the OG Context to the given Group node.
+   *
+   * @param object $group
+   *   Group node to set the context for.
+   * @param object $account
+   *   Optional user object to set the context for.
+   */
+  public function ogSmSetOgContextToGroup($group, $account = NULL) {
+    $context = &drupal_static('og_context');
+    $context = array(
+      'node::' . $group->nid . ':1' => array(
+        'group_type' => 'node',
+        'gid' => $group->nid,
+      ),
+    );
+
+    if ($account) {
+      $context['node:' . $account->uid . ':' . $group->nid . ':1'] = array(
+        'group_type' => 'node',
+        'gid' => $group->nid,
+      );
+    }
+  }
+
 }

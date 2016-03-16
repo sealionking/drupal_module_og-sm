@@ -23,7 +23,6 @@ function og_sm_context_og_context_negotiation_info() {
     'callback' => 'og_sm_context_handler_admin',
   );
 
-
   return $providers;
 }
 
