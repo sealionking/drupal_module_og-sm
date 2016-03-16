@@ -120,4 +120,26 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
     $this->assertEqual($original, $content_test3);
   }
 
+  /**
+   * Test the helper to fill in the Site Node ID in an admin path.
+   */
+  public function testMenuRouterPathFromAdminPath() {
+    $site = new stdClass();
+    $site->nid = 555;
+
+    $path = 'group/node/[site:nid]/admin';
+    $expected = 'group/node/555/admin';
+    $this->assertEqual(
+      $expected,
+      og_sm_admin_menu_router_path_from_admin_path($site, $path)
+    );
+
+    $path = '/group/node/[site:nid]';
+    $expected = 'group/node/555';
+    $this->assertEqual(
+      $expected,
+      og_sm_admin_menu_router_path_from_admin_path($site, $path)
+    );
+  }
+
 }
