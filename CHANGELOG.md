@@ -1,8 +1,8 @@
-#Changelog
+# Changelog
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
-## [Unreleased]
+## [7.x-1.0-alpha3]
 ### Fixed
 - DMOGSM-7 : Broken tests due to changed context detection callback name.
 - DMOGSM-7 : Broken tests due to notices when testing with non-existing node
@@ -31,5 +31,6 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha3%0D7.x-1.0-alpha2#diff
 [7.x-1.0-alpha2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha2%0D7.x-1.0-alpha1#diff
 [7.x-1.0-alpha1]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/commits/tag/7.x-1.0-alpha1
