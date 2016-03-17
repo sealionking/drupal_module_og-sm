@@ -100,6 +100,21 @@ Check if the given node type is a Site type:
 $is_site_type = og_sm_is_site_type($node_type);
 ```
 
+### Set the breacrumb for a site
+This is a wrapper around the og_set_breadcrumb.
+
+```php
+og_sm_set_breadcrumb($site, 'path/to/set/the/breadcrumb');
+```
+
+### Site content types
+Helper function to get a list of site type objects that can be used to create
+content within a site.
+
+```php
+$site_content_types = og_sm_content_get_types();
+```
+
 ### Check if content belongs to a Site
 Helper functions to get the Site (if any) of a given content item (node) belongs
 to.

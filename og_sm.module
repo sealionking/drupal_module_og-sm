@@ -323,6 +323,25 @@ function og_sm_remove_site_type($type) {
   }
 }
 
+/**
+ * Set the breadcrumb for the given Site.
+ *
+ * @param object $site
+ *   The site object to setthe breadcrumb for.
+ * @param array $path
+ *   Array of links to append to the breadcumb.
+ */
+function og_sm_set_breadcrumb($site, $path = array()) {
+  $label = entity_label('node', $site);
+  $uri = entity_uri('node', $site);
+  drupal_set_breadcrumb(
+    array_merge(
+      array(l(t('Home'), '<front>')),
+      array(l($label, $uri['path'])),
+      $path
+    )
+  );
+}
 
 /**
  * Get a list of content types that can be used to create Site content.
