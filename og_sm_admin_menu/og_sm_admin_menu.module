@@ -343,3 +343,21 @@ function og_sm_admin_menu_menu_alter(&$items) {
   // Mark the admin menu to be rebuild every time the menu system is rebuild.
   og_sm_admin_menu_needs_rebuild();
 }
+
+/**
+ * Implements hook_og_role_grant().
+ */
+function og_sm_admin_menu_og_role_grant($entity_type, $gid, $uid, $rid) {
+  // Make sure that the admin_menu cache for this user is flushed when his roles
+  // change.
+  admin_menu_flush_caches($uid);
+}
+
+/**
+ * Implements hook_og_role_revoke().
+ */
+function og_sm_admin_menu_og_role_revoke($entity_type, $gid, $uid, $rid) {
+  // Make sure that the admin_menu cache for this user is flushed when his roles
+  // change.
+  admin_menu_flush_caches($uid);
+}
