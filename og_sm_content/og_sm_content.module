@@ -5,6 +5,16 @@
  */
 
 /**
+ * Implements hook_admin_paths().
+ */
+function og_sm_content_admin_paths() {
+  return array(
+    'group/node/*/content/add' => TRUE,
+    'group/node/*/content/add/*' => TRUE,
+  );
+}
+
+/**
  * Implements hook_menu().
  */
 function og_sm_content_menu() {
