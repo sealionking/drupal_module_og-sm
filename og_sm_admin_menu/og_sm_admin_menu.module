@@ -292,35 +292,27 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
   // Alter the add content links.
   if (!empty($content['menu']['node/add'])) {
     $query = array('og_group_ref' => $site->nid);
+    $site_content_types = og_sm_content_get_types();
 
+    // Alter the node/add overview item.
+    $content['menu']['node/add']['#options']['query'] = $query;
+
+    // Alter the node/add/[node-type] items.
     foreach ($content['menu']['node/add'] as $key => $item) {
-      // Add the query to the root element.
-      if ($key === '#options') {
-        $content['menu']['node/add'][$key]['query'] = $query;
-        continue;
-      }
-
-      // Only for child elements.
-      if (!preg_match('#node/add/#', $key)) {
-        continue;
-      }
-
       // Get the content type name.
-      preg_match('#node/add/(.*)#', $key, $matches);
+      preg_match('#^node/add/(.*)#', $key, $matches);
+      if (empty($matches[1])) {
+        continue;
+      }
       $node_type = preg_replace('/-/', '_', $matches[1]);
 
-      // Exclude Site types.
-      if (og_sm_is_site_type($node_type)) {
+      // Show only Site content type.
+      if (!isset($site_content_types[$node_type])) {
         unset($content['menu']['node/add'][$key]);
         continue;
       }
 
-      // Exclude non-group content types.
-      if (!og_is_group_content_type('node', $node_type)) {
-        unset($content['menu']['node/add'][$key]);
-        continue;
-      }
-
+      // Alter the href or add query.
       $content['menu']['node/add'][$key]['#options']['query'] = $query;
     }
   }
