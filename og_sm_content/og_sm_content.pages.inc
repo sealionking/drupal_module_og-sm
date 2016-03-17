@@ -82,7 +82,7 @@ function og_sm_content_add_overview($site) {
   $options = array();
   foreach ($types as $type) {
     $options[$type->name] = array(
-      'title' => $type->name,
+      'title' => filter_xss($type->name),
       'description' => $type->description,
       'href' => og_sm_content_add_uri($site, $type->type),
       'localized_options' => array(),

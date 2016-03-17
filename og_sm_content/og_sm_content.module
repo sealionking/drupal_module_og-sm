@@ -180,3 +180,75 @@ function og_sm_content_add_uri($site, $node_type) {
 
   return sprintf($path, $nid, $type);
 }
+
+/**
+ * Implements hook_admin_menu_output_alter().
+ */
+function og_sm_content_admin_menu_output_alter(&$content) {
+  $site = og_sm_current_site();
+
+  // Only if there is an active Site.
+  if (!$site || empty($content['#components']['og_sm_admin_menu.site'])) {
+    return;
+  }
+
+  // Get the menu items to show.
+  $items = og_sm_content_admin_menu_items($site);
+
+  // Remove the node/add item if no items to show.
+  if (!$items && isset($content['menu']['node/add'])) {
+    unset($content['menu']['node/add']);
+    return;
+  }
+
+  $content['menu']['node/add'] = $items;
+}
+
+/**
+ * Helper to construct a menu of content create links for the admin menu.
+ *
+ * @param object $site
+ *   The site to create the items for.
+ *
+ * @return array
+ *   The menu items.
+ */
+function og_sm_content_admin_menu_items($site) {
+  $items = array();
+  $types = og_sm_content_get_types_by_site($site);
+  if (!$types) {
+    return $items;
+  }
+
+  $items = array(
+    '#title' => t('Add content'),
+    '#href' => url('group/node/' . $site->nid . '/content/add'),
+    '#options' => array('alias' => TRUE),
+    '#weight' => -100,
+    '#attributes' => array('class' => array('admin-menu-toolbar-category')),
+  );
+
+  $sort = array();
+  foreach ($types as $type) {
+    $key = 'node/add/' . $type->type;
+    $sort[$type->name] = $key;
+    $items[$key] = array(
+      '#title' => $type->name,
+      '#href' => url(og_sm_content_add_uri($site, $type->type)),
+      '#options' => array(
+        'attributes' => array(),
+        'alias' => TRUE,
+        'html' => TRUE,
+      ),
+      '#weight' => 0,
+    );
+  }
+
+  ksort($sort);
+  $sorted = array_values($sort);
+  foreach ($sorted as $weight => $key) {
+    $items[$key]['#weight'] = $weight;
+  }
+
+  return $items;
+}

@@ -336,9 +336,6 @@ function og_sm_admin_menu_admin_menu_cache_id_alter(&$cid) {
 /**
  * Implements hook_menu_alter().
  */
-/**
- * Implements hook_menu_alter().
- */
 function og_sm_admin_menu_menu_alter(&$items) {
   // Mark the admin menu to be rebuild every time the menu system is rebuild.
   og_sm_admin_menu_needs_rebuild();
