@@ -69,11 +69,11 @@ function og_sm_content_add_overview($site) {
   og_set_breadcrumb('node', $site->nid, array(l(t('Group'), "node/$site->nid/group")));
 
   $options = array();
-  $base_path = 'group/node/' . $site->nid . '/content/add/';
 
   $types = og_sm_content_get_types_by_site($site);
   foreach ($types as $type) {
-    $options[$type->name] = l($type->name, $base_path . $type->type);
+    $uri = og_sm_content_add_uri($site, $type->type);
+    $options[$type->name] = l($type->name, $uri);
   }
   ksort($options);
 

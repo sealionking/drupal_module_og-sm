@@ -151,3 +151,22 @@ function og_sm_content_get_types_by_site($site, $account = NULL) {
 
   return $types;
 }
+
+/**
+ * Helper to create a URL path to create a new content item.
+ *
+ * @param object $site
+ *   The site to create the URL for.
+ * @param string $node_type
+ *   The node type to create.
+ *
+ * @return string
+ *   The URI path.
+ */
+function og_sm_content_add_uri($site, $node_type) {
+  $path = 'group/node/%d/content/add/%s';
+  $nid = (int) $site->nid;
+  $type = preg_replace('/_/', '-', $node_type);
+
+  return sprintf($path, $nid, $type);
+}

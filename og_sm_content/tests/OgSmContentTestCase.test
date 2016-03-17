@@ -92,6 +92,20 @@ class OgSmContentTestCase extends OgSmWebTestCase {
   }
 
   /**
+   * Test the elper to create the content/add/type path.
+   */
+  public function testContentAddUri() {
+    $site = new stdClass();
+    $site->nid = 555;
+    $type = 'test_type';
+
+    $this->assertEqual(
+      'group/node/555/content/add/test-type',
+      og_sm_content_add_uri($site, $type)
+    );
+  }
+
+  /**
    * Tests the helper to get all Site content types a user can create.
    */
   public function testGetTypesBySite() {
