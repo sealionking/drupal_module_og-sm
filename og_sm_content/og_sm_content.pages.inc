@@ -81,14 +81,13 @@ function og_sm_content_add_overview($site) {
   // Show list of node types the user can create.
   $options = array();
   foreach ($types as $type) {
-    $options[$type->name] = array(
+    $options[$type->type] = array(
       'title' => filter_xss($type->name),
       'description' => $type->description,
       'href' => og_sm_content_add_uri($site, $type->type),
       'localized_options' => array(),
     );
   }
-  ksort($options);
 
   return theme('node_add_list', array('content' => $options));
 }

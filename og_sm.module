@@ -347,24 +347,37 @@ function og_sm_set_breadcrumb($site, $path = array()) {
  * Get a list of content types that can be used to create Site content.
  *
  * @return array
- *   Content types that are OG types.
+ *   Content types that are OG types, sorted by their name.
  */
 function og_sm_content_get_types() {
+  global $language;
+  $langcode = $language->language;
+
   $types = &drupal_static(__FUNCTION__, array());
 
-  if (empty($types)) {
+  if (empty($types[$langcode])) {
+    $types[$langcode] = array();
     $content_types = node_type_get_types();
 
+    $sort = array();
+    $items = array();
     foreach ($content_types as $content_type) {
       if (!og_is_group_content_type('node', $content_type->type)) {
         continue;
       }
 
-      $types[$content_type->type] = $content_type;
+      $sort[$content_type->name] = $content_type->type;
+      $items[$content_type->type] = $content_type;
+    }
+
+    // Sort the items.
+    ksort($sort);
+    foreach ($sort as $key) {
+      $types[$langcode][$key] = $items[$key];
     }
   }
 
-  return $types;
+  return $types[$langcode];
 }
 
 /**

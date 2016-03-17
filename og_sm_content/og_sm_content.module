@@ -228,7 +228,7 @@ function og_sm_content_admin_menu_items($site) {
     '#attributes' => array('class' => array('admin-menu-toolbar-category')),
   );
 
-  $sort = array();
+  $weight = 1;
   foreach ($types as $type) {
     $key = 'node/add/' . $type->type;
     $sort[$type->name] = $key;
@@ -240,14 +240,9 @@ function og_sm_content_admin_menu_items($site) {
         'alias' => TRUE,
         'html' => TRUE,
       ),
-      '#weight' => 0,
+      '#weight' => $weight,
     );
-  }
-
-  ksort($sort);
-  $sorted = array_values($sort);
-  foreach ($sorted as $weight => $key) {
-    $items[$key]['#weight'] = $weight;
+    $weight++;
   }
 
   return $items;

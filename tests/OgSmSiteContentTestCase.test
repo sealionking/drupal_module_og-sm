@@ -81,10 +81,15 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
     $this->ogSmCreateGroupNodeType();
     $this->drupalCreateContentType();
 
-    $site_content_name = $this->ogSmCreateGroupContentNodeType();
-    $site_content_type = node_type_load($site_content_name);
+    $site_content_name_zzz = $this->ogSmCreateGroupContentNodeType('og_sm_type_zzz');
+    $site_content_name_aaa = $this->ogSmCreateGroupContentNodeType('og_sm_type_aaa');
+    $site_content_type_zzz = node_type_load($site_content_name_zzz);
+    $site_content_type_aaa = node_type_load($site_content_name_aaa);
 
-    $expected = array($site_content_name => $site_content_type);
+    $expected = array(
+      $site_content_name_aaa => $site_content_type_aaa,
+      $site_content_name_zzz => $site_content_type_zzz,
+    );
     $this->assertEqual($expected, og_sm_content_get_types());
   }
 
