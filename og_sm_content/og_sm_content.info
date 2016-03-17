@@ -6,5 +6,8 @@ core = 7.x
 
 dependencies[] = og_sm
 
+; Views plugins.
+files[] = views/og_sm_views_content_handler_filter_content_type.inc
+
 ; Tests.
 files[] = tests/OgSmContentTestCase.test

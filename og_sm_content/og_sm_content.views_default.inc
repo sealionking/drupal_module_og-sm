@@ -352,18 +352,18 @@ function og_sm_content_views_default_views() {
     4 => 0,
     6 => 0,
   );
-  /* Filter criterion: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['ui_name'] = 'Type';
-  $handler->display->display_options['filters']['type']['group'] = 1;
-  $handler->display->display_options['filters']['type']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['type']['expose']['operator_id'] = 'type_op';
-  $handler->display->display_options['filters']['type']['expose']['label'] = 'Type';
-  $handler->display->display_options['filters']['type']['expose']['operator'] = 'type_op';
-  $handler->display->display_options['filters']['type']['expose']['identifier'] = 'type';
-  $handler->display->display_options['filters']['type']['expose']['remember_roles'] = array(
+  /* Filter criterion: Site content type */
+  $handler->display->display_options['filters']['og_sm_content_type']['id'] = 'og_sm_content_type';
+  $handler->display->display_options['filters']['og_sm_content_type']['table'] = 'node';
+  $handler->display->display_options['filters']['og_sm_content_type']['field'] = 'og_sm_content_type';
+  $handler->display->display_options['filters']['og_sm_content_type']['ui_name'] = 'Site content type';
+  $handler->display->display_options['filters']['og_sm_content_type']['group'] = 1;
+  $handler->display->display_options['filters']['og_sm_content_type']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['operator_id'] = 'og_sm_content_type_op';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['label'] = 'Type';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['operator'] = 'og_sm_content_type_op';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['identifier'] = 'type';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['remember_roles'] = array(
     2 => '2',
     1 => 0,
     3 => 0,
@@ -450,18 +450,24 @@ function og_sm_content_views_default_views() {
     4 => 0,
     6 => 0,
   );
-  /* Filter criterion: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['ui_name'] = 'Type';
-  $handler->display->display_options['filters']['type']['value'] = array(
-    'activity' => 'activity',
-    'blogger' => 'blogger',
-    'blogpost' => 'blogpost',
-    'idea' => 'idea',
-    'page' => 'page',
-    'news' => 'news',
+  /* Filter criterion: Site content type */
+  $handler->display->display_options['filters']['og_sm_content_type']['id'] = 'og_sm_content_type';
+  $handler->display->display_options['filters']['og_sm_content_type']['table'] = 'node';
+  $handler->display->display_options['filters']['og_sm_content_type']['field'] = 'og_sm_content_type';
+  $handler->display->display_options['filters']['og_sm_content_type']['ui_name'] = 'Site content type';
+  $handler->display->display_options['filters']['og_sm_content_type']['group'] = 1;
+  $handler->display->display_options['filters']['og_sm_content_type']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['operator_id'] = 'og_sm_content_type_op';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['label'] = 'Type';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['operator'] = 'og_sm_content_type_op';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['identifier'] = 'type';
+  $handler->display->display_options['filters']['og_sm_content_type']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+    5 => 0,
+    4 => 0,
+    6 => 0,
   );
   $handler->display->display_options['filters']['type']['group'] = 1;
   $handler->display->display_options['filters']['type']['exposed'] = TRUE;
