@@ -14,7 +14,8 @@
  *   The page content.
  */
 function og_sm_content_admin_overview($site) {
-  //og_set_breadcrumb('node', $site->nid, array(l(t('Group'), "node/$site->nid/group")));
+  $parent = 'group/node/' . $site->nid . '/admin';
+  og_sm_set_breadcrumb($site, array(l(t('Administer Site'), $parent)));
 
   $view = views_get_view('og_sm_content_admin_overview');
   $view->set_display('embed_overview');
@@ -34,7 +35,8 @@ function og_sm_content_admin_overview($site) {
  *   The page content.
  */
 function og_sm_content_admin_overview_my($site) {
-  //og_set_breadcrumb('node', $site->nid, array(l(t('Group'), "node/$site->nid/group")));
+  $parent = 'group/node/' . $site->nid . '/admin';
+  og_sm_set_breadcrumb($site, array(l(t('Administer Site'), $parent)));
 
   $view = views_get_view('og_sm_content_admin_overview');
   $view->set_display('embed_overview_my');
@@ -66,18 +68,29 @@ function og_sm_content_admin_add_content($site) {
  *   The page content.
  */
 function og_sm_content_add_overview($site) {
-  og_set_breadcrumb('node', $site->nid, array(l(t('Group'), "node/$site->nid/group")));
-
-  $options = array();
-
   $types = og_sm_content_get_types_by_site($site);
+
+  // Redirect to the content type if the user has access to only 1 type.
+  if (count($types) === 1) {
+    $type = array_shift($types);
+    drupal_goto(og_sm_content_add_uri($site, $type->type));
+  }
+
+  og_sm_set_breadcrumb($site);
+
+  // Show list of node types the user can create.
+  $options = array();
   foreach ($types as $type) {
-    $uri = og_sm_content_add_uri($site, $type->type);
-    $options[$type->name] = l($type->name, $uri);
+    $options[$type->name] = array(
+      'title' => $type->name,
+      'description' => $type->description,
+      'href' => og_sm_content_add_uri($site, $type->type),
+      'localized_options' => array(),
+    );
   }
   ksort($options);
 
-  return theme('item_list', array('items' => $options));
+  return theme('node_add_list', array('content' => $options));
 }
 
 /**
@@ -89,10 +102,15 @@ function og_sm_content_add_overview($site) {
  *   The node type to add.
  *
  * @return string
- *   The page content.
+ *   The content creation form.
  */
 function og_sm_content_add_content($site, $node_type) {
-  og_set_breadcrumb('node', $site->nid, array(l(t('Group'), "node/$site->nid/group")));
+  $parent = 'group/node/' . $site->nid . '/content/add';
+  og_sm_set_breadcrumb($site, array(l(t('Create content'), $parent)));
 
-  return $site->title . ' : ' . $node_type;
+  // Set the Site reference.
+  $_GET['og_group_ref'] = $site->nid;
+
+  module_load_include('inc', 'node', 'node.pages');
+  return node_add($node_type);
 }
