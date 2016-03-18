@@ -21,6 +21,14 @@ This module will update all aliases (content & administration pages) when the
 alias of the Site changes.
 
 
+### Aliases for node/NID/edit & node/NID/delete
+This module does not provide path alaises for `node/NID/edit` and
+`node/NID/delete` paths.
+
+Install the [Extended Path Aliases][link-path_alias_xt] module to provide this
+functionality.
+
+
 
 ## Installation
 1. Enable the module.
@@ -29,3 +37,7 @@ alias of the Site changes.
 
 ### Dependencies
 * Organic Groups Site Manager
+
+
+
+[link-path_alias_xt]: https://www.drupal.org/project/path_alias_xt
