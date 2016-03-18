@@ -40,7 +40,7 @@ function og_sm_content_views_default_views() {
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['pager']['options']['quantity'] = '9';
-  $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Items per pagina';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Items per page';
   $handler->display->display_options['pager']['options']['expose']['offset_label'] = 'Start';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
@@ -502,7 +502,7 @@ function og_sm_content_views_default_views() {
     t('Sort by'),
     t('Ascending'),
     t('Descending'),
-    t('Items per pagina'),
+    t('Items per page'),
     t('- All -'),
     t('Start'),
     t('« first'),

@@ -105,7 +105,7 @@ function og_sm_content_add_overview($site) {
  */
 function og_sm_content_add_content($site, $node_type) {
   $parent = 'group/node/' . $site->nid . '/content/add';
-  og_sm_set_breadcrumb($site, array(l(t('Create content'), $parent)));
+  og_sm_set_breadcrumb($site, array(l(t('Add content'), $parent)));
 
   // Set the Site reference.
   $_GET['og_group_ref'] = $site->nid;
