@@ -5,7 +5,22 @@
  */
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_global_roles_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'custom_theme' && isset($implementations['og_sm_global_roles'])) {
+    $group = $implementations['og_sm_global_roles'];
+    unset($implementations['og_sm_global_roles']);
+    $implementations = array('og_sm_global_roles' => $group) + $implementations;
+  }
+}
+
+/**
  * Implements hook_custom_theme().
+ *
+ * This implementation does not change anything about the theme. We only use
+ * this to get add extra roles to the current user (when in a Site context)
+ * before the first call to user_access().
  */
 function og_sm_global_roles_custom_theme() {
   // Load a user and its custom roles before anything else calls node_access.
@@ -16,7 +31,7 @@ function og_sm_global_roles_custom_theme() {
     return;
   }
 
-  $gid = og_context_determine_context('node', 'foo/bar/biz/baz', FALSE);
+  $gid = og_context_determine_context('node', $_GET['q'], FALSE);
   if (!$gid) {
     return;
   }
@@ -47,67 +62,6 @@ function og_sm_global_roles_menu() {
   return $items;
 }
 
-
-/**
- * Implements hook_og_permission().
- */
-function og_sm_global_roles_og_permission() {
-  $items = &drupal_static(__FUNCTION__);
-
-  if (empty($items)) {
-    $types = array();
-    $site_types = og_sm_get_site_types();
-    foreach ($site_types as $site_type) {
-      $types[$site_type] = node_type_load($site_type);
-    }
-
-    $roles = user_roles(TRUE);
-    $black_list = array('authenticated user');
-
-    foreach ($roles as $role_id => $role_name) {
-      if (in_array($role_name, $black_list)) {
-        continue;
-      }
-
-      foreach ($types as $type) {
-        $args = array('%role' => $role_name);
-        $permission = sprintf('Act as role "%s"', $role_name, $type->type);
-        $items[$permission] = array(
-          'title' => t('Act as role "%role"', $args),
-          'description' => t('Allow user to have the global role "%role" permissions within a Site context.', $args),
-          'role_id' => $role_id,
-          'role_name' => $role_name,
-        );
-      }
-    }
-
-    ksort($items);
-  }
-
-  return $items;
-}
-
-/**
- * Implements hook_user_load().
- */
-function og_sm_global_roles_user_load($users) {
-  return;
-
-  $context = og_context('node', NULL, NULL);
-  if (!$context) {
-    return;
-  }
-
-  $site = og_sm_site_load($context['gid']);
-  if (!$site) {
-    return;
-  }
-
-  foreach ($users as $user) {
-    og_sm_global_roles_user_load_roles($site, $user);
-  }
-}
-
 /**
  * Check and load global roles for users within a Site context.
  *
@@ -117,20 +71,38 @@ function og_sm_global_roles_user_load($users) {
  *   The user object to load the roles for.
  */
 function og_sm_global_roles_user_load_roles($site, $account) {
-  $permissions = og_sm_global_roles_og_permission();
-  if (!$permissions) {
+  $og_roles = og_get_user_roles('node', $site->nid, $account->uid);
+  if (!$og_roles) {
     return;
   }
 
-  foreach ($permissions as $permission => $info) {
-    if (!og_sm_site_permission_access($site, $permission, $account)) {
+  // Load the extra roles.
+  $extra_roles = array();
+  foreach ($og_roles as $og_role) {
+    $key = sprintf('og_sm_global_roles_%s', $og_role);
+    $roles = array_filter(variable_get($key, array()));
+    if (empty($roles)) {
       continue;
     }
 
-    if (in_array($info['role'], $account->roles)) {
+    $extra_roles = array_merge($extra_roles, $roles);
+  }
+
+  if (!$extra_roles) {
+    return;
+  }
+
+  // Add the extra roles to the user.
+  $global_roles = user_roles(TRUE);
+  foreach ($extra_roles as $rid) {
+    if (isset($account->roles[$rid])) {
       continue;
     }
 
-    $account->roles[$info['role_id']] = $info['role_name'];
+    if (!isset($global_roles[$rid])) {
+      continue;
+    }
+
+    $account->roles[$rid] = $global_roles[$rid];
   }
 }
