@@ -42,7 +42,7 @@ class OgSmAccessCallbacksTestCase extends OgSmWebTestCase {
     // Create group role.
     $role_manager = og_role_create('role_group_manager', 'node', 0, $group_type);
     og_role_save($role_manager);
-    og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION));
+    og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION_SITE));
 
     // Create users.
     $anonymous = user_load(0);

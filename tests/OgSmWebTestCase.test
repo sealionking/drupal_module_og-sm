@@ -83,12 +83,18 @@ class OgSmWebTestCase extends DrupalWebTestCase {
    *
    * @param string $node_type
    *   The node type to create the group for.
+   * @param array $settings
+   *   The node settings on creation.
+   *   (@link DrupalWebTestCase::drupalCreateNode()).
    *
    * @return object
    *   The created group node.
    */
-  public function ogSmCreateGroup($node_type) {
-    $settings = array('type' => $node_type);
+  public function ogSmCreateGroup($node_type, $settings = array()) {
+    if (!is_array($settings)) {
+      $settings = array();
+    }
+    $settings['type'] = $node_type;
     $settings[OG_GROUP_FIELD][LANGUAGE_NONE][0]['value'] = 1;
     $group = $this->drupalCreateNode($settings);
     return node_load($group->nid);
@@ -101,12 +107,18 @@ class OgSmWebTestCase extends DrupalWebTestCase {
    *   The node type to create the group for.
    * @param array $groups
    *   (optional) Array of groups the node is member of.
+   * @param array $settings
+   *   The node settings on creation.
+   *   (@link DrupalWebTestCase::drupalCreateNode()).
    *
    * @return object
    *   The created group content node.
    */
-  public function ogSmCreateGroupContent($node_type, $groups = array()) {
-    $settings = array('type' => $node_type);
+  public function ogSmCreateGroupContent($node_type, $groups = array(), $settings = array()) {
+    if (!is_array($settings)) {
+      $settings = array();
+    }
+    $settings['type'] = $node_type;
     $node = $this->drupalCreateNode($settings);
 
     // Add the group memberships (if any).

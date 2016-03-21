@@ -31,28 +31,27 @@ class OgSmAccessGrantsTestCase extends OgSmWebTestCase {
   /**
    * Test the Site Access grants hook implementation.
    */
-  public function testAccessGrants() {
+  public function testSiteUnpublishedAccessGrants() {
     // Content types.
     $group_type = $this->ogSmCreateGroupNodeType();
 
     // Create group.
-    $group = $this->ogSmCreateGroup($group_type);
-    $groups = array($group);
+    $site_published = $this->ogSmCreateGroup($group_type);
+    $site_unpublished = $this->ogSmCreateGroup($group_type, array('status' => 0));
+    $groups = array($site_published, $site_unpublished);
 
     // Create group role.
     $role_manager = og_role_create('role_group_manager', 'node', 0, $group_type);
     og_role_save($role_manager);
-    og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION));
+    og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION_SITE));
 
     // Create users.
     $anonymous = user_load(0);
     $user = $this->drupalCreateUser();
     $group_user = $this->ogSmCreateGroupUser(array(), $groups);
     $group_manager = $this->ogSmCreateGroupUser(array(), $groups);
-    og_role_grant('node', $group->nid, $group_manager->uid, $role_manager->rid);
-
-    // Grants only for op = view.
-    $this->assertNull(og_sm_access_node_grants($group_manager, 'edit'));
+    og_role_grant('node', $site_published->nid, $group_manager->uid, $role_manager->rid);
+    og_role_grant('node', $site_unpublished->nid, $group_manager->uid, $role_manager->rid);
 
     // Default grants.
     $grants = array(OG_SM_ACCESS_REALM_SITE => array(OG_SM_ACCESS_GRANT_ALL));
@@ -70,20 +69,47 @@ class OgSmAccessGrantsTestCase extends OgSmWebTestCase {
     $this->assertEqual($grants, og_sm_access_node_grants($anonymous, 'view'));
     $this->assertEqual($grants, og_sm_access_node_grants($user, 'view'));
     $this->assertEqual($grants, og_sm_access_node_grants($group_user, 'view'));
-    $this->assertEqual($grants, og_sm_access_node_grants($group_manager, 'view'));
 
-    // Unpublish the site, grants should change for users with proper group
-    // permissions.
-    $group->status = 0;
-    node_save($group);
-
-    $this->assertEqual($grants, og_sm_access_node_grants($anonymous, 'view'));
-    $this->assertEqual($grants, og_sm_access_node_grants($user, 'view'));
-    $this->assertEqual($grants, og_sm_access_node_grants($group_user, 'view'));
-
+    // The Site manager should also get grants for the unpublished group.
     $expected = $grants;
-    $expected[OG_SM_ACCESS_REALM_SITE][] = $group->nid;
+    $expected[OG_SM_ACCESS_REALM_SITE][] = $site_unpublished->nid;
     $this->assertEqual($expected, og_sm_access_node_grants($group_manager, 'view'));
+  }
+
+  /**
+   * Test the access grants to manage all Site nodes.
+   */
+  public function testManageSiteContentAccessGrants() {
+    // Content types.
+    $site_type = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($site_type);
+
+    // Create Site.
+    $site = $this->ogSmCreateGroup($site_type);
+    $sites = array($site);
+
+    // Create Site role.
+    $role_manager = og_role_create('role_site_manager', 'node', 0, $site_type);
+    og_role_save($role_manager);
+    og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION_CONTENT));
+
+    // Create users.
+    $anonymous = user_load(0);
+    $user = $this->drupalCreateUser();
+    $site_user = $this->ogSmCreateGroupUser(array(), $sites);
+    $site_manager = $this->ogSmCreateGroupUser(array(), $sites);
+    og_role_grant('node', $site->nid, $site_manager->uid, $role_manager->rid);
+
+    // Check grants.
+    $expected = array(OG_SM_ACCESS_REALM_SITE => array(OG_SM_ACCESS_GRANT_ALL));
+    $this->assertEqual($expected, og_sm_access_node_grants($anonymous, 'view'));
+    $this->assertEqual($expected, og_sm_access_node_grants($user, 'edit'));
+    $this->assertEqual($expected, og_sm_access_node_grants($site_user, 'delete'));
+
+    $expected[OG_SM_ACCESS_REALM_CONTENT] = array($site->nid);
+    $this->assertEqual($expected, og_sm_access_node_grants($site_manager, 'view'));
+    $this->assertEqual($expected, og_sm_access_node_grants($site_manager, 'edit'));
+    $this->assertEqual($expected, og_sm_access_node_grants($site_manager, 'delete'));
   }
 
 }
