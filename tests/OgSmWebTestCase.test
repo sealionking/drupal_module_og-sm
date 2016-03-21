@@ -152,7 +152,36 @@ class OgSmWebTestCase extends DrupalWebTestCase {
       );
     }
 
-    return user_load($account->uid);
+    // Load the user from db so all hooks are triggered.
+    $user = user_load($account->uid);
+    $user->pass_raw = $account->pass_raw;
+    return $user;
+  }
+
+  /**
+   * Creates an admin user with 'administrator' role.
+   *
+   * User will have access to all permissions.
+   *
+   * @return object
+   *   User object.
+   */
+  public function ogSmCreateAdminUser() {
+    // Get all the permissions an admin user should have.
+    $roles = user_roles();
+    $index = array_search('administrator', $roles);
+    $list = user_role_permissions(array($index => 'administrator'));
+    $permissions = array_keys($list[$index]);
+
+    // Create a user with all administrator permissions.
+    $administrator = $this->ogSmCreateGroupUser($permissions);
+    $this->verbose(print_r($administrator, TRUE));
+
+    // Add the administrator role to the user.
+    $administrator->roles[$index] = 'administrator';
+    user_save($administrator);
+
+    return $administrator;
   }
 
   /**

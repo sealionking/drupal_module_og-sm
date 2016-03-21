@@ -292,35 +292,27 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
   // Alter the add content links.
   if (!empty($content['menu']['node/add'])) {
     $query = array('og_group_ref' => $site->nid);
+    $site_content_types = og_sm_content_get_types();
 
+    // Alter the node/add overview item.
+    $content['menu']['node/add']['#options']['query'] = $query;
+
+    // Alter the node/add/[node-type] items.
     foreach ($content['menu']['node/add'] as $key => $item) {
-      // Add the query to the root element.
-      if ($key === '#options') {
-        $content['menu']['node/add'][$key]['query'] = $query;
-        continue;
-      }
-
-      // Only for child elements.
-      if (!preg_match('#node/add/#', $key)) {
-        continue;
-      }
-
       // Get the content type name.
-      preg_match('#node/add/(.*)#', $key, $matches);
+      preg_match('#^node/add/(.*)#', $key, $matches);
+      if (empty($matches[1])) {
+        continue;
+      }
       $node_type = preg_replace('/-/', '_', $matches[1]);
 
-      // Exclude Site types.
-      if (og_sm_is_site_type($node_type)) {
+      // Show only Site content type.
+      if (!isset($site_content_types[$node_type])) {
         unset($content['menu']['node/add'][$key]);
         continue;
       }
 
-      // Exclude non-group content types.
-      if (!og_is_group_content_type('node', $node_type)) {
-        unset($content['menu']['node/add'][$key]);
-        continue;
-      }
-
+      // Alter the href or add query.
       $content['menu']['node/add'][$key]['#options']['query'] = $query;
     }
   }
@@ -344,10 +336,25 @@ function og_sm_admin_menu_admin_menu_cache_id_alter(&$cid) {
 /**
  * Implements hook_menu_alter().
  */
-/**
- * Implements hook_menu_alter().
- */
 function og_sm_admin_menu_menu_alter(&$items) {
   // Mark the admin menu to be rebuild every time the menu system is rebuild.
   og_sm_admin_menu_needs_rebuild();
+}
+
+/**
+ * Implements hook_og_role_grant().
+ */
+function og_sm_admin_menu_og_role_grant($entity_type, $gid, $uid, $rid) {
+  // Make sure that the admin_menu cache for this user is flushed when his roles
+  // change.
+  admin_menu_flush_caches($uid);
+}
+
+/**
+ * Implements hook_og_role_revoke().
+ */
+function og_sm_admin_menu_og_role_revoke($entity_type, $gid, $uid, $rid) {
+  // Make sure that the admin_menu cache for this user is flushed when his roles
+  // change.
+  admin_menu_flush_caches($uid);
 }

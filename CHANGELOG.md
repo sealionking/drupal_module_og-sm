@@ -2,6 +2,12 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
+## [Unreleased]
+### Added
+- DMOGSM-11 : Added the og_sm_content module to create & manage Site content
+  within the Site context.
+
+
 ## [7.x-1.0-alpha3]
 ### Fixed
 - DMOGSM-7 : Broken tests due to changed context detection callback name.

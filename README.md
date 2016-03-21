@@ -9,17 +9,35 @@ The usage of OG allows to share users between sites.
 ## Functionality
 This module and its submodules adds functionality to support:
 
-### Included
+### Included in og_sm module
 * Support for Group types to become sites enabled (Site).
 * Support for Group Content types (Site Content).
 * Support for Group Users (Site Users).
-* Automatic path aliasing with the Site alias as staring point.
+
+### Included in og_sm_access module
 * Access to Site content based on the publication status of the Site they
   belong to.
-* Site settings.
-* Site administration.
+
+### Included in og_sm_admin_menu module
 * Site administration menu that replaces the default admin toolbar when the user
   is in a
+
+### Included in og_sm_content module
+* Site content administration
+
+### Included in og_sm_context module
+* OG context detection based on:
+  - Path alias of the current page.
+  - Paths starting with group/node/NID
+
+### Included in og_sm_pathauto module
+* Automatic path aliasing with the Site alias as staring point.
+* Auto update of Site content aliases and Site related page aliases when the
+  Site alias changes.
+
+### Included in og_sm_variable module
+* Store Site specific settings in og_sm_variable table.
+* Get/Set/Delete Site specific variables.
 
 
 ### Todo
@@ -98,6 +116,21 @@ $is_site = og_sm_is_site($node);
 Check if the given node type is a Site type:
 ```php
 $is_site_type = og_sm_is_site_type($node_type);
+```
+
+### Set the breacrumb for a site
+This is a wrapper around the og_set_breadcrumb.
+
+```php
+og_sm_set_breadcrumb($site, 'path/to/set/the/breadcrumb');
+```
+
+### Site content types
+Helper function to get a list of site type objects that can be used to create
+content within a site.
+
+```php
+$site_content_types = og_sm_content_get_types();
 ```
 
 ### Check if content belongs to a Site
