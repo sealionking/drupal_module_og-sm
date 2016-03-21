@@ -6,8 +6,10 @@
 
 // Node access realm.
 define('OG_SM_ACCESS_REALM_SITE', 'og_sm_access:site');
+define('OG_SM_ACCESS_REALM_CONTENT', 'og_sm_access:node');
 define('OG_SM_ACCESS_GRANT_ALL', 0);
-define('OG_SM_ACCESS_PERMISSION', 'view unpublished site and its content');
+define('OG_SM_ACCESS_PERMISSION_SITE', 'view unpublished site and its content');
+define('OG_SM_ACCESS_PERMISSION_CONTENT', 'manage all content within site');
 
 /**
  * Implements hook_views_api().
@@ -21,9 +23,15 @@ function og_sm_access_views_api($module = NULL, $api = NULL) {
  */
 function og_sm_access_og_permission() {
   return array(
-    OG_SM_ACCESS_PERMISSION => array(
+    OG_SM_ACCESS_PERMISSION_SITE => array(
       'title' => t('View an unpublished Site and its content'),
       'description' => t('View all content within a Site that is not published.'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_ADMINISTRATOR_ROLE),
+    ),
+    OG_SM_ACCESS_PERMISSION_CONTENT => array(
+      'title' => t('Manage all content within a Site'),
+      'description' => t('View and manage all content in the Site. <em>Warning: Give to trusted roles only; this permission has security implications in the Site context.</em>'),
       'roles' => array(OG_AUTHENTICATED_ROLE),
       'default role' => array(OG_ADMINISTRATOR_ROLE),
     ),
@@ -147,6 +155,16 @@ function og_sm_access_node_access_records_site_content($node) {
       'grant_delete' => 0,
       'priority' => 0,
     );
+
+    // Site content administration.
+    $grants[] = array(
+      'realm' => OG_SM_ACCESS_REALM_CONTENT,
+      'gid' => $site->nid,
+      'grant_view' => 1,
+      'grant_update' => 1,
+      'grant_delete' => 1,
+      'priority' => 0,
+    );
   }
 
   return $grants;
@@ -156,10 +174,6 @@ function og_sm_access_node_access_records_site_content($node) {
  * Implements hook_node_grants().
  */
 function og_sm_access_node_grants($account, $op) {
-  if ($op !== 'view') {
-    return;
-  }
-
   $grants = array();
 
   // Defaults for users without Site membership.
@@ -168,17 +182,15 @@ function og_sm_access_node_grants($account, $op) {
   // Specific for Sites the user is member of.
   $sites = og_sm_user_get_sites($account);
   foreach ($sites as $site) {
-    // We only need to return the grant for not-published Sites.
-    if ($site->status > 0) {
-      continue;
+    // View sites and their content when the Site is not published.
+    if ($site->status < 1 && og_sm_site_permission_access($site, OG_SM_ACCESS_PERMISSION_SITE, $account)) {
+      $grants[OG_SM_ACCESS_REALM_SITE][] = (int) $site->nid;
     }
 
-    // Only grant access when the user has the proper permissions.
-    if (!og_user_access('node', $site->nid, OG_SM_ACCESS_PERMISSION, $account)) {
-      continue;
+    // Manage all content within a Site.
+    if (og_sm_site_permission_access($site, OG_SM_ACCESS_PERMISSION_CONTENT, $account)) {
+      $grants[OG_SM_ACCESS_REALM_CONTENT][] = (int) $site->nid;
     }
-
-    $grants[OG_SM_ACCESS_REALM_SITE][] = (int) $site->nid;
   }
 
   return $grants;
