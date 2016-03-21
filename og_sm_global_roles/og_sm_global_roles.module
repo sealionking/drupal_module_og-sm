@@ -1,0 +1,92 @@
+<?php
+/**
+ * @file
+ * Module og_sm_global_roles.
+ */
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_global_roles_og_permission() {
+  $items = &drupal_static(__FUNCTION__);
+
+  if (empty($items)) {
+    $types = array();
+    $site_types = og_sm_get_site_types();
+    foreach ($site_types as $site_type) {
+      $types[$site_type] = node_type_load($site_type);
+    }
+
+    $roles = user_roles(TRUE);
+    $black_list = array('authenticated user');
+
+    foreach ($roles as $role_id => $role_name) {
+      if (in_array($role_name, $black_list)) {
+        continue;
+      }
+
+      foreach ($types as $type) {
+        $args = array('%role' => $role_name);
+        $permission = sprintf('Act as role "%s"', $role_name, $type->type);
+        $items[$permission] = array(
+          'title' => t('Act as role "%role"', $args),
+          'description' => t('Allow user to have the global role "%role" permissions within a Site context.', $args),
+          'role_id' => $role_id,
+          'role_name' => $role_name,
+        );
+      }
+    }
+
+    ksort($items);
+  }
+
+  return $items;
+}
+
+/**
+ * Implements hook_user_load().
+ */
+function og_sm_global_roles_user_load($users) {
+  return;
+
+  $context = og_context('node', NULL, NULL);
+  if (!$context) {
+    return;
+  }
+
+  $site = og_sm_site_load($context['gid']);
+  if (!$site) {
+    return;
+  }
+
+  foreach ($users as $user) {
+    og_sm_global_roles_user_load_roles($site, $user);
+  }
+}
+
+/**
+ * Check and load global roles for users within a Site context.
+ *
+ * @param object $site
+ *   The Site object to load the roles by.
+ * @param object $account
+ *   The user object to load the roles for.
+ */
+function og_sm_global_roles_user_load_roles($site, $account) {
+  $permissions = og_sm_global_roles_og_permission();
+  if (!$permissions) {
+    return;
+  }
+
+  foreach ($permissions as $permission => $info) {
+    if (!og_sm_site_permission_access($site, $permission, $account)) {
+      continue;
+    }
+
+    if (in_array($info['role'], $account->roles)) {
+      continue;
+    }
+
+    $account->roles[$info['role_id']] = $info['role_name'];
+  }
+}
