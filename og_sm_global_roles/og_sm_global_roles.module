@@ -1,0 +1,110 @@
+<?php
+/**
+ * @file
+ * Module og_sm_global_roles.
+ */
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_global_roles_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'custom_theme' && isset($implementations['og_sm_global_roles'])) {
+    $group = $implementations['og_sm_global_roles'];
+    unset($implementations['og_sm_global_roles']);
+    $implementations = array('og_sm_global_roles' => $group) + $implementations;
+  }
+}
+
+/**
+ * Implements hook_custom_theme().
+ *
+ * This implementation does not change anything about the theme. We only use
+ * this to get add extra roles to the current user (when in a Site context)
+ * before the first call to user_access().
+ */
+function og_sm_global_roles_custom_theme() {
+  // Load a user and its custom roles before anything else calls node_access.
+  global $user;
+
+  // Only if not one of the system accounts.
+  if ($user->uid < 2) {
+    return;
+  }
+
+  // We can't use og_context or og_sm_current_site here as this will trigger a
+  // user_load() and user_access().
+  $gid = og_context_determine_context('node', $_GET['q'], FALSE);
+  if (!$gid) {
+    return;
+  }
+
+  $site = og_sm_site_load($gid);
+  if (!$site) {
+    return;
+  }
+
+  og_sm_global_roles_user_load_roles($site, $user);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_global_roles_menu() {
+  $items = array();
+
+  $items['admin/config/group/global-roles']  = array(
+    'title' => 'OG Global Roles',
+    'description' => 'Give users global roles when they are within a Site context.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_global_roles_settings'),
+    'access arguments' => array('administer group'),
+    'file' => 'og_sm_global_roles.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Check and load global roles for users within a Site context.
+ *
+ * @param object $site
+ *   The Site object to load the roles by.
+ * @param object $account
+ *   The user object to load the roles for.
+ */
+function og_sm_global_roles_user_load_roles($site, $account) {
+  $og_roles = og_get_user_roles('node', $site->nid, $account->uid);
+  if (!$og_roles) {
+    return;
+  }
+
+  // Load the extra roles.
+  $extra_roles = array();
+  foreach ($og_roles as $og_role) {
+    $key = sprintf('og_sm_global_roles_%s', $og_role);
+    $roles = array_filter(variable_get($key, array()));
+    if (empty($roles)) {
+      continue;
+    }
+
+    $extra_roles = array_merge($extra_roles, $roles);
+  }
+
+  if (!$extra_roles) {
+    return;
+  }
+
+  // Add the extra roles to the user.
+  $global_roles = user_roles(TRUE);
+  foreach ($extra_roles as $rid) {
+    if (isset($account->roles[$rid])) {
+      continue;
+    }
+
+    if (!isset($global_roles[$rid])) {
+      continue;
+    }
+
+    $account->roles[$rid] = $global_roles[$rid];
+  }
+}
