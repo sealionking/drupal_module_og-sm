@@ -1,0 +1,87 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_global_roles module.
+ */
+
+/**
+ * Tests about the OG Global Roles functionality.
+ */
+class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
+  /**
+   * Test data.
+   */
+  protected $site;
+  protected $sitePath;
+  protected $siteUser;
+  protected $siteAdmin;
+  protected $roleGlobal;
+  protected $roleSite;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Global Roles'),
+      'description' => t('Tests Site Global Roles functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_global_roles', 'og_sm_context');
+    parent::setUp($modules);
+
+    $site_type = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($site_type);
+    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
+
+    $this->site = $site = $this->ogSmCreateGroup($site_type);
+    $this->sitePath = drupal_get_path_alias('node/' . $site->nid);
+
+    $sites = array($site);
+    $this->siteUser = $user = $this->ogSmCreateGroupUser(array(), $sites);
+    $this->siteAdmin = $user_admin = $this->ogSmCreateGroupUser(array(), $sites);
+
+    // Create global role.
+    $this->roleGlobal = new stdClass();
+    $this->roleGlobal->name = 'role_global';
+    user_role_save($this->roleGlobal);
+
+    // Create Site role.
+    $this->roleSite = og_role_create('role_site', 'node', 0, $site_type);
+    og_role_save($this->roleSite);
+
+    // Combine both roles.
+    variable_set(
+      'og_sm_global_roles_role_site',
+      array($this->roleGlobal->rid => $this->roleGlobal->rid)
+    );
+
+    // Assign site role.
+    og_role_grant('node', $this->site->nid, $this->siteAdmin->uid, $this->roleSite->rid);
+  }
+
+  /**
+   * Test the Context Alias handler that reacts on aliases like [site-path]/...
+   */
+  public function testLoadRoles() {
+    $expected = array(2);
+    $this->assertEqual($expected, array_keys($this->siteUser->roles));
+    $this->assertEqual($expected, array_keys($this->siteAdmin->roles));
+
+    // Test loading extra roles.
+    og_sm_global_roles_user_load_roles($this->site, $this->siteUser);
+    $this->assertEqual($expected, array_keys($this->siteUser->roles));
+
+    og_sm_global_roles_user_load_roles($this->site, $this->siteAdmin);
+    $expected[] = $this->roleGlobal->rid;
+    $this->assertEqual($expected, array_keys($this->siteAdmin->roles));
+  }
+
+}

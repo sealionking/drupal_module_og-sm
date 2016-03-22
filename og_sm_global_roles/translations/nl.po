@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-03-22 08:56+0100\n"
-"PO-Revision-Date: 2016-03-22 08:56+0100\n"
+"PO-Revision-Date: 2016-03-22 11:17+0100\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -39,3 +39,10 @@ msgstr "Geef Site rollen toegang tot globalle rollen binnen een Site context."
 msgid "Organic Groups Site Manager"
 msgstr ""
 
+#: tests/og_sm_global_roles.OgSmGlobalRolesTestCase.test:26
+msgid "Site Global Roles"
+msgstr "Site Globale Rollen"
+
+#: tests/og_sm_global_roles.OgSmGlobalRolesTestCase.test:27
+msgid "Tests Site Global Roles functionality."
+msgstr "Test Site Globale Rollen functionaliteit."
