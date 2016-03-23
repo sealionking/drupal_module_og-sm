@@ -33,7 +33,7 @@ function og_sm_global_roles_custom_theme() {
 
   // We can't use og_context or og_sm_current_site here as this will trigger a
   // user_load() and user_access().
-  $gid = og_context_determine_context('node', $_GET['q'], FALSE);
+  $gid = og_context_determine_context('node', array('path' => $_GET['q']), FALSE);
   if (!$gid) {
     return;
   }
