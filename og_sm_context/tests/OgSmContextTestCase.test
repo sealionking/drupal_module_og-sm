@@ -9,6 +9,63 @@
  */
 class OgSmContextTestCase extends OgSmWebTestCase {
   /**
+   * Site node type.
+   *
+   * @var string
+   */
+  protected $siteType;
+
+  /**
+   * Site content node type.
+   *
+   * @var string
+   */
+  protected $siteContentType;
+
+  /**
+   * Default node outside any group.
+   *
+   * @var object
+   */
+  protected $nodeGlobal;
+
+  /**
+   * Node of a group type that is not a Site.
+   *
+   * @var object
+   */
+  protected $nodeGroup;
+
+  /**
+   * Content within a group that is not a Site.
+   *
+   * @var object
+   */
+  protected $nodeGroupContent;
+
+  /**
+   * Site node.
+   *
+   * @var object
+   */
+  protected $nodeSite;
+
+  /**
+   * Site Content node.
+   *
+   * @var object
+   */
+  protected $nodeSiteContent;
+
+  /**
+   * Site node path.
+   *
+   * @var string
+   */
+  protected $nodeSitePath;
+
+
+  /**
    * {@inheritdoc}
    */
   public static function getInfo() {
@@ -26,86 +83,95 @@ class OgSmContextTestCase extends OgSmWebTestCase {
     // Enable required modules.
     $modules = array('og_sm_context');
     parent::setUp($modules);
+
+    // Create non Site content.
+    $this->nodeGlobal = $this->drupalCreateNode();
+
+    // Create a default group content.
+    $group_type = $this->ogSmCreateGroupNodeType('default_group');
+    $this->nodeGroup = $this->ogSmCreateGroup($group_type);
+    $group_content_type = $this->ogSmCreateGroupContentNodeType('default_group_content');
+    $this->nodeGroupContent = $this->ogSmCreateGroupContent($group_content_type, array($this->nodeGroup));
+
+    // Create the Site node.
+    $this->siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($this->siteType);
+    variable_set('pathauto_node_' . $this->siteType . '_pattern', '[node:title]');
+    $this->nodeSite = $this->ogSmCreateGroup($this->siteType);
+    $this->nodeSitePath = drupal_get_path_alias('node/' . $this->nodeSite->nid);
+
+    // Create the Site content node.
+    $this->siteContentType = $this->ogSmCreateGroupContentNodeType();
+    variable_set('pathauto_node_' . $this->siteContentType . '_pattern', $this->nodeSitePath . '/[node:title]');
+    $this->nodeSiteContent = $this->ogSmCreateGroupContent($this->siteContentType, array($this->nodeSite));
   }
 
   /**
    * Test the Context Alias handler that reacts on aliases like [site-path]/...
    */
   public function testOgContextHandlerAlias() {
-    $site_type = $this->ogSmCreateGroupNodeType();
-    $site_content_type = $this->ogSmCreateGroupContentNodeType();
-
-    // Create non Site content.
-    $content = $this->drupalCreateNode();
-
-    // Set the auto path for Site node type.
-    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
-
-    // Create a Site node.
-    $site = $this->ogSmCreateGroup($site_type);
-    $site_path = drupal_get_path_alias('node/' . $site->nid);
-
-    // Set the auto path for Site Content type.
-    variable_set('pathauto_node_' . $site_content_type . '_pattern', $site_path . '/[node:title]');
-
-    // Create Site Content.
-    $site_content = $this->ogSmCreateGroupContent($site_content_type, array($site));
-
-    // The Group node type is not yet a site.
-    $_GET['q'] = 'node/' . $content->nid;
+    // Content outside Site context.
+    $_GET['q'] = 'node/' . $this->nodeGlobal->nid;
     $this->assertNull(og_sm_context_handler_alias());
-    $_GET['q'] = 'node/' . $site->nid;
+    $_GET['q'] = 'node/' . $this->nodeGroup->nid;
     $this->assertNull(og_sm_context_handler_alias());
-    $_GET['q'] = 'node/' . $site_content->nid;
+    $_GET['q'] = 'node/' . $this->nodeGroupContent->nid;
     $this->assertNull(og_sm_context_handler_alias());
 
-    // Make it a Site node type.
-    og_sm_add_site_type($site_type);
-    $expected = array('node' => array((int) $site->nid));
+    // Test Site & Site content.
+    $expected = array('node' => array((int) $this->nodeSite->nid));
 
-    $_GET['q'] = 'node/' . $content->nid;
-    $this->assertNull(og_sm_context_handler_alias());
-    $_GET['q'] = 'node/' . $site->nid;
+    $_GET['q'] = 'node/' . $this->nodeSite->nid;
     $this->assertEqual($expected, og_sm_context_handler_alias());
-    $_GET['q'] = 'node/' . $site_content->nid;
+    $_GET['q'] = 'node/' . $this->nodeSiteContent->nid;
     $this->assertEqual($expected, og_sm_context_handler_alias());
 
     // Test with custom paths.
     $_GET['q'] = 'whatever/foo/bar/biz/baz';
     $this->assertNull(og_sm_context_handler_alias());
-    $_GET['q'] = $site_path . '/whatever/foo/bar/biz/baz';
+    $_GET['q'] = $this->nodeSitePath . '/whatever/foo/bar/biz/baz';
     $this->assertEqual($expected, og_sm_context_handler_alias());
+  }
+
+  /**
+   * Test Context Content handler that reacts on paths as node/[nid](/[action]).
+   */
+  public function testOgContextHandlerContent() {
+    // Test content outside Site context.
+    $_GET['q'] = 'node/' . $this->nodeGlobal->nid;
+    $this->assertNull(og_sm_context_handler_content());
+    $_GET['q'] = 'node/' . $this->nodeGroup->nid;
+    $this->assertNull(og_sm_context_handler_content());
+    $_GET['q'] = 'node/' . $this->nodeGroupContent->nid;
+    $this->assertNull(og_sm_context_handler_content());
+
+    // Expected result inside Site context.
+    $expected = array('node' => array((int) $this->nodeSite->nid));
+
+    // Test Site node.
+    $_GET['q'] = 'node/' . $this->nodeSite->nid;
+    $this->assertEqual($expected, og_sm_context_handler_content());
+    $_GET['q'] = 'node/' . $this->nodeSite->nid . '/edit';
+    $this->assertEqual($expected, og_sm_context_handler_content());
+
+    // Test Site Content node.
+    $_GET['q'] = 'node/' . $this->nodeSiteContent->nid;
+    $this->assertEqual($expected, og_sm_context_handler_content());
+    $_GET['q'] = 'node/' . $this->nodeSiteContent->nid . '/delete';
+    $this->assertEqual($expected, og_sm_context_handler_content());
   }
 
   /**
    * Test the Context Admin handler that reacts on paths like group/node/[nid]/.
    */
   public function testOgContextHandlerAdmin() {
-    $site_type = $this->ogSmCreateGroupNodeType();
-    $site_content_type = $this->ogSmCreateGroupContentNodeType();
-
-    // Create a Site node.
-    $site = $this->ogSmCreateGroup($site_type);
-
-    // The Group node type is not yet a site.
-    $_GET['q'] = 'group/node/' . $site->nid;
+    // Test outside Site context.
+    $_GET['q'] = 'group/node/' . $this->nodeGroup->nid;
     $this->assertNull(og_sm_context_handler_admin());
-    $_GET['q'] = 'group/node/' . $site->nid . '/admin';
+    $_GET['q'] = 'group/node/' . $this->nodeGroup->nid . '/admin';
     $this->assertNull(og_sm_context_handler_admin());
 
-    // Make it a Site node type.
-    og_sm_add_site_type($site_type);
-    $expected = array('node' => array((int) $site->nid));
-
-    $_GET['q'] = 'group/node/' . $site->nid;
-    $this->assertEqual($expected, og_sm_context_handler_admin());
-    $_GET['q'] = 'group/node/' . $site->nid . '/';
-    $this->assertEqual($expected, og_sm_context_handler_admin());
-    $_GET['q'] = 'group/node/' . $site->nid . '/admin';
-    $this->assertEqual($expected, og_sm_context_handler_admin());
-    $_GET['q'] = 'group/node/' . $site->nid . '/465';
-    $this->assertEqual($expected, og_sm_context_handler_admin());
-
+    // Test rubbish paths.
     $_GET['q'] = 'group/node/abc/465';
     $this->assertNull(og_sm_context_handler_admin());
     $_GET['q'] = 'group/node/4548744654984/admin';
@@ -114,6 +180,19 @@ class OgSmContextTestCase extends OgSmWebTestCase {
     $this->assertNull(og_sm_context_handler_admin());
     $_GET['q'] = 'group/node/';
     $this->assertNull(og_sm_context_handler_admin());
+
+    // Test inside Site context.
+    $site_nid = (int) $this->nodeSite->nid;
+    $expected = array('node' => array($site_nid));
+
+    $_GET['q'] = 'group/node/' . $site_nid;
+    $this->assertEqual($expected, og_sm_context_handler_admin());
+    $_GET['q'] = 'group/node/' . $site_nid . '/';
+    $this->assertEqual($expected, og_sm_context_handler_admin());
+    $_GET['q'] = 'group/node/' . $site_nid . '/admin';
+    $this->assertEqual($expected, og_sm_context_handler_admin());
+    $_GET['q'] = 'group/node/' . $site_nid . '/465';
+    $this->assertEqual($expected, og_sm_context_handler_admin());
   }
 
 }
