@@ -29,7 +29,7 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Test Site helpers.
+   * Test Site Content helpers.
    */
   public function testSiteContent() {
     $type_group = $this->ogSmCreateGroupNodeType();
@@ -41,7 +41,7 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
     $group3 = $this->ogSmCreateGroup($type_group_no_site);
     $groups = array($group3, $group2, $group1);
 
-    // Test getting the groups from a site.
+    // Test getting the groups from site content.
     $content_no_groups = $this->ogSmCreateGroupContent($type_group_content);
     $content_with_groups = $this->ogSmCreateGroupContent($type_group_content, $groups);
 
@@ -72,6 +72,25 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
 
     // No Site group types are ignored.
     $this->assertFalse(og_sm_content_is_site_member($content_with_groups, $group3));
+  }
+
+  /**
+   * Test Site content type helpers.
+   */
+  public function testContentGetTypes() {
+    $this->ogSmCreateGroupNodeType();
+    $this->drupalCreateContentType();
+
+    $site_content_name_zzz = $this->ogSmCreateGroupContentNodeType('og_sm_type_zzz');
+    $site_content_name_aaa = $this->ogSmCreateGroupContentNodeType('og_sm_type_aaa');
+    $site_content_type_zzz = node_type_load($site_content_name_zzz);
+    $site_content_type_aaa = node_type_load($site_content_name_aaa);
+
+    $expected = array(
+      $site_content_name_aaa => $site_content_type_aaa,
+      $site_content_name_zzz => $site_content_type_zzz,
+    );
+    $this->assertEqual($expected, og_sm_content_get_types());
   }
 
 }

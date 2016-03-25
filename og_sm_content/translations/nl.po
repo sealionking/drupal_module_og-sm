@@ -1,0 +1,200 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-03-18 09:32+0100\n"
+"PO-Revision-Date: 2016-03-18 09:32+0100\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.6\n"
+
+#: og_sm_content.og_sm.inc:44 og_sm_content.pages.inc:108 og_sm_content.module:224;52;63
+msgid "Add content"
+msgstr "Inhoud toevoegen"
+
+#: og_sm_content.og_sm.inc:45
+msgid "Overview of all content types that can be created."
+msgstr "Overzicht van alle inhoudstypes die kunnen worden aangemaakt."
+
+#: og_sm_content.og_sm.inc:46
+msgid "Manage content"
+msgstr "Inhoud beheren"
+
+#: og_sm_content.og_sm.inc:47
+msgid "Manage contents of this Site."
+msgstr "Beheer de inhoud van deze Site."
+
+#: og_sm_content.pages.inc:18;39
+msgid "Administer Site"
+msgstr "Beheer Site"
+
+#: og_sm_content.views.inc:12
+msgid "Site content types"
+msgstr "Site inhoud types"
+
+#: og_sm_content.views.inc:13
+msgid "Content types that can be used to create content within a Site."
+msgstr "Inhoud types die binnen een Site kunnen gebruikt worden."
+
+#: og_sm_content.views_default.inc:498
+msgid "Defaults"
+msgstr "Standaard"
+
+#: og_sm_content.views_default.inc:499
+msgid "Administer my content"
+msgstr "Beheer mijn inhoud"
+
+#: og_sm_content.views_default.inc:500
+msgid "Submit"
+msgstr "Toepassen"
+
+#: og_sm_content.views_default.inc:501
+msgid "Reset"
+msgstr "Resetten"
+
+#: og_sm_content.views_default.inc:502
+msgid "Sort by"
+msgstr "Sorteer op"
+
+#: og_sm_content.views_default.inc:503
+msgid "Ascending"
+msgstr "Oplopend"
+
+#: og_sm_content.views_default.inc:504
+msgid "Descending"
+msgstr "Aflopend"
+
+#: og_sm_content.views_default.inc:505
+msgid "Items per page"
+msgstr "Items per pagina"
+
+#: og_sm_content.views_default.inc:506
+msgid "- All -"
+msgstr "- Alle -"
+
+#: og_sm_content.views_default.inc:507
+msgid "Start"
+msgstr "Start"
+
+#: og_sm_content.views_default.inc:508
+msgid "« first"
+msgstr "« eerste"
+
+#: og_sm_content.views_default.inc:509
+msgid "‹ previous"
+msgstr "‹ vorige"
+
+#: og_sm_content.views_default.inc:510
+msgid "next ›"
+msgstr "volgende ›"
+
+#: og_sm_content.views_default.inc:511
+msgid "last »"
+msgstr "laatste »"
+
+#: og_sm_content.views_default.inc:512
+msgid "Results"
+msgstr "Resultaten"
+
+#: og_sm_content.views_default.inc:513
+msgid "Show @start - @end of @total"
+msgstr "Toon @start - @end van @total"
+
+#: og_sm_content.views_default.inc:514
+msgid "There is no content in this Site."
+msgstr "Er is geen inhoud binnen deze Site."
+
+#: og_sm_content.views_default.inc:515
+msgid "Site membership"
+msgstr "Site lidmaatschap"
+
+#: og_sm_content.views_default.inc:516
+msgid "author"
+msgstr "auteur"
+
+#: og_sm_content.views_default.inc:517
+msgid "Content"
+msgstr "Inhoud"
+
+#: og_sm_content.views_default.inc:518
+msgid "- Choose an operation -"
+msgstr "- Kies een actie -"
+
+#: og_sm_content.views_default.inc:519
+msgid "Image"
+msgstr "Afbeelding"
+
+#: og_sm_content.views_default.inc:520
+msgid "Title"
+msgstr "Titel"
+
+#: og_sm_content.views_default.inc:521
+msgid "Type"
+msgstr "Type"
+
+#: og_sm_content.views_default.inc:522
+msgid "Published"
+msgstr "Gepubliceerd"
+
+#: og_sm_content.views_default.inc:523
+msgid "Created"
+msgstr "Gecrëerd"
+
+#: og_sm_content.views_default.inc:524
+msgid "Updated"
+msgstr "Aangepast"
+
+#: og_sm_content.views_default.inc:525
+msgid "Author"
+msgstr "Auteur"
+
+#: og_sm_content.views_default.inc:526
+msgid "Actions"
+msgstr "Acties"
+
+#: og_sm_content.views_default.inc:527
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: og_sm_content.views_default.inc:528
+msgid "All"
+msgstr "Alle"
+
+#: og_sm_content.views_default.inc:529
+msgid "Overview"
+msgstr "Overzicht"
+
+#: og_sm_content.views_default.inc:530
+msgid "more"
+msgstr "meer"
+
+#: og_sm_content.views_default.inc:531
+msgid "My"
+msgstr "Mijn"
+
+#: og_sm_content.module:25
+msgid "Administer content"
+msgstr "Beheer inhoud"
+
+#: og_sm_content.module:35
+msgid "All content"
+msgstr "Alle inhoud"
+
+#: og_sm_content.module:41
+msgid "My content"
+msgstr "Mijn inhoud"
+
+#: og_sm_content.info:0
+msgid "Site Content"
+msgstr "Site inhoud"
+
+#: og_sm_content.info:0
+msgid "Site content creation and administration."
+msgstr "Site inhoud aanmaken en beheren."
+
+#: og_sm_content.info:0
+msgid "Organic Groups Site Manager"
+msgstr ""

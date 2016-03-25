@@ -323,6 +323,62 @@ function og_sm_remove_site_type($type) {
   }
 }
 
+/**
+ * Set the breadcrumb for the given Site.
+ *
+ * @param object $site
+ *   The site object to setthe breadcrumb for.
+ * @param array $path
+ *   Array of links to append to the breadcumb.
+ */
+function og_sm_set_breadcrumb($site, $path = array()) {
+  $label = entity_label('node', $site);
+  $uri = entity_uri('node', $site);
+  drupal_set_breadcrumb(
+    array_merge(
+      array(l(t('Home'), '<front>')),
+      array(l($label, $uri['path'])),
+      $path
+    )
+  );
+}
+
+/**
+ * Get a list of content types that can be used to create Site content.
+ *
+ * @return array
+ *   Content types that are OG types, sorted by their name.
+ */
+function og_sm_content_get_types() {
+  global $language;
+  $langcode = $language->language;
+
+  $types = &drupal_static(__FUNCTION__, array());
+
+  if (empty($types[$langcode])) {
+    $types[$langcode] = array();
+    $content_types = node_type_get_types();
+
+    $sort = array();
+    $items = array();
+    foreach ($content_types as $content_type) {
+      if (!og_is_group_content_type('node', $content_type->type)) {
+        continue;
+      }
+
+      $sort[$content_type->name] = $content_type->type;
+      $items[$content_type->type] = $content_type;
+    }
+
+    // Sort the items.
+    ksort($sort);
+    foreach ($sort as $key) {
+      $types[$langcode][$key] = $items[$key];
+    }
+  }
+
+  return $types[$langcode];
+}
 
 /**
  * Get all the Sites a node belongs to.

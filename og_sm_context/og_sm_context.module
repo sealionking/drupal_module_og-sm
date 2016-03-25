@@ -13,13 +13,18 @@ function og_sm_context_og_context_negotiation_info() {
   $providers = array();
 
   $providers['og_sm_context_alias'] = array(
-    'name' => t('Site Manager Site Alias'),
-    'description' => t('Determine group context based on the fact that the current URL starts with the path alias of a Site node.'),
+    'name' => t('Site Alias'),
+    'description' => t('Determine Site context based on the fact that the current URL starts with the path alias of a Site node.'),
     'callback' => 'og_sm_context_handler_alias',
   );
+  $providers['og_sm_context_node'] = array(
+    'name' => t('Site Content'),
+    'description' => t('Determine Site context based on the fact that we are on a Site page or a Site content page.'),
+    'callback' => 'og_sm_context_handler_content',
+  );
   $providers['og_sm_context_admin'] = array(
-    'name' => t('Site Manager Admin pages'),
-    'description' => t('Determine group context based on the fact that we are on a Site administration page.'),
+    'name' => t('Site Administration'),
+    'description' => t('Determine Site context based on the fact that we are on a Site administration page.'),
     'callback' => 'og_sm_context_handler_admin',
   );
 
@@ -50,7 +55,7 @@ function og_sm_context_handler_alias() {
   }
 
   // Get the site_nid from the path.
-  preg_match('/^node\/([0-9]+)$/', $site_path, $parts);
+  preg_match('#^node/([0-9]+)$#', $site_path, $parts);
   if (empty($parts[1])) {
     return NULL;
   }
@@ -62,6 +67,42 @@ function og_sm_context_handler_alias() {
   }
 
   return array('node' => array((int) $site->nid));
+}
+
+/**
+ * Tries to get the context based on the fact that we are on a node page.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_negotiation_info
+ */
+function og_sm_context_handler_content() {
+  // Get the content nid from the path.
+  $path = current_path();
+  preg_match('#^node/([0-9]+)#', $path, $parts);
+  if (empty($parts[1])) {
+    return NULL;
+  }
+
+  // Get the Node.
+  $node = node_load($parts[1]);
+  if (!$node) {
+    return NULL;
+  }
+
+  // Is the node a Site?
+  if (og_sm_is_site($node)) {
+    return array('node' => array((int) $node->nid));
+  }
+
+  // Is the node Site Content?
+  $site = og_sm_content_get_site($node);
+  if ($site) {
+    return array('node' => array((int) $site->nid));
+  }
+
+  return NULL;
 }
 
 /**

@@ -1,0 +1,10 @@
+name = Site Global Roles
+description = "Grant Site roles global roles when in a Site context."
+package = "Organic Groups Site Manager"
+version = "7.x-1.x-dev"
+core = 7.x
+
+dependencies[] = og_sm
+
+; Tests.
+files[] = tests/OgSmGlobalRolesTestCase.test

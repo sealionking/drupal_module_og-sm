@@ -2,6 +2,23 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
+## [7.x-1.0-alpha4]
+### Added
+- DMOGSM-11 : Added the og_sm_content module to create & manage Site content
+  within the Site context.
+- DMOGSM-26 : Added the og_sm_global_roles module to grant users global roles
+  when they have a specific Site role (when a Site context is active).
+- DMOGSM-27 : Added extra permission and node_access implementation to grant
+  Site roles admin access to all Site content.
+- DMOGSM-31 : Added extra og_context handler to detect the Site context based on
+  the node/\[nid](/\[action]) paths.
+- DMOGSM-17 : Removed the usage of pathauto for the `group/node/[NID]/admin/…`
+  and `group/node/[nid]/content/add…` paths. Using url_outbound/inbound_alter to
+  cover also dynamic paths. This replaces also the destination query parameter
+  by its alias or altered URL.
+
+
+
 ## [7.x-1.0-alpha3]
 ### Fixed
 - DMOGSM-7 : Broken tests due to changed context detection callback name.
@@ -31,6 +48,7 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha4%0D7.x-1.0-alpha3#diff
 [7.x-1.0-alpha3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha3%0D7.x-1.0-alpha2#diff
 [7.x-1.0-alpha2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha2%0D7.x-1.0-alpha1#diff
 [7.x-1.0-alpha1]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/commits/tag/7.x-1.0-alpha1

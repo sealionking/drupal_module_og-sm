@@ -83,12 +83,18 @@ class OgSmWebTestCase extends DrupalWebTestCase {
    *
    * @param string $node_type
    *   The node type to create the group for.
+   * @param array $settings
+   *   The node settings on creation.
+   *   (@link DrupalWebTestCase::drupalCreateNode()).
    *
    * @return object
    *   The created group node.
    */
-  public function ogSmCreateGroup($node_type) {
-    $settings = array('type' => $node_type);
+  public function ogSmCreateGroup($node_type, $settings = array()) {
+    if (!is_array($settings)) {
+      $settings = array();
+    }
+    $settings['type'] = $node_type;
     $settings[OG_GROUP_FIELD][LANGUAGE_NONE][0]['value'] = 1;
     $group = $this->drupalCreateNode($settings);
     return node_load($group->nid);
@@ -101,12 +107,18 @@ class OgSmWebTestCase extends DrupalWebTestCase {
    *   The node type to create the group for.
    * @param array $groups
    *   (optional) Array of groups the node is member of.
+   * @param array $settings
+   *   The node settings on creation.
+   *   (@link DrupalWebTestCase::drupalCreateNode()).
    *
    * @return object
    *   The created group content node.
    */
-  public function ogSmCreateGroupContent($node_type, $groups = array()) {
-    $settings = array('type' => $node_type);
+  public function ogSmCreateGroupContent($node_type, $groups = array(), $settings = array()) {
+    if (!is_array($settings)) {
+      $settings = array();
+    }
+    $settings['type'] = $node_type;
     $node = $this->drupalCreateNode($settings);
 
     // Add the group memberships (if any).
@@ -152,7 +164,36 @@ class OgSmWebTestCase extends DrupalWebTestCase {
       );
     }
 
-    return user_load($account->uid);
+    // Load the user from db so all hooks are triggered.
+    $user = user_load($account->uid);
+    $user->pass_raw = $account->pass_raw;
+    return $user;
+  }
+
+  /**
+   * Creates an admin user with 'administrator' role.
+   *
+   * User will have access to all permissions.
+   *
+   * @return object
+   *   User object.
+   */
+  public function ogSmCreateAdminUser() {
+    // Get all the permissions an admin user should have.
+    $roles = user_roles();
+    $index = array_search('administrator', $roles);
+    $list = user_role_permissions(array($index => 'administrator'));
+    $permissions = array_keys($list[$index]);
+
+    // Create a user with all administrator permissions.
+    $administrator = $this->ogSmCreateGroupUser($permissions);
+    $this->verbose(print_r($administrator, TRUE));
+
+    // Add the administrator role to the user.
+    $administrator->roles[$index] = 'administrator';
+    user_save($administrator);
+
+    return $administrator;
   }
 
   /**
