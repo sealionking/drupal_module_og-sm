@@ -1,27 +1,37 @@
 # Organic Groups : Site Pathauto
-This module provides extra pathauto functionality to create aliases for all Site
-related pages that are not content (e.g. administration pages).
-
-The aliased path is then used to get the Site context.
+This module uses the pathauto Site node alias to create aliases for all Site
+content or to rewrite the Site administration pages URL's so they always contain
+the Site alias.
 
 
 
 ## Functionality
-### Aliases for group administration pages.
-This module will automatically replace all paths that start with:
+### URL alter
+This module will automatically alter all outgoing URL's from
+`group/node/[nid]/admin/…` to `[site-alias]/admin/…`.
 
-* **group/node/%nid**(/rest of path)
+It will transform incoming altered URL's back to its original path.
 
-and create an alias like:
 
-* **\[node:site-path\]**(/rest of path).
+### URL query *destination* alter
+It will check if an URL has a destination query parameter and will replace its
+value by the proper path alias or URL outbound altered value.
+
 
 ### Update all aliases when a Site alias changes
-This module will update all aliases (content & administration pages) when the
+This module will update all aliases (content and administration pages) when the
 alias of the Site changes.
 
 
-### Aliases for node/NID/edit & node/NID/delete
+### Delete all aliases when a Site is deleted
+This module will delete all existing aliases for content and pages related to
+the Site.
+
+This is done by deleting all aliases where the alias path starts with the Site
+alias.
+
+
+### Aliases for node/NID/edit and node/NID/delete
 This module does not provide path alaises for `node/NID/edit` and
 `node/NID/delete` paths.
 
