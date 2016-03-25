@@ -50,7 +50,12 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     // Enable required modules.
     $modules = array('og_sm_content');
     parent::setUp($modules);
+  }
 
+  /**
+   * Helper to setup the content items.
+   */
+  private function setUpContent() {
     // Create the site.
     $this->siteType = $this->ogSmCreateGroupNodeType();
     og_sm_add_site_type($this->siteType);
@@ -63,7 +68,12 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->siteContentTypeArticle = node_type_load(
       $this->ogSmCreateGroupContentNodeType($this->siteContentTypeNameArticle)
     );
+  }
 
+  /**
+   * Helper to setup the users.
+   */
+  private function setUpUsers() {
     // Create site roles.
     $this->roleTypesPageArticle = og_role_create('role1', 'node', 0, $this->siteType);
     og_role_save($this->roleTypesPageArticle);
@@ -91,6 +101,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     og_role_grant('node', $this->site->nid, $this->siteUserArticle->uid, $this->roleTypesArticle->rid);
   }
 
+
   /**
    * Test the elper to create the content/add/type path.
    */
@@ -109,6 +120,10 @@ class OgSmContentTestCase extends OgSmWebTestCase {
    * Tests the helper to get all Site content types a user can create.
    */
   public function testGetTypesBySite() {
+    // Setup test data.
+    $this->setUpContent();
+    $this->setUpUsers();
+
     // Test for default user.
     $this->assertEqual(array(), og_sm_content_get_types_by_site($this->site, $this->userDefault));
 
@@ -133,6 +148,10 @@ class OgSmContentTestCase extends OgSmWebTestCase {
    * Test the access callbacks.
    */
   public function testAccessCallbacks() {
+    // Setup test data.
+    $this->setUpContent();
+    $this->setUpUsers();
+
     $path_overview = 'group/node/' . $this->site->nid . '/content/add';
     $path_add_page = $path_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNamePage);
     $path_add_article = $path_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
@@ -184,6 +203,48 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertResponse(403, 'User is not allowed to add Page content.');
     $this->drupalGet($path_add_article);
     $this->assertResponse(200, 'User is allowed to add Article content.');
+  }
+
+  /**
+   * Test the hook_url_outbound_alter() implementation.
+   */
+  public function testUrlOutboundAlter() {
+    // Setup test data.
+    $this->setUpContent();
+
+    $site_path = og_sm_site_path($this->site);
+    $site_nid = $this->site->nid;
+    $options = array();
+
+    // Test rewriting for non Site paths.
+    $path = $path_expected = 'group/node/987654321/content/add';
+    og_sm_content_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+
+    // Test rewriting admin path rewrite for a Site.
+    $path = 'group/node/' . $site_nid . '/content/add/page';
+    $path_expected = $site_path . '/content/add/page';
+    og_sm_content_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+  }
+
+  /**
+   * Test the hook_url_inbound_alter() implementation.
+   */
+  public function testUrlInboundAlter() {
+    // Setup test data.
+    $this->setUpContent();
+
+    // Not a Site path.
+    $path = $path_expected = 'content/test/45687266/content/add/article';
+    og_sm_content_url_inbound_alter($path, 'foo/bar', 'en');
+    $this->assertEqual($path_expected, $path);
+
+    // Site path.
+    $path = og_sm_site_path($this->site) . '/content/add';
+    $path_expected = 'group/node/' . $this->site->nid . '/content/add';
+    og_sm_content_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
   }
 
 }

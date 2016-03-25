@@ -248,3 +248,29 @@ function og_sm_content_admin_menu_items($site) {
 
   return $items;
 }
+
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
+  // Rewrite all outgoing site admin paths for paths that do not have an alias.
+  if (preg_match('#^group/node/([0-9]+)(/content.*)#', $path, $parts)) {
+    $site = og_sm_site_load($parts[1]);
+    if ($site) {
+      $path = og_sm_site_path($site) . $parts[2];
+    }
+  }
+}
+
+/**
+ * Implements hook_url_inbound_alter().
+ */
+function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language) {
+  // Translate an admin path without alias back to its original path.
+  if (preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
+    $site = og_sm_site_load_by_path($parts[1]);
+    if ($site) {
+      $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
+    }
+  }
+}
