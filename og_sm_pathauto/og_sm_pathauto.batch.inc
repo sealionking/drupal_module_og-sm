@@ -18,6 +18,7 @@ function og_sm_pathauto_site_alias_update_batch($site) {
     'title' => t('Update Site content aliases'),
     'operations' => array(
       array('og_sm_pathauto_site_alias_update_content_process', $params),
+      array('og_sm_pathauto_site_alias_update_menu_process', $params),
     ),
     'file' => $file,
   );
@@ -69,6 +70,29 @@ function og_sm_pathauto_site_alias_update_content_process($site_nid, &$context) 
 
   // Progress.
   $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['total'];
+}
+
+/**
+ * Batch processing callback; Process to update the menu's.
+ *
+ * This will trigger a menu cache clear.
+ *
+ * @param int $site_nid
+ *   The Site Node ID to run the process for.
+ * @param array $context
+ *   The process context.
+ *
+ * @see og_sm_pathauto_site_alias_update_batch
+ */
+function og_sm_pathauto_site_alias_update_menu_process($site_nid, &$context) {
+  menu_cache_clear_all();
+
+  if (module_exists('admin_menu')) {
+    admin_menu_flush_caches();
+  }
+
+  $context['message'] = t('Menu cache cleared.');
+  $context['finished'] = 1;
 }
 
 /**
