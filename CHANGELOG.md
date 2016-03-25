@@ -2,6 +2,12 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
+## [7.x-1.0-alpha5]
+### Fixed
+- DMOGSM-17 : Fixed broken global roles due to using url_outbound/inbound_alter.
+
+
+
 ## [7.x-1.0-alpha4]
 ### Added
 - DMOGSM-11 : Added the og_sm_content module to create & manage Site content
@@ -48,6 +54,7 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha5%0D7.x-1.0-alpha4#diff
 [7.x-1.0-alpha4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha4%0D7.x-1.0-alpha3#diff
 [7.x-1.0-alpha3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha3%0D7.x-1.0-alpha2#diff
 [7.x-1.0-alpha2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha2%0D7.x-1.0-alpha1#diff

@@ -130,8 +130,14 @@ function og_sm_site_load($site_nid) {
  *   The alias.
  */
 function og_sm_site_path($site) {
-  $language = entity_language('node', $site);
-  return drupal_get_path_alias('node/' . $site->nid, $language);
+  $aliases = drupal_static(__FUNCTION__);
+
+  if (!isset($aliases[$site->nid])) {
+    $language = entity_language('node', $site);
+    $aliases[$site->nid] = _og_sm_site_alias_by_nid($site->nid, $language);
+  }
+
+  return $aliases[$site->nid];
 }
 
 /**
@@ -146,21 +152,14 @@ function og_sm_site_path($site) {
  *   The Site node (if any).
  */
 function og_sm_site_load_by_path($path) {
-  $path = drupal_lookup_path('source', $path);
-  if (!$path) {
+  global $language;
+
+  $site_nid = _og_sm_site_nid_by_alias($path, $language->language);
+  if (!$site_nid) {
     return FALSE;
   }
 
-  $site = menu_get_object('node', 1, $path);
-  if (!$site) {
-    return FALSE;
-  }
-
-  if (!og_sm_is_site($site)) {
-    return FALSE;
-  }
-
-  return $site;
+  return og_sm_site_load($site_nid);
 }
 
 /**
@@ -617,4 +616,57 @@ function og_sm_hook_site($action, $node) {
 
   $hook = 'og_sm_site_' . $action;
   module_invoke_all($hook, $node);
+}
+
+/**
+ * Helper to get the Site Alias by its nid.
+ *
+ * @param int $site_nid
+ *   The Site NID.
+ * @param string $language
+ *   The language to get the alias for.
+ *
+ * @return string
+ *   The Site alias.
+ */
+function _og_sm_site_alias_by_nid($site_nid, $language) {
+  $source = 'node/' . $site_nid;
+  $alias = db_select('url_alias', 'ur')
+    ->fields('ur', array('alias'))
+    ->condition('ur.source', $source)
+    ->condition('ur.language', $language)
+    ->execute()
+    ->fetchField();
+
+  return (!empty($alias)) ? $alias : $source;
+}
+
+/**
+ * Helper to get the Site NID by its alias.
+ *
+ * @param string $alias
+ *   The Site alias.
+ * @param string $language
+ *   The language to search for.
+ *
+ * @return int|FALSE
+ *   The Site id.
+ */
+function _og_sm_site_nid_by_alias($alias, $language) {
+  $source = db_select('url_alias', 'ur')
+    ->fields('ur', array('source'))
+    ->condition('ur.alias', $alias)
+    ->condition('ur.language', $language)
+    ->execute()
+    ->fetchField();
+
+  if (empty($source)) {
+    FALSE;
+  }
+
+  if (!preg_match('#^node/([0-9]+)$#', $source, $parts)) {
+    return FALSE;
+  }
+
+  return (int) $parts[1];
 }
