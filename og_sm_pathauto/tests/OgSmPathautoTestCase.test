@@ -78,7 +78,7 @@ class OgSmPathautoTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Test the hook_url_inboundalter() implementation.
+   * Test the hook_url_inbound_alter() implementation.
    */
   public function testUrlInboundAlter() {
     // Not a Site path.
