@@ -6,6 +6,8 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 ### Fixed
 - DMOGSM-11 : Added support for the addanother module so it uses the proper
   content creation paths within a Site context.
+- PPL-309 : Fixed logout link in the admin bar + fixed home link in the
+  responsive version of the admin bar.
 
 
 ## [7.x-1.0-alpha5]
