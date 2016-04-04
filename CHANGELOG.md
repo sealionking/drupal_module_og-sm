@@ -2,6 +2,12 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
+## [Unreleased]
+### Fixed
+- DMOGSM-11 : Added support for the addanother module so it uses the proper
+  content creation paths within a Site context.
+
+
 ## [7.x-1.0-alpha5]
 ### Fixed
 - DMOGSM-17 : Fixed broken global roles due to using url_outbound/inbound_alter.
