@@ -1,0 +1,74 @@
+<?php
+/**
+ * @file
+ * Configurable theme per Site.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_theme_menu() {
+  $items = array();
+  $items['group/%/%og_sm_site/admin/theme'] = array(
+    'title' => 'Theme settings',
+    'description' => 'Configure the theme for a Site.',
+    'page callback' => 'og_sm_theme_overview_page',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'file' => 'og_sm_theme.admin.inc',
+  );
+
+  $items['group/%/%og_sm_site/admin/theme/default'] = array(
+    'title' => 'Set default theme',
+    'page callback' => 'og_sm_theme_set_default',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'type' => MENU_CALLBACK,
+    'file' => 'og_sm_theme.admin.inc',
+  );
+
+  $items['admin/config/group/theme']  = array(
+    'title' => 'Theme settings',
+    'description' => 'Configure the global Site theme settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_theme_global_settings_form'),
+    'access arguments' => array('administer group'),
+    'file' => 'og_sm_theme.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Lists the available themes for a Site to choose from.
+ *
+ * @param object $site
+ *   The Site.
+ *
+ * @return array $themes
+ */
+function og_sm_theme_site_themes($site) {
+  // Get all active themes
+  $all_themes = array_filter(list_themes(), function ($theme) {
+    return !empty($theme->status);
+  });
+
+  // Allowed site themes by global configuration
+  $site_themes = variable_get('og_sm_theme_site_themes', array());
+  $themes = array_map(function ($theme_name) use ($all_themes) {
+    return isset($all_themes[$theme_name]) ? $all_themes[$theme_name] : 0;
+  }, $site_themes);
+  $themes = array_filter($themes);
+
+  // Allow other modules to change the list.
+  $context = array(
+    'site' => clone $site
+  );
+  drupal_alter('site_themes', $themes, $context);
+
+  return $themes;
+}
+

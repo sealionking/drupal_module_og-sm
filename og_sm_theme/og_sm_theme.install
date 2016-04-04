@@ -1,0 +1,13 @@
+<?php
+/**
+ * @file
+ * Install, Update and Uninstall hooks.
+ */
+
+/**
+ * Implemenys hook_uninstall().
+ */
+function og_sm_theme_uninstall() {
+  variable_del('og_sm_theme_site_themes');
+}
+
