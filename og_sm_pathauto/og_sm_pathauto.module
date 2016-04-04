@@ -46,6 +46,11 @@ function og_sm_pathauto_url_outbound_alter(&$path, &$options, $original_path) {
     }
   }
 
+  // Rewrite all system paths.
+  if (preg_match('#^system/.*#', $path) && $site = og_sm_current_site()) {
+    $path = og_sm_site_path($site) . '/' . $path;
+  }
+
   // This will check replace any destination (in the options > query) by its
   // path alias.
   if (isset($options['query']['destination'])) {
@@ -63,6 +68,15 @@ function og_sm_pathauto_url_inbound_alter(&$path, $original_path, $path_language
     $site = og_sm_site_load_by_path($parts[1]);
     if ($site) {
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
+    }
+  }
+
+  // Translate a system path back to normal path.
+  if (preg_match('#^([\w/_-]+)(/system.*)#', $path, $parts)) {
+    $site = og_sm_site_load_by_path($parts[1]);
+    if ($site) {
+      $path = $parts[2];
+      $_GET['og_sm_context_site_id'] = $site->nid;
     }
   }
 }

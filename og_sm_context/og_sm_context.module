@@ -27,6 +27,11 @@ function og_sm_context_og_context_negotiation_info() {
     'description' => t('Determine Site context based on the fact that we are on a Site administration page.'),
     'callback' => 'og_sm_context_handler_admin',
   );
+  $providers['og_sm_context_get'] = array(
+    'name' => t('Site Get parameter'),
+    'description' => t('Determine Site context based on the fact that there is a GET parameter "og_sm_context_site_id" set.'),
+    'callback' => 'og_sm_context_handler_get',
+  );
 
   return $providers;
 }
@@ -127,6 +132,31 @@ function og_sm_context_handler_admin() {
 
   // Get the Site.
   $site = og_sm_site_load($parts[1]);
+  if (!$site) {
+    return NULL;
+  }
+
+  return array('node' => array((int) $site->nid));
+}
+
+/**
+ * Tries to get the context based on a Site ID in a get parameter.
+ *
+ * Will check if there is a get parameter "og_sm_context_site_id" with a valid
+ * Site Node ID.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_negotiation_info
+ */
+function og_sm_context_handler_get() {
+  if (empty($_GET['og_sm_context_site_id'])) {
+    return NULL;
+  }
+
+  // Get the Site.
+  $site = og_sm_site_load($_GET['og_sm_context_site_id']);
   if (!$site) {
     return NULL;
   }
