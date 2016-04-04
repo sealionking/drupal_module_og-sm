@@ -5,6 +5,17 @@
  */
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_content_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'form_alter') {
+    $group = $implementations['og_sm_content'];
+    unset($implementations['og_sm_content']);
+    $implementations['og_sm_content'] = $group;
+  }
+}
+
+/**
  * Implements hook_admin_paths().
  */
 function og_sm_content_admin_paths() {
@@ -90,6 +101,18 @@ function og_sm_content_menu() {
   }
 
   return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function og_sm_content_menu_alter(&$items) {
+  // Add support for the addanother module.
+  $path = 'node/%node/addanother';
+  if (isset($items[$path])) {
+    $items[$path]['page callback'] = 'og_sm_content_addanother_goto';
+    $items[$path]['file'] = 'modules/addanother.inc';
+  }
 }
 
 /**
@@ -272,5 +295,16 @@ function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language)
     if ($site) {
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
     }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function og_sm_content_form_alter(&$form, &$form_state, $form_id) {
+  // Add support for addanother module buttons within a Site context.
+  if (isset($form['actions']['addanother'])) {
+    form_load_include($form_state, 'inc', 'og_sm_content', 'modules/addanother');
+    og_sm_content_form_alter_addanother($form, $form_state);
   }
 }
