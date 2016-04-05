@@ -13,11 +13,23 @@
  * Alter the list of allowed site themes for a Site.
  *
  * @param array $themes
- *   The allowed site themes for this site
+ *   The allowed site themes for this Site
  * @param array $context
- *   The context - contains the site for which to alter the themes list.
+ *   The context - contains the Site for which to alter the themes list.
  */
 function hook_og_sm_theme_site_themes(&$themes, $context) {
+
+}
+
+/**
+ * Alters theme operation links for a Site.
+ *
+ * @param $theme_groups
+ *   An associative array containing groups of themes.
+ *
+ * @see og_sm_theme_themes_page()
+ */
+function hook_og_sm_theme_themes_page_alter(&$theme_groups) {
 
 }
 

@@ -9,5 +9,6 @@
  */
 function og_sm_theme_uninstall() {
   variable_del('og_sm_theme_site_themes');
+  variable_del('og_sm_theme_default_theme');
 }
 

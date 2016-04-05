@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Admin page callbacks for the theme settings.
+ * Admin callbacks for the theme settings.
  */
 
 /**
@@ -9,7 +9,7 @@
  * 
  * Similar to Core, but only displays the enabled theme groups. We assume
  * all themes will be enabled globally before we allow them to be used in a
- * site. Enabling and disabling is not supported from the Site theme settings.
+ * Site. Enabling and disabling is not supported from the Site theme settings.
  * Same goes for the incompatibility checks, we assume they passed when the
  * theme was enabled globally.
  *
@@ -21,7 +21,7 @@
  * 
  * @see system_themes_page()
  */
-function og_sm_theme_overview_page($site) {
+function og_sm_theme_themes_page($site) {
   $parent =  'group/node/' . $site->nid . '/admin/theme';
   og_sm_set_breadcrumb($site, array(l(t('Administer theme'), $parent)));
 
@@ -108,6 +108,8 @@ function og_sm_theme_overview_page($site) {
   module_load_include('inc', 'system', 'system.admin');
   uasort($theme_groups['enabled'], 'system_sort_themes');
 
+  drupal_alter('og_sm_theme_themes_page', $theme_groups);
+  
   return theme('system_themes_page', array(
     'theme_groups' => $theme_groups,
     'theme_group_titles' => $theme_group_titles
@@ -117,7 +119,7 @@ function og_sm_theme_overview_page($site) {
 /**
  * Menu callback; Set the default theme.
  * 
- * Similar to Drupal's callback but sets a  Site variable instead of the global
+ * Similar to Drupal's callback but sets a Site variable instead of the global
  * default theme.
  *
  * @param object $site
@@ -137,6 +139,8 @@ function og_sm_theme_set_default($site) {
   }
 
   $theme = $_REQUEST['theme'];
+  
+  // Get all themes that we can choose from
   $themes = og_sm_theme_site_themes($site);
 
   // Check if the specified theme is one recognized by the system.
@@ -144,18 +148,10 @@ function og_sm_theme_set_default($site) {
     // Set the default theme.
     og_sm_variable_set($site->nid, 'theme', $theme);
 
-    // The status message depends on whether an admin theme is currently in use:
-    // a value of 0 means the admin theme is set to be the default theme.
-    $admin_theme = variable_get('admin_theme', 0);
-    if ($admin_theme != 0 && $admin_theme != $theme) {
-      drupal_set_message(t('Please note that the administration theme is still set to the %admin_theme theme; consequently, the theme on this page remains unchanged. All non-administrative sections of the site, however, will show the selected %selected_theme theme by default.', array(
-        '%admin_theme' => $themes[$admin_theme]->info['name'],
-        '%selected_theme' => $themes[$theme]->info['name'],
-      )));
-    }
-    else {
-      drupal_set_message(t('%theme is now the default theme.', array('%theme' => $themes[$theme]->info['name'])));
-    }
+    drupal_set_message(t('%theme is now the default theme.', array(
+      '%theme' => $themes[$theme]->info['name']
+    )));
+
   }
   else {
     drupal_set_message(t('The %theme theme was not found.', array(
@@ -200,13 +196,14 @@ function og_sm_theme_global_settings_form() {
     '#options' => $themes,
     '#default_value' => variable_get('og_sm_theme_site_themes', array()),
   );
-  
+
+  $global_theme = variable_get('theme_default', 'bartik');
   $form['default_theme'] = array(
     '#type' => 'select',
     '#options' => $themes,
     '#title' => t('Default theme'),
     '#description' => t('Choose the "Default theme" to use when no theme has been selected.'),
-    '#default_value' => variable_get('og_sm_theme_default_theme'),
+    '#default_value' => variable_get('og_sm_theme_default_theme', $global_theme),
   );
 
   $form['actions']['#type'] = 'actions';
@@ -235,52 +232,14 @@ function og_sm_theme_global_settings_form_submit($form, $form_state) {
 
   variable_set('og_sm_theme_site_themes', $new_themes);
 
-  // See if some site are still using a theme that's not allowed anymore.
+  // See if some sites are still using a theme that's not allowed anymore.
   $diff = array_diff(
     array_filter($current_themes),
     array_filter($new_themes)
   );
   if ($diff) {
-    _og_sm_theme_verify_disabled_themes($diff);
+    _og_sm_theme_verify_disabled_site_themes($diff);
   }
 
   drupal_set_message(t('The configuration options have been saved.'));
-}
-
-/**
- * Verify disabled themes aren't used anymore.
- *
- * If a theme is disabled globally or in the allowed site themes, we have to
- * make sure existing Site variables get updated as well.
- *
- * @param array $disabled_themes
- */
-function _og_sm_theme_verify_disabled_themes($disabled_themes) {
-  // Determine the fallback theme in case the disabled theme is in use.
-  $default_site_theme = variable_get('og_sm_theme_default_theme');
-  if (!$default_site_theme) {
-    $default_site_theme = variable_get('theme_default', 'bartik');
-  }
-
-  // Verify that the disabled theme is not in use.
-  foreach (_og_sm_variable_load_all_sites('theme') as $nid => $theme) {
-    if (in_array($theme, $disabled_themes)) {
-      // The theme isn't allowed anymore, revert to the global default
-      og_sm_variable_set($nid, 'theme', $default_site_theme);
-      $site = og_sm_site_load($nid);
-      drupal_set_message(t('The theme for %site has been reset to use the default.', array(
-        '%site' => $site->title
-      )));
-    }
-  }
-}
-
-/**
- * Implements hook_themes_disabled().
- * 
- * @param array $theme_list
- *   Array containing the names of the themes being disabled.
- */
-function og_sm_theme_themes_disabled($theme_list) {
-  _og_sm_theme_verify_disabled_themes($theme_list);
 }

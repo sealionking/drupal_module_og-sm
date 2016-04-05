@@ -5,3 +5,5 @@ version = "7.x-1.x-dev"
 core = 7.x
 
 dependencies[] = og_sm
+dependencies[] = og_sm_variable
+dependencies[] = og_sm_context
