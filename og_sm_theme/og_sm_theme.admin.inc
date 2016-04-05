@@ -202,7 +202,7 @@ function og_sm_theme_global_settings_form() {
     '#type' => 'select',
     '#options' => $themes,
     '#title' => t('Default theme'),
-    '#description' => t('Choose the "Default theme" to use when no theme has been selected.'),
+    '#description' => t('Choose the default Site theme to use when no theme has been selected.'),
     '#default_value' => variable_get('og_sm_theme_default_theme', $global_theme),
   );
 
