@@ -30,7 +30,7 @@ function og_sm_theme_menu() {
   );
 
   $items['admin/config/group/theme']  = array(
-    'title' => 'Theme settings',
+    'title' => 'OG Theme settings',
     'description' => 'Configure the global Site theme settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('og_sm_theme_global_settings_form'),
@@ -44,9 +44,6 @@ function og_sm_theme_menu() {
 
 /**
  * Implements hook_themes_disabled().
- *
- * @param array $theme_list
- *   Array containing the names of the themes being disabled.
  */
 function og_sm_theme_themes_disabled($theme_list) {
   $all_themes = list_themes();
@@ -86,13 +83,10 @@ function og_sm_theme_themes_disabled($theme_list) {
 
 /**
  * Implements hook_themes_enabled().
- *
- * @param array $theme_list
- *   Array containing the names of the themes being enabled.
  */
 function og_sm_theme_themes_enabled($theme_list) {
   drupal_set_message(t('A theme was enabled. To make it available to Sites, go to <a href="@url">OG Theme settings</a> and enable it.', array(
-    '@url' => url('admin/config/group/theme')
+    '@url' => url('admin/config/group/theme'),
   )));
 }
 
@@ -101,11 +95,6 @@ function og_sm_theme_themes_enabled($theme_list) {
  *
  * If a theme is disabled globally or in the allowed site themes, we have to
  * make sure existing Site variables get updated as well.
- *
- * @param array $disabled_themes
- *
- * @return array $sites_disabled
- *   Array with the sites that had their theme reset.
  */
 function _og_sm_theme_verify_disabled_site_themes($disabled_themes) {
   // Determine the fallback theme in case the disabled theme is in use.
@@ -119,7 +108,7 @@ function _og_sm_theme_verify_disabled_site_themes($disabled_themes) {
   $sites_disabled = array();
   foreach (_og_sm_variable_load_all_sites('theme') as $nid => $theme) {
     if (in_array($theme, $disabled_themes)) {
-      // The theme isn't allowed anymore, revert to the global default
+      // The theme isn't allowed anymore, revert to the global default.
       og_sm_variable_set($nid, 'theme', $default_site_theme);
       $site = og_sm_site_load($nid);
       $sites_disabled[$nid] = $site->title;
@@ -135,14 +124,15 @@ function _og_sm_theme_verify_disabled_site_themes($disabled_themes) {
  *   The Site.
  *
  * @return array $themes
+ *   The list of themes.
  */
 function og_sm_theme_site_themes($site) {
-  // Get all active themes
+  // Get all active themes.
   $all_themes = array_filter(list_themes(), function ($theme) {
     return !empty($theme->status);
   });
 
-  // Allowed site themes by global configuration
+  // Allowed site themes by global configuration.
   $site_themes = variable_get('og_sm_theme_site_themes', array());
   $themes = array_map(function ($theme_name) use ($all_themes) {
     return isset($all_themes[$theme_name]) ? $all_themes[$theme_name] : 0;
@@ -151,9 +141,9 @@ function og_sm_theme_site_themes($site) {
 
   // Allow other modules to change the list within a site context.
   $context = array(
-    'site' => clone $site
+    'site' => clone $site,
   );
-  drupal_alter('site_themes', $themes, $context);
+  drupal_alter('og_sm_theme_site_themes', $themes, $context);
 
   return $themes;
 }

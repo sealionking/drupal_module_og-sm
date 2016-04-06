@@ -6,7 +6,7 @@
 
 /**
  * Menu callback; displays a listing of all themes for a Site.
- * 
+ *
  * Similar to Core, but only displays the enabled theme groups. We assume
  * all themes will be enabled globally before we allow them to be used in a
  * Site. Enabling and disabling is not supported from the Site theme settings.
@@ -18,11 +18,11 @@
  *
  * @return string
  *   Rendered themes overview
- * 
+ *
  * @see system_themes_page()
  */
 function og_sm_theme_themes_page($site) {
-  $parent =  'group/node/' . $site->nid . '/admin/theme';
+  $parent = 'group/node/' . $site->nid . '/admin/theme';
   og_sm_set_breadcrumb($site, array(l(t('Administer theme'), $parent)));
 
   // Get a list of available themes.
@@ -36,7 +36,7 @@ function og_sm_theme_themes_page($site) {
     if (!empty($theme->info['hidden'])) {
       continue;
     }
-    $admin_theme_options[$theme->name] = $theme->info['name'];
+
     $theme->is_default = ($theme->name == $theme_default);
 
     // Identify theme screenshot.
@@ -80,7 +80,7 @@ function og_sm_theme_themes_page($site) {
             'href' => $parent . '/default',
             'query' => $query,
             'attributes' => array(
-              'title' => t('Set !theme as site theme', array('!theme' => $theme->info['name']))
+              'title' => t('Set !theme as site theme', array('!theme' => $theme->info['name'])),
             ),
           );
         }
@@ -109,16 +109,16 @@ function og_sm_theme_themes_page($site) {
   uasort($theme_groups['enabled'], 'system_sort_themes');
 
   drupal_alter('og_sm_theme_themes_page', $theme_groups);
-  
+
   return theme('system_themes_page', array(
     'theme_groups' => $theme_groups,
-    'theme_group_titles' => $theme_group_titles
+    'theme_group_titles' => $theme_group_titles,
   ));
 }
 
 /**
  * Menu callback; Set the default theme.
- * 
+ *
  * Similar to Drupal's callback but sets a Site variable instead of the global
  * default theme.
  *
@@ -126,6 +126,7 @@ function og_sm_theme_themes_page($site) {
  *   The Site.
  *
  * @return int|void
+ *   Menu callback response or void on redirect
  *
  * @see system_theme_default()
  */
@@ -139,8 +140,8 @@ function og_sm_theme_set_default($site) {
   }
 
   $theme = $_REQUEST['theme'];
-  
-  // Get all themes that we can choose from
+
+  // Get all themes that we can choose from.
   $themes = og_sm_theme_site_themes($site);
 
   // Check if the specified theme is one recognized by the system.
@@ -149,13 +150,13 @@ function og_sm_theme_set_default($site) {
     og_sm_variable_set($site->nid, 'theme', $theme);
 
     drupal_set_message(t('%theme is now the default theme.', array(
-      '%theme' => $themes[$theme]->info['name']
+      '%theme' => $themes[$theme]->info['name'],
     )));
 
   }
   else {
     drupal_set_message(t('The %theme theme was not found.', array(
-      '%theme' => $theme
+      '%theme' => $theme,
     )), 'error');
   }
   drupal_goto('group/node/' . $site->nid . '/admin/theme');
@@ -168,7 +169,7 @@ function og_sm_theme_set_default($site) {
  *   The form
  */
 function og_sm_theme_global_settings_form() {
-  
+
   $form['available_themes'] = array(
     '#type' => 'fieldset',
     '#title' => t('Allowed themes'),
@@ -176,15 +177,15 @@ function og_sm_theme_global_settings_form() {
   );
 
   // Get a sorted list of enabled themes.
-  $themes =  array_filter(list_themes(), function ($theme) {
+  $themes = array_filter(list_themes(), function ($theme) {
     return $theme->status;
   });
 
-  // Sort the list
+  // Sort the list.
   module_load_include('inc', 'system', 'system.admin');
   uasort($themes, 'system_sort_modules_by_info_name');
 
-  // Map the keys with the human readable name
+  // Map the keys with the human readable name.
   $themes = array_map(
     function ($theme) {
       return $theme->info['name'];
@@ -209,7 +210,7 @@ function og_sm_theme_global_settings_form() {
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save configuration')
+    '#value' => t('Save configuration'),
   );
 
   return $form;
@@ -219,9 +220,9 @@ function og_sm_theme_global_settings_form() {
  * Form submit handler for the theme settings form.
  *
  * @param array $form
- *   The form
- * @param $form_state
- *   The form state
+ *   The form.
+ * @param array $form_state
+ *   The form state.
  */
 function og_sm_theme_global_settings_form_submit($form, $form_state) {
 
