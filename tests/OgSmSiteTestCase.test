@@ -83,35 +83,6 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Test the token generation.
-   */
-  public function testSiteTokens() {
-    module_load_include('inc', 'og_sm', 'og_sm.tokens');
-
-    $site_type = $this->ogSmCreateGroupNodeType();
-    $site_content_type = $this->ogSmCreateGroupContentNodeType();
-
-    // Set the auto path for Site node type.
-    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
-
-    $site = $this->ogSmCreateGroup($site_type);
-    $site_content = $this->ogSmCreateGroupContent($site_content_type, array($site));
-    $site_path = og_sm_site_path($site);
-
-    $type = 'node';
-    $tokens = array('site-path');
-    $data = array('node' => $site_content);
-
-    // Site node type is not in the Site types => no token.
-    $this->assertEqual(array(), og_sm_tokens($type, $tokens, $data));
-
-    // Site node type is in the Site types.
-    og_sm_add_site_type($site_type);
-    $expected = array('site-path' => $site_path);
-    $this->assertEqual($expected, og_sm_tokens($type, $tokens, $data));
-  }
-
-  /**
    * Test loading the site by its path.
    */
   public function testSiteLoadByPath() {
