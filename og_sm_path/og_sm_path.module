@@ -20,9 +20,9 @@ function og_sm_path_form_node_form_alter(&$form, &$form_state) {
  * Implements hook_og_sm_site_insert().
  */
 function og_sm_path_og_sm_site_insert($site) {
-  // Save the Site path.
+  // Save the Site path, no need to trigger the hook here.
   if (isset($site->site_path)) {
-    og_sm_variable_set($site->nid, 'path', $site->site_path);
+    og_sm_path_set($site, $site->site_path, FALSE);
   }
 }
 
@@ -30,9 +30,12 @@ function og_sm_path_og_sm_site_insert($site) {
  * Implements hook_og_sm_site_update().
  */
 function og_sm_path_og_sm_site_update($site) {
-  // Save the Site path.
+  // Save the Site path IF the value changed.
   if (isset($site->site_path)) {
-    og_sm_variable_set($site->nid, 'path', $site->site_path);
+    $existing = og_sm_variable_get($site->nid, 'path');
+    if ($existing !== $site->site_path) {
+      og_sm_path_set($site, $site->site_path);
+    }
   }
 }
 
@@ -66,4 +69,25 @@ function og_sm_path_load_site($path) {
   }
 
   return og_sm_site_load($site_nid);
+}
+
+/**
+ * Set a new path for a Site.
+ *
+ * This will also trigger the og_sm_path_change hook.
+ *
+ * @param object $site
+ *   The Site to set the path for.
+ * @param string $path
+ *   The path to set.
+ * @param bool $trigger_hook
+ *   By default the og_sm_path_change hook will be called when the path is set
+ *   for a Site. This is not always wanted (eg. when a new Site is created).
+ *   Set the parameter to FALSE to prevent the hook from being triggered.
+ */
+function og_sm_path_set($site, $path, $trigger_hook = TRUE) {
+  og_sm_variable_set($site->nid, 'path', $path);
+  if ($trigger_hook) {
+    og_sm_hook_site('path_change', $site);
+  }
 }
