@@ -1,0 +1,85 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_context module.
+ */
+
+/**
+ * Tests about the Site node forms.
+ */
+class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
+  /**
+   * The Site node to test with.
+   */
+  private $nodeSite;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Path node form'),
+      'description' => t('Tests Site Path node form settings.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_path');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test the node form.
+   */
+  public function testSiteNodeForm() {
+    $administrator = $this->ogSmCreateAdminUser();
+    $this->drupalLogin($administrator);
+
+    // Test non-site node forms.
+    $this->ogSmCreateGroupNodeType('not_site_type');
+    $this->drupalGet('node/add/not-site-type');
+    $this->assertNoFieldById('edit-site-path');
+
+    // Test site node form.
+    $site_type = $this->ogSmCreateGroupNodeType('is_site_type');
+    og_sm_add_site_type($site_type);
+    $this->drupalGet('node/add/is-site-type');
+    $this->assertFieldById('edit-site-path');
+
+    // Create a new Site, check if the path is saved.
+    $edit = array(
+      'title' => 'Site node test 1',
+      'site_path' => 'site-node-test-me',
+    );
+    $this->drupalPost('node/add/is-site-type', $edit, 'Save');
+    $site_nid = db_select('node', 'n')
+      ->condition('n.type', $site_type)
+      ->condition('n.title', $edit['title'])
+      ->fields('n', array('nid'))
+      ->execute()
+      ->fetchField();
+    $this->assertEqual($edit['site_path'], og_sm_variable_get($site_nid, 'path'));
+
+    // Creating a new Site with an existing path should result in a form error.
+    $edit = array(
+      'title' => 'Site node test 2',
+      'site_path' => 'site-node-test-me',
+    );
+    $this->drupalPost('node/add/is-site-type', $edit, 'Save');
+    $this->assertText('The Site path site-node-test-me is already in use.');
+
+    // Creating a new Site with an invalid path should result in a form error.
+    $edit = array(
+      'title' => 'Site node test 2',
+      'site_path' => 'site path not valid',
+    );
+    $this->drupalPost('node/add/is-site-type', $edit, 'Save');
+    $this->assertText('The Site path may contain only lowercase letters, numbers and dashes.');
+  }
+
+}
