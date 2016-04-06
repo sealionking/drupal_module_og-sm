@@ -54,8 +54,6 @@ function og_sm_variable_get_all($site_nid) {
 /**
  * Get all the values for all sites by the variable name.
  *
- * TODO: This was ported from the participation platform but there is not used.
- *
  * @param string $name
  *   The variable name to get the values for.
  *

@@ -1,0 +1,56 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_path module.
+ */
+
+/**
+ * Tests about the Site Path.
+ */
+class OgSmPathTestCase extends OgSmWebTestCase {
+  /**
+   * The Site node to test with.
+   */
+  private $nodeSite;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Path'),
+      'description' => t('Tests Site Path functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_path');
+    parent::setUp($modules);
+
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_add_site_type($type);
+    $this->nodeSite = $this->ogSmCreateGroup($type);
+  }
+
+  /**
+   * Test the Path API.
+   */
+  public function testPath() {
+    // Test to get the path for a Site.
+    $path = 'test-path';
+    og_sm_variable_set($this->nodeSite->nid, 'path', $path);
+    $this->assertEqual($path, og_sm_path($this->nodeSite));
+
+    // Test to get a Site for non existing path.
+    $this->assertFalse(og_sm_path_load_site('foo-bar-fizz-buzz'));
+
+    // Test to get a Site for an existing path.
+    $this->assertEqual($this->nodeSite, og_sm_path_load_site($path));
+  }
+
+}

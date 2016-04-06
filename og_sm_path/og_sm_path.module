@@ -21,7 +21,9 @@ function og_sm_path_form_node_form_alter(&$form, &$form_state) {
  */
 function og_sm_path_og_sm_site_insert($site) {
   // Save the Site path.
-  og_sm_variable_set($site->nid, 'path', $site->site_path);
+  if (isset($site->site_path)) {
+    og_sm_variable_set($site->nid, 'path', $site->site_path);
+  }
 }
 
 /**
@@ -29,5 +31,39 @@ function og_sm_path_og_sm_site_insert($site) {
  */
 function og_sm_path_og_sm_site_update($site) {
   // Save the Site path.
-  og_sm_variable_set($site->nid, 'path', $site->site_path);
+  if (isset($site->site_path)) {
+    og_sm_variable_set($site->nid, 'path', $site->site_path);
+  }
+}
+
+/**
+ * Get the path for Site node.
+ *
+ * @param object $site
+ *   The Site node to get the path for.
+ *
+ * @return string
+ *   The Site path.
+ */
+function og_sm_path($site) {
+  return og_sm_variable_get($site->nid, 'path');
+}
+
+/**
+ * Get the Site by its path.
+ *
+ * @param string $path
+ *   The path to load the Site for.
+ *
+ * @return object|FALSE
+ *   The Site object.
+ */
+function og_sm_path_load_site($path) {
+  $paths = og_sm_variable_get_all_sites('path');
+  $site_nid = array_search($path, $paths);
+  if (!$site_nid) {
+    return FALSE;
+  }
+
+  return og_sm_site_load($site_nid);
 }
