@@ -91,3 +91,33 @@ function og_sm_path_set($site, $path, $trigger_hook = TRUE) {
     og_sm_hook_site('path_change', $site);
   }
 }
+
+/**
+ * Implements hook_og_sm_site_path_change().
+ */
+function og_sm_path_og_sm_site_path_change($site) {
+  // Update all aliases for the Site when its alias changes.
+  module_load_include('inc', 'og_sm_path', 'og_sm_path.batch');
+  og_sm_path_site_alias_update_batch($site);
+}
+
+/**
+ * Implements hook_og_sm_site_delete().
+ */
+function og_sm_path_og_sm_site_delete($site) {
+  // Delete all aliases for a site when it is deleted.
+  og_sm_path_site_delete_aliases($site);
+}
+
+/**
+ * Delete all aliases for the given Site.
+ *
+ * @param object $site
+ *   The Site node to delete the aliases for.
+ */
+function og_sm_path_site_delete_aliases($site) {
+  $site_path = og_sm_path($site);
+  db_delete('url_alias')
+    ->condition('alias', db_like($site_path) . '/%', 'LIKE')
+    ->execute();
+}

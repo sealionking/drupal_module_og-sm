@@ -47,7 +47,7 @@ Site node.
    Example:
 
    ```
-   [node:title]
+   [node:site-path]
    ```
 
 3. Configure the path alias for Site Content node types. Use `[node:site-path]` in

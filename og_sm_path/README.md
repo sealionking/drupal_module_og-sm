@@ -77,7 +77,7 @@ $site = og_sm_path_load_site($path);
 The module watches actions taken place on Site nodes and triggers its own hooks
 when an action happens:
 
-* `hook_og_sm_path_change($site)` : Site node path has changed.
+* `hook_og_sm_site_path_change($site)` : Site node path has changed.
 
 > NOTE : The hooks can be implemented in a `modulename.og_sm.inc` file
 > instead of the modulename.module file.

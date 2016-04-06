@@ -5,36 +5,6 @@
  */
 
 /**
- * Implements hook_og_sm_site_update_alias().
- */
-function og_sm_pathauto_og_sm_site_update_alias($site) {
-  // Update all aliases for the Site when its alias changes.
-  module_load_include('inc', 'og_sm_pathauto', 'og_sm_pathauto.batch');
-  og_sm_pathauto_site_alias_update_batch($site);
-}
-
-/**
- * Implements hook_og_sm_site_delete().
- */
-function og_sm_pathauto_og_sm_site_delete($site) {
-  // Delete all aliases for a site when it is deleted.
-  og_sm_pathauto_site_delete_aliases($site);
-}
-
-/**
- * Delete all aliases for the given Site.
- *
- * @param object $site
- *   The Site node to delete the aliases for.
- */
-function og_sm_pathauto_site_delete_aliases($site) {
-  $site_path = og_sm_site_path($site);
-  db_delete('url_alias')
-    ->condition('alias', db_like($site_path) . '/%', 'LIKE')
-    ->execute();
-}
-
-/**
  * Implements hook_url_outbound_alter().
  */
 function og_sm_pathauto_url_outbound_alter(&$path, &$options, $original_path) {
