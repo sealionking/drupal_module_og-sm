@@ -128,6 +128,8 @@ function og_sm_site_load($site_nid) {
  *
  * @return string
  *   The alias.
+ *
+ * @deprecated Use og_sm_path($site).
  */
 function og_sm_site_path($site) {
   $aliases = drupal_static(__FUNCTION__);
