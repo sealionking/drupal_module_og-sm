@@ -216,16 +216,32 @@ function og_sm_content_admin_menu_output_alter(&$content) {
     return;
   }
 
-  // Get the menu items to show.
-  $items = og_sm_content_admin_menu_items($site);
-
-  // Remove the node/add item if no items to show.
-  if (!$items && isset($content['menu']['node/add'])) {
-    unset($content['menu']['node/add']);
+  // Only if there are node/add menu's.
+  if (empty($content['menu']['node/add'])
+    && empty($content['responsive-menu']['node/add'])
+  ) {
     return;
   }
 
-  $content['menu']['node/add'] = $items;
+  // Get the menu items to show.
+  $items = og_sm_content_admin_menu_items($site);
+
+  // Update desktop & responsive menu.
+  $menu_types = array('menu', 'responsive-menu');
+  foreach ($menu_types as $menu_type) {
+    // Only if the menu item exists.
+    if (!isset($content[$menu_type]['node/add'])) {
+      continue;
+    }
+
+    // Remove if no items.
+    if (empty($items)) {
+      unset($content[$menu_type]['node/add']);
+      continue;
+    }
+
+    $content[$menu_type]['node/add'] = $items;
+  }
 }
 
 /**
