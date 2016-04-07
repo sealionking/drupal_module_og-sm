@@ -12,3 +12,4 @@ dependencies[] = pathauto
 files[] = tests/OgSmPathTestCase.test
 files[] = tests/OgSmPathNodeFormTestCase.test
 files[] = tests/OgSmPathTokensTestCase.test
+files[] = tests/OgSmPathUrlAlterTestCase.test

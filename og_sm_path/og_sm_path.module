@@ -121,3 +121,36 @@ function og_sm_path_site_delete_aliases($site) {
     ->condition('alias', db_like($site_path) . '/%', 'LIKE')
     ->execute();
 }
+
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function og_sm_path_url_outbound_alter(&$path, &$options, $original_path) {
+  // Rewrite all outgoing site admin paths for paths that do not have an alias.
+  if (preg_match('#^group/node/([0-9]+)(/admin.*)#', $path, $parts)) {
+    $site = og_sm_site_load($parts[1]);
+    if ($site) {
+      $path = og_sm_path($site) . $parts[2];
+    }
+  }
+
+  // This will check replace any destination (in the options > query) by its
+  // path alias.
+  if (isset($options['query']['destination'])) {
+    $alias = url($options['query']['destination']);
+    $options['query']['destination'] = trim($alias, '/');
+  }
+}
+
+/**
+ * Implements hook_url_inbound_alter().
+ */
+function og_sm_path_url_inbound_alter(&$path, $original_path, $path_language) {
+  // Translate an admin path without alias back to its original path.
+  if (preg_match('#^([\w/_-]+)(/admin.*)#', $path, $parts)) {
+    $site = og_sm_path_load_site($parts[1]);
+    if ($site) {
+      $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
+    }
+  }
+}
