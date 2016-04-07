@@ -75,6 +75,15 @@ class OgSmAccessRecordsTestCase extends OgSmWebTestCase {
         'priority' => 0,
       ),
     );
+    $expected_group_published_content_published = $expected_group_published;
+    $expected_group_published_content_published[] = array(
+      'realm' => OG_SM_ACCESS_REALM_CONTENT,
+      'gid' => $group_published->nid,
+      'grant_view' => 1,
+      'grant_update' => 1,
+      'grant_delete' => 1,
+      'priority' => 0,
+    );
     $expected_group_published_content_unpublished = array(
       array(
         'realm' => OG_SM_ACCESS_REALM_SITE,
@@ -84,13 +93,22 @@ class OgSmAccessRecordsTestCase extends OgSmWebTestCase {
         'grant_delete' => 0,
         'priority' => 0,
       ),
+      array(
+        'realm' => OG_SM_ACCESS_REALM_CONTENT,
+        'gid' => $group_published->nid,
+        'grant_view' => 1,
+        'grant_update' => 1,
+        'grant_delete' => 1,
+        'priority' => 0,
+      ),
     );
+
     $this->assertEqual(
       $expected_group_published,
       og_sm_access_node_access_records($group_published)
     );
     $this->assertEqual(
-      $expected_group_published,
+      $expected_group_published_content_published,
       og_sm_access_node_access_records($group_published_content_published)
     );
     $this->assertEqual(
@@ -109,6 +127,15 @@ class OgSmAccessRecordsTestCase extends OgSmWebTestCase {
         'priority' => 0,
       ),
     );
+    $expected_group_unpublished_content_published = $expected_group_unpublished;
+    $expected_group_unpublished_content_published[] = array(
+      'realm' => OG_SM_ACCESS_REALM_CONTENT,
+      'gid' => $group_unpublished->nid,
+      'grant_view' => 1,
+      'grant_update' => 1,
+      'grant_delete' => 1,
+      'priority' => 0,
+    );
     $expected_group_unpublished_content_unpublished = array(
       array(
         'realm' => OG_SM_ACCESS_REALM_SITE,
@@ -118,13 +145,21 @@ class OgSmAccessRecordsTestCase extends OgSmWebTestCase {
         'grant_delete' => 0,
         'priority' => 0,
       ),
+      array(
+        'realm' => OG_SM_ACCESS_REALM_CONTENT,
+        'gid' => $group_unpublished->nid,
+        'grant_view' => 1,
+        'grant_update' => 1,
+        'grant_delete' => 1,
+        'priority' => 0,
+      ),
     );
     $this->assertEqual(
       $expected_group_unpublished,
       og_sm_access_node_access_records($group_unpublished)
     );
     $this->assertEqual(
-      $expected_group_unpublished,
+      $expected_group_unpublished_content_published,
       og_sm_access_node_access_records($group_unpublished_content_published)
     );
     $this->assertEqual(
