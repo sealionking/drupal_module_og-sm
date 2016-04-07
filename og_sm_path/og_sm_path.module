@@ -5,6 +5,17 @@
  */
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_path_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'form_alter' && isset($implementations['og_sm_path'])) {
+    $group = $implementations['og_sm_path'];
+    unset($implementations['og_sm_path']);
+    $implementations['og_sm_path'] = $group;
+  }
+}
+
+/**
  * Implements hook_form_FORMID_alter().
  *
  * Adds the Site Path field to the Site node forms.

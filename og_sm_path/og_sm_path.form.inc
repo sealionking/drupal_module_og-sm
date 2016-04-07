@@ -32,6 +32,9 @@ function _og_sm_path_form_node_site_form_alter(array &$form, array &$form_state)
     '#element_validate' => array('_og_sm_path_field_site_path_validate'),
     '#field_prefix' => url('<front>', array('absolute' => TRUE)),
   );
+
+  // Disable access to the pathauto settings as we use the Site Path value here!
+  $form['path']['#access'] = FALSE;
 }
 
 /**
@@ -67,4 +70,10 @@ function _og_sm_path_field_site_path_validate($element, &$form_state, $form) {
     form_error($element, t('The Site path %site_path is already in use.', $args));
     return;
   }
+
+  // Force the path alias to manual set equal to the Site Path value.
+  $form_state['values']['path']['alias'] = $path;
+  $form_state['values']['path']['pathauto'] = 0;
+}
+
 }
