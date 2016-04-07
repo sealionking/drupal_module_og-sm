@@ -62,7 +62,7 @@ function _og_sm_path_field_site_path_validate($element, &$form_state, $form) {
   $site = $form['#node'];
   $paths = og_sm_variable_get_all_sites('path');
   $existing = array_search($path, $paths);
-  if ($existing && (empty($site->nid) || $site->nid !== $existing)) {
+  if ($existing && (empty($site->nid) || (int) $site->nid !== $existing)) {
     $args = array('%site_path' => $path);
     form_error($element, t('The Site path %site_path is already in use.', $args));
     return;
