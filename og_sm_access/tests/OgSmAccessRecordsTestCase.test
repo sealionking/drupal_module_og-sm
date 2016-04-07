@@ -62,7 +62,7 @@ class OgSmAccessRecordsTestCase extends OgSmWebTestCase {
     $this->assertNull(og_sm_access_node_access_records($group_unpublished_content_unpublished));
 
     // Test for Site group types.
-    og_sm_add_site_type($group_type);
+    og_sm_site_type_add($group_type);
 
     // Published Sites.
     $expected_group_published = array(

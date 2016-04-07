@@ -95,7 +95,7 @@ class OgSmContextTestCase extends OgSmWebTestCase {
 
     // Create the Site node.
     $this->siteType = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($this->siteType);
+    og_sm_site_type_add($this->siteType);
     variable_set('pathauto_node_' . $this->siteType . '_pattern', '[node:title]');
     $this->nodeSite = $this->ogSmCreateGroup($this->siteType);
     $this->nodeSitePath = drupal_get_path_alias('node/' . $this->nodeSite->nid);

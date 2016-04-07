@@ -50,7 +50,7 @@ class OgSmPathTokensCase extends OgSmWebTestCase {
 
     // Create the Site node with his path.
     $type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($type);
+    og_sm_site_type_add($type);
     $this->nodeSite = $this->ogSmCreateGroup($type);
     $this->nodePath = 'test-path-token';
     og_sm_path_set($this->nodeSite, $this->nodePath, FALSE);

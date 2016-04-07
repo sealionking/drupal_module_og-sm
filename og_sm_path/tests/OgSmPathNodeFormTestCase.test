@@ -48,7 +48,7 @@ class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
 
     // Test site node form.
     $site_type = $this->ogSmCreateGroupNodeType('is_site_type');
-    og_sm_add_site_type($site_type);
+    og_sm_site_type_add($site_type);
     $this->drupalGet('node/add/is-site-type');
     $this->assertFieldById('edit-site-path');
     $this->assertNoFieldById('edit-path-alias');

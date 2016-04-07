@@ -87,10 +87,10 @@ function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
 function og_sm_node_type_form_field_submit($form, $form_state) {
   $type = $form_state['values']['type'];
   if ((bool) $form_state['og_sm_node_type']) {
-    og_sm_add_site_type($type);
+    og_sm_site_type_add($type);
   }
   else {
-    og_sm_remove_site_type($type);
+    og_sm_site_type_remove($type);
   }
 }
 
@@ -231,7 +231,7 @@ function og_sm_is_site_type($type) {
  * @param string $type
  *   The content type to add.
  */
-function og_sm_add_site_type($type) {
+function og_sm_site_type_add($type) {
   $types = og_sm_get_site_types();
 
   if (!in_array($type, $types)) {
@@ -246,7 +246,7 @@ function og_sm_add_site_type($type) {
  * @param string $type
  *   The content type to remove.
  */
-function og_sm_remove_site_type($type) {
+function og_sm_site_type_remove($type) {
   $types = og_sm_get_site_types();
 
   if (in_array($type, $types)) {
@@ -442,7 +442,7 @@ function _og_sm_filter_sites_from_groups(array $groups) {
  */
 function og_sm_node_type_delete($info) {
   // Remove the content type from the list of Site types.
-  og_sm_remove_site_type($info->type);
+  og_sm_site_type_remove($info->type);
 }
 
 /**

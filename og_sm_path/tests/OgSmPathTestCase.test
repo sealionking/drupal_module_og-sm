@@ -33,7 +33,7 @@ class OgSmPathTestCase extends OgSmWebTestCase {
     parent::setUp($modules);
 
     $type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($type);
+    og_sm_site_type_add($type);
     $this->nodeSite = $this->ogSmCreateGroup($type);
   }
 

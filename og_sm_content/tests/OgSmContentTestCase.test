@@ -58,7 +58,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
   private function setUpContent() {
     // Create the site.
     $this->siteType = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($this->siteType);
+    og_sm_site_type_add($this->siteType);
     $this->site = $this->ogSmCreateGroup($this->siteType);
 
     // Create site content types.

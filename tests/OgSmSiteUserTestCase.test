@@ -50,7 +50,7 @@ class OgSmSiteUserTestCase extends OgSmWebTestCase {
     $this->assertEqual(array(), og_sm_user_get_sites($user_with_groups));
 
     // Make the group type a Site type.
-    og_sm_add_site_type($type_group);
+    og_sm_site_type_add($type_group);
 
     // Get all sites a user belongs to.
     $sites = og_sm_user_get_sites($user_with_groups);

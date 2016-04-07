@@ -245,7 +245,7 @@ class OgSmVariableTestCase extends OgSmWebTestCase {
    */
   public function testVariablesDeleteOnSiteDelete() {
     $content_type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($content_type);
+    og_sm_site_type_add($content_type);
     $site = $this->ogSmCreateGroup($content_type);
     $site_nid = $site->nid;
 

@@ -42,7 +42,7 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
     parent::setUp($modules);
 
     $site_type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($site_type);
+    og_sm_site_type_add($site_type);
     $this->nodeSite = $this->ogSmCreateGroup($site_type);
     $this->nodeSitePath = 'test-site-path';
     og_sm_path_set($this->nodeSite, $this->nodeSitePath, FALSE);

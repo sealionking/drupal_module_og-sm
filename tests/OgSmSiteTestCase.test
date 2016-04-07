@@ -39,13 +39,13 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     // Test og_sm_is_site.
     $this->assertFalse(og_sm_is_site($node));
     $this->assertFalse(og_sm_is_site($group));
-    og_sm_add_site_type($type_group);
+    og_sm_site_type_add($type_group);
     $this->assertTrue(og_sm_is_site($group));
 
     // Test og_sm_site_load.
     $site = og_sm_site_load($group->nid);
     $this->assertEqual($group->title, $site->title);
-    og_sm_remove_site_type($type_group);
+    og_sm_site_type_remove($type_group);
     $this->assertFalse(og_sm_site_load($group->nid));
 
     // Test og_sm_site_load with non-existing node id.
@@ -55,7 +55,7 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     $group2 = $this->ogSmCreateGroup($type_group);
     $group3 = $this->ogSmCreateGroup($type_group);
     $this->assertEqual(array(), og_sm_site_all_nids());
-    og_sm_add_site_type($type_group);
+    og_sm_site_type_add($type_group);
     $expected = array(
       $group->nid => $group->nid,
       $group2->nid => $group2->nid,
@@ -70,7 +70,7 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
   public function testFilterSitesFromGroups() {
     $type_is_group = $this->ogSmCreateGroupNodeType();
     $type_not_group = $this->ogSmCreateNodeType();
-    og_sm_add_site_type(self::TYPE_IS_GROUP);
+    og_sm_site_type_add(self::TYPE_IS_GROUP);
 
     $group1 = $this->ogSmCreateGroup($type_is_group);
     $group2 = $this->ogSmCreateGroup($type_is_group);
@@ -87,7 +87,7 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
    */
   public function testSiteAccessCallbacks() {
     $site_type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($site_type);
+    og_sm_site_type_add($site_type);
 
     // Path Auto support.
     module_load_include('inc', 'og_sm', 'og_sm.tokens');
