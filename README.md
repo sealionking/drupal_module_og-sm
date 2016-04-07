@@ -184,6 +184,16 @@ These functions can be used in Menu items ($account is optional):
   by Site node id and permission name.
 
 
+### Site node type action hooks
+The module triggers hooks when a node type is being added or removed as being a
+Site node type.
+
+* `hook_og_sm_site_type_add($type)` : Site node type is being added as a Site
+  type.
+* `hook_og_sm_site_type_remove($type)` : Site node type is no longer a Site
+  type.
+
+
 ### Site action hooks
 The module watches actions taken place on Site nodes and triggers its own hooks
 when an action happens:
@@ -196,7 +206,6 @@ when an action happens:
   prepared to being shown on the screen.
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
-* `hook_og_sm_site_update_alias($site)` : Site node alias is updated.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
 

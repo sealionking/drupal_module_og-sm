@@ -10,6 +10,30 @@
  */
 
 /**
+ * Act when a node type is added to the list of Site node type.
+ *
+ * @param string $type
+ *   The node type machine name.
+ *
+ * @see og_sm_site_type_add()
+ */
+function hook_og_sm_site_type_add($type) {
+
+}
+
+/**
+ * Act when a node type is removed from the list of Site node types.
+ *
+ * @param string $type
+ *   The node type machine name.
+ *
+ * @see og_sm_site_type_remove()
+ */
+function hook_og_sm_site_type_remove($type) {
+
+}
+
+/**
  * Act on a Site node being viewed.
  *
  * Will only be triggered when the node_view hook is triggered for a node type
@@ -85,21 +109,6 @@ function hook_og_sm_site_insert($site) {
  * @see hook_node_update()
  */
 function hook_og_sm_site_update($site) {
-
-}
-
-/**
- * Act on a Site node alias being changed.
- *
- * Will only be triggered when the node_update hook is triggered for a node type
- * that is a Site type & the path alias will change (auto or manually).
- *
- * @param object $site
- *   The Site node object.
- *
- * @see hook_node_update()
- */
-function hook_og_sm_site_update_alias($site) {
 
 }
 

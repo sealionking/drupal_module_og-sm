@@ -237,6 +237,7 @@ function og_sm_site_type_add($type) {
   if (!in_array($type, $types)) {
     $types[$type] = $type;
     variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+    module_invoke_all('og_sm_site_type_add', $type);
   }
 }
 
@@ -252,6 +253,7 @@ function og_sm_site_type_remove($type) {
   if (in_array($type, $types)) {
     unset($types[$type]);
     variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+    module_invoke_all('og_sm_site_type_remove', $type);
   }
 }
 
