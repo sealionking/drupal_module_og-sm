@@ -59,7 +59,7 @@ functionality.
 
 
 ## API
-### Get the Site path
+### Get the path of a Site
 Get the path of the given Site:
 ```php
 $path = og_sm_path($site);
@@ -70,6 +70,23 @@ $path = og_sm_path($site);
 Get the Site object by its path:
 ```php
 $site = og_sm_path_load_site($path);
+```
+
+
+### Set the path for a site
+Pragmatically set the path for a given site.
+
+This will:
+- Set the path variable for the site.
+- Set the path alias path for the given site.
+- Trigger a hook to inform the platform about the path change.
+```php
+og_sm_path_set($site, 'my-site-path');
+```
+
+Triggering the `og_sm_site_path_changed` can be disabled:
+```php
+og_sm_path_set($site, 'my-site-path', FALSE);
 ```
 
 

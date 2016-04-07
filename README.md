@@ -30,10 +30,15 @@ This module and its submodules adds functionality to support:
   - Path alias of the current page.
   - Paths starting with group/node/NID
 
-### Included in og_sm_pathauto module
-* Automatic path aliasing with the Site alias as staring point.
+### Included in og_sm_global_roles module
+* Dynamically grant user global roles when they have specific Site roles.
+
+### Included in og_sm_path module
+* Define a Site path prefix per Site.
+* Automatic path aliasing with the Site path as staring point.
 * Auto update of Site content aliases and Site related page aliases when the
-  Site alias changes.
+  Site path changes.
+* Altering the `group/node/nid/admin/...` paths to `[site-path]/admin/...`.
 
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
