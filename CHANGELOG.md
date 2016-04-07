@@ -6,6 +6,8 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 ### Added
 - DMOGSM-35 : Added new module og_sm_path that contains all logic about hosting
   a subsite on its own path (eg. `http://domain/[site-path]`).
+- DMOGSM-35 : Added OG Context Site Path handler to detect context based on the
+  current path (or its alias) starting with a known Site Path value.
 
 ### Changed
 - DMOGSM-35 : Replaced the `og_sm_site_path()` function by `og_sm_path()`.
@@ -16,6 +18,8 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 - DMOGSM-35 : Removed the og_sm_pathauto module, all logic about using Site
   paths is now in the og_sm_path module.
 - DMOGSM-35 : Removed the `og_sm_site_path_permission_access()` function.
+- DMOGSM-35 : Removed the OG Context Site Alias handler as it is replaced by
+  the Site Path handler.
 
 ### Fixed
 - DMOGSM-11 : Added support for the addanother module so it uses the proper

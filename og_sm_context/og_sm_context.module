@@ -12,11 +12,6 @@
 function og_sm_context_og_context_negotiation_info() {
   $providers = array();
 
-  $providers['og_sm_context_alias'] = array(
-    'name' => t('Site Alias'),
-    'description' => t('Determine Site context based on the fact that the current URL starts with the path alias of a Site node.'),
-    'callback' => 'og_sm_context_handler_alias',
-  );
   $providers['og_sm_context_node'] = array(
     'name' => t('Site Content'),
     'description' => t('Determine Site context based on the fact that we are on a Site page or a Site content page.'),
@@ -29,44 +24,6 @@ function og_sm_context_og_context_negotiation_info() {
   );
 
   return $providers;
-}
-
-/**
- * Tries to get the context based on the first part of the URL.
- *
- * If the first part is the alias of a Site, that Site becomes the active
- * context.
- *
- * @return array|NULL
- *   Contexts grouped by the entity type.
- *
- * @see og_sm_context_negotiation_info
- */
-function og_sm_context_handler_alias() {
-  // Get the alias of the current URL.
-  $page_alias = drupal_get_path_alias(current_path());
-  $parts = explode('/', $page_alias);
-  $site_alias = reset($parts);
-
-  // Get the normal path by the possible Site alias.
-  $site_path = drupal_get_normal_path($site_alias);
-  if (!$site_path) {
-    return NULL;
-  }
-
-  // Get the site_nid from the path.
-  preg_match('#^node/([0-9]+)$#', $site_path, $parts);
-  if (empty($parts[1])) {
-    return NULL;
-  }
-
-  // Get the Site.
-  $site = og_sm_site_load($parts[1]);
-  if (!$site) {
-    return NULL;
-  }
-
-  return array('node' => array((int) $site->nid));
 }
 
 /**

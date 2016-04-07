@@ -107,33 +107,6 @@ class OgSmContextTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Test the Context Alias handler that reacts on aliases like [site-path]/...
-   */
-  public function testOgContextHandlerAlias() {
-    // Content outside Site context.
-    $_GET['q'] = 'node/' . $this->nodeGlobal->nid;
-    $this->assertNull(og_sm_context_handler_alias());
-    $_GET['q'] = 'node/' . $this->nodeGroup->nid;
-    $this->assertNull(og_sm_context_handler_alias());
-    $_GET['q'] = 'node/' . $this->nodeGroupContent->nid;
-    $this->assertNull(og_sm_context_handler_alias());
-
-    // Test Site & Site content.
-    $expected = array('node' => array((int) $this->nodeSite->nid));
-
-    $_GET['q'] = 'node/' . $this->nodeSite->nid;
-    $this->assertEqual($expected, og_sm_context_handler_alias());
-    $_GET['q'] = 'node/' . $this->nodeSiteContent->nid;
-    $this->assertEqual($expected, og_sm_context_handler_alias());
-
-    // Test with custom paths.
-    $_GET['q'] = 'whatever/foo/bar/biz/baz';
-    $this->assertNull(og_sm_context_handler_alias());
-    $_GET['q'] = $this->nodeSitePath . '/whatever/foo/bar/biz/baz';
-    $this->assertEqual($expected, og_sm_context_handler_alias());
-  }
-
-  /**
    * Test Context Content handler that reacts on paths as node/[nid](/[action]).
    */
   public function testOgContextHandlerContent() {

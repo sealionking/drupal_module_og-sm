@@ -67,7 +67,8 @@ See installation instructions.
    - Put the "**Site Path**" detection method on the **first** place.
    If the og_sm_context module is used, make sure that the "**Site Path**"
    method is always set first.
-4. Delete and regenerate all content aliases.
+4. Update all existing Sites: edit them and set their Site Path value.
+5. Delete and regenerate all content aliases.
 
 
 ### Dependencies
