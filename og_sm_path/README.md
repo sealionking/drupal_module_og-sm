@@ -77,14 +77,15 @@ $site = og_sm_path_load_site($path);
 Pragmatically set the path for a given site.
 
 This will:
-- Set the path variable for the site.
-- Set the path alias path for the given site.
-- Trigger a hook to inform the platform about the path change.
+- Check if the new path is different from the current if so it will:
+  - Set the path variable for the site.
+  - Trigger a hook `og_sm_site_path_change` to inform the platform about the
+    path change.
 ```php
 og_sm_path_set($site, 'my-site-path');
 ```
 
-Triggering the `og_sm_site_path_changed` can be disabled:
+Triggering the `og_sm_site_path_change` can be disabled:
 ```php
 og_sm_path_set($site, 'my-site-path', FALSE);
 ```
@@ -96,8 +97,10 @@ when an action happens:
 
 * `hook_og_sm_site_path_change($site)` : Site node path has changed.
 
-> NOTE : The hooks can be implemented in a `modulename.og_sm.inc` file
-> instead of the modulename.module file.
+> The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
 
 
 
