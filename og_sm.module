@@ -11,6 +11,26 @@ define('OG_SM_VARIABLE_GROUP_TYPES', 'og_sm_node_types');
 define('OG_SM_PERMISSION_SITE_ADMIN', 'administer site');
 
 /**
+ * Implements hook_hook_info().
+ */
+function og_sm_hook_info() {
+  $group = array('group' => 'og_sm');
+
+  $hooks = array(
+    'og_sm_site_type_add' => $group,
+    'og_sm_site_type_remove' => $group,
+    'og_sm_site_view' => $group,
+    'og_sm_site_presave' => $group,
+    'og_sm_site_prepare' => $group,
+    'og_sm_site_insert' => $group,
+    'og_sm_site_update' => $group,
+    'og_sm_site_delete' => $group,
+  );
+
+  return $hooks;
+}
+
+/**
  * Implements hook_og_permission().
  */
 function og_sm_og_permission() {
@@ -23,7 +43,6 @@ function og_sm_og_permission() {
     ),
   );
 }
-
 
 /**
  * Implements hook_form_FORM_ID_alter().

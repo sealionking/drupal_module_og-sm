@@ -193,6 +193,12 @@ Site node type.
 * `hook_og_sm_site_type_remove($type)` : Site node type is no longer a Site
   type.
 
+> **TIP** : The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+>
+> The recommended place is in the `….og_sm.inc` file as it keeps your `.module`
+> cleaner and less code to load in memory.
+
 
 ### Site action hooks
 The module watches actions taken place on Site nodes and triggers its own hooks
@@ -207,6 +213,12 @@ when an action happens:
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
+
+> **TIP** : The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+>
+> The recommended place is in the `….og_sm.inc` file as it keeps your `.module`
+> cleaner and less code to load in memory.
 
 
 
