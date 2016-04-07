@@ -76,4 +76,30 @@ function _og_sm_path_field_site_path_validate($element, &$form_state, $form) {
   $form_state['values']['path']['pathauto'] = 0;
 }
 
+/**
+ * Alter the Pathauto patterns form.
+ *
+ * Replace the patterns for Site content types by a message.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ *
+ * @see og_sm_pathauto_form_node_form_alter()
+ */
+function _og_sm_path_form_pathauto_patterns_form_alter(array &$form, array &$form_state) {
+  $site_types = og_sm_get_site_types();
+  foreach ($site_types as $type) {
+    $key = 'pathauto_node_' . $type . '_pattern';
+    if (!isset($form['node'][$key])) {
+      continue;
+    }
+
+    $form['node'][$key]['#type'] = 'item';
+    $form['node'][$key]['#markup'] = t(
+      'The %type node type is a Site type, these are aliased using the Site path settings. The path is set in the create/update node form.',
+      array('%type' => $type)
+    );
+  }
 }
