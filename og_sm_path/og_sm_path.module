@@ -84,7 +84,7 @@ function og_sm_path_load_site($path) {
  */
 function og_sm_path_set($site, $path, $trigger_hook = TRUE) {
   $existing = og_sm_variable_get($site->nid, 'path');
-  if ($existing === $site->site_path) {
+  if ($existing === $path) {
     // No change.
     return;
   }
