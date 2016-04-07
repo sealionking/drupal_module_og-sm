@@ -177,8 +177,6 @@ These functions can be used in Menu items ($account is optional):
   node and permission name.
 * `og_sm_site_nid_permission_access($site_nid, $permission, $account)` : Check
   by Site node id and permission name.
-* `og_sm_site_path_permission_access($site_path, $permission, $accont)` : Check
-  by Site path alias and permission name.
 
 
 ### Site action hooks
