@@ -46,12 +46,29 @@ Install the [Extended Path Aliases][link-path_alias_xt] module to provide this
 functionality.
 
 
+### OG Context provider by Site path
+Context provider to detect the Group context based on the Site path of the
+current page.
+
+It will check if:
+- The path alias (if any) starts with a known Site path.
+- The path (if no alias) starts with a known Site path.
+
+Content created within the Site needs to get a path prefixed with the Site path.
+See installation instructions.
+
 
 ## Installation
 1. Enable the module.
 2. Configure the alias for content on admin/config/search/path/patterns:
-   - Site node type : `[node:site-path]`.
-   - Site content types : `[node:site-path]/...`
+   - Overall or per Site content types : `[node:site-path]/...`
+3. Setup the OG context providers on admin/config/group/context:
+   - Enable the "**Site Path**" detection method.
+   - Put the "**Site Path**" detection method on the **first** place.
+   If the og_sm_context module is used, make sure that the "**Site Path**"
+   method is always set first.
+4. Delete and regenerate all content aliases.
+
 
 ### Dependencies
 * Organic Groups Site Manager

@@ -164,3 +164,46 @@ function og_sm_path_admin_menu_output_alter(&$content) {
     );
   }
 }
+
+/**
+ * Implements hook_og_context_negotiation_info().
+ *
+ * Add context negotiation info based on the path alias.
+ */
+function og_sm_path_og_context_negotiation_info() {
+  $providers = array();
+
+  $providers['og_sm_context_path'] = array(
+    'name' => t('Site Path'),
+    'description' => t('Determine Site context based on the fact that the current URL starts with the Site path of a Site node.'),
+    'callback' => 'og_sm_path_context_handler_path',
+  );
+
+  return $providers;
+}
+
+/**
+ * Tries to get the context based on the first part of the URL.
+ *
+ * If the first part is the path of a Site, that Site becomes the active
+ * context.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_negotiation_info
+ */
+function og_sm_path_context_handler_path() {
+  // Get the alias of the current URL.
+  $page_alias = drupal_get_path_alias(current_path());
+  $parts = explode('/', $page_alias);
+  $site_path = reset($parts);
+
+  // Get the normal path by the possible Site alias.
+  $site = og_sm_path_load_site($site_path);
+  if (!$site) {
+    return NULL;
+  }
+
+  return array('node' => array((int) $site->nid));
+}

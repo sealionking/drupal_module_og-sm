@@ -9,7 +9,8 @@ dependencies[] = og_sm_variable
 dependencies[] = pathauto
 
 ; Tests.
-files[] = tests/OgSmPathTestCase.test
+files[] = tests/OgSmPathContextTestCase.test
 files[] = tests/OgSmPathNodeFormTestCase.test
+files[] = tests/OgSmPathTestCase.test
 files[] = tests/OgSmPathTokensTestCase.test
 files[] = tests/OgSmPathUrlAlterTestCase.test
