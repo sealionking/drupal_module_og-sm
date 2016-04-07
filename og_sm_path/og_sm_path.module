@@ -173,3 +173,24 @@ function og_sm_path_url_inbound_alter(&$path, $original_path, $path_language) {
     }
   }
 }
+
+/**
+ * Implements hook_admin_menu_output_alter().
+ */
+function og_sm_path_admin_menu_output_alter(&$content) {
+  // Only if there is an active Site.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Make sure that the destination of the logout link stays within the current
+  // Site.
+  if (isset($content['account']['logout'])) {
+    $content['account']['logout']['#options'] = array(
+      'query' => array(
+        'destination' => og_sm_path($site),
+      ),
+    );
+  }
+}

@@ -279,8 +279,6 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
     return;
   }
 
-  $site_path = og_sm_site_path($site);
-
   // Clear out the empty item when showing Site menu.
   if (!empty($content['responsive-menu']['admin/index'])) {
     unset($content['responsive-menu']['admin/index']);
@@ -325,15 +323,6 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
   // Remove the shortcuts.
   if (isset($content['shortcut'])) {
     unset($content['shortcut']);
-  }
-
-  // Replace the sign out link.
-  if (isset($content['account']['logout'])) {
-    $content['account']['logout']['#options'] = array(
-      'query' => array(
-        'destination' => $site_path,
-      ),
-    );
   }
 }
 
