@@ -30,11 +30,10 @@ Following modules are required to use the Sites functionality:
 This module uses 2 hooks to collect what info to show in the menu and the
 overview page.
 
-> **TIP** : The hooks can be put in the `yourmodule.module` OR in the
+> The hooks can be put in the `yourmodule.module` OR in the
 > `yourmodule.og_sm.inc` file.
->
-> The recommended place is in the `….og_sm.inc` file as it keeps your `.module`
-> cleaner and less code to load in memory.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
 
 
 ### hook_og_sm_admin_menu()

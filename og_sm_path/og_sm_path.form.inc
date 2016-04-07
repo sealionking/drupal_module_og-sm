@@ -71,9 +71,9 @@ function _og_sm_path_field_site_path_validate($element, &$form_state, $form) {
     return;
   }
 
-  // Force the path alias to manual set equal to the Site Path value.
+  // Force the path alias to be automatically.
   $form_state['values']['path']['alias'] = $path;
-  $form_state['values']['path']['pathauto'] = 0;
+  $form_state['values']['path']['pathauto'] = 1;
 }
 
 /**
