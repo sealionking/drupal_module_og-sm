@@ -2,11 +2,16 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
+## [Unreleased]
+### Added
+- DMOGSM-19 : Added the og_sm_theme module to configure a theme per Site.
+
+
+
 ## [7.x-1.0-alpha5]
 ### Fixed
 - DMOGSM-17 : Fixed broken global roles due to using url_outbound/inbound_alter.
-### Added
-- DMOGSM-19 : Added the og_sm_theme module to configure a theme per Site.
+
 
 
 ## [7.x-1.0-alpha4]
