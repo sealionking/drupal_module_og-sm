@@ -4,6 +4,7 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 ## [Unreleased]
 ### Added
+- DMOGSM-19 : Added the og_sm_theme module to configure a theme per Site.
 - DMOGSM-35 : Added new module og_sm_path that contains all logic about hosting
   a subsite on its own path (eg. `http://domain/[site-path]`).
 - DMOGSM-35 : Added OG Context Site Path handler to detect context based on the
@@ -29,7 +30,6 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 - DMOGSM-33 : Fixed responsive version of the node/add menu.
 - DMOGSM-35 : Fixed auto path alias generating by setting the Site path as a
   separate field instead of relying on pathauto to generate one.
-
 
 
 
