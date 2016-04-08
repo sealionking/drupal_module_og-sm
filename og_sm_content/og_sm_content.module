@@ -5,6 +5,17 @@
  */
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_content_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'form_alter') {
+    $group = $implementations['og_sm_content'];
+    unset($implementations['og_sm_content']);
+    $implementations['og_sm_content'] = $group;
+  }
+}
+
+/**
  * Implements hook_admin_paths().
  */
 function og_sm_content_admin_paths() {
@@ -90,6 +101,18 @@ function og_sm_content_menu() {
   }
 
   return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function og_sm_content_menu_alter(&$items) {
+  // Add support for the addanother module.
+  $path = 'node/%node/addanother';
+  if (isset($items[$path])) {
+    $items[$path]['page callback'] = 'og_sm_content_addanother_goto';
+    $items[$path]['file'] = 'modules/addanother.inc';
+  }
 }
 
 /**
@@ -193,16 +216,32 @@ function og_sm_content_admin_menu_output_alter(&$content) {
     return;
   }
 
-  // Get the menu items to show.
-  $items = og_sm_content_admin_menu_items($site);
-
-  // Remove the node/add item if no items to show.
-  if (!$items && isset($content['menu']['node/add'])) {
-    unset($content['menu']['node/add']);
+  // Only if there are node/add menu's.
+  if (empty($content['menu']['node/add'])
+    && empty($content['responsive-menu']['node/add'])
+  ) {
     return;
   }
 
-  $content['menu']['node/add'] = $items;
+  // Get the menu items to show.
+  $items = og_sm_content_admin_menu_items($site);
+
+  // Update desktop & responsive menu.
+  $menu_types = array('menu', 'responsive-menu');
+  foreach ($menu_types as $menu_type) {
+    // Only if the menu item exists.
+    if (!isset($content[$menu_type]['node/add'])) {
+      continue;
+    }
+
+    // Remove if no items.
+    if (empty($items)) {
+      unset($content[$menu_type]['node/add']);
+      continue;
+    }
+
+    $content[$menu_type]['node/add'] = $items;
+  }
 }
 
 /**
@@ -253,11 +292,12 @@ function og_sm_content_admin_menu_items($site) {
  * Implements hook_url_outbound_alter().
  */
 function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
+  // Support for og_sm_path module:
   // Rewrite all outgoing site admin paths for paths that do not have an alias.
-  if (preg_match('#^group/node/([0-9]+)(/content.*)#', $path, $parts)) {
+  if (module_exists('og_sm_path') && preg_match('#^group/node/([0-9]+)(/content.*)#', $path, $parts)) {
     $site = og_sm_site_load($parts[1]);
     if ($site) {
-      $path = og_sm_site_path($site) . $parts[2];
+      $path = og_sm_path($site) . $parts[2];
     }
   }
 }
@@ -266,11 +306,23 @@ function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
  * Implements hook_url_inbound_alter().
  */
 function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language) {
+  // Support for og_sm_path module:
   // Translate an admin path without alias back to its original path.
-  if (preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
-    $site = og_sm_site_load_by_path($parts[1]);
+  if (module_exists('og_sm_path') && preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
+    $site = og_sm_path_load_site($parts[1]);
     if ($site) {
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
     }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function og_sm_content_form_alter(&$form, &$form_state, $form_id) {
+  // Add support for addanother module buttons within a Site context.
+  if (isset($form['actions']['addanother'])) {
+    form_load_include($form_state, 'inc', 'og_sm_content', 'modules/addanother');
+    og_sm_content_form_alter_addanother($form, $form_state);
   }
 }

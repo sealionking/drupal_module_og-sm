@@ -11,6 +11,26 @@ define('OG_SM_VARIABLE_GROUP_TYPES', 'og_sm_node_types');
 define('OG_SM_PERMISSION_SITE_ADMIN', 'administer site');
 
 /**
+ * Implements hook_hook_info().
+ */
+function og_sm_hook_info() {
+  $group = array('group' => 'og_sm');
+
+  $hooks = array(
+    'og_sm_site_type_add' => $group,
+    'og_sm_site_type_remove' => $group,
+    'og_sm_site_view' => $group,
+    'og_sm_site_presave' => $group,
+    'og_sm_site_prepare' => $group,
+    'og_sm_site_insert' => $group,
+    'og_sm_site_update' => $group,
+    'og_sm_site_delete' => $group,
+  );
+
+  return $hooks;
+}
+
+/**
  * Implements hook_og_permission().
  */
 function og_sm_og_permission() {
@@ -23,7 +43,6 @@ function og_sm_og_permission() {
     ),
   );
 }
-
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -87,10 +106,10 @@ function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
 function og_sm_node_type_form_field_submit($form, $form_state) {
   $type = $form_state['values']['type'];
   if ((bool) $form_state['og_sm_node_type']) {
-    og_sm_add_site_type($type);
+    og_sm_site_type_add($type);
   }
   else {
-    og_sm_remove_site_type($type);
+    og_sm_site_type_remove($type);
   }
 }
 
@@ -115,51 +134,6 @@ function og_sm_site_load($site_nid) {
   }
 
   return $site;
-}
-
-/**
- * Get the path alias of a Site node.
- *
- * This is a wrapper around the drupal_get_path_alias() function.
- * It uses the language of the Site to get the proper path.
- *
- * @param object $site
- *   The Site node to get the path alias for.
- *
- * @return string
- *   The alias.
- */
-function og_sm_site_path($site) {
-  $aliases = drupal_static(__FUNCTION__);
-
-  if (!isset($aliases[$site->nid])) {
-    $language = entity_language('node', $site);
-    $aliases[$site->nid] = _og_sm_site_alias_by_nid($site->nid, $language);
-  }
-
-  return $aliases[$site->nid];
-}
-
-/**
- * Load a Site node by it's path.
- *
- * Is also used in hook_menu as %site_path wildcard.
- *
- * @param string $path
- *   The path to load the site for.
- *
- * @return object|FALSE
- *   The Site node (if any).
- */
-function og_sm_site_load_by_path($path) {
-  global $language;
-
-  $site_nid = _og_sm_site_nid_by_alias($path, $language->language);
-  if (!$site_nid) {
-    return FALSE;
-  }
-
-  return og_sm_site_load($site_nid);
 }
 
 /**
@@ -216,28 +190,6 @@ function og_sm_site_permission_access($site, $permission, $account = NULL) {
  */
 function og_sm_site_nid_permission_access($site_nid, $permission, $account = NULL) {
   return og_user_access('node', $site_nid, $permission, $account);
-}
-
-/**
- * Check access to a OG permission for a Site Path alias.
- *
- * @param string $site_path
- *   The Site path.
- * @param string $permission
- *   The permission name.
- * @param object $account
- *   The optional account to check for.
- *
- * @return bool
- *   Has access.
- */
-function og_sm_site_path_permission_access($site_path, $permission, $account = NULL) {
-  $site = og_sm_site_load_by_path($site_path);
-  if (!$site) {
-    return FALSE;
-  }
-
-  return og_sm_site_permission_access($site, $permission, $account);
 }
 
 /**
@@ -298,12 +250,13 @@ function og_sm_is_site_type($type) {
  * @param string $type
  *   The content type to add.
  */
-function og_sm_add_site_type($type) {
+function og_sm_site_type_add($type) {
   $types = og_sm_get_site_types();
 
   if (!in_array($type, $types)) {
     $types[$type] = $type;
     variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+    module_invoke_all('og_sm_site_type_add', $type);
   }
 }
 
@@ -313,12 +266,13 @@ function og_sm_add_site_type($type) {
  * @param string $type
  *   The content type to remove.
  */
-function og_sm_remove_site_type($type) {
+function og_sm_site_type_remove($type) {
   $types = og_sm_get_site_types();
 
   if (in_array($type, $types)) {
     unset($types[$type]);
     variable_set(OG_SM_VARIABLE_GROUP_TYPES, $types);
+    module_invoke_all('og_sm_site_type_remove', $type);
   }
 }
 
@@ -509,7 +463,7 @@ function _og_sm_filter_sites_from_groups(array $groups) {
  */
 function og_sm_node_type_delete($info) {
   // Remove the content type from the list of Site types.
-  og_sm_remove_site_type($info->type);
+  og_sm_site_type_remove($info->type);
 }
 
 /**

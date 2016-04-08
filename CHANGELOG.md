@@ -2,6 +2,37 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
+## [7.x-1.0-alpha6]
+### Added
+- DMOGSM-19 : Added the og_sm_theme module to configure a theme per Site.
+- DMOGSM-35 : Added new module og_sm_path that contains all logic about hosting
+  a subsite on its own path (eg. `http://domain/[site-path]`).
+- DMOGSM-35 : Added OG Context Site Path handler to detect context based on the
+  current path (or its alias) starting with a known Site Path value.
+
+### Changed
+- DMOGSM-35 : Replaced the `og_sm_site_path()` function by `og_sm_path()`.
+- DMOGSM-35 : Replaced the `og_sm_site_load_by_path()` function by
+  `og_sm_path_load_site()`.
+
+### Removed
+- DMOGSM-35 : Removed the og_sm_pathauto module, all logic about using Site
+  paths is now in the og_sm_path module.
+- DMOGSM-35 : Removed the `og_sm_site_path_permission_access()` function.
+- DMOGSM-35 : Removed the OG Context Site Alias handler as it is replaced by
+  the Site Path handler.
+
+### Fixed
+- DMOGSM-11 : Added support for the addanother module so it uses the proper
+  content creation paths within a Site context.
+- PPL-309 : Fixed logout link in the admin bar + fixed home link in the
+  responsive version of the admin bar.
+- DMOGSM-33 : Fixed responsive version of the node/add menu.
+- DMOGSM-35 : Fixed auto path alias generating by setting the Site path as a
+  separate field instead of relying on pathauto to generate one.
+
+
+
 ## [7.x-1.0-alpha5]
 ### Fixed
 - DMOGSM-17 : Fixed broken global roles due to using url_outbound/inbound_alter.
@@ -54,6 +85,7 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha6%0D7.x-1.0-alpha5#diff
 [7.x-1.0-alpha5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha5%0D7.x-1.0-alpha4#diff
 [7.x-1.0-alpha4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha4%0D7.x-1.0-alpha3#diff
 [7.x-1.0-alpha3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha3%0D7.x-1.0-alpha2#diff

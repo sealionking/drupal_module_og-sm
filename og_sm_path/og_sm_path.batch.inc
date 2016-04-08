@@ -10,15 +10,15 @@
  * @param object $site
  *   The Site to create the batch for.
  */
-function og_sm_pathauto_site_alias_update_batch($site) {
+function og_sm_path_site_alias_update_batch($site) {
   $params = array($site->nid);
-  $file = drupal_get_path('module', 'og_sm_pathauto') . '/og_sm_pathauto.batch.inc';
+  $file = drupal_get_path('module', 'og_sm_path') . '/og_sm_path.batch.inc';
 
   $batch = array(
     'title' => t('Update Site content aliases'),
     'operations' => array(
-      array('og_sm_pathauto_site_alias_update_content_process', $params),
-      array('og_sm_pathauto_site_alias_update_menu_process', $params),
+      array('og_sm_path_site_alias_update_content_process', $params),
+      array('og_sm_path_site_alias_update_menu_process', $params),
     ),
     'file' => $file,
   );
@@ -36,14 +36,14 @@ function og_sm_pathauto_site_alias_update_batch($site) {
  * @param array $context
  *   The process context.
  *
- * @see og_sm_pathauto_site_alias_update_batch
+ * @see og_sm_path_site_alias_update_batch
  */
-function og_sm_pathauto_site_alias_update_content_process($site_nid, &$context) {
+function og_sm_path_site_alias_update_content_process($site_nid, &$context) {
   $site = og_sm_site_load($site_nid);
-  _og_sm_pathauto_site_alias_update_content_init($site->nid, $context);
+  _og_sm_path_site_alias_update_content_init($site->nid, $context);
 
   // Get the group memberships.
-  $site_memberships = _og_sm_pathauto_site_alias_update_content_get_memberships($site->nid, $context);
+  $site_memberships = _og_sm_path_site_alias_update_content_get_memberships($site->nid, $context);
   if (!$site_memberships) {
     $context['finished'] = 1;
     return;
@@ -82,9 +82,10 @@ function og_sm_pathauto_site_alias_update_content_process($site_nid, &$context) 
  * @param array $context
  *   The process context.
  *
- * @see og_sm_pathauto_site_alias_update_batch
+ * @see og_sm_path_site_alias_update_batch
  */
-function og_sm_pathauto_site_alias_update_menu_process($site_nid, &$context) {
+function og_sm_path_site_alias_update_menu_process($site_nid, &$context) {
+  menu_rebuild();
   menu_cache_clear_all();
 
   if (module_exists('admin_menu')) {
@@ -103,9 +104,9 @@ function og_sm_pathauto_site_alias_update_menu_process($site_nid, &$context) {
  * @param array $context
  *   Batch API context.
  *
- * @see og_sm_pathauto_site_alias_update_content_process
+ * @see og_sm_path_site_alias_update_content_process
  */
-function _og_sm_pathauto_site_alias_update_content_init($site_nid, &$context) {
+function _og_sm_path_site_alias_update_content_init($site_nid, &$context) {
   // Initiate the batch.
   if (empty($context['sandbox'])) {
     // Count relevant nodes.
@@ -134,9 +135,9 @@ function _og_sm_pathauto_site_alias_update_content_init($site_nid, &$context) {
  * @return array[OgMembership]
  *   Array of OgMembership objects.
  *
- * @see og_sm_pathauto_site_alias_update_content_process
+ * @see og_sm_path_site_alias_update_content_process
  */
-function _og_sm_pathauto_site_alias_update_content_get_memberships($site_nid, &$context) {
+function _og_sm_path_site_alias_update_content_get_memberships($site_nid, &$context) {
   $limit = 50;
 
   // Retrieve the next batch.

@@ -63,7 +63,7 @@ class OgSmAccessGrantsTestCase extends OgSmWebTestCase {
     $this->assertEqual($grants, og_sm_access_node_grants($group_manager, 'view'));
 
     // Make group a Site type.
-    og_sm_add_site_type($group_type);
+    og_sm_site_type_add($group_type);
 
     // Group is published, grants should be default.
     $this->assertEqual($grants, og_sm_access_node_grants($anonymous, 'view'));
@@ -82,7 +82,7 @@ class OgSmAccessGrantsTestCase extends OgSmWebTestCase {
   public function testManageSiteContentAccessGrants() {
     // Content types.
     $site_type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($site_type);
+    og_sm_site_type_add($site_type);
 
     // Create Site.
     $site = $this->ogSmCreateGroup($site_type);

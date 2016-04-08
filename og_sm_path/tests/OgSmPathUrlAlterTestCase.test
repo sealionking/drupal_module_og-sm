@@ -1,25 +1,34 @@
 <?php
 /**
  * @file
- * Tests for the og_sm_context module.
+ * Tests for the og_sm_path module.
  */
 
 /**
- * Tests about the node type settings.
+ * Tests about the URL in/outbound alters.
  */
-class OgSmPathautoTestCase extends OgSmWebTestCase {
+class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
   /**
    * The Site node to test with.
+   *
+   * @var object
    */
   private $nodeSite;
+
+  /**
+   * The Site node path.
+   *
+   * @var string
+   */
+  private $nodeSitePath;
 
   /**
    * {@inheritdoc}
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Pathauto'),
-      'description' => t('Tests Site Pathauto functionality.'),
+      'name' => t('Site Path URL alter'),
+      'description' => t('Tests Site Path URL in/outbound alters.'),
       'group' => t('Organic Groups Site Manager'),
     );
   }
@@ -29,19 +38,20 @@ class OgSmPathautoTestCase extends OgSmWebTestCase {
    */
   public function setUp() {
     // Enable required modules.
-    $modules = array('og_sm_pathauto');
+    $modules = array('og_sm_path');
     parent::setUp($modules);
 
     $site_type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($site_type);
+    og_sm_site_type_add($site_type);
     $this->nodeSite = $this->ogSmCreateGroup($site_type);
+    $this->nodeSitePath = 'test-site-path';
+    og_sm_path_set($this->nodeSite, $this->nodeSitePath, FALSE);
   }
 
   /**
    * Test the hook_url_outbound_alter() implementation.
    */
   public function testUrlOutboundAlter() {
-    $site_path = og_sm_site_path($this->nodeSite);
     $site_nid = $this->nodeSite->nid;
 
     // Test rewriting for non Site paths.
@@ -51,15 +61,15 @@ class OgSmPathautoTestCase extends OgSmWebTestCase {
         'destination' => $path,
       ),
     );
-    og_sm_pathauto_url_outbound_alter($path, $options, 'foo/bar');
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($path_expected, $path);
     $this->assertEqual($options_expected, $options);
 
     // Test rewriting admin path rewrite for a Site.
     $path = 'group/node/' . $site_nid . '/admin/test/me/456';
-    $path_expected = $site_path . '/admin/test/me/456';
+    $path_expected = $this->nodeSitePath . '/admin/test/me/456';
     $options = array();
-    og_sm_pathauto_url_outbound_alter($path, $options, 'foo/bar');
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($path_expected, $path);
 
     // Test rewriting the destination for admin paths.
@@ -70,10 +80,10 @@ class OgSmPathautoTestCase extends OgSmWebTestCase {
     );
     $options_expected = array(
       'query' => array(
-        'destination' => $site_path . '/admin/test/me/456',
+        'destination' => $this->nodeSitePath . '/admin/test/me/456',
       ),
     );
-    og_sm_pathauto_url_outbound_alter($path, $options, 'foo/bar');
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($options_expected, $options);
   }
 
@@ -84,14 +94,13 @@ class OgSmPathautoTestCase extends OgSmWebTestCase {
     // Not a Site path.
     $path = 'content/test/45687266/admin/content';
     $path_expected = $path;
-    og_sm_pathauto_url_inbound_alter($path, 'foo/bar', 'en');
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'en');
     $this->assertEqual($path_expected, $path);
 
-
     // Site path.
-    $path = og_sm_site_path($this->nodeSite) . '/admin/people/edit/456';
+    $path = $this->nodeSitePath . '/admin/people/edit/456';
     $path_expected = 'group/node/' . $this->nodeSite->nid . '/admin/people/edit/456';
-    og_sm_pathauto_url_inbound_alter($path, 'foo/bar', 'nl');
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
   }
 

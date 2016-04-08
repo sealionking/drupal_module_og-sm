@@ -1,0 +1,209 @@
+<?php
+/**
+ * @file
+ * Module to support Site paths.
+ */
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_path_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'form_alter' && isset($implementations['og_sm_path'])) {
+    $group = $implementations['og_sm_path'];
+    unset($implementations['og_sm_path']);
+    $implementations['og_sm_path'] = $group;
+  }
+}
+
+/**
+ * Implements hook_form_FORMID_alter().
+ *
+ * Adds the Site Path field to the Site node forms.
+ */
+function og_sm_path_form_node_form_alter(&$form, &$form_state) {
+  if (og_sm_is_site($form['#node'])) {
+    form_load_include($form_state, 'inc', 'og_sm_path', 'og_sm_path.form');
+    _og_sm_path_form_node_site_form_alter($form, $form_state);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function og_sm_path_form_pathauto_patterns_form_alter(&$form, &$form_state) {
+  form_load_include($form_state, 'inc', 'og_sm_path', 'og_sm_path.form');
+  _og_sm_path_form_pathauto_patterns_form_alter($form, $form_state);
+}
+
+/**
+ * Get the path for Site node.
+ *
+ * @param object $site
+ *   The Site node to get the path for.
+ *
+ * @return string
+ *   The Site path.
+ */
+function og_sm_path($site) {
+  return og_sm_variable_get($site->nid, 'path');
+}
+
+/**
+ * Get the Site by its path.
+ *
+ * @param string $path
+ *   The path to load the Site for.
+ *
+ * @return object|FALSE
+ *   The Site object.
+ */
+function og_sm_path_load_site($path) {
+  $paths = og_sm_variable_get_all_sites('path');
+  $site_nid = array_search($path, $paths);
+  if (!$site_nid) {
+    return FALSE;
+  }
+
+  return og_sm_site_load($site_nid);
+}
+
+/**
+ * Set a new path for a Site.
+ *
+ * This will also trigger the og_sm_path_change hook.
+ *
+ * @param object $site
+ *   The Site to set the path for.
+ * @param string $path
+ *   The path to set.
+ * @param bool $trigger_hook
+ *   By default the og_sm_site_path_change hook will be called when the path is
+ *   changed for a Site. This is not always wanted (eg. when a new Site is
+ *   created). Set the parameter to FALSE to prevent the hook from being
+ *   triggered.
+ */
+function og_sm_path_set($site, $path, $trigger_hook = TRUE) {
+  $existing = og_sm_variable_get($site->nid, 'path');
+  if ($existing === $path) {
+    // No change.
+    return;
+  }
+
+  // Change the path variable.
+  og_sm_variable_set($site->nid, 'path', $path);
+
+  // Trigger the path change hook.
+  if ($trigger_hook) {
+    og_sm_hook_site('path_change', $site);
+  }
+}
+
+/**
+ * Delete all aliases for the given Site.
+ *
+ * @param object $site
+ *   The Site node to delete the aliases for.
+ */
+function og_sm_path_site_delete_aliases($site) {
+  $site_path = og_sm_path($site);
+  db_delete('url_alias')
+    ->condition('alias', db_like($site_path) . '/%', 'LIKE')
+    ->execute();
+}
+
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function og_sm_path_url_outbound_alter(&$path, &$options, $original_path) {
+  // Rewrite all outgoing site admin paths for paths that do not have an alias.
+  if (preg_match('#^group/node/([0-9]+)(/admin.*)#', $path, $parts)) {
+    $site = og_sm_site_load($parts[1]);
+    if ($site) {
+      $path = og_sm_path($site) . $parts[2];
+    }
+  }
+
+  // This will check replace any destination (in the options > query) by its
+  // path alias.
+  if (isset($options['query']['destination'])) {
+    $alias = url($options['query']['destination']);
+    $options['query']['destination'] = trim($alias, '/');
+  }
+}
+
+/**
+ * Implements hook_url_inbound_alter().
+ */
+function og_sm_path_url_inbound_alter(&$path, $original_path, $path_language) {
+  // Translate an admin path without alias back to its original path.
+  if (preg_match('#^([\w/_-]+)(/admin.*)#', $path, $parts)) {
+    $site = og_sm_path_load_site($parts[1]);
+    if ($site) {
+      $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
+    }
+  }
+}
+
+/**
+ * Implements hook_admin_menu_output_alter().
+ */
+function og_sm_path_admin_menu_output_alter(&$content) {
+  // Only if there is an active Site.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Make sure that the destination of the logout link stays within the current
+  // Site.
+  if (isset($content['account']['logout'])) {
+    $content['account']['logout']['#options'] = array(
+      'query' => array(
+        'destination' => og_sm_path($site),
+      ),
+    );
+  }
+}
+
+/**
+ * Implements hook_og_context_negotiation_info().
+ *
+ * Add context negotiation info based on the path alias.
+ */
+function og_sm_path_og_context_negotiation_info() {
+  $providers = array();
+
+  $providers['og_sm_context_path'] = array(
+    'name' => t('Site Path'),
+    'description' => t('Determine Site context based on the fact that the current URL starts with the Site path of a Site node.'),
+    'callback' => 'og_sm_path_context_handler_path',
+  );
+
+  return $providers;
+}
+
+/**
+ * Tries to get the context based on the first part of the URL.
+ *
+ * If the first part is the path of a Site, that Site becomes the active
+ * context.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_negotiation_info
+ */
+function og_sm_path_context_handler_path() {
+  // Get the alias of the current URL.
+  $page_alias = drupal_get_path_alias(current_path());
+  $parts = explode('/', $page_alias);
+  $site_path = reset($parts);
+
+  // Get the normal path by the possible Site alias.
+  $site = og_sm_path_load_site($site_path);
+  if (!$site) {
+    return NULL;
+  }
+
+  return array('node' => array((int) $site->nid));
+}

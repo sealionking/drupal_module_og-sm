@@ -1,0 +1,16 @@
+name = Site Manager Path
+description = "Functionality to create a Site Path Prefix for all Site related pages."
+package = "Organic Groups Site Manager"
+version = "7.x-1.x-dev"
+core = 7.x
+
+dependencies[] = og_sm
+dependencies[] = og_sm_variable
+dependencies[] = pathauto
+
+; Tests.
+files[] = tests/OgSmPathContextTestCase.test
+files[] = tests/OgSmPathNodeFormTestCase.test
+files[] = tests/OgSmPathTestCase.test
+files[] = tests/OgSmPathTokensTestCase.test
+files[] = tests/OgSmPathUrlAlterTestCase.test

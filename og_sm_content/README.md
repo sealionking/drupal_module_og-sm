@@ -93,5 +93,13 @@ $uri = og_sm_content_add_uri($site, 'article');
 ```
 
 
+## Contributed module support
+This module alters contributed modules so they support the new node/add paths:
+
+* [addanother][link-addanother] : Make sure that the path to add another node
+  within a Site stays within the current Site context.
+
+
 
 [link-path_alias_xt]: https://www.drupal.org/project/path_alias_xt
+[link-addanother]: https://www.drupal.org/project/addanother

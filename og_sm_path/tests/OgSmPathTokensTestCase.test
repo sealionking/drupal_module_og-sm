@@ -1,0 +1,89 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_path module.
+ */
+
+/**
+ * Tests about the Site Path tokens.
+ */
+class OgSmPathTokensCase extends OgSmWebTestCase {
+  /**
+   * The Site node to test with.
+   *
+   * @param object
+   */
+  private $nodeSite;
+
+  /**
+   * The Site node path to test with.
+   *
+   * @param string
+   */
+  private $nodePath;
+
+  /**
+   * Site content node to test with.
+   *
+   * @param object
+   */
+  private $nodeSiteContent;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Path tokens'),
+      'description' => t('Tests Site Path tokens.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_path');
+    parent::setUp($modules);
+
+    // Create the Site node with his path.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $this->nodeSite = $this->ogSmCreateGroup($type);
+    $this->nodePath = 'test-path-token';
+    og_sm_path_set($this->nodeSite, $this->nodePath, FALSE);
+
+    // Create the Site content node.
+    $type_content = $this->ogSmCreateGroupContentNodeType();
+    $sites = array($this->nodeSite);
+    $this->nodeSiteContent = $this->ogSmCreateGroupContent($type_content, $sites);
+  }
+
+  /**
+   * Test the token generation.
+   */
+  public function testSiteTokens() {
+    module_load_include('inc', 'og_sm_path', 'og_sm_path.tokens');
+
+    $type = 'node';
+    $tokens = array('site-path');
+
+    // No tokens for non Site or its content.
+    $node = $this->drupalCreateNode();
+    $data = array('node' => $node);
+    $this->assertEqual(array(), og_sm_path_tokens($type, $tokens, $data));
+
+    // Token if node is Site.
+    $data = array('node' => $this->nodeSite);
+    $expected = array('site-path' => $this->nodePath);
+    $this->assertEqual($expected, og_sm_path_tokens($type, $tokens, $data));
+
+    // Token if node is Site content.
+    $data = array('node' => $this->nodeSiteContent);
+    $expected = array('site-path' => $this->nodePath);
+    $this->assertEqual($expected, og_sm_path_tokens($type, $tokens, $data));
+  }
+
+}

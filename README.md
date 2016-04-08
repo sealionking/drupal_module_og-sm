@@ -30,10 +30,15 @@ This module and its submodules adds functionality to support:
   - Path alias of the current page.
   - Paths starting with group/node/NID
 
-### Included in og_sm_pathauto module
-* Automatic path aliasing with the Site alias as staring point.
+### Included in og_sm_global_roles module
+* Dynamically grant user global roles when they have specific Site roles.
+
+### Included in og_sm_path module
+* Define a Site path prefix per Site.
+* Automatic path aliasing with the Site path as staring point.
 * Auto update of Site content aliases and Site related page aliases when the
-  Site alias changes.
+  Site path changes.
+* Altering the `group/node/nid/admin/...` paths to `[site-path]/admin/...`.
 
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
@@ -78,13 +83,6 @@ Get a Site node by its Node ID (nid). Will only return the node object if the
 node exists and it is a Site node type.
 ```php
 $site = og_sm_site_load($site_nid);
-```
-
-### Get the Site path alias
-Get the path alias of the given Site. This will use the language of the Site to
-get the correct path.
-```php
-$path = og_sm_site_path($site);
 ```
 
 ### Currently active Site
@@ -184,8 +182,21 @@ These functions can be used in Menu items ($account is optional):
   node and permission name.
 * `og_sm_site_nid_permission_access($site_nid, $permission, $account)` : Check
   by Site node id and permission name.
-* `og_sm_site_path_permission_access($site_path, $permission, $accont)` : Check
-  by Site path alias and permission name.
+
+
+### Site node type action hooks
+The module triggers hooks when a node type is being added or removed as being a
+Site node type.
+
+* `hook_og_sm_site_type_add($type)` : Site node type is being added as a Site
+  type.
+* `hook_og_sm_site_type_remove($type)` : Site node type is no longer a Site
+  type.
+
+> The hook can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
 
 
 ### Site action hooks
@@ -200,8 +211,12 @@ when an action happens:
   prepared to being shown on the screen.
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
-* `hook_og_sm_site_update_alias($site)` : Site node alias is updated.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
+
+> The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
 
 
 

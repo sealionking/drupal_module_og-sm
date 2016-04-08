@@ -1,11 +1,6 @@
 name = Site Pathauto
-description = "Pathauto functionality to create aliases for all Site related pages that are not content."
+description = "DO NOT USE : is replaced by the Site Manager Path (og_sm_path) module. This module is only here to support upgrades."
 package = "Organic Groups Site Manager"
 version = "7.x-1.x-dev"
 core = 7.x
-
-dependencies[] = og_sm
-dependencies[] = pathauto
-
-; Tests.
-files[] = tests/OgSmPathautoTestCase.test
+hidden = 1

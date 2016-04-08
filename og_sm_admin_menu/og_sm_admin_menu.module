@@ -288,6 +288,9 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
   if (!empty($content['icon'])) {
     $content['icon']['icon']['#href'] = 'node/' . $site->nid;
   }
+  if (!empty($content['responsive-menu']['icon'])) {
+    $content['responsive-menu']['icon']['#href'] = 'node/' . $site->nid;
+  }
 
   // Alter the add content links.
   if (!empty($content['menu']['node/add'])) {

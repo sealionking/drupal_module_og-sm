@@ -7,11 +7,11 @@
 /**
  * Implements hook_token_info().
  */
-function og_sm_token_info() {
+function og_sm_path_token_info() {
   $node_tokens = array();
   $node_tokens['site-path'] = array(
     'name' => t('Site Path'),
-    'description' => t('The path alias of the Site the node belongs to.'),
+    'description' => t('The path of the Site the node belongs to.'),
   );
 
   return array(
@@ -22,12 +22,12 @@ function og_sm_token_info() {
 /**
  * Implements hook_tokens().
  */
-function og_sm_tokens($type, $tokens, array $data = array(), array $options = array()) {
+function og_sm_path_tokens($type, $tokens, array $data = array(), array $options = array()) {
   $replacements = array();
 
   switch ($type) {
     case 'node':
-      $replacements = _og_sm_tokens_node($tokens, $data, $options);
+      $replacements = _og_sm_path_tokens_node($tokens, $data, $options);
       break;
   }
 
@@ -51,7 +51,7 @@ function og_sm_tokens($type, $tokens, array $data = array(), array $options = ar
  * @return array
  *   Replacements keyed by their token.
  */
-function _og_sm_tokens_node(array $tokens, array $data, array $options) {
+function _og_sm_path_tokens_node(array $tokens, array $data, array $options) {
   $node = $data['node'];
   $sanitize = !empty($options['sanitize']);
 
@@ -60,7 +60,7 @@ function _og_sm_tokens_node(array $tokens, array $data, array $options) {
   foreach ($tokens as $name => $original) {
     switch ($name) {
       case 'site-path':
-        $replacements[$original] = _og_sm_tokens_site_path($node, $sanitize);
+        $replacements[$original] = _og_sm_path_tokens_site_path($node, $sanitize);
         break;
     }
   }
@@ -70,9 +70,7 @@ function _og_sm_tokens_node(array $tokens, array $data, array $options) {
 }
 
 /**
- * Get the node title of the group the node belongs to.
- *
- * Or the default name or the name as overridden in og_sm_og_variables.
+ * Get the path of the Site the node belongs to.
  *
  * @param object $node
  *   The node to create the token for.
@@ -82,7 +80,7 @@ function _og_sm_tokens_node(array $tokens, array $data, array $options) {
  * @return string|NULL
  *   Token string if any.
  */
-function _og_sm_tokens_site_path($node, $sanitize) {
+function _og_sm_path_tokens_site_path($node, $sanitize) {
   $site = (og_sm_is_site($node))
     ? $node
     : og_sm_content_get_site($node);
@@ -91,6 +89,6 @@ function _og_sm_tokens_site_path($node, $sanitize) {
     return NULL;
   }
 
-  $path = og_sm_site_path($site);
+  $path = og_sm_path($site);
   return $sanitize ? check_plain($path) : $path;
 }
