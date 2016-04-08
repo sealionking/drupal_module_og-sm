@@ -2,7 +2,7 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
-## [Unreleased]
+## [7.x-1.0-alpha6]
 ### Added
 - DMOGSM-19 : Added the og_sm_theme module to configure a theme per Site.
 - DMOGSM-35 : Added new module og_sm_path that contains all logic about hosting
@@ -85,6 +85,7 @@ All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha6%0D7.x-1.0-alpha5#diff
 [7.x-1.0-alpha5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha5%0D7.x-1.0-alpha4#diff
 [7.x-1.0-alpha4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha4%0D7.x-1.0-alpha3#diff
 [7.x-1.0-alpha3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha3%0D7.x-1.0-alpha2#diff

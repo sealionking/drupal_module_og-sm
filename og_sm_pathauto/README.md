@@ -1,2 +1,7 @@
 # Organic Groups : Site Pathauto
-This module is replaced by og_sm_path.
+
+> **DO NOT USE !**
+>
+> This module is replaced by the Site Manager Path (og_sm_path) module.
+>
+> This module is only here to support upgrades.
