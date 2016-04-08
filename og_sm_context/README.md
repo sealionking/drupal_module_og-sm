@@ -47,7 +47,7 @@ Site node.
    Example:
 
    ```
-   [node:title]
+   [node:site-path]
    ```
 
 3. Configure the path alias for Site Content node types. Use `[node:site-path]` in
@@ -59,17 +59,16 @@ Site node.
    [node:site-path]/[node:type]/[node:title]
    ```
 
-4. Delete and regenerate all content aliases.
-
-5. Configure the og_context providers:
-   * Enable the "**Site Alias**" detection method and put it on the **first**
-     place.
-   * Enable the "**Site Content**" detection method and put it on the **second**
+4. Configure the og_context providers:
+   * Enable the "**Site Content**" detection method and put it on the **first**
      place.
    * Enable the "**Site Administration**" detection method and put it on the
-     **third** place.
+     **second** place.
    * Enable or disable other context providers. Put them lower then the Site
      context providers.
+
+5. Delete and regenerate all content aliases.
+
 
 > **NOTE :**
 > The **Site Content** provider replaces the "Node" context provider as provided

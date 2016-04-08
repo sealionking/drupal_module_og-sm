@@ -37,6 +37,10 @@
  * - column: In what column (left, right) should the item be shown on the
  *   overview page. Only applicable for the first level items.
  *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
  * @return array
  *   The menu items to add to the admin menu.
  */
@@ -70,6 +74,10 @@ function hook_og_sm_admin_menu() {
 
 /**
  * Alter the menu items as gathered using hook_og_sm_admin_menu().
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
  *
  * @param array $items
  *   The items as collected.

@@ -53,7 +53,7 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
     $this->assertFalse(og_sm_content_is_site_member($content_with_groups, $group1));
 
     // Make the group type a Site type.
-    og_sm_add_site_type($type_group);
+    og_sm_site_type_add($type_group);
 
     // Get all sites a node belongs to.
     $sites = og_sm_content_get_sites($content_with_groups);

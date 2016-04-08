@@ -50,12 +50,12 @@ class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
     $this->assertFalse(og_sm_is_site_type($type_is_group));
 
     // Add the type.
-    og_sm_add_site_type($type_is_group);
+    og_sm_site_type_add($type_is_group);
     $this->assertTrue(og_sm_is_site_type($type_is_group));
     $this->assertEqual(array(self::TYPE_IS_GROUP => self::TYPE_IS_GROUP), og_sm_get_site_types());
 
     // Remove the type.
-    og_sm_remove_site_type($type_is_group);
+    og_sm_site_type_remove($type_is_group);
     $this->assertFalse(og_sm_is_site_type($type_is_group));
     $this->assertEqual(array(), og_sm_get_site_types());
   }
@@ -110,7 +110,7 @@ class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
    */
   public function testDeleteSiteNodeType() {
     $type_is_group = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($type_is_group);
+    og_sm_site_type_add($type_is_group);
     $this->assertEqual(array($type_is_group => $type_is_group), og_sm_get_site_types());
 
     $url_delete = 'admin/structure/types/manage/' . self::TYPE_IS_GROUP . '/delete';

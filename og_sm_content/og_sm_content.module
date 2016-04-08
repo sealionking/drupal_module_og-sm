@@ -292,11 +292,12 @@ function og_sm_content_admin_menu_items($site) {
  * Implements hook_url_outbound_alter().
  */
 function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
+  // Support for og_sm_path module:
   // Rewrite all outgoing site admin paths for paths that do not have an alias.
-  if (preg_match('#^group/node/([0-9]+)(/content.*)#', $path, $parts)) {
+  if (module_exists('og_sm_path') && preg_match('#^group/node/([0-9]+)(/content.*)#', $path, $parts)) {
     $site = og_sm_site_load($parts[1]);
     if ($site) {
-      $path = og_sm_site_path($site) . $parts[2];
+      $path = og_sm_path($site) . $parts[2];
     }
   }
 }
@@ -305,9 +306,10 @@ function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
  * Implements hook_url_inbound_alter().
  */
 function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language) {
+  // Support for og_sm_path module:
   // Translate an admin path without alias back to its original path.
-  if (preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
-    $site = og_sm_site_load_by_path($parts[1]);
+  if (module_exists('og_sm_path') && preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
+    $site = og_sm_path_load_site($parts[1]);
     if ($site) {
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
     }

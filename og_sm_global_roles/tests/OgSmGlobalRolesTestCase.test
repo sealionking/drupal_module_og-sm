@@ -38,7 +38,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
     parent::setUp($modules);
 
     $site_type = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($site_type);
+    og_sm_site_type_add($site_type);
     variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
 
     $this->site = $site = $this->ogSmCreateGroup($site_type);

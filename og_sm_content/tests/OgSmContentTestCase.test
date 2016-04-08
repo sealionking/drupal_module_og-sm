@@ -58,7 +58,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
   private function setUpContent() {
     // Create the site.
     $this->siteType = $this->ogSmCreateGroupNodeType();
-    og_sm_add_site_type($this->siteType);
+    og_sm_site_type_add($this->siteType);
     $this->site = $this->ogSmCreateGroup($this->siteType);
 
     // Create site content types.
@@ -209,10 +209,14 @@ class OgSmContentTestCase extends OgSmWebTestCase {
    * Test the hook_url_outbound_alter() implementation.
    */
   public function testUrlOutboundAlter() {
+    // Enable the og_sm_path module.
+    module_enable(array('og_sm_path'), TRUE);
+
     // Setup test data.
     $this->setUpContent();
+    $site_path = 'site-path-test';
+    og_sm_path_set($this->site, $site_path, FALSE);
 
-    $site_path = og_sm_site_path($this->site);
     $site_nid = $this->site->nid;
     $options = array();
 
@@ -232,8 +236,13 @@ class OgSmContentTestCase extends OgSmWebTestCase {
    * Test the hook_url_inbound_alter() implementation.
    */
   public function testUrlInboundAlter() {
+    // Enable the og_sm_path module.
+    module_enable(array('og_sm_path'), TRUE);
+
     // Setup test data.
     $this->setUpContent();
+    $site_path = 'site-path-test';
+    og_sm_path_set($this->site, $site_path, FALSE);
 
     // Not a Site path.
     $path = $path_expected = 'content/test/45687266/content/add/article';
@@ -241,7 +250,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertEqual($path_expected, $path);
 
     // Site path.
-    $path = og_sm_site_path($this->site) . '/content/add';
+    $path = $site_path . '/content/add';
     $path_expected = 'group/node/' . $this->site->nid . '/content/add';
     og_sm_content_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);

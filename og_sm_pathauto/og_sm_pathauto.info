@@ -3,9 +3,3 @@ description = "Pathauto functionality to create aliases for all Site related pag
 package = "Organic Groups Site Manager"
 version = "7.x-1.x-dev"
 core = 7.x
-
-dependencies[] = og_sm
-dependencies[] = pathauto
-
-; Tests.
-files[] = tests/OgSmPathautoTestCase.test
