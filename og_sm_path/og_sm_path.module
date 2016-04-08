@@ -36,6 +36,28 @@ function og_sm_path_form_pathauto_patterns_form_alter(&$form, &$form_state) {
 }
 
 /**
+ * Implements hook_field_extra_fields().
+ */
+function og_sm_path_field_extra_fields() {
+  // Make sure that the placement of the Site path field can be altered in the
+  // node forms.
+  $site_types = og_sm_get_site_types();
+  foreach ($site_types as $site_type) {
+    $extra['node'][$site_type] = array(
+      'form' => array(
+        'site_path' => array(
+          'label' => t('Site Path'),
+          'description' => t('The Site path prefix.'),
+          'weight' => -10,
+        ),
+      ),
+    );
+  }
+
+  return $extra;
+}
+
+/**
  * Get the path for Site node.
  *
  * @param object $site

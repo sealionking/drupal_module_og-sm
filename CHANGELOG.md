@@ -2,6 +2,13 @@
 All Notable changes to `digipolisgent/drupal_module_og-sm`.
 
 
+## [Unreleased]
+### Added
+- DMOGSM-35 : Added the Site Path field to the extra fields so the placement in
+  the Site node foms can be altered.
+
+
+
 ## [7.x-1.0-alpha6]
 ### Added
 - DMOGSM-19 : Added the og_sm_theme module to configure a theme per Site.
