@@ -5,6 +5,19 @@
  */
 
 /**
+ * Implements hook_hook_info().
+ */
+function og_sm_theme_hook_info() {
+  $group = array('group' => 'og_sm');
+  $hooks = array(
+    'og_sm_theme_themes_site_alter' => $group,
+    'og_sm_theme_themes_page_alter' => $group,
+  );
+
+  return $hooks;
+}
+
+/**
  * Implements hook_menu().
  */
 function og_sm_theme_menu() {
