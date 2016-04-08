@@ -1,4 +1,4 @@
-# Organic Groups : Theme
+# Organic Groups : Site theme
 This module allows to choose a theme per Site.
 
 
