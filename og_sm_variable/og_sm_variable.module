@@ -276,3 +276,75 @@ function _og_sm_variable_cache_clear_name($name) {
 function _og_sm_variable_cache_clear_name_all() {
   cache_clear_all(OG_SM_VARIABLE_CID_NAME, OG_SM_VARIABLE_CACHE_BIN, TRUE);
 }
+
+/**
+ * Sets up a form to save Site variables automatically.
+ *
+ * Same as Drupal's system_settings_form, but stores the form values in
+ * Site variables instead of global variables.
+ *
+ * @param array $form
+ *   An associative array containing the structure of the form.
+ * @param array $form_state
+ *   The form_state array.
+ * @param object $site
+ *   The Site node.
+ *
+ * @return array $form
+ *   The form structure.
+ *
+ * @see system_settings_form()
+ * @see og_sm_variable_settings_form_submit()
+ *
+ * @ingroup forms
+ */
+function og_sm_variable_settings_form(array $form, array &$form_state, $site) {
+  // Store the site in our form_state as we need the site context to store
+  // the variables in our submit handler.
+  $form_state['site'] = $site;
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  if (!empty($_POST) && form_get_errors()) {
+    drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
+  }
+  $form['#submit'][] = 'og_sm_variable_settings_form_submit';
+
+  // By default, render the form using theme_system_settings_form().
+  if (!isset($form['#theme'])) {
+    $form['#theme'] = 'system_settings_form';
+  }
+
+  return $form;
+}
+
+/**
+ * Form submission handler for og_sm_variable_settings_form().
+ *
+ * @param array $form
+ *   The form array.
+ * @param array $form_state
+ *   The form_state array.
+ */
+function og_sm_variable_settings_form_submit($form, &$form_state) {
+  // Exclude unnecessary elements.
+  form_state_values_clean($form_state);
+  $site = $form_state['site'];
+
+  foreach ($form_state['values'] as $key => $value) {
+    if (is_array($value) && isset($form_state['values']['array_filter'])) {
+      $value = array_keys(array_filter($value));
+    }
+
+    // We save the variable & clear the caches manually to improve speed.
+    _og_sm_variable_save($site->nid, $key, $value);
+    _og_sm_variable_cache_clear_name($key);
+  }
+  _og_sm_variable_cache_clear_site($site->nid);
+
+  drupal_set_message(t('The configuration options have been saved.'));
+}

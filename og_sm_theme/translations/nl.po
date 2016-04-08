@@ -1,0 +1,113 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-04-05 14:56+0100\n"
+"PO-Revision-Date: 2016-04-05 15:05+0100\n"
+"Last-Translator: Floris Walraet <floris.walraet@digipolis.be>\n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-KeywordsList: t;format_plural:2,3;watchdog:2;$t;Drupal.t;Drupal."
+"formatPlural:2,3\n"
+"X-Poedit-Basepath: ../\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: og_sm_theme.module:59
+msgid ""
+"A theme was disabled when it was set as the Site default theme. The default "
+"Site theme has been reset to the default theme (@default). To change this, "
+"go to <a href=\"@url\">OG Theme settings</a>."
+msgstr ""
+"Er werd een thema uitgeschakeld dat was ingesteld als standaard thema voor "
+"Sites. Het standaardthema voor Sites werd hersteld naar het globale "
+"standaardthema (@default). Om dit aan te passen, ga naar <a href=\"@url\">OG "
+"Thema instellingen</a>."
+
+#: og_sm_theme.module:74
+msgid ""
+"A theme was disabled when it was set as an allowed Site theme. It has been "
+"removed from the allowed Site themes."
+msgstr ""
+"Er werd een thema uitgeschakeld dat was ingesteld als toegelaten thema "
+"binnen een Site. Dit thema werd uit de lijst van toegelaten Site thema's "
+"verwijderd."
+
+#: og_sm_theme.module:80
+msgid ""
+"A theme was disabled. The Site theme of @sites has been reset to the default "
+"Site theme (@default)."
+msgstr ""
+"Er werd een thema uitgeschakeld. Het Site thema van @sites werd hersteld "
+"naar het standaardthema voor Sites (@default)."
+
+#: og_sm_theme.module:94
+msgid ""
+"A theme was enabled. To make it available to Sites, go to <a href=\"@url"
+"\">OG Theme settings</a> and enable it."
+msgstr ""
+"Er werd een thema ingeschakeld. Om dit thema beschikbaar te maken voor "
+"Sites, activeer het onder <a href=\"@url\">OG Thema instellingen</a>."
+
+#: og_sm_theme.admin.inc:26
+msgid "Administer theme"
+msgstr "Beheer thema instellingen"
+
+#: og_sm_theme.admin.inc:63 og_sm_theme.admin.inc:64
+msgid "Screenshot for !theme theme"
+msgstr ""
+
+#: og_sm_theme.admin.inc:79
+msgid "Set as site theme"
+msgstr "Instellen als Site thema"
+
+#: og_sm_theme.admin.inc:83
+msgid "Set !theme as site theme"
+msgstr "Stel !theme in als Site thema"
+
+#: og_sm_theme.admin.inc:95
+msgid "default theme"
+msgstr ""
+
+#: og_sm_theme.admin.inc:105
+msgid "Site theme"
+msgid_plural "Site themes"
+msgstr[0] "Site thema"
+msgstr[1] "Site thema's"
+
+#: og_sm_theme.admin.inc:151
+msgid "%theme is now the default theme."
+msgstr ""
+
+#: og_sm_theme.admin.inc:157
+msgid "The %theme theme was not found."
+msgstr ""
+
+#: og_sm_theme.admin.inc:174
+msgid "Allowed themes"
+msgstr "Toegelaten thema's"
+
+#: og_sm_theme.admin.inc:175
+msgid "Select which themes should be available for Sites."
+msgstr "Selecteer de thema's die beschikbaar dienen te zijn voor Sites."
+
+#: og_sm_theme.admin.inc:204
+msgid "Default theme"
+msgstr ""
+
+#: og_sm_theme.admin.inc:205
+msgid "Choose the default Site theme to use when no theme has been selected."
+msgstr ""
+"Kies het standaardthema voor Sites wanneer deze geen thema hebben gekozen."
+
+#: og_sm_theme.admin.inc:212
+msgid "Save configuration"
+msgstr ""
+
+#: og_sm_theme.admin.inc:244
+msgid "The configuration options have been saved."
+msgstr ""
