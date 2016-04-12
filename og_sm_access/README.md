@@ -13,7 +13,7 @@ This Site Manager submodule provides:
 
 
 
-## Dependencies
+## Requirements
 The Sites functionality is build upon [Organic Groups][link-og].
 
 Following modules are required to use the Site Access functionality:

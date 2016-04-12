@@ -12,7 +12,7 @@ It also provides the Administration pages overview on <site-path>/admin.
 
 
 
-## Dependencies
+## Requirements
 Following modules are required to use the Sites functionality:
 
 * [Administration Menu][link-admin-menu] module (admin_menu)
