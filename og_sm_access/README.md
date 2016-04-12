@@ -12,13 +12,8 @@ This Site Manager submodule provides:
   published state of that Site changes.
 
 
-## Installation
-Enable the Organic Groups Site Manager Access module.
 
-Update the group permissions: grant the proper user roles within groups the
-"View an unpublished Site and its content" permission.
-
-### Dependencies
+## Dependencies
 The Sites functionality is build upon [Organic Groups][link-og].
 
 Following modules are required to use the Site Access functionality:
@@ -26,6 +21,15 @@ Following modules are required to use the Site Access functionality:
 * Organic Groups
 * OG Site Manager
 * Node access
+
+
+
+## Installation
+* Enable the Organic Groups Site Manager Access module.
+* Update the group permissions:
+  * grant the proper user roles within groups the "View an unpublished Site and
+    its content" permission.
+
 
 
 ## API
@@ -40,9 +44,11 @@ Check if the user has access to the currently active Site (if any):
 ```php
 function mymodule_menu() {
   $items = array();
+  $items['my-page'] = array(
     'title' => t('My module access callback demo'),
     'page callback' => 'mymodule_page_callback',
     'access callback' => 'og_sm_access_callback',
+  );
   return $items;
 }
 ```
