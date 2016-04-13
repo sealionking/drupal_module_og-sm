@@ -182,7 +182,8 @@ class OgSmContextTestCase extends OgSmWebTestCase {
     // Test a valid parameter.
     $site_nid = (int) $this->nodeSite->nid;
     $expected = array('node' => array($site_nid));
-    $_GET['og_sm_context_site_id'] = $this->nodeGroup->nid;
+    $_GET['og_sm_context_site_id'] = $site_nid;
     $this->assertEqual($expected, og_sm_context_handler_get());
   }
+
 }
