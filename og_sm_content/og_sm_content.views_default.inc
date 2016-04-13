@@ -105,7 +105,7 @@ function og_sm_content_views_default_views() {
     ),
     'edit_node' => array(
       'align' => '',
-      'separator' => '',
+      'separator' => '&emsp;',
       'empty_column' => 0,
     ),
     'delete_node' => array(
