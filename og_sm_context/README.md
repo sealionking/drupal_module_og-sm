@@ -39,6 +39,11 @@ context provider will detect these paths and use the `NID` to check if this is a
 Site node.
 
 
+### Site Get parameter
+This provider checks the presence of a get parameter `og_sm_context_site_id`.
+This parameter should contain a Site's node ID. If set and valid, the
+corresponding Site will be set as active.
+
 
 ## Installation
 1. Enable the module.
@@ -64,6 +69,8 @@ Site node.
      place.
    * Enable the "**Site Administration**" detection method and put it on the
      **second** place.
+   * Enable the "**Site Get parameter**" detection method and put it on the
+     **third** place.
    * Enable or disable other context providers. Put them lower then the Site
      context providers.
 
@@ -73,6 +80,10 @@ Site node.
 > **NOTE :**
 > The **Site Content** provider replaces the "Node" context provider as provided
 > by the og_context module. This provider can be disabled.
+
+> **NOTE :**
+> The **Site Get parameter** provider should preferably only be used when
+> the other providers of this module don't cover a specific use case.
 
 > **TIP :**
 > If the og_sm_content module is used, the "URL (content create)" is no longer

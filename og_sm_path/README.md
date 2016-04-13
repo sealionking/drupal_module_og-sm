@@ -14,8 +14,10 @@ content path aliases and to rewrite Site administration paths.
 
 
 ### URL alter
-This module will automatically alter all outgoing URL's from
-`group/node/[nid]/admin/…` to `[site-alias]/admin/…`.
+This module will automatically alter all outgoing URL's from :
+* `group/node/[nid]/admin/…` to `[site-alias]/admin/…`
+* `system/ajax` to `[site-alias]/system/ajax`
+* `views/ajax` to `[site-alias]/views/ajax`
 
 It will transform incoming altered URL's back to its original path.
 
