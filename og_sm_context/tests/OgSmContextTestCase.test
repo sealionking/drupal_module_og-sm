@@ -168,4 +168,21 @@ class OgSmContextTestCase extends OgSmWebTestCase {
     $this->assertEqual($expected, og_sm_context_handler_admin());
   }
 
+  /**
+   * Test Context Get handler that reacts on a GET parameter.
+   */
+  public function testOgContextHandlerGetParameter() {
+    // Test without a parameter.
+    $this->assertNull(og_sm_context_handler_get());
+
+    // Test with an invalid parameter.
+    $_GET['og_sm_context_site_id'] = 'foo';
+    $this->assertNull(og_sm_context_handler_get());
+
+    // Test a valid parameter.
+    $site_nid = (int) $this->nodeSite->nid;
+    $expected = array('node' => array($site_nid));
+    $_GET['og_sm_context_site_id'] = $this->nodeGroup->nid;
+    $this->assertEqual($expected, og_sm_context_handler_get());
+  }
 }

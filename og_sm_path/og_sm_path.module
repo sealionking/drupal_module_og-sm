@@ -147,17 +147,16 @@ function og_sm_path_url_outbound_alter(&$path, &$options, $original_path) {
 
   // Only check specific paths in a Site context.
   elseif ($site = og_sm_current_site()) {
-    // Rewrite all system paths.
     if (preg_match('#^(system/ajax|views/ajax)$#', $path)) {
       $path = og_sm_path($site) . '/' . $path;
     }
+  }
 
-    // This will check replace any destination (in the options > query) by its
-    // path alias.
-    if (isset($options['query']['destination'])) {
-      $alias = url($options['query']['destination']);
-      $options['query']['destination'] = trim($alias, '/');
-    }
+  // This will check replace any destination (in the options > query) by its
+  // path alias.
+  if (isset($options['query']['destination'])) {
+    $alias = url($options['query']['destination']);
+    $options['query']['destination'] = trim($alias, '/');
   }
 }
 

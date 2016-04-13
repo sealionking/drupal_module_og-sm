@@ -102,6 +102,18 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
     $path_expected = 'group/node/' . $this->nodeSite->nid . '/admin/people/edit/456';
     og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
+
+    // System AJAX path.
+    $path = 'system/ajax';
+    $path_expected = 'group/node/' . $this->nodeSite->nid . '/system/ajax';
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
+
+    // Views AJAX path.
+    $path = 'views/ajax';
+    $path_expected = 'group/node/' . $this->nodeSite->nid . '/views/ajax';
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
   }
 
 }
