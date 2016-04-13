@@ -116,8 +116,10 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
     og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
 
-    // System AJAX path.
+    // The following tests require a site context set.
     $this->ogSmSetOgContextToGroup($this->nodeSite);
+
+    // System AJAX path.
     $path = $this->nodeSitePath . '/system/ajax';
     $path_expected = 'system/ajax';
     og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
