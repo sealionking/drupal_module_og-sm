@@ -85,6 +85,19 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
     );
     og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($options_expected, $options);
+
+    $this->ogSmSetOgContextToGroup($this->nodeSite);
+    // Test rewriting for system/ajax.
+    $path = 'system/ajax';
+    $path_expected = $this->nodeSitePath . '/system/ajax';
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+
+    // Test rewriting for views/ajax.
+    $path = 'views/ajax';
+    $path_expected = $this->nodeSitePath . '/views/ajax';
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
   }
 
   /**
@@ -104,14 +117,15 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
     $this->assertEqual($path_expected, $path);
 
     // System AJAX path.
-    $path = 'system/ajax';
-    $path_expected = 'group/node/' . $this->nodeSite->nid . '/system/ajax';
+    $this->ogSmSetOgContextToGroup($this->nodeSite);
+    $path = $this->nodeSitePath . '/system/ajax';
+    $path_expected = 'system/ajax';
     og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
 
     // Views AJAX path.
-    $path = 'views/ajax';
-    $path_expected = 'group/node/' . $this->nodeSite->nid . '/views/ajax';
+    $path = $this->nodeSitePath . '/views/ajax';
+    $path_expected = 'views/ajax';
     og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
   }
