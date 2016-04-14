@@ -8,6 +8,13 @@ This module allows to choose a theme per Site.
 * Set a theme per Site.
 
 
+
+## Requirements
+* Organic Groups Site Manager
+* Organic Groups Site Variable
+
+
+
 ## Installation
 1. Enable the module.
 2. Open the admin settings (admin/config/administration/theme) and
@@ -15,8 +22,6 @@ This module allows to choose a theme per Site.
 3. Open the Site theme settings (`[site-path]/admin/theme`) and select the theme
    for the Site.
 
-### Dependencies
-* Organic Groups Site Manager
 
 
 ## API
@@ -28,10 +33,12 @@ Setting the theme can be done by changing the `theme` variable for a Site:
 og_sm_variable_set($site, 'theme', 'bartik');
 ```
 
-### Theme related hooks
+
+
+## Hooks
 Two hooks are available to alter the theme settings behaviour:
 
-* `hook_og_sm_theme_themes_site_alter($themes, $context)` : Alter the list of
+* `hook_og_sm_theme_themes_site_alter(&$themes, $context)` : Alter the list of
   allowed site themes for a Site.
 * `hook_og_sm_theme_themes_page_alter(&$theme_groups)` : Alters theme operation
   links for a Site.

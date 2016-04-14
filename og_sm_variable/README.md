@@ -16,12 +16,15 @@ This module provides:
 * Caching to speed up variable access.
 
 
-## Installation
-Enable the module. Variables are set by modules that store their settings in the
-variables table.
 
-### Dependencies
+## Requirements
 * Organic Groups
+
+
+
+## Installation
+1. Enable the module. Variables are set by modules that store their settings in
+   the variables table.
 
 
 ## API

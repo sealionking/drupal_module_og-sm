@@ -2,7 +2,10 @@
 This module provides support to setup a platform supporting multiple (sub)sites
 based on [Organic Groups][link-og] (OG) functionality.
 
-The usage of OG allows to share users between sites.
+* Define what node types should be used as Site's.
+* Simplified OG API by providing OG function wrappers.
+
+> *NOTE* : Site entities are limited to node entities.
 
 
 
@@ -40,6 +43,9 @@ This module and its submodules adds functionality to support:
   Site path changes.
 * Altering the `group/node/nid/admin/...` paths to `[site-path]/admin/...`.
 
+### Included in og_sm_theme module
+* Set the theme per Site.
+
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
 * Get/Set/Delete Site specific variables.
@@ -47,14 +53,21 @@ This module and its submodules adds functionality to support:
 
 ### Todo
 * Support for User profile & settings per Site (Site User).
-* Theme settings per Site (different theme or same theme with different
-  settings).
 * Taxonomy terms per Site.
 * Site features: enable functionality per site (eg. Site A has blogs, Site B
   not).
 * Site Content settings per Site (eg. Site A enables commenting on Blog posts,
   Site B not).
 * Rename Site Content types per site.
+
+
+
+## Requirements
+The Sites functionality is build upon [Organic Groups][link-og].
+
+Following modules are required to use the Sites functionality:
+
+* [Organic Groups][link-og]
 
 
 
@@ -65,14 +78,6 @@ Edit the node type settings of the types that should be Site types.
 Enable:
 * The Organic Groups > Group checkbox
 * And the Site Manager > Site Type checkbox.
-
-
-### Dependencies
-The Sites functionality is build upon [Organic Groups][link-og].
-
-Following modules are required to use the Sites functionality:
-
-* [Organic Groups][link-og]
 
 
 
@@ -102,7 +107,7 @@ Get a list of node types that are Site node types:
 $site_types = og_sm_get_site_types();
 ```
 
-### Check if content is a Site
+### Check if node is a Site
 The module provides helper functions to detect is a node or node type is a Site
 node type:
 
@@ -111,6 +116,7 @@ Check if the given node is a Site type:
 $is_site = og_sm_is_site($node);
 ```
 
+### Check if a node type is a Site type
 Check if the given node type is a Site type:
 ```php
 $is_site_type = og_sm_is_site_type($node_type);

@@ -1,5 +1,5 @@
 # Changelog
-All Notable changes to `digipolisgent/drupal_module_og-sm`.
+All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 ## [Unreleased]
