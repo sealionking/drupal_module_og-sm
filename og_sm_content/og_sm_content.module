@@ -326,3 +326,32 @@ function og_sm_content_form_alter(&$form, &$form_state, $form_id) {
     og_sm_content_form_alter_addanother($form, $form_state);
   }
 }
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
+  // Only alter node forms in a Site context.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Normally the permission "administer nodes" is required to change the node
+  // author, options, etc. That global role might not be granted in a Site
+  // context. We add an extra check on the Site role "administer site" to allow
+  // access to these fields.
+  $access = user_access('administer nodes') || og_sm_site_permission_access($site, 'administer site');
+  $node = $form_state['node'];
+
+  if (isset($form['revision_information'])) {
+    $form['revision_information']['#access'] = $node->revision || $access;
+    $form['revision_information']['revision']['#access'] = $access;
+  }
+  if (isset($form['author'])) {
+    $form['author']['#access'] = $access;
+  }
+  if (isset($form['options'])) {
+    $form['options']['#access'] = $access;
+  }
+}
