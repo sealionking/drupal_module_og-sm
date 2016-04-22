@@ -2,6 +2,11 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
+## [Unreleased]
+### Fixed
+- DMOGSM-40 : Fixed determining when to use the admin theme.
+
+
 ## [7.x-1.0-alpha7]
 ### Added
 - DMOGSM-35 : Added the Site Path field to the extra fields so the placement in
