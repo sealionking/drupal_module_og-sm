@@ -2,6 +2,11 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
+## [7.x-1.0-alpha8]
+### Fixed
+- DMOGSM-40 : Fixed determining when to use the admin theme.
+
+
 ## [7.x-1.0-alpha7]
 ### Added
 - DMOGSM-35 : Added the Site Path field to the extra fields so the placement in
@@ -104,6 +109,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha8%0D7.x-1.0-alpha7#diff
 [7.x-1.0-alpha7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha7%0D7.x-1.0-alpha6#diff
 [7.x-1.0-alpha6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha6%0D7.x-1.0-alpha5#diff
 [7.x-1.0-alpha5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha5%0D7.x-1.0-alpha4#diff

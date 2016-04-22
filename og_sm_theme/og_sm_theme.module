@@ -167,11 +167,12 @@ function og_sm_theme_site_themes($site) {
 function og_sm_theme_custom_theme() {
 
   // Skip admin paths.
-  if (path_is_admin($_GET['q'])) {
+  $current_path = current_path();
+  if (user_access('view the administration theme') && path_is_admin($current_path)) {
     // Even though we are on an admin path, we allow node forms to be themed
     // in a custom theme, when we use the og_sm_content links.
     $paths = "group/node/*content/add/*\rgroup/node/*content/edit/*";
-    if (!drupal_match_path($_GET['q'], $paths)) {
+    if (!drupal_match_path($current_path, $paths)) {
       return;
     };
   }
