@@ -288,3 +288,33 @@ function og_sm_path_og_permission() {
   );
   return $items;
 }
+
+/**
+ * Helper to check if the given account has access to change the Site path.
+ *
+ * @param object $site
+ *   The Site to change the path for.
+ * @param object $account
+ *   (optional) The account to check the access for.
+ *
+ * @return bool
+ *   Has the user access Yes/No.
+ */
+function og_sm_path_access_change_path($site, $account = NULL) {
+  if (!$account) {
+    global $user;
+    $account = $user;
+  }
+
+  // User can change all Site paths.
+  if (user_access(OG_SM_PATH_PERM_CHANGE_PATH_ALL, $account)) {
+    return TRUE;
+  }
+
+  // User can change own Site paths.
+  if ($site->uid === $account->uid && user_access(OG_SM_PATH_PERM_CHANGE_PATH_OWN, $account)) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
