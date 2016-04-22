@@ -5,6 +5,13 @@
  */
 
 /**
+ * Permissions.
+ */
+define ('OG_SM_PATH_PERM_CHANGE_PATH_ALL', 'change all site path');
+define ('OG_SM_PATH_PERM_CHANGE_PATH_OWN', 'change own site path');
+define ('OG_SM_PATH_OG_PERM_CHANGE_PATH', 'change site path');
+
+/**
  * Implements hook_module_implements_alter().
  */
 function og_sm_path_module_implements_alter(&$implementations, $hook) {
@@ -250,4 +257,34 @@ function og_sm_path_context_handler_path() {
   }
 
   return array('node' => array((int) $site->nid));
+}
+
+/**
+ * Implements hook_permission().
+ */
+function og_sm_path_permission() {
+  $items = array();
+  $items[OG_SM_PATH_PERM_CHANGE_PATH_ALL] = array(
+    'title' => t('Change all Site paths'),
+    'description' => t('Change the paths of all Sites.'),
+  );
+  $items[OG_SM_PATH_PERM_CHANGE_PATH_OWN] = array(
+    'title' => t('Change own Site paths'),
+    'description' => t('Change the paths of all Sites the user is the owner of.'),
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_path_og_permission() {
+  $items = array();
+  $items[OG_SM_PATH_OG_PERM_CHANGE_PATH] = array(
+    'title' => t('Change Site path'),
+    'description' => t("Allow user change the Site path (used to alias all Site pages)."),
+    'roles' => array(OG_ADMINISTRATOR_ROLE),
+    'default role' => array(OG_ADMINISTRATOR_ROLE),
+  );
+  return $items;
 }
