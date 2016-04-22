@@ -23,8 +23,10 @@ functionality.
 ### Manage content within a Site
 Two new Site admin pages are provided by this module:
 * `[site-path]/admin/content` : Overview of all content within the Site.
-* `[site-path]/admin/content/my` : Pvreview of all content created by the logged
+* `[site-path]/admin/content/my` : Preview of all content created by the logged
   in user.
+* Allow users with the Organic Groups "administer site" to alter the authoring
+  data (author, published status, last update date).
 
 
 ### Extend the Site admin menu
