@@ -2,10 +2,22 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
-## [Unreleased]
+## [7.x-1.0-alpha7]
 ### Added
 - DMOGSM-35 : Added the Site Path field to the extra fields so the placement in
   the Site node fomrs can be altered.
+- PPL-310 : Rewrite the paths of ajax callbacks to they get the proper Site
+  context.
+- DMOGSM-39 : Added access to the authoring data of a node for users with
+  "administer site" permission within a Site.
+
+### Updated
+- DMOGSM-38 : Updated documentation.
+
+### Fixed
+- PPL-365 : Added missing space between the action links in the administer
+  content page.
+- PPL-375 : Fixed the og_sm_content_type views handler.
 
 
 
@@ -92,6 +104,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha7%0D7.x-1.0-alpha6#diff
 [7.x-1.0-alpha6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha6%0D7.x-1.0-alpha5#diff
 [7.x-1.0-alpha5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha5%0D7.x-1.0-alpha4#diff
 [7.x-1.0-alpha4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha4%0D7.x-1.0-alpha3#diff
