@@ -23,8 +23,10 @@ functionality.
 ### Manage content within a Site
 Two new Site admin pages are provided by this module:
 * `[site-path]/admin/content` : Overview of all content within the Site.
-* `[site-path]/admin/content/my` : Pvreview of all content created by the logged
+* `[site-path]/admin/content/my` : Preview of all content created by the logged
   in user.
+* Allow users with the Organic Groups "administer site" to alter the authoring
+  data (author, published status, last update date).
 
 
 ### Extend the Site admin menu
@@ -44,13 +46,22 @@ overview page:
 
 
 
+## Requirements
+* Organic Groups Site Manager
+
+Optional:
+* Organic Groups Administration menu : this module adds extra menu items to
+  quickly add new content.
+* Organic Groups Path : all content related paths
+  (`group/node/[nid]/content/add/...`) are rewritten to
+  `[site-path]/content/add/...`.
+* [Extended Path Aliases][link-path_alias_xt] : Will add an
+  `[content-path]/edit` and `[content-path]/delete` alias for all Site content.
+
+
+
 ## Installation
 1. Enable the module.
-2. Optional download and install the [Extended Path Aliases][link-path_alias_xt]
-   module.
-
-### Dependencies
-* Organic Groups Site Manager
 
 
 

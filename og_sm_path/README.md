@@ -14,8 +14,12 @@ content path aliases and to rewrite Site administration paths.
 
 
 ### URL alter
-This module will automatically alter all outgoing URL's from
-`group/node/[nid]/admin/…` to `[site-alias]/admin/…`.
+This module will automatically alter all outgoing URL's from:
+* `group/node/[nid]/admin/…` to `[site-path]/admin/…`.
+* `system/ajax` to `[site-path]/system/ajax` (only if the URL is created within
+  an active Site context).
+* `views/ajax` to `[site-path]/views/ajax` (only if the URL is created within
+  an active Site context).
 
 It will transform incoming altered URL's back to its original path.
 
@@ -58,6 +62,22 @@ Content created within the Site needs to get a path prefixed with the Site path.
 See installation instructions.
 
 
+### OG Context provider by GET parameter
+Context provider to detect if a Group context was set using a GET parameter with
+the name "og_sm_context_site_id". This GET parameter is used to pass any context
+detaction during the URL inbound alter of system paths starting with a site-path
+prefix (eg. [site-path]/system/ajax, [site-path]/views/ajax).
+
+
+
+## Requirements
+* Organic Groups Site Manager
+* Organic Groups Site Variable
+* [Pathauto](https://www.drupal.org/project/pathauto)
+* [Token](https://www.drupal.org/project/token)
+
+
+
 ## Installation
 1. Enable the module.
 2. Configure the alias for content on admin/config/search/path/patterns:
@@ -69,10 +89,6 @@ See installation instructions.
    method is always set first.
 4. Update all existing Sites: edit them and set their Site Path value.
 5. Delete and regenerate all content aliases.
-
-
-### Dependencies
-* Organic Groups Site Manager
 
 
 
@@ -109,6 +125,7 @@ og_sm_path_set($site, 'my-site-path', FALSE);
 ```
 
 
+## Hooks
 ### Site action hooks
 The module watches actions taken place on Site nodes and triggers its own hooks
 when an action happens:

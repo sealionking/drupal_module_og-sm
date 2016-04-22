@@ -12,17 +12,25 @@ It also provides the Administration pages overview on <site-path>/admin.
 
 
 
+## Requirements
+Following modules are required to use the Sites functionality:
+
+* [Administration Menu][link-admin-menu] module (admin_menu)
+* og_sm
+* [Patch][link-admin-menu-patch] for the administration menu module cache.
+
+
+
 ## Installation
 1. Enable the module.
 2. Open the admin_menu settings (admin/config/administration/admin_menu) and
    check the "Site Administration menu" option.
 
-
-### Dependencies
-Following modules are required to use the Sites functionality:
-
-* [Administration Menu][link-admin-menu] module (admin_menu)
-* og_sm
+> **TIP** : The user needs the global "access administration menu" permission.
+> This can only be assigned to global roles.
+>
+> Use the og_sm_global_roles module to give users within a Site the roles who
+> have access to the administration menu.
 
 
 
@@ -104,3 +112,4 @@ Alter the menu items as gathered using hook_og_sm_admin_menu().
 
 
 [link-admin-menu]: https://www.drupal.org/project/admin_menu
+[link-admin-menu-patch]: https://www.drupal.org/files/issues/admin_menu_cache_id_alter-2684839-2.patch
