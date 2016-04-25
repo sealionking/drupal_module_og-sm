@@ -316,5 +316,12 @@ function og_sm_path_access_change_path($site, $account = NULL) {
     return TRUE;
   }
 
+  // Permission within the group.
+  // We can't use og_sm_site_permission_access here as we don't want to skip the
+  // permissions for Site administrators.
+  if (og_user_access('node', $site->nid, OG_SM_PATH_OG_PERM_CHANGE_PATH, $account, FALSE, TRUE)) {
+    return TRUE;
+  }
+
   return FALSE;
 }
