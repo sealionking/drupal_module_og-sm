@@ -2,9 +2,17 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
+## [Unreleased]
+### Added
+- DMOGSM-37 : Added permissions to limit access to change the path of existing
+  Sites.
+
+
+
 ## [7.x-1.0-alpha8]
 ### Fixed
 - DMOGSM-40 : Fixed determining when to use the admin theme.
+
 
 
 ## [7.x-1.0-alpha7]
