@@ -96,7 +96,11 @@ class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
       array('bypass node access', 'administer nodes')
     );
     $this->userWithChangeAllPermission = $this->drupalCreateUser(
-      array('bypass node access', 'administer nodes', OG_SM_PATH_PERM_CHANGE_PATH_ALL)
+      array(
+        'bypass node access',
+        'administer nodes',
+        OG_SM_PATH_PERM_CHANGE_PATH_ALL,
+      )
     );
 
     // Site owner.

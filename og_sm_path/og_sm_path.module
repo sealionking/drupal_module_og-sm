@@ -7,9 +7,9 @@
 /**
  * Permissions.
  */
-define ('OG_SM_PATH_PERM_CHANGE_PATH_ALL', 'change all site path');
-define ('OG_SM_PATH_PERM_CHANGE_PATH_OWN', 'change own site path');
-define ('OG_SM_PATH_OG_PERM_CHANGE_PATH', 'change site path');
+define('OG_SM_PATH_PERM_CHANGE_PATH_ALL', 'change all site path');
+define('OG_SM_PATH_PERM_CHANGE_PATH_OWN', 'change own site path');
+define('OG_SM_PATH_OG_PERM_CHANGE_PATH', 'change site path');
 
 /**
  * Implements hook_module_implements_alter().

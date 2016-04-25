@@ -8,6 +8,7 @@
  * Tests about the node type settings.
  */
 class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
+
   /**
    * {@inheritdoc}
    */

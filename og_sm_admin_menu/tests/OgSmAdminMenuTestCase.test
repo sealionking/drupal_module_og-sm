@@ -8,6 +8,7 @@
  * Tests about the OG SM Administration Menu.
  */
 class OgSmAdminMenuTestCase extends OgSmWebTestCase {
+
   /**
    * {@inheritdoc}
    */

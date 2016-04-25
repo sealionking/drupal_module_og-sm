@@ -1,7 +1,6 @@
 name = Site Content
 description = "Site content creation and administration."
 package = "Organic Groups Site Manager"
-version = "7.x-1.x-dev"
 core = 7.x
 
 dependencies[] = og_sm

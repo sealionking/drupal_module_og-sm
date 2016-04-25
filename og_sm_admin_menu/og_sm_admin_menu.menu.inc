@@ -119,7 +119,6 @@ function _og_sm_admin_menu_build_item_link_placeholder() {
   return OG_SM_ADMIN_MENU_NAME . '/' . uniqid(NULL, TRUE);
 }
 
-
 /**
  * Get the menu structure as defined in the hooks.
  *

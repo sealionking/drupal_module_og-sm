@@ -31,7 +31,6 @@ function hook_og_sm_site_path_change($site) {
   og_sm_path_site_alias_update_batch($site);
 }
 
-
 /**
  * @} End of "addtogroup hooks".
  */
