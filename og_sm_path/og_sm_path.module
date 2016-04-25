@@ -7,7 +7,7 @@
 /**
  * Permissions.
  */
-define('OG_SM_PATH_PERM_CHANGE_PATH_ALL', 'change all site path');
+define('OG_SM_PATH_PERM_CHANGE_PATH_ALL', 'change all site paths');
 define('OG_SM_PATH_PERM_CHANGE_PATH_OWN', 'change own site path');
 define('OG_SM_PATH_OG_PERM_CHANGE_PATH', 'change site path');
 
@@ -266,11 +266,11 @@ function og_sm_path_permission() {
   $items = array();
   $items[OG_SM_PATH_PERM_CHANGE_PATH_ALL] = array(
     'title' => t('Change all Site paths'),
-    'description' => t('Change the paths of all Sites.'),
+    'description' => t('Change the path of all Sites.'),
   );
   $items[OG_SM_PATH_PERM_CHANGE_PATH_OWN] = array(
     'title' => t('Change own Site paths'),
-    'description' => t('Change the paths of all Sites the user is the owner of.'),
+    'description' => t('Change the path of all Sites the user is the owner of.'),
   );
   return $items;
 }
@@ -282,7 +282,7 @@ function og_sm_path_og_permission() {
   $items = array();
   $items[OG_SM_PATH_OG_PERM_CHANGE_PATH] = array(
     'title' => t('Change Site path'),
-    'description' => t("Allow user change the Site path (used to alias all Site pages)."),
+    'description' => t('Allow a user to change the Site path (used when creating aliased paths for all Site pages).'),
     'roles' => array(OG_ADMINISTRATOR_ROLE),
     'default role' => array(OG_ADMINISTRATOR_ROLE),
   );
