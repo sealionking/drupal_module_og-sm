@@ -5,28 +5,43 @@
  */
 
 /**
- * Get all vocabulary names that have OG group field.
+ * Get a list of vocabulary names that have the OG group audience field.
  *
  * @return array
- *   Vocabularies grouped by their machine name.
+ *   Vocabulary names (labels) keyed by their machine name.
  */
-function og_sm_taxonomy_get_vocabularies() {
-  $vocabularies = array();
-
-  $bundles = og_get_all_group_content_bundle();
-  if (empty($bundles['taxonomy_term'])) {
-    return $vocabularies;
+function og_sm_taxonomy_get_vocabulary_names() {
+  $vocabularies = &drupal_static(__FUNCTION__, array());
+  if (!$vocabularies) {
+    $bundles = og_get_all_group_content_bundle();
+    if (!empty($bundles['taxonomy_term'])) {
+      $vocabularies = $bundles['taxonomy_term'];
+    }
   }
 
-  $bundles = array_keys($bundles['taxonomy_term']);
-  foreach ($bundles as $bundle) {
-    $vocabularies[$bundle] = taxonomy_vocabulary_machine_name_load($bundle);
-  }
   return $vocabularies;
 }
 
 /**
- * Check if a given taxonomy vocabulary is an OG vocabulary.
+ * Get all vocabular objects that have the OG group audience field.
+ *
+ * @return array
+ *   Vocabulary objects keyed by their machine name.
+ */
+function og_sm_taxonomy_get_vocabularies() {
+  $vocabularies = &drupal_static(__FUNCTION__, array());
+  if (!$vocabularies) {
+    $names = array_keys(og_sm_taxonomy_get_vocabulary_names());
+    foreach ($names as $name) {
+      $vocabularies[$name] = taxonomy_vocabulary_machine_name_load($name);
+    }
+  }
+
+  return $vocabularies;
+}
+
+/**
+ * Check if a given taxonomy vocabulary has the OG group audience field.
  *
  * @param string $name
  *   The vocbulary name.
@@ -35,10 +50,69 @@ function og_sm_taxonomy_get_vocabularies() {
  *   Is an OG vocabulary.
  */
 function og_sm_taxonomy_is_vocabulary($name) {
-  $bundles = og_get_all_group_content_bundle();
-  if (empty($bundles['taxonomy_term'])) {
+  $names = og_sm_taxonomy_get_vocabulary_names();
+  return array_key_exists($name, $names);
+}
+
+/**
+ * Get all the Sites a taxonomy term belongs to.
+ *
+ * @param object $term
+ *   The term to get the Sites for.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_taxonomy_term_get_sites($term) {
+  $groups = og_get_entity_groups('taxonomy_term', $term);
+  return _og_sm_filter_sites_from_groups($groups);
+}
+
+/**
+ * Get the Site object the taxonomy term belongs to.
+ *
+ * If a term belongs to multiple Sites, only the first will be returned.
+ *
+ * @param object $term
+ *   The term to get the Sites for.
+ *
+ * @return object|FALSE
+ *   The site node (if any).
+ */
+function og_sm_taxonomy_term_get_site($term) {
+  $sites = og_sm_taxonomy_term_get_sites($term);
+  if (empty($sites)) {
     return FALSE;
   }
 
-  return array_key_exists($name, $bundles['taxonomy_term']);
+  return reset($sites);
+}
+
+/**
+ * Check if a term is used within at least one Site.
+ *
+ * @param object $term
+ *   The Term object.
+ *
+ * @return bool
+ *   Is used within a Site.
+ */
+function og_sm_taxonomy_term_is_site_term($term) {
+  return (bool) og_sm_taxonomy_term_get_site($term);
+}
+
+/**
+ * Check if a Term is a member of the given Site.
+ *
+ * @param object $term
+ *   The Term object.
+ * @param object $site
+ *   The Site object.
+ *
+ * @return bool
+ *   Is a Site member.
+ */
+function og_sm_taxonomy_term_is_site_member($term, $site) {
+  $sites = og_sm_taxonomy_term_get_sites($term);
+  return !empty($sites[$site->nid]);
 }
