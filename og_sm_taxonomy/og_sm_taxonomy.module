@@ -5,6 +5,62 @@
  */
 
 /**
+ * OG permissions.
+ */
+define('OG_SM_TAXONOMY_OG_PERM_ADMIN', 'administer taxonomy');
+define('OG_SM_TAXONOMY_OG_PERM_VOCAB', 'edit terms in %s');
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_taxonomy_og_permission() {
+  $items = array();
+
+  $items[OG_SM_TAXONOMY_OG_PERM_ADMIN] = array(
+    'title' => t('Administer taxonomy'),
+    'description' => t('Manage all taxonomy terms.'),
+  );
+
+  $vocabularies = og_sm_taxonomy_get_vocabularies();
+  foreach ($vocabularies as $vocabulary) {
+    $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, $vocabulary->machine_name);
+
+    $items[$perm] = array(
+      'title' => t(
+        'Edit terms in %name',
+        array('%name' => $vocabulary->machine_name)
+      ),
+      'description' => t(
+        'Edit all terms for the %name vocabulary',
+        array('%name' => $vocabulary->name)
+      ),
+    );
+  }
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_taxonomy_menu() {
+  $items = array();
+  $file_admin = 'og_sm_taxonomy.admin.inc';
+
+  $item['group/node/%site/admin/taxonomy'] = array(
+    'title' => 'Administer taxonomy',
+    'page callback' => 'og_sm_taxonomy_admin_overview',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_taxonomy_admin_access_overview',
+    'access arguments' => array(2),
+    'weight' => 11,
+    'file' => $file_admin,
+  );
+
+  return $items;
+}
+
+/**
  * Get a list of vocabulary names that have the OG group audience field.
  *
  * @return array
