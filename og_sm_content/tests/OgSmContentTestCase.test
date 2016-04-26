@@ -265,29 +265,25 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->setUpUsers();
 
     // Default user.
-    $this->verbose('Pass the Default user.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNamePage, $this->userDefault);
-    $this->assertFalse($access, 'User is not allowed to add Page content.');
+    $this->assertFalse($access, 'Default user is not allowed to add Page content.');
 
     // Admin user.
-    $this->verbose('Pass the Admin user.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNamePage, $this->userAdmin);
-    $this->assertTrue($access, 'User is allowed to add Page content.');
+    $this->assertTrue($access, 'Admin user is allowed to add Page content.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNameArticle, $this->userAdmin);
-    $this->assertTrue($access, 'User is allowed to add Article content.');
+    $this->assertTrue($access, 'Admin user is allowed to add Article content.');
 
     // User with access to all content.
-    $this->verbose('Pass the user who can create pages & articles.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNamePage, $this->siteUserPageArticle);
-    $this->assertTrue($access, 'User is allowed to add Page content.');
+    $this->assertTrue($access, 'User 1 is allowed to add Page content.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNameArticle, $this->siteUserPageArticle);
-    $this->assertTrue($access, 'User is allowed to add Article content.');
+    $this->assertTrue($access, 'User 1 is allowed to add Article content.');
 
     // User with access to only articles.
-    $this->verbose('Pass the user who can create only articles.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNamePage, $this->siteUserArticle);
-    $this->assertFalse($access, 'User is not allowed to add Page content.');
+    $this->assertFalse($access, 'User 2 is not allowed to add Page content.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNameArticle, $this->siteUserArticle);
-    $this->assertTrue($access, 'User is allowed to add Article content.');
+    $this->assertTrue($access, 'User 2 is allowed to add Article content.');
   }
 }
