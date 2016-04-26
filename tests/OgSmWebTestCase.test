@@ -41,8 +41,6 @@ class OgSmWebTestCase extends DrupalWebTestCase {
       'disabled' => 0,
       'orig_type' => $name,
     );
-    $this->assertEqual(SAVED_NEW, node_type_save($info));
-
     return $name;
   }
 
