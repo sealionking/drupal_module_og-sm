@@ -140,12 +140,14 @@ function og_sm_content_add_overview_access($site) {
  *   The Site to check the access for.
  * @param string $node_type
  *   The node type to check access for.
+ * @param object $account
+ *   (optional) User account to check access for.
  *
  * @return bool
  *   Has access.
  */
-function og_sm_content_add_content_access($site, $node_type) {
-  $types = array_keys(og_sm_content_get_types_by_site($site));
+function og_sm_content_add_content_access($site, $node_type, $account = NULL) {
+  $types = array_keys(og_sm_content_get_types_by_site($site, $account));
   return in_array($node_type, $types);
 }
 

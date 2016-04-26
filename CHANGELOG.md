@@ -7,6 +7,9 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-37 : Added permissions to limit access to change the path of existing
   Sites.
 
+### Deleted
+- DMOGSM-42: Removed the no longer required og_sm_pathauto module.
+
 
 
 ## [7.x-1.0-alpha8]
