@@ -7,7 +7,6 @@
 // Menu name.
 define('OG_SM_ADMIN_MENU_NAME', 'og-sm-admin-menu');
 
-
 /**
  * Implements hook_hook_info().
  */

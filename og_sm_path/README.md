@@ -12,6 +12,8 @@ related paths and URL's.
 Adds a Site Path field to the Site node form. That path will be used to create
 content path aliases and to rewrite Site administration paths.
 
+Changing existing Site paths can be limited by global and Site roles.
+
 
 ### URL alter
 This module will automatically alter all outgoing URL's from:
@@ -87,8 +89,10 @@ prefix (eg. [site-path]/system/ajax, [site-path]/views/ajax).
    - Put the "**Site Path**" detection method on the **first** place.
    If the og_sm_context module is used, make sure that the "**Site Path**"
    method is always set first.
-4. Update all existing Sites: edit them and set their Site Path value.
-5. Delete and regenerate all content aliases.
+4. Grant user roles access to edit existing Site paths.
+5. Grant organic group roles access to edit existing Site paths.
+6. Update all existing Sites: edit them and set their Site Path value.
+7. Delete and regenerate all content aliases.
 
 
 

@@ -8,6 +8,7 @@
  * Tests about the Site access grants hook.
  */
 class OgSmAccessGrantsTestCase extends OgSmWebTestCase {
+
   /**
    * {@inheritdoc}
    */

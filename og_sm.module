@@ -113,7 +113,6 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
   }
 }
 
-
 /**
  * Load a Site node by its Node ID.
  *
@@ -396,7 +395,6 @@ function og_sm_content_is_site_member($node, $site) {
   return !empty($sites[$site->nid]);
 }
 
-
 /**
  * Get all the sites a User belongs to.
  *
@@ -427,7 +425,6 @@ function og_sm_user_is_member_of_site($account, $site) {
   return !empty($sites[$site->nid]);
 }
 
-
 /**
  * Helper function to get a list of Site objects from a list of group id's.
  *
@@ -456,7 +453,6 @@ function _og_sm_filter_sites_from_groups(array $groups) {
 
   return $sites;
 }
-
 
 /**
  * Implements hook_node_type_delete().

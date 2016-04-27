@@ -31,7 +31,6 @@ class OgSmContentTestCase extends OgSmWebTestCase {
   protected $roleTypesPageArticle;
   protected $roleTypesArticle;
 
-
   /**
    * {@inheritdoc}
    */
@@ -100,7 +99,6 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     og_role_grant('node', $this->site->nid, $this->siteUserPageArticle->uid, $this->roleTypesPageArticle->rid);
     og_role_grant('node', $this->site->nid, $this->siteUserArticle->uid, $this->roleTypesArticle->rid);
   }
-
 
   /**
    * Test the elper to create the content/add/type path.

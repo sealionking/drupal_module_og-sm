@@ -64,7 +64,6 @@ class OgSmPathContextTestCase extends OgSmWebTestCase {
    */
   protected $nodeSitePath;
 
-
   /**
    * {@inheritdoc}
    */
@@ -97,7 +96,7 @@ class OgSmPathContextTestCase extends OgSmWebTestCase {
     $this->siteType = $this->ogSmCreateGroupNodeType();
     og_sm_site_type_add($this->siteType);
     $settings = array(
-      'site_path' => 'my-test-path'
+      'site_path' => 'my-test-path',
     );
     $this->nodeSite = $this->ogSmCreateGroup($this->siteType, $settings);
     $this->nodeSitePath = og_sm_path($this->nodeSite);
