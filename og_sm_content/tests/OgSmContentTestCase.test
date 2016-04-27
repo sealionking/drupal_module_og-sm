@@ -101,6 +101,23 @@ class OgSmContentTestCase extends OgSmWebTestCase {
   }
 
   /**
+   * Overwrites a content type basic info to be site specific.
+   *
+   * @param object $site
+   *   The site node.
+   * @param string $content_type
+   *   The content type's machine name.
+   * @param array $info
+   *   A key value array with site specific info for the content type.
+   */
+  private function setupSiteSpecificContentType($site, $content_type, $info) {
+    $variable_base = 'og_sm_content_' . $content_type . '_';
+    foreach ($info as $name => $value) {
+      og_sm_variable_set($site->nid, $variable_base . $name, $value);
+    }
+  }
+
+  /**
    * Test the elper to create the content/add/type path.
    */
   public function testContentAddUri() {
@@ -228,6 +245,36 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $path_expected = $site_path . '/content/add/page';
     og_sm_content_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($path_expected, $path);
+
+    // Setup site specific content type info.
+    $this->setupSiteSpecificContentType($this->site, $this->siteContentTypeNameArticle, array(
+      'machine_name' => 'llama',
+    ));
+
+    // Verify that the add content path is now uses the site specific content
+    // type alias.
+    $path = 'group/node/' . $site_nid . '/content/add/' . $this->siteContentTypeNameArticle;
+    $path_expected = $site_path . '/content/add/llama';
+    og_sm_content_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+
+    // Verify that the content type alias is not used for another site.
+    $llama_site = $this->ogSmCreateGroup($this->siteType);
+    $site_path = 'site-llamas';
+    og_sm_path_set($llama_site, $site_path, FALSE);
+    $path = 'group/node/' . $llama_site->nid . '/content/add/' . $this->siteContentTypeNameArticle;
+    $path_expected = $site_path . '/content/add/' . $this->siteContentTypeNameArticle;
+    og_sm_content_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+
+    // Unless we also set an alias to the article content type for that site.
+    $this->setupSiteSpecificContentType($llama_site, $this->siteContentTypeNameArticle, array(
+      'machine_name' => 'llama',
+    ));
+    $path = 'group/node/' . $llama_site->nid . '/content/add/' . $this->siteContentTypeNameArticle;
+    $path_expected = $site_path . '/content/add/llama';
+    og_sm_content_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
   }
 
   /**
@@ -250,6 +297,18 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     // Site path.
     $path = $site_path . '/content/add';
     $path_expected = 'group/node/' . $this->site->nid . '/content/add';
+    og_sm_content_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
+
+    // Setup site specific content type info.
+    $this->setupSiteSpecificContentType($this->site, $this->siteContentTypeNameArticle, array(
+      'machine_name' => 'llama',
+    ));
+
+    // Verify that add content path finds the correct content type based on its
+    // alias name.
+    $path = $site_path . '/content/add/llama';
+    $path_expected = 'group/node/' . $this->site->nid . '/content/add/' . $this->siteContentTypeNameArticle;
     og_sm_content_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
   }

@@ -84,7 +84,7 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
       '#type' => 'select',
       '#title' => t('Comments'),
       '#description' => t('Select whether the comment form can be shown for @content_type_plural.', array(
-        '@content_type_plural' => strtolower($content_type->name_plural),
+        '@content_type_plural' => drupal_strtolower($content_type->name_plural),
       )),
       '#default_value' => $content_type->comment,
       '#options' => array(
