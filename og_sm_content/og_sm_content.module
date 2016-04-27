@@ -113,8 +113,7 @@ function og_sm_content_menu() {
       'title' => $type->name,
       'title callback' => 'check_plain',
       'page callback' => 'drupal_get_form',
-      'page arguments' => array(
-        'og_sm_content_admin_overview_type_edit_form', 2, 6),
+      'page arguments' => array('og_sm_content_admin_overview_type_edit_form', 2, 6),
       'access callback' => 'og_sm_site_permission_access',
       'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
       'file' => $file_admin,
@@ -217,7 +216,7 @@ function og_sm_content_get_types_by_site($site, $account = NULL) {
  *   The content type object or machine name.
  *
  * @return object
- *   The content type altered to match the site's settings.
+ *   The site specific content type object.
  */
 function og_sm_content_get_type_info_by_site($site, $content_type) {
   if (is_string($content_type)) {
@@ -237,6 +236,26 @@ function og_sm_content_get_type_info_by_site($site, $content_type) {
   }
 
   return $content_type;
+}
+
+/**
+ * Fetches the site specific settings for a content type.
+ *
+ * @param object $node
+ *   The node to fetch the site specific content type info of.
+ *
+ * @return object|bool
+ *   The site specific content type object.
+ */
+function og_sm_content_get_type_info_by_node($node) {
+  if (!og_sm_content_is_site_content($node)) {
+    return FALSE;
+  }
+  $site = og_sm_content_get_site($node);
+  if ($site) {
+    return og_sm_content_get_type_info_by_site($site, $node->type);
+  }
+  return FALSE;
 }
 
 /**
