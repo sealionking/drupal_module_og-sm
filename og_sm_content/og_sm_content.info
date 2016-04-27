@@ -8,6 +8,7 @@ dependencies[] = og_sm_variable
 
 ; Views plugins.
 files[] = views/og_sm_views_content_handler_filter_content_type.inc
+files[] = views/og_sm_views_content_handler_field_content_type.inc
 
 ; Tests.
 files[] = tests/OgSmContentTestCase.test
