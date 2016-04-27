@@ -4,6 +4,7 @@ package = "Organic Groups Site Manager"
 core = 7.x
 
 dependencies[] = og_sm
+dependencies[] = og_sm_variable
 
 ; Views plugins.
 files[] = views/og_sm_views_content_handler_filter_content_type.inc
