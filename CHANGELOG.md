@@ -3,7 +3,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
-## [Unreleased]
+## [7.x-1.0]
 ### Deleted
 - DMOGSM-42: Removed the no longer required og_sm_pathauto module.
 
@@ -117,6 +117,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.0-alpha8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0%0D7.x-1.0-alpha8#diff
 [7.x-1.0-alpha8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha8%0D7.x-1.0-alpha7#diff
 [7.x-1.0-alpha7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha7%0D7.x-1.0-alpha6#diff
 [7.x-1.0-alpha6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha6%0D7.x-1.0-alpha5#diff
