@@ -79,9 +79,21 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
    * {@inheritdoc}
    */
   public function setUp() {
-    // Enable required modules.
-    $modules = array('og_sm_taxonomy');
+    // Enable required modules (we need context to filter the terms!).
+    $modules = array('og_sm_taxonomy', 'og_sm_context');
     parent::setUp($modules);
+
+    // Setup OG context.
+    $context_enabled = array(
+      'og_sm_context_node' => new stdClass(),
+      'og_sm_context_admin' => new stdClass(),
+    );
+    variable_set('og_context_negotiation_group_context', $context_enabled);
+    $context_order = array(
+      'og_sm_context_node' => -50,
+      'og_sm_context_admin' => -49,
+    );
+    variable_set('og_context_providers_weight_group_context', $context_order);
 
     // Create the Site type.
     $type = $this->ogSmCreateGroupNodeType();
@@ -158,7 +170,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
   }
 
   /**
-   * Test the taxonomy administration overview page.
+   * Test the taxonomy administration overview access.
    */
   public function testTaxonomyAdministrationOverviewAccess() {
     // Global Administrators should always have access.
@@ -289,6 +301,58 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
       ),
       'Site Taxonomy administrate vocabulary : Site user without vocabulary specific permissions has no access to it.'
     );
+  }
+
+  /**
+   * Test the taxonomy overview page.
+   */
+  public function testTaxonomyAdministrationOverviewPage() {
+    $path_overview = 'group/node/' . $this->siteNode->nid . '/admin/taxonomy';
+    $this->drupalLogin($this->userPermissionNone);
+    $this->drupalGet($path_overview);
+    $this->assertResponse(403, 'Site Taxonomy administration overview : No access without proper permissions.');
+
+    // User with access to administer all taxonomies should see all in the list.
+    $this->drupalLogin($this->userPermissionAll);
+    $this->drupalGet($path_overview);
+    $this->assertResponse(200, 'Site Taxonomy administration overview : Access when having edit all taxonomies permission.');
+    $this->assertText($this->vocabCategories->name, 'Category vocabulary is in the list.');
+    $this->assertText($this->vocabTags->name, 'Tags vocabulary is in the list.');
+
+    // User with access to only 1 vocabulary should not see other taxonomies.
+    $this->drupalLogin($this->siteUserPermissionCategories);
+    $this->drupalGet($path_overview);
+    $this->assertResponse(200, 'Site Taxonomy administration overview : Access when having edit at least one taxonomy permission.');
+    $this->assertText($this->vocabCategories->name, 'Category vocabulary is in the list.');
+    $this->assertNoText($this->vocabTags->name, 'Tags vocabulary is not in the list.');
+  }
+
+  /**
+   * Test the taxonomy list page.
+   */
+  public function testTaxonomyAdministrationVocabularyPage() {
+    $path_categories = 'group/node/' . $this->siteNode->nid . '/admin/taxonomy/test_categories';
+    $this->drupalLogin($this->siteUserPermissionNone);
+    $this->drupalGet($path_categories);
+    $this->assertResponse(403, 'Site Taxonomy administration overview : No access without proper permissions.');
+
+    $this->drupalLogin($this->userAdministrator);
+    $this->drupalGet($path_categories);
+    $this->assertResponse(200, 'Site Taxonomy administration overview : Administrator has access to all vocabularies.');
+
+    // Add some category terms.
+    $sites = array($this->siteNode);
+    $termOutside = $this->ogSmCreateTerm($this->vocabCategories, 'term_outside');
+    $term1 = $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
+    $term2 = $this->ogSmCreateTerm($this->vocabCategories, 'term_2', $sites);
+    $term3 = $this->ogSmCreateTerm($this->vocabCategories, 'term_3', $sites);
+
+    // Check if the terms are listed.
+    $this->drupalGet($path_categories);
+    $this->assertNoText('term_outside', 'The no-site term is not in the list.');
+    $this->assertText('term_1', 'Term "term_1" is in the list.');
+    $this->assertText('term_2', 'Term "term_2" is in the list.');
+    $this->assertText('term_3', 'Term "term_3" is in the list.');
   }
 
 }

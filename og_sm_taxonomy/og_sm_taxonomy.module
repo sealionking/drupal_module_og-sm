@@ -64,16 +64,31 @@ function og_sm_taxonomy_og_permission() {
  */
 function og_sm_taxonomy_menu() {
   $items = array();
+
+  // OG SM Taxonomy file.
   $file_admin = 'og_sm_taxonomy.admin.inc';
 
-  $item['group/node/%site/admin/taxonomy'] = array(
+  // Taxonomy module file.
+  $file_taxonomy_path = drupal_get_path('module', 'taxonomy');
+  $file_taxonomy_file = 'taxonomy.admin.inc';
+
+  $items['group/%/%og_sm_site/admin/taxonomy'] = array(
     'title' => 'Administer taxonomy',
     'page callback' => 'og_sm_taxonomy_admin_overview',
     'page arguments' => array(2),
     'access callback' => 'og_sm_taxonomy_admin_access_overview',
     'access arguments' => array(2),
-    'weight' => 11,
     'file' => $file_admin,
+  );
+  $items['group/%/%og_sm_site/admin/taxonomy/%taxonomy_vocabulary_machine_name'] = array(
+    'title callback' => 'entity_label',
+    'title arguments' => array('taxonomy_vocabulary', 5),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('taxonomy_overview_terms', 5),
+    'access callback' => 'og_sm_taxonomy_admin_access_vocabulary',
+    'access arguments' => array(2, 5),
+    'file' => $file_taxonomy_file,
+    'file path' => $file_taxonomy_path,
   );
 
   return $items;
@@ -253,4 +268,62 @@ function og_sm_taxonomy_term_is_site_term($term) {
 function og_sm_taxonomy_term_is_site_member($term, $site) {
   $sites = og_sm_taxonomy_term_get_sites($term);
   return !empty($sites[$site->nid]);
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * Filters the term query by the current Site (if any).
+ */
+function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) {
+  // Only alter when in a Site context.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Get the vocabulary from the query.
+  $vocabulary = FALSE;
+  $conditions = $query->conditions();
+  foreach ($conditions as $condition) {
+    if (empty($condition['field'])) {
+      continue;
+    }
+    if ($condition['field'] !== 't.vid') {
+      continue;
+    }
+
+    $vocabulary = taxonomy_vocabulary_load($condition['value']);
+  }
+  if (!$vocabulary) {
+    return;
+  }
+
+  // Only when the vocabulary is a Site vocabulary.
+  if (!og_sm_taxonomy_is_vocabulary($vocabulary->machine_name)) {
+    return;
+  }
+
+  // Get the taxonomy_term_data alias.
+  $table_alias = NULL;
+  $tables = $query->getTables();
+  foreach ($tables as $info) {
+    if ($info['table'] !== 'taxonomy_term_data') {
+      continue;
+    }
+
+    $table_alias = $info['alias'];
+  }
+
+  // Only if the taxonomy_term_data table is in the query.
+  if (!$table_alias) {
+    return;
+  }
+
+  // Filter by the Site membership.
+  $query->join('og_membership', 'ogm', 'ogm.etid = ' . $table_alias . '.tid');
+  $query->condition('ogm.entity_type', 'taxonomy_term');
+  $query->condition('ogm.group_type', 'node');
+  $query->condition('ogm.gid', $site->nid);
+  $query->condition('ogm.state', 1);
 }
