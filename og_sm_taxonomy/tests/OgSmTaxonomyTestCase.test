@@ -7,7 +7,7 @@
 /**
  * Tests about the Site Taxonomy API.
  */
-class OgSmTaxonomyTestCase extends OgSmWebTestCase {
+class OgSmTaxonomyTestCase extends OgSmTaxonomyWebTestCase {
   /**
    * Site Nodes to run the tests with.
    *
@@ -24,7 +24,7 @@ class OgSmTaxonomyTestCase extends OgSmWebTestCase {
   private $vocabCategories;
 
   /**
-   * Vocbulary "tags" to run tests with.
+   * Vocabulary "tags" to run tests with.
    *
    * @var object
    */
@@ -35,29 +35,29 @@ class OgSmTaxonomyTestCase extends OgSmWebTestCase {
    *
    * @var object
    */
-  private $termCatergoryWithoutSite;
+  private $termCategoryWithoutSite;
 
   /**
    * Category term with one Site to test with.
    *
    * @var object
    */
-  private $termCatergoryWithSite;
+  private $termCategoryWithSite;
 
   /**
    * Category term with multiple Sites to test with.
    *
    * @var object
    */
-  private $termCatergoryWithSites;
+  private $termCategoryWithSites;
 
   /**
    * {@inheritdoc}
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Taxonomy'),
-      'description' => t('Tests Site Taxonomy terms functionality.'),
+      'name' => t('Site Taxonomy Administration'),
+      'description' => t('Tests Site Taxonomy administration functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );
   }
@@ -81,16 +81,16 @@ class OgSmTaxonomyTestCase extends OgSmWebTestCase {
     $this->vocabTags = $this->ogSmCreateVocabulary('test_tags');
 
     // Create terms.
-    $this->termCatergoryWithoutSite = $this->ogSmCreateTerm(
+    $this->termCategoryWithoutSite = $this->ogSmCreateTerm(
       $this->vocabCategories,
       'category-without-sites'
     );
-    $this->termCatergoryWithSite = $this->ogSmCreateTerm(
+    $this->termCategoryWithSite    = $this->ogSmCreateTerm(
       $this->vocabCategories,
       'category-with-site',
       array($this->siteNode1)
     );
-    $this->termCatergoryWithSites = $this->ogSmCreateTerm(
+    $this->termCategoryWithSites   = $this->ogSmCreateTerm(
       $this->vocabCategories,
       'category-with-sites',
       array($this->siteNode1, $this->siteNode2)
@@ -134,119 +134,59 @@ class OgSmTaxonomyTestCase extends OgSmWebTestCase {
     $expected = array();
     $this->assertEqual(
       $expected,
-      og_sm_taxonomy_term_get_sites($this->termCatergoryWithoutSite),
+      og_sm_taxonomy_term_get_sites($this->termCategoryWithoutSite),
       'Term without Sites.'
     );
     $expected = array($this->siteNode1->nid => $this->siteNode1);
     $this->assertEqual(
       $expected,
-      og_sm_taxonomy_term_get_sites($this->termCatergoryWithSite),
+      og_sm_taxonomy_term_get_sites($this->termCategoryWithSite),
       'Term with one Site.'
     );
     $this->assertEqual(
       $this->siteNode1,
-      og_sm_taxonomy_term_get_site($this->termCatergoryWithSite),
+      og_sm_taxonomy_term_get_site($this->termCategoryWithSite),
       'Single Site term returns the only Site it belongs to.'
     );
     $expected[$this->siteNode2->nid] = $this->siteNode2;
     $this->assertEqual(
       $expected,
-      og_sm_taxonomy_term_get_sites($this->termCatergoryWithSites),
+      og_sm_taxonomy_term_get_sites($this->termCategoryWithSites),
       'Term with two Sites.'
     );
     $this->assertEqual(
       $this->siteNode1,
-      og_sm_taxonomy_term_get_site($this->termCatergoryWithSites),
+      og_sm_taxonomy_term_get_site($this->termCategoryWithSites),
       'Multiple Site Term returns the first Site it belongs to.'
     );
 
     // Test checking if a Term is used within one or more Sites.
     $this->assertFalse(
-      og_sm_taxonomy_term_is_site_term($this->termCatergoryWithoutSite),
+      og_sm_taxonomy_term_is_site_term($this->termCategoryWithoutSite),
       'Term is not member of any Site'
     );
     $this->assertTrue(
-      og_sm_taxonomy_term_is_site_term($this->termCatergoryWithSite),
+      og_sm_taxonomy_term_is_site_term($this->termCategoryWithSite),
       'Term is member of at least one Site'
     );
 
     // Test checking if a Term belongs to a given Site.
     $this->assertFalse(
-      og_sm_taxonomy_term_is_site_member($this->termCatergoryWithoutSite, $this->siteNode1),
+      og_sm_taxonomy_term_is_site_member($this->termCategoryWithoutSite, $this->siteNode1),
       'Term is not member of a Site'
     );
     $this->assertTrue(
-      og_sm_taxonomy_term_is_site_member($this->termCatergoryWithSite, $this->siteNode1),
+      og_sm_taxonomy_term_is_site_member($this->termCategoryWithSite, $this->siteNode1),
       'Term is member of Site 1'
     );
     $this->assertFalse(
-      og_sm_taxonomy_term_is_site_member($this->termCatergoryWithSite, $this->siteNode2),
+      og_sm_taxonomy_term_is_site_member($this->termCategoryWithSite, $this->siteNode2),
       'Term is not member of Site 2'
     );
     $this->assertTrue(
-      og_sm_taxonomy_term_is_site_member($this->termCatergoryWithSites, $this->siteNode2),
+      og_sm_taxonomy_term_is_site_member($this->termCategoryWithSites, $this->siteNode2),
       'Term is member of Site 2'
     );
-  }
-
-  /**
-   * Helper to create a taxonomy with OG field.
-   *
-   * @param string $name
-   *   The machine name for the taxonomy.
-   *
-   * @return object
-   *   The vocbulary object.
-   */
-  public function ogSmCreateVocabulary($name) {
-    // Create the vocabulary.
-    $vocab = new stdClass();
-    $vocab->name = $name;
-    $vocab->description = 'Test the ' . $name;
-    $vocab->machine_name = $name;
-    taxonomy_vocabulary_save($vocab);
-
-    // Add the group field.
-    og_create_field(OG_AUDIENCE_FIELD, 'taxonomy_term', $name);
-
-    return $vocab;
-  }
-
-  /**
-   * Helper to create a term.
-   *
-   * @param object $vocabulary
-   *   The vocabulary to create the term for.
-   * @param string $name
-   *   The term name.
-   * @param array $sites
-   *   The optional array of Sites the term belongs to.
-   *
-   * @return object
-   *   The created term.
-   */
-  public function ogSmCreateTerm($vocabulary, $name, $sites = array()) {
-    $term = (object) array(
-      'vid' => $vocabulary->vid,
-      'name' => $name,
-      'description' => sprintf('Test term for %s vocabulary', $vocabulary->machine_name),
-    );
-    taxonomy_term_save($term);
-
-    // Add the group memberships (if any).
-    foreach ($sites as $site) {
-      og_group(
-        'node',
-        $site->nid,
-        array(
-          'entity_type' => 'taxonomy_term',
-          'entity' => $term,
-          'field_name' => OG_AUDIENCE_FIELD,
-        )
-      );
-    }
-
-    return taxonomy_term_load($term->tid);
   }
 
 }
