@@ -5,10 +5,29 @@
  */
 
 /**
+ * Global permissions.
+ */
+define('OG_SM_TAXONOMY_PERM_ALL', 'edit all site taxonomies');
+
+/**
  * OG permissions.
  */
-define('OG_SM_TAXONOMY_OG_PERM_ADMIN', 'administer taxonomy');
+define('OG_SM_TAXONOMY_OG_PERM_ALL', 'edit all taxonomy terms');
 define('OG_SM_TAXONOMY_OG_PERM_VOCAB', 'edit terms in %s');
+
+/**
+ * Implements hook_permission().
+ */
+function og_sm_taxonomy_permission() {
+  $items = array();
+
+  $items[OG_SM_TAXONOMY_PERM_ALL] = array(
+    'title' => t('Edit all taxonomy terms'),
+    'description' => t('Edit the taxonomy terms of all Sites.'),
+  );
+
+  return $items;
+}
 
 /**
  * Implements hook_og_permission().
@@ -16,7 +35,7 @@ define('OG_SM_TAXONOMY_OG_PERM_VOCAB', 'edit terms in %s');
 function og_sm_taxonomy_og_permission() {
   $items = array();
 
-  $items[OG_SM_TAXONOMY_OG_PERM_ADMIN] = array(
+  $items[OG_SM_TAXONOMY_OG_PERM_ALL] = array(
     'title' => t('Administer taxonomy'),
     'description' => t('Manage all taxonomy terms.'),
   );
@@ -58,6 +77,69 @@ function og_sm_taxonomy_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Access callback to check access to the taxonomy administration overview.
+ *
+ * @param object $site
+ *   The Site to validate the access for.
+ * @param object $account
+ *   The account to validate the access for.
+ *
+ * @return bool
+ *   Access TRUE/FALSE.
+ */
+function og_sm_taxonomy_admin_access_overview($site, $account = NULL) {
+  if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
+    return TRUE;
+  }
+
+  if (og_sm_site_permission_access($site, OG_SM_TAXONOMY_OG_PERM_ALL, $account)) {
+    return TRUE;
+  }
+
+  // Check access to edit one of the vocabularies.
+  $vocabularies = array_keys(og_sm_taxonomy_get_vocabularies());
+  foreach ($vocabularies as $vocabulary) {
+    $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, $vocabulary);
+    if (og_sm_site_permission_access($site, $perm, $account)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Access callback to check access to one taxonomy administration vocabulary.
+ *
+ * @param object $site
+ *   The Site to validate the access for.
+ * @param object $vocabulary
+ *   The vocabulary to check the access for.
+ * @param object $account
+ *   The account to validate the access for.
+ *
+ * @return bool
+ *   Access TRUE/FALSE.
+ */
+function og_sm_taxonomy_admin_access_vocabulary($site, $vocabulary, $account = NULL) {
+  if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
+    return TRUE;
+  }
+
+  if (og_sm_site_permission_access($site, OG_SM_TAXONOMY_OG_PERM_ALL, $account)) {
+    return TRUE;
+  }
+
+  // Vocabulary specific.
+  $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, $vocabulary->machine_name);
+  if (og_sm_site_permission_access($site, $perm, $account)) {
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 /**

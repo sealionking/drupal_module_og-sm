@@ -1,0 +1,294 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Taxonomies.
+ */
+
+/**
+ * Tests about the Site Taxonomy API.
+ */
+class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
+  /**
+   * Site Nodes to run the tests with.
+   *
+   * @var object
+   */
+  private $siteNode;
+
+  /**
+   * Vocabulary "categories" to run tests with.
+   *
+   * @var object
+   */
+  private $vocabCategories;
+
+  /**
+   * Vocabulary "tags" to run tests with.
+   *
+   * @var object
+   */
+  private $vocabTags;
+
+  /**
+   * The admin user to test with.
+   */
+  private $userAdministrator;
+
+  /**
+   * Global user without any special permissions.
+   */
+  private $userPermissionNone;
+
+  /**
+   * Global user with edit all permission.
+   */
+  private $userPermissionAll;
+
+  /**
+   * The site user without taxonomy permissions.
+   */
+  private $siteUserPermissionNone;
+
+  /**
+   * The site user with taxonomy administration permission.
+   */
+  private $siteUserPermissionAll;
+
+  /**
+   * The site user with the permission to administer the categories.
+   */
+  private $siteUserPermissionCategories;
+
+  /**
+   * The site user with the permission to administer the tags.
+   */
+  private $siteUserPermissionTags;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Taxonomy Administration'),
+      'description' => t('Tests Site Taxonomy administration functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_taxonomy');
+    parent::setUp($modules);
+
+    // Create the Site type.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+
+    // Create the Site node.
+    $this->siteNode = $this->ogSmCreateGroup($type);
+
+    // Create vocabularies.
+    $this->vocabCategories = $this->ogSmCreateVocabulary('test_categories');
+    $this->vocabTags = $this->ogSmCreateVocabulary('test_tags');
+
+    // Create users.
+    $this->userAdministrator = $this->ogSmCreateAdminUser();
+    $this->userPermissionNone = $this->drupalCreateUser();
+    $this->userPermissionAll = $this->drupalCreateUser(array(OG_SM_TAXONOMY_PERM_ALL));
+
+    // Site user without permissions.
+    $this->siteUserPermissionNone = $this->ogSmCreateGroupUser(
+      array(),
+      array($this->siteNode)
+    );
+
+    // Site user with taxonomy administration permissions.
+    $site_role_all = og_role_create('site taxonomy all', 'node', 0, $type);
+    og_role_save($site_role_all);
+    og_role_grant_permissions($site_role_all->rid, array(OG_SM_TAXONOMY_OG_PERM_ALL));
+    $this->siteUserPermissionAll = $this->ogSmCreateGroupUser(
+      array(),
+      array($this->siteNode)
+    );
+    og_role_grant(
+      'node',
+      $this->siteNode->nid,
+      $this->siteUserPermissionAll->uid,
+      $site_role_all->rid
+    );
+
+    // Site user who can manage only categories.
+    $site_role_categories = og_role_create('site taxonomy categories', 'node', 0, $type);
+    og_role_save($site_role_categories);
+    og_role_grant_permissions(
+      $site_role_categories->rid,
+      array(sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, 'test_categories'))
+    );
+    $this->siteUserPermissionCategories = $this->ogSmCreateGroupUser(
+      array(),
+      array($this->siteNode)
+    );
+    og_role_grant(
+      'node',
+      $this->siteNode->nid,
+      $this->siteUserPermissionCategories->uid,
+      $site_role_categories->rid
+    );
+
+    // Site user who can manage only tags.
+    $site_role_tags = og_role_create('site taxonomy tags', 'node', 0, $type);
+    og_role_save($site_role_tags);
+    og_role_grant_permissions(
+      $site_role_tags->rid,
+      array(sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, 'test_tags'))
+    );
+    $this->siteUserPermissionTags = $this->ogSmCreateGroupUser(
+      array(),
+      array($this->siteNode)
+    );
+    og_role_grant(
+      'node',
+      $this->siteNode->nid,
+      $this->siteUserPermissionTags->uid,
+      $site_role_tags->rid
+    );
+  }
+
+  /**
+   * Test the taxonomy administration overview page.
+   */
+  public function testTaxonomyAdministrationOverviewAccess() {
+    // Global Administrators should always have access.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_overview(
+        $this->siteNode,
+        $this->userAdministrator
+      ),
+      'Site Taxonomy administration overview : Global administrators have always access.'
+    );
+
+    // Global user without permissions should not have access.
+    $this->assertFalse(
+      og_sm_taxonomy_admin_access_overview(
+        $this->siteNode,
+        $this->userPermissionNone
+      ),
+      'Site Taxonomy administration overview : Global user without permissions has no access.'
+    );
+
+    // Global user with the permission should have access.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_overview(
+        $this->siteNode,
+        $this->userPermissionAll
+      ),
+      'Site Taxonomy administration overview : Global user with permission has access.'
+    );
+
+    // Site users without permissions should not have access.
+    $this->assertFalse(
+      og_sm_taxonomy_admin_access_overview(
+        $this->siteNode,
+        $this->siteUserPermissionNone
+      ),
+      'Site Taxonomy administration overview : Site user without permissions has no access.'
+    );
+
+    // Site users with all taxonomy permission should have access.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_overview(
+        $this->siteNode,
+        $this->siteUserPermissionAll
+      ),
+      'Site Taxonomy administration overview : Site user with edit all permissions has access.'
+    );
+
+    // Site users with at least one vocabulary edit access have access.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_overview(
+        $this->siteNode,
+        $this->siteUserPermissionCategories
+      ),
+      'Site Taxonomy administration overview : Site user with edit one of the vocabulary permissions has access.'
+    );
+  }
+
+  /**
+   * Test access to edit the terms of a vocabulary.
+   */
+  public function testTaxonomyAdministrationVocabularyAccess() {
+    // Global Administrators should always have access.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_vocabulary(
+        $this->siteNode,
+        $this->vocabCategories,
+        $this->userAdministrator
+      ),
+      'Site Taxonomy administrate vocabulary : Global administrators have always access.'
+    );
+
+    // Global user without permissions should not have access.
+    $this->assertFalse(
+      og_sm_taxonomy_admin_access_vocabulary(
+        $this->siteNode,
+        $this->vocabTags,
+        $this->userPermissionNone
+      ),
+      'Site Taxonomy administrate vocabulary : Global user without permissions has no access.'
+    );
+
+    // Global user with the permission should have access.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_vocabulary(
+        $this->siteNode,
+        $this->vocabCategories,
+        $this->userPermissionAll
+      ),
+      'Site Taxonomy administrate vocabulary : Global user with permission has access.'
+    );
+
+    // Site users without permissions should not have access.
+    $this->assertFalse(
+      og_sm_taxonomy_admin_access_vocabulary(
+        $this->siteNode,
+        $this->vocabCategories,
+        $this->siteUserPermissionNone
+      ),
+      'Site Taxonomy administrate vocabulary : Site user without permissions has no access.'
+    );
+
+    // Site users with all taxonomy permission should have access.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_vocabulary(
+        $this->siteNode,
+        $this->vocabTags,
+        $this->siteUserPermissionAll
+      ),
+      'Site Taxonomy administrate vocabulary : Site user with edit all permissions has access.'
+    );
+
+    // Site users with at taxonomy specific permission.
+    $this->assertTrue(
+      og_sm_taxonomy_admin_access_vocabulary(
+        $this->siteNode,
+        $this->vocabCategories,
+        $this->siteUserPermissionCategories
+      ),
+      'Site Taxonomy administrate vocabulary : Site user with vocabulary specific permissions has access to it.'
+    );
+
+    // Site user with taxonomy he has no access to.
+    $this->assertFalse(
+      og_sm_taxonomy_admin_access_vocabulary(
+        $this->siteNode,
+        $this->vocabTags,
+        $this->siteUserPermissionCategories
+      ),
+      'Site Taxonomy administrate vocabulary : Site user without vocabulary specific permissions has no access to it.'
+    );
+  }
+
+}
