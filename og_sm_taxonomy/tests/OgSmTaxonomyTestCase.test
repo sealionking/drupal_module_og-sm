@@ -56,8 +56,8 @@ class OgSmTaxonomyTestCase extends OgSmTaxonomyWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Taxonomy Administration'),
-      'description' => t('Tests Site Taxonomy administration functionality.'),
+      'name' => t('Site Taxonomy'),
+      'description' => t('Tests Site Taxonomy terms functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );
   }
@@ -85,12 +85,12 @@ class OgSmTaxonomyTestCase extends OgSmTaxonomyWebTestCase {
       $this->vocabCategories,
       'category-without-sites'
     );
-    $this->termCategoryWithSite    = $this->ogSmCreateTerm(
+    $this->termCategoryWithSite = $this->ogSmCreateTerm(
       $this->vocabCategories,
       'category-with-site',
       array($this->siteNode1)
     );
-    $this->termCategoryWithSites   = $this->ogSmCreateTerm(
+    $this->termCategoryWithSites = $this->ogSmCreateTerm(
       $this->vocabCategories,
       'category-with-sites',
       array($this->siteNode1, $this->siteNode2)
