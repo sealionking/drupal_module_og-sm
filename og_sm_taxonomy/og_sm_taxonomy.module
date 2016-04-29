@@ -91,6 +91,16 @@ function og_sm_taxonomy_menu() {
     'file path' => $file_taxonomy_path,
   );
 
+  $items['group/%/%og_sm_site/admin/taxonomy/%taxonomy_vocabulary_machine_name/add'] = array(
+    'title' => 'Add term',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('taxonomy_form_term', array(), 3),
+    'access callback' => 'og_sm_taxonomy_admin_access_vocabulary',
+    'access arguments' => array(2, 5),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'taxonomy.admin.inc',
+  );
+
   return $items;
 }
 

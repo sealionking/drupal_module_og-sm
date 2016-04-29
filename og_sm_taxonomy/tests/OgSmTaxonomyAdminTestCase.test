@@ -353,6 +353,9 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     $this->assertText('term_1', 'Term "term_1" is in the list.');
     $this->assertText('term_2', 'Term "term_2" is in the list.');
     $this->assertText('term_3', 'Term "term_3" is in the list.');
+
+    // Check if the add button is available.
+    $this->assertText('Add term');
   }
 
 }
