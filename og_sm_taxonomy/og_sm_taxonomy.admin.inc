@@ -30,7 +30,7 @@ function og_sm_taxonomy_admin_overview($site) {
     $label = check_plain($vocabulary->name);
     $name = $vocabulary->machine_name;
 
-    if (!og_sm_taxonomy_admin_access_vocabulary($site, $vocabulary)) {
+    if (!og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary)) {
       continue;
     }
 

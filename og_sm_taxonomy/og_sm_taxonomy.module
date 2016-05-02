@@ -76,7 +76,7 @@ function og_sm_taxonomy_menu() {
     'title' => 'Administer taxonomy',
     'page callback' => 'og_sm_taxonomy_admin_overview',
     'page arguments' => array(2),
-    'access callback' => 'og_sm_taxonomy_admin_access_overview',
+    'access callback' => 'og_sm_taxonomy_admin_vocabulary_overview_access',
     'access arguments' => array(2),
     'file' => $file_admin,
   );
@@ -85,7 +85,7 @@ function og_sm_taxonomy_menu() {
     'title arguments' => array('taxonomy_vocabulary', 5),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('taxonomy_overview_terms', 5),
-    'access callback' => 'og_sm_taxonomy_admin_access_vocabulary',
+    'access callback' => 'og_sm_taxonomy_admin_vocabulary_access',
     'access arguments' => array(2, 5),
     'file' => $file_taxonomy_file,
     'file path' => $file_taxonomy_path,
@@ -95,7 +95,7 @@ function og_sm_taxonomy_menu() {
     'title' => 'Add term',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('taxonomy_form_term', array(), 5),
-    'access callback' => 'og_sm_taxonomy_admin_access_vocabulary',
+    'access callback' => 'og_sm_taxonomy_admin_vocabulary_access',
     'access arguments' => array(2, 5),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'taxonomy.admin.inc',
@@ -123,7 +123,7 @@ function og_sm_taxonomy_menu_alter(&$items) {
  * @return bool
  *   Access TRUE/FALSE.
  */
-function og_sm_taxonomy_admin_access_overview($site, $account = NULL) {
+function og_sm_taxonomy_admin_vocabulary_overview_access($site, $account = NULL) {
   if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
     return TRUE;
   }
@@ -157,7 +157,7 @@ function og_sm_taxonomy_admin_access_overview($site, $account = NULL) {
  * @return bool
  *   Access TRUE/FALSE.
  */
-function og_sm_taxonomy_admin_access_vocabulary($site, $vocabulary, $account = NULL) {
+function og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account = NULL) {
   if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
     return TRUE;
   }
@@ -193,7 +193,7 @@ function og_sm_taxonomy_term_edit_access($term, $account = NULL) {
   }
 
   $vocabulary = taxonomy_vocabulary_load($term->vid);
-  return og_sm_taxonomy_admin_access_vocabulary($site, $vocabulary, $account);
+  return og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account);
 }
 
 /**

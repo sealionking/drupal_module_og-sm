@@ -175,7 +175,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
   public function testTaxonomyAdministrationOverviewAccess() {
     // Global Administrators should always have access.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_overview(
+      og_sm_taxonomy_admin_vocabulary_overview_access(
         $this->siteNode,
         $this->userAdministrator
       ),
@@ -184,7 +184,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Global user without permissions should not have access.
     $this->assertFalse(
-      og_sm_taxonomy_admin_access_overview(
+      og_sm_taxonomy_admin_vocabulary_overview_access(
         $this->siteNode,
         $this->userPermissionNone
       ),
@@ -193,7 +193,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Global user with the permission should have access.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_overview(
+      og_sm_taxonomy_admin_vocabulary_overview_access(
         $this->siteNode,
         $this->userPermissionAll
       ),
@@ -202,7 +202,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Site users without permissions should not have access.
     $this->assertFalse(
-      og_sm_taxonomy_admin_access_overview(
+      og_sm_taxonomy_admin_vocabulary_overview_access(
         $this->siteNode,
         $this->siteUserPermissionNone
       ),
@@ -211,7 +211,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Site users with all taxonomy permission should have access.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_overview(
+      og_sm_taxonomy_admin_vocabulary_overview_access(
         $this->siteNode,
         $this->siteUserPermissionAll
       ),
@@ -220,7 +220,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Site users with at least one vocabulary edit access have access.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_overview(
+      og_sm_taxonomy_admin_vocabulary_overview_access(
         $this->siteNode,
         $this->siteUserPermissionCategories
       ),
@@ -234,7 +234,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
   public function testTaxonomyAdministrationVocabularyAccess() {
     // Global Administrators should always have access.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_vocabulary(
+      og_sm_taxonomy_admin_vocabulary_access(
         $this->siteNode,
         $this->vocabCategories,
         $this->userAdministrator
@@ -244,7 +244,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Global user without permissions should not have access.
     $this->assertFalse(
-      og_sm_taxonomy_admin_access_vocabulary(
+      og_sm_taxonomy_admin_vocabulary_access(
         $this->siteNode,
         $this->vocabTags,
         $this->userPermissionNone
@@ -254,7 +254,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Global user with the permission should have access.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_vocabulary(
+      og_sm_taxonomy_admin_vocabulary_access(
         $this->siteNode,
         $this->vocabCategories,
         $this->userPermissionAll
@@ -264,7 +264,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Site users without permissions should not have access.
     $this->assertFalse(
-      og_sm_taxonomy_admin_access_vocabulary(
+      og_sm_taxonomy_admin_vocabulary_access(
         $this->siteNode,
         $this->vocabCategories,
         $this->siteUserPermissionNone
@@ -274,7 +274,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Site users with all taxonomy permission should have access.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_vocabulary(
+      og_sm_taxonomy_admin_vocabulary_access(
         $this->siteNode,
         $this->vocabTags,
         $this->siteUserPermissionAll
@@ -284,7 +284,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Site users with at taxonomy specific permission.
     $this->assertTrue(
-      og_sm_taxonomy_admin_access_vocabulary(
+      og_sm_taxonomy_admin_vocabulary_access(
         $this->siteNode,
         $this->vocabCategories,
         $this->siteUserPermissionCategories
@@ -294,7 +294,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Site user with taxonomy he has no access to.
     $this->assertFalse(
-      og_sm_taxonomy_admin_access_vocabulary(
+      og_sm_taxonomy_admin_vocabulary_access(
         $this->siteNode,
         $this->vocabTags,
         $this->siteUserPermissionCategories

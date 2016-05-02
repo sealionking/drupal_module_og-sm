@@ -5,9 +5,10 @@ its own taxonomy terms.
 
 ## Functionality
 This module provides:
-* Support one global vocabulary with Site specific terms.
+* Support global vocabularies with Site specific terms.
 * Manage terms per Site.
 * Select only from terms within the Site when creating content.
+* A token provider for terms within a Site (used for path aliases).
 
 > **NOTE** : vocabulary terms will be automatically filtered to only those
 > related to the current Site context.
@@ -92,4 +93,20 @@ Check if the term belongs to the given Site object.
 
 ```php
 $is_member = og_sm_taxonomy_term_is_site_member($term, $site);
+```
+
+
+### Check if a user can manage a vocabulary
+Check if a user can manage a vocabulary within the given Site context:
+
+```php
+$has_access = og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary);
+```
+
+
+### Check if a user can edit/delete a term
+Check if a user can edit and delete a given term.
+
+```php
+$has_access = og_sm_taxonomy_term_edit_access($term);
 ```
