@@ -342,10 +342,10 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Add some category terms.
     $sites = array($this->siteNode);
-    $termOutside = $this->ogSmCreateTerm($this->vocabCategories, 'term_outside');
-    $term1 = $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
-    $term2 = $this->ogSmCreateTerm($this->vocabCategories, 'term_2', $sites);
-    $term3 = $this->ogSmCreateTerm($this->vocabCategories, 'term_3', $sites);
+    $this->ogSmCreateTerm($this->vocabCategories, 'term_outside');
+    $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
+    $this->ogSmCreateTerm($this->vocabCategories, 'term_2', $sites);
+    $this->ogSmCreateTerm($this->vocabCategories, 'term_3', $sites);
 
     // Check if the terms are listed.
     $this->drupalGet($path_categories);
@@ -356,6 +356,42 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Check if the add button is available.
     $this->assertText('Add term');
+  }
+
+  /**
+   * Test ordering the taxonomy terms.
+   */
+  public function _testTaxonomyAdministrationVocabularyPageOrder() {
+    $path_categories = 'group/node/' . $this->siteNode->nid . '/admin/taxonomy/test_categories';
+
+    // Login to the platform.
+    $this->drupalLogin($this->userAdministrator);
+
+    // Add some terms.
+    $sites = array($this->siteNode);
+    $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
+    $this->ogSmCreateTerm($this->vocabCategories, 'term_2', $sites);
+    $this->ogSmCreateTerm($this->vocabCategories, 'term_3', $sites);
+
+    // Reset the order of the terms, we should return to the overview within the
+    // Site context.
+    $this->drupalPost($path_categories, array(), 'Reset to alphabetical');
+    $this->drupalPost(NULL, array(), t('Reset to alphabetical'));
+    $this->assertUrl(
+      $path_categories,
+      array(),
+      'The user is redirected back to the Site vocabulary terms overview page.'
+    );
+
+    // Open the reset order confirmation page, using the cancel button should
+    // redirect back to the Site vocabulary terms overview page.
+    $this->drupalPost($path_categories, array(), 'Reset to alphabetical');
+    $this->clickLink('Cancel');
+    $this->assertUrl(
+      $path_categories,
+      array(),
+      'The user is redirected back to the Site vocabulary terms overview page.'
+    );
   }
 
 }

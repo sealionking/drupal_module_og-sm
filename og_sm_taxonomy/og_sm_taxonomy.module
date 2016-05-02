@@ -337,3 +337,15 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
   $query->condition('ogm.gid', $site->nid);
   $query->condition('ogm.state', 1);
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state, $form_id) {
+  // If alphabetically term order confirmation form is shown: make sure that the
+  // links point to the proper location (e.g. when used in Site context).
+  if (isset($form['reset_alphabetical'])) {
+    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
+    _og_sm_taxonomy_form_taxonomy_overview_terms_alter($form);
+  }
+}
