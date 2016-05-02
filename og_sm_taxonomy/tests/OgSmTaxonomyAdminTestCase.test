@@ -394,4 +394,44 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     );
   }
 
+  /**
+   * Test adding a vocabulary term.
+   */
+  public function testTaxonomyAdministrationTermAdd() {
+    $path_categories = 'group/node/' . $this->siteNode->nid . '/admin/taxonomy/test_categories';
+    $path_add = $path_categories . '/add';
+
+    // Login to the platform as user without proper permissions.
+    $this->drupalLogin($this->siteUserPermissionNone);
+    $this->drupalGet($path_add);
+    $this->assertResponse(403, 'Site Taxonomy term add : No access without proper permissions.');
+    $this->assertNoFieldById('edit-name', NULL, 'There should be no form on the page.');
+
+    // Login to the platform as user with proper permissions.
+    $this->drupalLogin($this->siteUserPermissionAll);
+    $this->drupalGet($path_add);
+    $this->assertResponse(200, 'Site Taxonomy term add : Administrator has access to all vocabularies.');
+    $this->assertFieldById('edit-name', NULL, 'Term field is on the page.');
+
+    // Post the form.
+    $data = array(
+      'name' => 'test_term_post',
+      'description[value]' => 'test_term_description',
+      'og_group_ref[und][0][default][]' => $this->siteNode->nid,
+    );
+    $this->drupalPost($path_add, $data, 'Save');
+    $this->drupalGet($path_categories);
+    $this->assertText(
+      'test_term_post',
+      'The new term is saved for the site.'
+    );
+
+    // Check if the term is created linked to the Site.
+    $term = array_shift(taxonomy_get_term_by_name('test_term_post'));
+    $this->assertTrue(
+      og_sm_taxonomy_term_is_site_member($term, $this->siteNode),
+      'The term is a member of the Site.'
+    );
+  }
+
 }
