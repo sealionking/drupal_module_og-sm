@@ -142,6 +142,8 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     // Test for default user.
     $this->assertEqual(array(), og_sm_content_get_types_by_site($this->site, $this->userDefault));
 
+    $this->siteContentTypeArticle = og_sm_content_get_type_info_by_site($this->site, $this->siteContentTypeArticle);
+    $this->siteContentTypePage = og_sm_content_get_type_info_by_site($this->site, $this->siteContentTypePage);
     // Test getting the types for an admin user.
     $expected = array(
       $this->siteContentTypeNameArticle => $this->siteContentTypeArticle,

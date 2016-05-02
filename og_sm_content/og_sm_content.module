@@ -389,10 +389,11 @@ function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
   $site = FALSE;
   // Rewrite all path which have the node type name in them, try to replace it
   // with the site specific content type name.
-  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9\-_]*)#', $path, $parts)) {
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_]*)#', $path, $parts)) {
     if ($site = og_sm_site_load($parts[1])) {
       $content_type = og_sm_content_get_type_info_by_site($site, $parts[3]);
-      $path = str_replace($parts[3], $content_type->site_type, $path);
+      $content_type_name = str_replace('_', '-', $content_type->site_type);
+      $path = str_replace($parts[3], $content_type_name, $path);
     }
   }
   // Support for og_sm_path module:
@@ -419,10 +420,12 @@ function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language)
     }
   }
   // Translate site specific node type paths back to their original path.
-  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9\-_]*)#', $path, $parts)) {
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9\-]*)#', $path, $parts)) {
     $site = $site ?: og_sm_site_load($parts[1]);
     if ($site) {
-      $node_type_name = og_sm_content_get_original_type_by_site_alias_type($site, $parts[3]);
+      $alias_type_name = str_replace('-', '_', $parts[3]);
+      $node_type_name = og_sm_content_get_original_type_by_site_alias_type($site, $alias_type_name);
+      $node_type_name = str_replace('_', '-', $node_type_name);
       $path = str_replace($parts[3], $node_type_name, $path);
     }
   }
