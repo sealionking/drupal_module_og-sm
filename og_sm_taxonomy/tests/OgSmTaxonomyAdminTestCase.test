@@ -434,4 +434,59 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     );
   }
 
+  /**
+   * Test editing a vocabulary term.
+   */
+  public function testTaxonomyAdministrationtermEdit() {
+    $sites = array($this->siteNode);
+    $term = $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
+    $path_edit = 'taxonomy/term/' . $term->tid . '/edit';
+
+    // Not logged in.
+    $this->drupalGet($path_edit);
+    $this->assertResponse(403, 'Site Taxonomy term edit : No access without proper permissions.');
+    $this->assertNoFieldById('edit-description-value', NULL, 'There should be no form on the page.');
+
+    // No permission.
+    $this->drupalLogin($this->userPermissionNone);
+    $this->drupalGet($path_edit);
+    $this->assertResponse(403, 'Site Taxonomy term edit : No access without proper permissions.');
+
+    // Administrator has always access.
+    $this->drupalLogin($this->userAdministrator);
+    $this->drupalGet($path_edit);
+    $this->assertResponse(200, 'Site Taxonomy term edit : Platform administrator has access.');
+    $expected = $this->siteNode->title . ' (' . $this->siteNode->nid . ')';
+    $this->assertFieldById(
+      'edit-og-group-ref-und-0-admin-0-target-id',
+      $expected,
+      'Site field is filled in correctly.'
+    );
+
+    // Global user with proper permissions.
+    $this->drupalLogin($this->userPermissionAll);
+    $this->drupalGet($path_edit);
+    $this->assertResponse(200, 'Site Taxonomy term edit : Global user with edit all has access.');
+
+    // Site user without access.
+    $this->drupalLogin($this->siteUserPermissionNone);
+    $this->drupalGet($path_edit);
+    $this->assertResponse(403, 'Site Taxonomy term edit : Site user without proper permissions has no access.');
+
+    // Site user who can manage all.
+    $this->drupalLogin($this->siteUserPermissionAll);
+    $this->drupalGet($path_edit);
+    $this->assertResponse(200, 'Site Taxonomy term edit : Site user with edit all has access.');
+
+    // Site user with specific vocabulary.
+    $this->drupalLogin($this->siteUserPermissionCategories);
+    $this->drupalGet($path_edit);
+    $this->assertResponse(200, 'Site Taxonomy term edit : Site user with categories edit has access.');
+
+    // Site user without specific vocabulary access.
+    $this->drupalLogin($this->siteUserPermissionTags);
+    $this->drupalGet($path_edit);
+    $this->assertResponse(403, 'Site Taxonomy term edit : Site user without categories permissions has no access.');
+  }
+
 }

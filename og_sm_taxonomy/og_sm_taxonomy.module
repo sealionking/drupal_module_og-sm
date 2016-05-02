@@ -106,6 +106,13 @@ function og_sm_taxonomy_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function og_sm_taxonomy_menu_alter(&$items) {
+  $items['taxonomy/term/%taxonomy_term/edit']['access callback'] = 'og_sm_taxonomy_term_edit_access';
+}
+
+/**
  * Access callback to check access to the taxonomy administration overview.
  *
  * @param object $site
@@ -166,6 +173,27 @@ function og_sm_taxonomy_admin_access_vocabulary($site, $vocabulary, $account = N
   }
 
   return FALSE;
+}
+
+/**
+ * Access callback to check access to edit taxonomy terms.
+ *
+ * @param object $term
+ *   The term to edit.
+ * @param object $account
+ *   Optional account to validate the access for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_taxonomy_term_edit_access($term, $account = NULL) {
+  $site = og_sm_taxonomy_term_get_site($term);
+  if (!$site) {
+    return taxonomy_term_edit_access($term);
+  }
+
+  $vocabulary = taxonomy_vocabulary_load($term->vid);
+  return og_sm_taxonomy_admin_access_vocabulary($site, $vocabulary, $account);
 }
 
 /**
