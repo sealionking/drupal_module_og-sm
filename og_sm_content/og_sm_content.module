@@ -389,7 +389,7 @@ function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
   $site = FALSE;
   // Rewrite all path which have the node type name in them, try to replace it
   // with the site specific content type name.
-  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_]*)#', $path, $parts)) {
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]*)#', $path, $parts)) {
     if ($site = og_sm_site_load($parts[1])) {
       $content_type = og_sm_content_get_type_info_by_site($site, $parts[3]);
       $content_type_name = str_replace('_', '-', $content_type->site_type);
@@ -420,7 +420,7 @@ function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language)
     }
   }
   // Translate site specific node type paths back to their original path.
-  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9\-]*)#', $path, $parts)) {
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]*)#', $path, $parts)) {
     $site = $site ?: og_sm_site_load($parts[1]);
     if ($site) {
       $alias_type_name = str_replace('-', '_', $parts[3]);
@@ -469,6 +469,14 @@ function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
   if (isset($form['options'])) {
     $form['options']['#access'] = $access;
   }
+
+  // Make sure the content type name alias is used on the node edit form.
+  $content_type_info = og_sm_content_get_type_info_by_node($node);
+  $args = array(
+    '@type' => $content_type_info->name,
+    '@title' => $node->title,
+  );
+  drupal_set_title(t('<em>Edit @type</em> @title', $args), PASS_THROUGH);
 }
 
 /**
