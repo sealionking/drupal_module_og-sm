@@ -470,13 +470,26 @@ function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
     $form['options']['#access'] = $access;
   }
 
-  // Make sure the content type name alias is used on the node edit form.
-  $content_type_info = og_sm_content_get_type_info_by_node($node);
-  $args = array(
-    '@type' => $content_type_info->name,
-    '@title' => $node->title,
-  );
-  drupal_set_title(t('<em>Edit @type</em> @title', $args), PASS_THROUGH);
+  $site = og_sm_current_site();
+  // If we are not in a site context don't bother overwriting the content type
+  // name.
+  if (!$site) {
+    return;
+  }
+  $content_type_info = og_sm_content_get_type_info_by_site($site, $node->type);
+
+  // Make sure the content type name alias is used on the node add/edit form.
+  if (empty($node->nid)) {
+    drupal_set_title(t('Create @name', array('@name' => $content_type_info->name)), PASS_THROUGH);
+  }
+  else {
+    $args = array(
+      '@type' => $content_type_info->name,
+      '@title' => $node->title,
+    );
+    drupal_set_title(t('<em>Edit @type</em> @title', $args), PASS_THROUGH);
+  }
+
 }
 
 /**

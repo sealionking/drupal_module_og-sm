@@ -96,10 +96,29 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
 
   $form = og_sm_variable_settings_form($form, $form_state, $site);
 
-  // Rebuild menu after variables have been saved.
-  $form['#submit'][] = 'menu_rebuild';
+  $form['#submit'][] = 'og_sm_content_admin_overview_type_edit_form_submit';
 
   return $form;
+}
+
+/**
+ * Submit handler for the content type edit form.
+ *
+ * @param array $form
+ *   The form array.
+ * @param array $form_state
+ *   The current form state.
+ */
+function og_sm_content_admin_overview_type_edit_form_submit($form, &$form_state) {
+  if (module_exists('og_sm_path')) {
+    // Update all existing path aliases in line with the new content type name.
+    module_load_include('inc', 'og_sm_path', 'og_sm_path.batch');
+    $site = $form_state['build_info']['args'][0];
+    og_sm_path_site_alias_update_batch($site);
+  }
+
+  // Rebuild menu after variables have been saved.
+  menu_rebuild();
 }
 
 /**
