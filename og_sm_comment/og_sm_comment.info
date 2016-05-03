@@ -1,0 +1,10 @@
+name = Site Comments
+description = "Site comment creation and administration."
+package = "Organic Groups Site Manager"
+core = 7.x
+
+dependencies[] = og_sm
+dependencies[] = comment
+
+; Views plugins.
+files[] = views/og_sm_comment_handler_field_comment_link_delete.inc
