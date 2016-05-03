@@ -77,8 +77,8 @@ class OgSmTaxonomyTestCase extends OgSmTaxonomyWebTestCase {
     $this->siteNode2 = $this->ogSmCreateGroup($type);
 
     // Create vocabularies.
-    $this->vocabCategories = $this->ogSmCreateVocabulary('test_categories');
-    $this->vocabTags = $this->ogSmCreateVocabulary('test_tags');
+    $this->vocabCategories = $this->ogSmCreateSiteVocabulary('test_categories');
+    $this->vocabTags = $this->ogSmCreateSiteVocabulary('test_tags');
 
     // Create terms.
     $this->termCategoryWithoutSite = $this->ogSmCreateTerm(

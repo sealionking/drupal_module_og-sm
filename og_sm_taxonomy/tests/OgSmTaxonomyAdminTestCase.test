@@ -103,8 +103,8 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     $this->siteNode = $this->ogSmCreateGroup($type);
 
     // Create vocabularies.
-    $this->vocabCategories = $this->ogSmCreateVocabulary('test_categories');
-    $this->vocabTags = $this->ogSmCreateVocabulary('test_tags');
+    $this->vocabCategories = $this->ogSmCreateSiteVocabulary('test_categories');
+    $this->vocabTags = $this->ogSmCreateSiteVocabulary('test_tags');
 
     // Create users.
     $this->userAdministrator = $this->ogSmCreateAdminUser();
