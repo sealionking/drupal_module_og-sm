@@ -244,14 +244,14 @@ function og_sm_content_views_default_views() {
   $handler->display->display_options['fields']['created']['ui_name'] = 'Created';
   $handler->display->display_options['fields']['created']['label'] = 'Created';
   $handler->display->display_options['fields']['created']['date_format'] = 'short';
-  $handler->display->display_options['fields']['created']['second_date_format'] = 'pp_short_d_F_Y';
+  $handler->display->display_options['fields']['created']['second_date_format'] = 'short';
   /* Field: Updated */
   $handler->display->display_options['fields']['changed']['id'] = 'changed';
   $handler->display->display_options['fields']['changed']['table'] = 'node';
   $handler->display->display_options['fields']['changed']['field'] = 'changed';
   $handler->display->display_options['fields']['changed']['ui_name'] = 'Updated';
   $handler->display->display_options['fields']['changed']['date_format'] = 'short';
-  $handler->display->display_options['fields']['changed']['second_date_format'] = 'pp_short_d_F_Y';
+  $handler->display->display_options['fields']['changed']['second_date_format'] = 'short';
   /* Field: Author */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'users';

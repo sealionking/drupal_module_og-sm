@@ -58,7 +58,7 @@ function og_sm_comment_pathauto_bulk_update_batch_process(&$context) {
   if (!isset($context['sandbox']['total'])) {
     $context['sandbox']['total'] = $query->countQuery()->execute()->fetchField();
 
-    // If there are no files to update, the stop immediately.
+    // If there are no comments to update, the stop immediately.
     if (!$context['sandbox']['total']) {
       $context['finished'] = 1;
       return;

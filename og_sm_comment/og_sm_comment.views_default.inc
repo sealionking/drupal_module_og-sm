@@ -210,7 +210,7 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['fields']['created']['field'] = 'created';
   $handler->display->display_options['fields']['created']['label'] = 'Created';
   $handler->display->display_options['fields']['created']['date_format'] = 'short';
-  $handler->display->display_options['fields']['created']['second_date_format'] = 'pp_short_d_F_Y';
+  $handler->display->display_options['fields']['created']['second_date_format'] = 'short';
   /* Field: Comment: Delete link */
   $handler->display->display_options['fields']['delete_comment']['id'] = 'delete_comment';
   $handler->display->display_options['fields']['delete_comment']['table'] = 'comment';
