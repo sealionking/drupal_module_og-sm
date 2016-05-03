@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2016-05-02 15:50+0100\n"
+"PO-Revision-Date: 2016-05-03 12:00+0100\n"
 "Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -61,6 +61,27 @@ msgstr "Laat een gebruiker toe alle reacties te bewerken."
 
 msgid "Edit all comments"
 msgstr "Alle reacties bewerken"
+
+msgid "There are no comments in this Site."
+msgstr "Er zijn geen reacties in deze Site."
+
+msgid "Comment ID"
+msgstr "Reactie-ID"
+
+msgid "Content ID"
+msgstr "Inhoud-ID"
+
+msgid "User ID"
+msgstr "Gebruikers-ID"
+
+msgid "Title content"
+msgstr "Titel inhoud"
+
+msgid "Comment contains"
+msgstr "Commentaar bevat"
+
+msgid "Title content contains"
+msgstr "Titel inhoud bevat"
 
 msgid "Organic Groups Site Manager"
 msgstr ""
