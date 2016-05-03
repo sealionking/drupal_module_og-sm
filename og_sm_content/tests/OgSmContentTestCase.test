@@ -118,7 +118,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Test the elper to create the content/add/type path.
+   * Test the helper to create the content/add/type path.
    */
   public function testContentAddUri() {
     $site = new stdClass();
@@ -396,6 +396,39 @@ class OgSmContentTestCase extends OgSmWebTestCase {
       '@type' => $content_type_name,
       '@title' => $node->title,
     )));
+
+    // Check if the comment form is rendered.
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertText(t('Add new comment'));
+    // Hide the comment form via the site specific settings.
+    $this->setupSiteSpecificContentType($this->site, $this->siteContentTypeNameArticle, array(
+      'comment' => COMMENT_NODE_HIDDEN,
+    ));
+    // Verify that the comment form is not rendered anymore.
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertNoText(t('Add new comment'));
+
+    // Verify that these changes have no effect on another site.
+    $second_site = $this->ogSmCreateGroup($this->siteType);
+
+    // Check if then content type name on the node add page has been replaced.
+    $base_path = 'group/node/' . $second_site->nid;
+    $path_add_article = $base_path . '/content/add/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(200);
+    $this->assertText(t('Create @name', array('@name' => $this->siteContentTypeNameArticle)));
+
+    // Check if then content type name on the node edit page has been replaced.
+    $node = $this->ogSmCreateGroupContent($this->siteContentTypeNameArticle, array($second_site));
+    $this->drupalGet('node/' . $node->nid . '/edit');
+    $this->assertRaw(t('<em>Edit @type</em> @title', array(
+      '@type' => $this->siteContentTypeNameArticle,
+      '@title' => $node->title,
+    )));
+
+    // Check if the comment form is rendered.
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertText(t('Add new comment'));
   }
 
 }
