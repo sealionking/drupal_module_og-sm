@@ -78,7 +78,7 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
     '#default_value' => $content_type->name_plural,
   );
 
-  // Only relevant if comments are eabled by default for this content type.
+  // Only relevant if comments are enabled by default for this content type.
   if (module_exists('comment') && variable_get('comment_' . $content_type->type) == COMMENT_NODE_OPEN) {
     $form[$variable_base . 'comment'] = array(
       '#type' => 'select',
