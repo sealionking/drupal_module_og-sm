@@ -109,7 +109,35 @@ function og_sm_taxonomy_menu() {
  * Implements hook_menu_alter().
  */
 function og_sm_taxonomy_menu_alter(&$items) {
+  // Add support to hide not-published Site content.
+  if (module_exists('og_sm_access')) {
+    $items['taxonomy/term/%taxonomy_term']['access callback'] = 'og_sm_taxonomy_term_view_access';
+    $items['taxonomy/term/%taxonomy_term']['access arguments'] = array(2);
+  }
+
+  // Edit access based on the extra permissions.
   $items['taxonomy/term/%taxonomy_term/edit']['access callback'] = 'og_sm_taxonomy_term_edit_access';
+}
+
+/**
+ * Access callback for the taxonomy term page.
+ *
+ * @param object $term
+ *   The taxonomy term object.
+ * @param object $account
+ *   Optional account to validate the access for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_taxonomy_term_view_access($term, $account = NULL) {
+  // Check if the term has a site.
+  $site = og_sm_taxonomy_term_get_site($term);
+  if (!$site) {
+    return user_access('access content', $account);
+  }
+
+  return og_sm_access_site_nid_callback($site->nid, $account);
 }
 
 /**

@@ -1,0 +1,181 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Taxonomies.
+ */
+
+/**
+ * Tests about the Site Taxonomy Term.
+ */
+class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
+  /**
+   * Site Nodes to run the tests with.
+   *
+   * @var object
+   */
+  private $siteNodePublished;
+  private $siteNodeNotPublished;
+
+  /**
+   * Vocabulary "categories" to run tests with.
+   *
+   * @var object
+   */
+  private $vocabCategories;
+
+  /**
+   * The admin user to test with.
+   */
+  private $userAdministrator;
+
+  /**
+   * Default user to test with.
+   */
+  private $userDefault;
+
+  /**
+   * Default Site user to test with.
+   */
+  private $siteUser;
+
+  /**
+   * Site user who can acces unpublished site.
+   */
+  private $siteUserWithAccess;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Taxonomy : Terms'),
+      'description' => t('Tests Site Terms functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules (we need context to filter the terms!).
+    $modules = array('og_sm_taxonomy', 'og_sm_context', 'og_sm_access');
+    parent::setUp($modules);
+
+    // Setup OG context.
+    $context_enabled = array(
+      'og_sm_context_node' => new stdClass(),
+      'og_sm_context_admin' => new stdClass(),
+    );
+    variable_set('og_context_negotiation_group_context', $context_enabled);
+    $context_order = array(
+      'og_sm_context_node' => -50,
+      'og_sm_context_admin' => -49,
+    );
+    variable_set('og_context_providers_weight_group_context', $context_order);
+
+    // Create the Site type.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+
+    // Create the Site nodes.
+    $this->siteNodePublished = $this->ogSmCreateGroup($type);
+    $this->siteNodeNotPublished = $this->ogSmCreateGroup($type, array('status' => 0));
+
+    // Create site role who can access not-published site.
+    $role_manager = og_role_create('role_group_manager', 'node', 0, $type);
+    og_role_save($role_manager);
+    og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION_SITE));
+
+    // Create vocabularies.
+    $this->vocabCategories = $this->ogSmCreateSiteVocabulary('test_categories');
+
+    // Create global users.
+    $this->userDefault = $this->drupalCreateUser(array('access content'));
+    $this->userAdministrator = $this->ogSmCreateAdminUser();
+
+    // Create site users.
+    $this->siteUser = $this->ogSmCreateGroupUser(array('access content'), array($this->siteNodeNotPublished));
+    $this->siteUserWithAccess = $this->ogSmCreateGroupUser(
+      array('access content'),
+      array($this->siteNodeNotPublished)
+    );
+    og_role_grant(
+      'node',
+      $this->siteNodeNotPublished->nid,
+      $this->siteUserWithAccess->uid,
+      $role_manager->rid
+    );
+  }
+
+  /**
+   * Check access to the taxonomy page.
+   */
+  public function testTaxonomyViewAccess() {
+    $term_global = $this->ogSmCreateTerm(
+      $this->vocabCategories,
+      'term-global'
+    );
+    $path_global = 'taxonomy/term/' . $term_global->tid;
+    $term_published = $this->ogSmCreateTerm(
+      $this->vocabCategories,
+      'term-published',
+      array($this->siteNodePublished)
+    );
+    $path_published = 'taxonomy/term/' . $term_published->tid;
+    $term_not_published = $this->ogSmCreateTerm(
+      $this->vocabCategories,
+      'term-not-published',
+      array($this->siteNodeNotPublished)
+    );
+    $path_not_published = 'taxonomy/term/' . $term_not_published->tid;
+
+    // Test the access check function.
+    $this->assertTrue(
+      og_sm_taxonomy_term_view_access($term_global, $this->userDefault),
+      'Term outside Site uses default access check (access content).'
+    );
+    $this->assertTrue(
+      og_sm_taxonomy_term_view_access($term_published, $this->userDefault),
+      'Everybody has access to term in published Site.'
+    );
+    $this->assertFalse(
+      og_sm_taxonomy_term_view_access($term_not_published, $this->userDefault),
+      'Users without proper permissions can not access terms in unpublished Site.'
+    );
+
+    // Test the menu alter.
+    $this->drupalGet($path_global);
+    $this->assertResponse(200, 'Everybody has access to terms outside Sites.');
+    $this->assertText($term_global->name);
+
+    $this->drupalGet($path_published);
+    $this->assertResponse(200, 'Everybody has access to terms inside published Sites.');
+    $this->assertText($term_published->name);
+
+    $this->drupalGet($path_not_published);
+    $this->assertResponse(403, 'Users without proper permissions have no access to terms inside not published Sites.');
+    $this->assertNoText($term_not_published->name);
+
+    $this->drupalLogin($this->userDefault);
+    $this->drupalGet($path_not_published);
+    $this->assertResponse(403, 'Global users without proper permissions have no access to terms inside not published Sites.');
+    $this->assertNoText($term_not_published->name);
+
+    $this->drupalLogin($this->siteUser);
+    $this->drupalGet($path_not_published);
+    $this->assertResponse(403, 'Site users without proper permissions have no access to terms inside not published Sites.');
+    $this->assertNoText($term_not_published->name);
+
+    $this->drupalLogin($this->siteUserWithAccess);
+    $this->drupalGet($path_not_published);
+    $this->assertResponse(200, 'Site users with proper permissions have access to terms inside not published Sites.');
+    $this->assertText($term_not_published->name);
+
+    $this->drupalLogin($this->userAdministrator);
+    $this->drupalGet($path_not_published);
+    $this->assertResponse(200, 'Platform administrator has access to all terms.');
+    $this->assertText($term_not_published->name);
+  }
+
+}

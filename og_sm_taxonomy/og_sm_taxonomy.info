@@ -8,6 +8,7 @@ dependencies[] = og_sm
 
 ; Tests.
 files[] = tests/OgSmTaxonomyAdminTestCase.test
+files[] = tests/OgSmTaxonomyTermTestCase.test
 files[] = tests/OgSmTaxonomyTestCase.test
 files[] = tests/OgSmTaxonomyTokensTestCase.test
 files[] = tests/OgSmTaxonomyWebTestCase.test
