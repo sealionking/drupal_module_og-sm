@@ -132,6 +132,13 @@ function og_sm_comment_comment_insert($comment) {
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function og_sm_comment_views_api() {
+  return array("api" => "3.0");
+}
+
+/**
  * Implements hook_og_context_negotiation_info().
  */
 function og_sm_comment_og_context_negotiation_info() {
