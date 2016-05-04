@@ -7,7 +7,7 @@
 /**
  * Tests about the Site Taxonomy API.
  */
-class OgSmTaxonomyTestCase extends OgSmTaxonomyWebTestCase {
+class OgSmTaxonomyApiTestCase extends OgSmTaxonomyWebTestCase {
   /**
    * Site Nodes to run the tests with.
    *
@@ -56,7 +56,7 @@ class OgSmTaxonomyTestCase extends OgSmTaxonomyWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Taxonomy'),
+      'name' => t('Site Taxonomy : API'),
       'description' => t('Tests Site Taxonomy terms functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );

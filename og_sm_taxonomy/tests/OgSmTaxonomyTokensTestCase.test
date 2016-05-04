@@ -34,7 +34,7 @@ class OgSmTaxonomyTokensTestCase extends OgSmTaxonomyWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Taxonomy tokens'),
+      'name' => t('Site Taxonomy : Tokens'),
       'description' => t('Tests Site Taxonomy tokens.'),
       'group' => t('Organic Groups Site Manager'),
     );

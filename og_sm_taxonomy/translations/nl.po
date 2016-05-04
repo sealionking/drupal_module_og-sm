@@ -28,8 +28,8 @@ msgid "add terms"
 msgstr "termen toevoegen"
 
 #: og_sm_taxonomy.og_sm.inc:36 og_sm_taxonomy.info:0
-msgid "Taxonomy"
-msgstr "Taxonomie"
+msgid "Site Taxonomy"
+msgstr "Site Taxonomie"
 
 #: og_sm_taxonomy.og_sm.inc:37
 msgid "Manage taxonomy terms."

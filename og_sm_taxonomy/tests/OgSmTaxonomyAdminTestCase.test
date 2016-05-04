@@ -69,7 +69,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Taxonomy Administration'),
+      'name' => t('Site Taxonomy : Administration'),
       'description' => t('Tests Site Taxonomy administration functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );
