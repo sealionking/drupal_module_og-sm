@@ -338,6 +338,29 @@ function og_sm_taxonomy_term_is_site_member($term, $site) {
 }
 
 /**
+ * Load all vocabulary terms associated to the given Site.
+ *
+ * @param object $vocabulary
+ *   The Vocabulary object.
+ * @param object $site
+ *   The Site object.
+ *
+ * @return array
+ *   Array of term objects.
+ */
+function og_sm_taxonomy_get_vocabulary_terms_by_site($vocabulary, $site) {
+  $query = db_select('og_membership', 'ogm');
+  $query->join('taxonomy_term_data', 'ttd', 'ogm.etid = ttd.tid');
+  $query->fields('ttd', array('tid'))
+    ->condition('ogm.entity_type', 'taxonomy_term')
+    ->condition('ogm.gid', $site->nid)
+    ->condition('ttd.vid', $vocabulary->vid);
+
+  $tids = $query->execute()->fetchCol();
+  return taxonomy_term_load_multiple($tids);
+}
+
+/**
  * Implements hook_query_TAG_alter().
  *
  * Filters the term query by the current Site (if any).
