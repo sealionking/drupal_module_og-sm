@@ -361,7 +361,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
   /**
    * Test ordering the taxonomy terms.
    */
-  public function _testTaxonomyAdministrationVocabularyPageOrder() {
+  public function testTaxonomyAdministrationVocabularyPageOrder() {
     $path_categories = 'group/node/' . $this->siteNode->nid . '/admin/taxonomy/test_categories';
 
     // Login to the platform.
