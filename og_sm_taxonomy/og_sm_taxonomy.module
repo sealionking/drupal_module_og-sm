@@ -50,7 +50,7 @@ function og_sm_taxonomy_og_permission() {
         array('%name' => $vocabulary->machine_name)
       ),
       'description' => t(
-        'Edit all terms for the %name vocabulary',
+        'Edit all terms for the %name vocabulary.',
         array('%name' => $vocabulary->name)
       ),
     );
@@ -443,7 +443,7 @@ function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state,
     form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
     _og_sm_taxonomy_form_taxonomy_overview_terms_alter_order($form);
   }
-  
+
   // When not in a site context, add the site names to the terms.
   if (!og_sm_current_site()) {
     form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
