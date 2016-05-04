@@ -113,7 +113,7 @@ class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
   /**
    * Check access to the taxonomy page.
    */
-  public function _testTaxonomyViewAccess() {
+  public function testTaxonomyViewAccess() {
     $term_global = $this->ogSmCreateTerm(
       $this->vocabCategories,
       'term-global'
@@ -183,7 +183,7 @@ class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
   /**
    * Test the query alter based on the current Site context.
    */
-  public function _testTermQueryAlter() {
+  public function testTermQueryAlter() {
     $this->ogSmCreateTerm($this->vocabCategories, 'term-global');
     $term_site_1 = $this->ogSmCreateTerm($this->vocabCategories, 'term-site-1', array($this->siteNodePublished1));
     $this->ogSmCreateTerm($this->vocabCategories, 'term-site-2', array($this->siteNodePublished2));
@@ -211,6 +211,42 @@ class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
     $terms = og_sm_taxonomy_get_vocabulary_terms_by_site($this->vocabCategories, $this->siteNodePublished1);
     $this->assertEqual(1, count($terms), 'There is only 1 category term in Site 1');
     $this->assertEqual($term_site_1, array_shift($terms), 'The Site 1 category term is in the collection.');
+  }
+
+  /**
+   * Test deleting all the Site terms when a site is deleted.
+   */
+  public function testDeleteAllSiteTermsWhenSiteIsDeleted() {
+    $site_nid = $this->siteNodePublished1->nid;
+
+    // Vocabularies.
+    $categories = $this->vocabCategories;
+    $tags = $this->ogSmCreateSiteVocabulary('test-tags');
+
+    // Global terms.
+    $global_category = $this->ogSmCreateTerm($categories, 'global-category');
+    $global_tag = $this->ogSmCreateTerm($tags, 'global-tags');
+
+    // Site terms.
+    $sites = array($this->siteNodePublished1);
+    $this->ogSmCreateTerm($categories, 'site-category', $sites);
+    $this->ogSmCreateTerm($tags, 'site-tag', $sites);
+
+    // Check created terms.
+    $this->assertEqual(2, count(taxonomy_get_tree($categories->vid)), '1 global and 1 site category created.');
+    $this->assertEqual(2, count(taxonomy_get_tree($tags->vid)), '1 global and 1 site tag created.');
+
+    // Delete the Site.
+    node_delete($this->siteNodePublished1->nid);
+    $this->assertFalse(node_load($site_nid), 'Site is deleted.');
+
+    // Check the terms.
+    $category_terms = taxonomy_get_tree($categories->vid);
+    $this->assertEqual(1, count($category_terms), 'The Site categories are deleted.');
+    $this->assertEqual($global_category->tid, array_shift($category_terms)->tid, 'Global category is not deleted.');
+    $tag_terms = taxonomy_get_tree($tags->vid);
+    $this->assertEqual(1, count($tag_terms), 'The Site tags are deleted.');
+    $this->assertEqual($global_tag->tid, array_shift($tag_terms)->tid, 'Global tag is not deleted.');
   }
 
 }
