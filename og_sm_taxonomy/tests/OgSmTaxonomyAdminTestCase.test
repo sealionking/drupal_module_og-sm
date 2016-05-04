@@ -489,4 +489,32 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     $this->assertResponse(403, 'Site Taxonomy term edit : Site user without categories permissions has no access.');
   }
 
+  /**
+   * Test the alter of the global taxonomy administration.
+   */
+  public function testTermAdministrationSiteInfo() {
+    $this->ogSmCreateTerm($this->vocabCategories, 'global-term');
+    $this->ogSmCreateTerm($this->vocabCategories, 'site-term', array($this->siteNode));
+
+    $this->drupalLogin($this->userAdministrator);
+
+    // Site info only shown on the Global overview.
+    $this->drupalGet('admin/structure/taxonomy/test_categories');
+    $this->assertRaw('>global-term</a>', 'Global terms do not have indication of the site.');
+    $this->assertRaw(
+      '>site-term</a> <small>(' . $this->siteNode->title . ')</small>',
+      'Site terms have indication of the site in the global term administration.'
+    );
+
+    // Site info not shown when in the Site terms administration.
+    $this->drupalGet('group/node/' . $this->siteNode->nid . '/admin/taxonomy/test_categories');
+    $this->assertRaw('>site-term</a>',
+      'Site terms are in the overview.'
+    );
+    $this->assertNoRaw(
+      '>site-term</a> <small>(' . $this->siteNode->title . ')</small>',
+      'Site terms have no indication of the Site in the Site term administration.'
+    );
+  }
+
 }

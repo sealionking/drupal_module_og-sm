@@ -441,6 +441,12 @@ function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state,
   // links point to the proper location (e.g. when used in Site context).
   if (isset($form['reset_alphabetical'])) {
     form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
-    _og_sm_taxonomy_form_taxonomy_overview_terms_alter($form);
+    _og_sm_taxonomy_form_taxonomy_overview_terms_alter_order($form);
+  }
+  
+  // When not in a site context, add the site names to the terms.
+  if (!og_sm_current_site()) {
+    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
+    _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names($form);
   }
 }
