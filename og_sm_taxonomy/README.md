@@ -13,6 +13,7 @@ This module provides:
 
 > **NOTE** : vocabulary terms will be automatically filtered to only those
 > related to the current Site context.
+>
 > Make sure that you have setup the context detection properly.
 > See og_sm_context and og_sm_path modules.
 
