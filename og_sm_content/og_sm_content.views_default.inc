@@ -136,7 +136,7 @@ function og_sm_content_views_default_views() {
   $handler->display->display_options['empty']['area']['ui_name'] = 'No results';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'There is no content in this Site.';
-  $handler->display->display_options['empty']['area']['format'] = 'restricted_html';
+  $handler->display->display_options['empty']['area']['format'] = 'plain_text';
   /* Relationship: Site membership from node */
   $handler->display->display_options['relationships']['og_membership_rel']['id'] = 'og_membership_rel';
   $handler->display->display_options['relationships']['og_membership_rel']['table'] = 'node';

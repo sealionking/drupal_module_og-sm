@@ -116,7 +116,7 @@ function og_sm_comment_access($op, $comment) {
       if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $user)) {
         return TRUE;
       }
-      $edit_own_access = og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $user);
+      $edit_own_access = $site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $user);
       return $edit_own_access && $user->uid == $comment->uid && $comment->status == COMMENT_PUBLISHED;
   }
 

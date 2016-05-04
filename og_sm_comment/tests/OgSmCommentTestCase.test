@@ -1,0 +1,172 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_comment module.
+ */
+
+/**
+ * Tests the OG SM Comment functionality.
+ */
+class OgSmCommentTestCase extends OgSmWebTestCase {
+  /**
+   * Test data.
+   */
+  protected $site;
+  protected $siteUser1;
+  protected $siteUser2;
+  protected $siteAdmin;
+  protected $siteContentTypeName = 'og_sm_site_content_type_page';
+  protected $siteType;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Comment management'),
+      'description' => t('Tests the Site Comment management functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_comment');
+    parent::setUp($modules);
+
+    // Create site.
+    $this->siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($this->siteType);
+    $this->site = $site = $this->ogSmCreateGroup($this->siteType);
+    $sites = array($site);
+
+    $roles = array_flip(og_roles('node', $this->siteType));
+
+    // Grant comments permissions to og group roles.
+    og_role_grant_permissions($roles[OG_ADMINISTRATOR_ROLE], array(
+      OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL,
+      OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL,
+      'administer group',
+    ));
+    og_role_grant_permissions($roles[OG_AUTHENTICATED_ROLE], array(
+      OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN,
+      OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN,
+    ));
+
+    // Create Site admin.
+    $this->siteAdmin = $this->ogSmCreateGroupUser(array(), $sites);
+    og_role_grant('node', $this->site->nid, $this->siteAdmin->uid, $roles[OG_ADMINISTRATOR_ROLE]);
+
+    // Create Site users.
+    $this->siteUser1 = $this->ogSmCreateGroupUser(array(), $sites);
+    og_role_grant('node', $this->site->nid, $this->siteUser1->uid, $roles[OG_AUTHENTICATED_ROLE]);
+    $this->siteUser2 = $this->ogSmCreateGroupUser(array(), $sites);
+    og_role_grant('node', $this->site->nid, $this->siteUser2->uid, $roles[OG_AUTHENTICATED_ROLE]);
+
+    // Create a content type which is open for comments.
+    $this->ogSmCreateGroupContentNodeType($this->siteContentTypeName);
+  }
+
+  /**
+   * Helper function to create a new comment.
+   *
+   * @param object $node
+   *   The node the comment should be linked to.
+   * @param object $user
+   *   The user who made the comment.
+   *
+   * @return object
+   *   The comment object.
+   */
+  private function createComment($node, $user) {
+    $comment = (object) array(
+      'cid' => NULL,
+      'nid' => $node->nid,
+      'node_type' => $node->type,
+      'pid' => 0,
+      'uid' => $user->uid,
+      'status' => COMMENT_PUBLISHED,
+      'subject' => $this->randomName(),
+      'hostname' => ip_address(),
+      'language' => LANGUAGE_NONE,
+    );
+    $comment->comment_body[LANGUAGE_NONE][0] = array('value' => $this->randomName());
+    comment_save($comment);
+    return $comment;
+  }
+
+  /**
+   * Test the access callbacks.
+   */
+  public function atestAccessCallbacks() {
+    $node = $this->ogSmCreateGroupContent($this->siteContentTypeName, array($this->site));
+    $comment = $this->createComment($node, $this->siteUser1);
+
+    // Verify that user1 has access to delete or edit his own comment.
+    $this->drupalLogin($this->siteUser1);
+    $this->drupalGet('comment/' . $comment->cid . '/delete');
+    $this->assertResponse(200);
+    $this->drupalGet('comment/' . $comment->cid . '/edit');
+    $this->assertResponse(200);
+
+    // Verify that user2 doesn't has access to delete or edit user1's comment.
+    $this->drupalLogin($this->siteUser2);
+    $this->drupalGet('comment/' . $comment->cid . '/delete');
+    $this->assertResponse(403);
+    $this->drupalGet('comment/' . $comment->cid . '/edit');
+    $this->assertResponse(403);
+
+    // Verify that site-admin has access to delete or edit user1's comment.
+    $this->drupalLogin($this->siteAdmin);
+    $this->drupalGet('comment/' . $comment->cid . '/delete');
+    $this->assertResponse(200);
+    $this->drupalGet('comment/' . $comment->cid . '/edit');
+    $this->assertResponse(200);
+  }
+
+  /**
+   * Test the site comment overview.
+   */
+  public function testCommentOverview() {
+    module_enable(array('views_bulk_operations'));
+    $context_providers = og_context_negotiation_info();
+    og_context_negotiation_set(array($context_providers['og_sm_context_comment']));
+    $this->drupalLogin($this->siteAdmin);
+
+    // Verify that the site admin can see an overview of the comments made on
+    // his site.
+    $this->drupalGet('group/node/' . $this->site->nid . '/admin/comments');
+    $this->assertResponse(200);
+
+    // Verify that there is a message when no comments are made yet.
+    $this->assertText('There are no comments in this Site.');
+
+    // Create a comment.
+    $node = $this->ogSmCreateGroupContent($this->siteContentTypeName, array($this->site));
+    $comment = $this->createComment($node, $this->siteUser1);
+
+    // Verify that the comment appears in the comment overview.
+    $this->drupalGet('group/node/' . $this->site->nid . '/admin/comments');
+    $element = $this->xpath('//table[contains(@class, :class)]//td[contains(text(), :text) and contains(@class, :field_class)]', array(
+      ':class' => 'views-table',
+      ':field_class' => 'views-field-cid',
+      ':text' => $comment->cid,
+    ));
+    $this->assertTrue($element, 'The comment is shown in the site overview');
+
+    // Verify that the comment is not shown in other site overviews.
+    $new_site = $this->ogSmCreateGroup($this->siteType);
+    og_group('node', $new_site->nid,
+      array(
+        'entity_type' => 'user',
+        'entity' => $this->siteAdmin,
+      )
+    );
+    $this->drupalGet('group/node/' . $new_site->nid . '/admin/comments');
+    $this->assertText('There are no comments in this Site.');
+  }
+
+}

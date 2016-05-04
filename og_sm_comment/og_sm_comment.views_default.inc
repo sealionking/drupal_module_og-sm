@@ -135,7 +135,7 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'There are no comments in this Site.';
-  $handler->display->display_options['empty']['area']['format'] = 'restricted_html';
+  $handler->display->display_options['empty']['area']['format'] = 'plain_text';
   /* Relationship: Comment: Content */
   $handler->display->display_options['relationships']['nid']['id'] = 'nid';
   $handler->display->display_options['relationships']['nid']['table'] = 'comment';

@@ -6,7 +6,7 @@
  */
 
 /**
- * Field handler to present a link to delete a node.
+ * Field handler to present a link to delete a comment.
  *
  * We need to overwrite access checks for this handler since it checks on
  * 'administer comments' to delete comments.
