@@ -31,6 +31,19 @@ function og_sm_hook_info() {
 }
 
 /**
+ * Implements hook_modules_enabled().
+ */
+function og_sm_modules_enabled($modules) {
+  if (in_array('googleanalytics', $modules)) {
+    // Add googleanalytics_account to og variable realm list.
+    $controller = variable_realm_controller('og');
+    $variables = $controller->getEnabledVariables();
+    $variables[] = 'googleanalytics_account';
+    $controller->setRealmVariable('list', $variables);
+  }
+}
+
+/**
  * Implements hook_og_permission().
  */
 function og_sm_og_permission() {
