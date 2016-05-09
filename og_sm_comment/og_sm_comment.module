@@ -116,8 +116,19 @@ function og_sm_comment_access($op, $comment) {
       if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL, $user)) {
         return TRUE;
       }
-      $delete_own_access = user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user) || $site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user);
-      return $delete_own_access && $user->uid == $comment->uid && $comment->status == COMMENT_PUBLISHED;
+      if ($user->uid !== $comment->uid) {
+        return FALSE;
+      }
+      if ($comment->status !== COMMENT_PUBLISHED) {
+        return FALSE;
+      }
+      if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user)) {
+        return TRUE;
+      }
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user)) {
+        return TRUE;
+      }
+      return FALSE;
 
     case 'edit':
       if (user_access(OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $user) || comment_access($op, $comment)) {
@@ -127,8 +138,13 @@ function og_sm_comment_access($op, $comment) {
       if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $user)) {
         return TRUE;
       }
-      $edit_own_access = $site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $user);
-      return $edit_own_access && $user->uid == $comment->uid && $comment->status == COMMENT_PUBLISHED;
+      if ($user->uid !== $comment->uid) {
+        return FALSE;
+      }
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $user)) {
+        return TRUE;
+      }
+      return FALSE;
   }
 
   return FALSE;
