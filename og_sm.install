@@ -9,7 +9,6 @@
  */
 function og_sm_install() {
   variable_set('og_sm_node_types', array());
-  og_sm_update_7001();
 }
 
 /**
@@ -17,18 +16,4 @@ function og_sm_install() {
  */
 function og_sm_uninstall() {
   variable_del('og_sm_node_types');
-}
-
-/**
- * Add googleanalytics_account to og variable realm list.
- */
-function og_sm_update_7001() {
-  if (module_exists('googleanalytics')) {
-    // If google analytics is enabled add the googleanalytics_account variable
-    // to the og variable realm list so it can be overwritten per site.
-    $controller = variable_realm_controller('og');
-    $variables = $controller->getEnabledVariables();
-    $variables[] = 'googleanalytics_account';
-    $controller->setRealmVariable('list', $variables);
-  }
 }
