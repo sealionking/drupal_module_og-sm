@@ -40,6 +40,19 @@ is also enabled).
    - Overall or per Vocabulary  : `[term:site-path]/...`.
 
 
+### TIP: hide the OG audience field
+You can hide the OG Audience field when creating/editing Site terms within a
+Site context.
+
+* Install the entityreference_prepopulate module and edit the OG Audience field
+  of the vocabularies.
+* Enable "Entity reference prepopulate".
+* Set the action to "Hide field".
+* Check "Apply action on edit".
+* Enable OG Context as provider and move it to the first position.
+* Disable URL as provider.
+
+
 
 ## API
 ### Get all the vocabulary names
