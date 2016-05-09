@@ -126,5 +126,5 @@ $has_access = og_sm_taxonomy_term_edit_access($term);
 Get an array of taxonomy terms by the vocabulary and Site.
 
 ```php
-$terms = og_sm_taxonomy_get_vocabulary_terms_by_site($vid, $site);
+$terms = og_sm_taxonomy_get_vocabulary_terms_by_site($vocabulary, $site);
 ```
