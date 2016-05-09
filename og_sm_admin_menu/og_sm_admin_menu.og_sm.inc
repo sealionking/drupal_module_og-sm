@@ -47,19 +47,32 @@ function og_sm_admin_menu_og_sm_admin_menu() {
     );
   }
 
+  $structure = array(
+    'title' => 'Structure',
+    'href' => 'admin/structure',
+    'column' => 'left',
+    'weight' => 30,
+  );
+
   // Add og_menu items.
   if (module_exists('og_menu')) {
-    $items['structure'] = array(
-      'title' => 'Structure',
-      'href' => 'admin/structure',
-      'column' => 'left',
-      'weight' => 30,
-    );
+    $items['structure'] = $structure;
     $items['structure/menu'] = array(
       'title' => 'Menus',
       'description' => 'Manage Site menus and their content.',
       'href' => 'admin/menus',
       'weight' => 0,
+    );
+  }
+
+  // Add og_variables items.
+  if (module_exists('og_variables')) {
+    $items['structure'] = $structure;
+    $items['structure/variables'] = array(
+      'title' => 'Variables',
+      'description' => 'Override global variables with Site specific values.',
+      'href' => 'admin/variables',
+      'weight' => 10,
     );
   }
 
@@ -75,6 +88,8 @@ function og_sm_admin_menu_og_sm_admin_menu() {
   t('Structure');
   t('Menus');
   t('Manage Site menus and their content.');
+  t('Variables');
+  t('Override global variables with Site specific values.');
 
   return $items;
 }

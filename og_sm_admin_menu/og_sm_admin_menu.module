@@ -341,6 +341,11 @@ function og_sm_admin_menu_admin_menu_cache_id_alter(&$cid) {
 function og_sm_admin_menu_menu_alter(&$items) {
   // Mark the admin menu to be rebuild every time the menu system is rebuild.
   og_sm_admin_menu_needs_rebuild();
+
+  // Remove the OG UI admin overview as it is replaced by this module.
+  if (isset($items['node/%/group'])) {
+    unset($items['node/%/group']);
+  }
 }
 
 /**
