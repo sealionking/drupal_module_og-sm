@@ -231,7 +231,7 @@ function og_sm_content_get_type_info_by_site($site, $content_type) {
     $content_type->comment = variable_get('comment_' . $content_type->type, COMMENT_NODE_OPEN);
     // The comment setting can only be overridden when the node type's comments
     // are open.
-    if ($content_type->comment === COMMENT_NODE_OPEN) {
+    if ((int) $content_type->comment === COMMENT_NODE_OPEN) {
       $content_type->comment = og_sm_variable_get($site->nid, $variable_base . 'comment', $content_type->comment);
     }
   }
@@ -503,7 +503,14 @@ function og_sm_content_node_view($node, $view_mode, $langcode) {
   // Remove the comment form from the node view if it is disabled for this site.
   $site = og_sm_content_get_site($node);
   $content_type = og_sm_content_get_type_info_by_site($site, $node->type);
-  if ($content_type->comment < COMMENT_NODE_OPEN) {
-    unset($node->content['comments']);
+
+  switch ($content_type->comment) {
+    case COMMENT_NODE_HIDDEN:
+      unset($node->content['comments']);
+      break;
+
+    case COMMENT_NODE_CLOSED:
+      unset($node->content['comments']['comment_form']);
+      break;
   }
 }

@@ -89,6 +89,7 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
       '#default_value' => $content_type->comment,
       '#options' => array(
         COMMENT_NODE_OPEN => t('Open'),
+        COMMENT_NODE_CLOSED => t('Closed'),
         COMMENT_NODE_HIDDEN => t('Hidden'),
       ),
     );
