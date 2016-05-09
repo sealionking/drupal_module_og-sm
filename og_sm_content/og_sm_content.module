@@ -504,13 +504,17 @@ function og_sm_content_node_view($node, $view_mode, $langcode) {
   $site = og_sm_content_get_site($node);
   $content_type = og_sm_content_get_type_info_by_site($site, $node->type);
 
-  switch ($content_type->comment) {
-    case COMMENT_NODE_HIDDEN:
-      unset($node->content['comments']);
-      break;
-
-    case COMMENT_NODE_CLOSED:
-      unset($node->content['comments']['comment_form']);
-      break;
+  if($content_type->comment < COMMENT_NODE_OPEN) {
+    unset($node->content['comments']['comment_form']);
+    unset($node->content['links']['comment']['#links']['comment-add']);
+    if (!isset($node->content['links']['comment']['#links']['comment_forbidden'])) {
+      $node->content['links']['comment']['#links']['comment_forbidden'] = array(
+        'title' => theme('comment_post_forbidden', array('node' => $node)),
+        'html' => TRUE,
+      );
+    }
+  }
+  if ((int) $content_type->comment === COMMENT_NODE_HIDDEN) {
+    unset($node->content['comments']);
   }
 }
