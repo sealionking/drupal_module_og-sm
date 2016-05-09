@@ -64,7 +64,7 @@ $vocabularies = og_sm_taxonomy_get_vocabularies();
 
 
 ### Check if a vocabulary has the OG Audience field
-Check if the given vocabluary machine name is a vocabulary with the Organic
+Check if the given vocabulary machine name is a vocabulary with the Organic
 Groups Audience field.
 
 ```php

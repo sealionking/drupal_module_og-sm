@@ -16,7 +16,7 @@ class OgSmTaxonomyWebTestCase extends OgSmWebTestCase {
    *   The machine name for the taxonomy.
    *
    * @return object
-   *   The vocbulary object.
+   *   The vocabulary object.
    */
   public function ogSmCreateSiteVocabulary($name) {
     // Create the vocabulary.

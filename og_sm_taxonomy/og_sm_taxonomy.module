@@ -243,7 +243,7 @@ function og_sm_taxonomy_get_vocabulary_names() {
 }
 
 /**
- * Get all vocabular objects that have the OG group audience field.
+ * Get all vocabulary objects that have the OG group audience field.
  *
  * @return array
  *   Vocabulary objects keyed by their machine name.
@@ -264,7 +264,7 @@ function og_sm_taxonomy_get_vocabularies() {
  * Check if a given taxonomy vocabulary has the OG group audience field.
  *
  * @param string $name
- *   The vocbulary name.
+ *   The vocabulary name.
  *
  * @return bool
  *   Is an OG vocabulary.
