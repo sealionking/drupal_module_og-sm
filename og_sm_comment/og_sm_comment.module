@@ -64,13 +64,24 @@ function og_sm_comment_permission() {
  * Implements hook_og_permission().
  */
 function og_sm_comment_og_permission() {
-  $permissions = og_sm_comment_permission();
-  $permissions[OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN] = array(
-    'title' => t('Edit own comments'),
-    'description' => t('Allows the user to edit his/her own comments.'),
+  return array(
+    OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN => array(
+      'title' => t('Delete own comments'),
+      'description' => t('Allows the user to delete his/her own comments.'),
+    ),
+    OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL => array(
+      'title' => t('Delete all comments'),
+      'description' => t('Allows the user to delete all comments.'),
+    ),
+    OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL => array(
+      'title' => t('Edit all comments'),
+      'description' => t('Allows the user to edit all comments.'),
+    ),
+    OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN => array(
+      'title' => t('Edit own comments'),
+      'description' => t('Allows the user to edit his/her own comments.'),
+    ),
   );
-
-  return $permissions;
 }
 
 /**
