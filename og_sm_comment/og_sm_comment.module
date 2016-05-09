@@ -119,7 +119,7 @@ function og_sm_comment_access($op, $comment) {
       if ($user->uid !== $comment->uid) {
         return FALSE;
       }
-      if ($comment->status !== COMMENT_PUBLISHED) {
+      if ((int) $comment->status !== COMMENT_PUBLISHED) {
         return FALSE;
       }
       if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user)) {
@@ -139,6 +139,9 @@ function og_sm_comment_access($op, $comment) {
         return TRUE;
       }
       if ($user->uid !== $comment->uid) {
+        return FALSE;
+      }
+      if ((int) $comment->status !== COMMENT_PUBLISHED) {
         return FALSE;
       }
       if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $user)) {
