@@ -228,11 +228,12 @@ function og_sm_content_get_type_info_by_site($site, $content_type) {
   $content_type->name = check_plain(og_sm_variable_get($site->nid, $variable_base . 'name', $content_type->name));
   $content_type->name_plural = check_plain(og_sm_variable_get($site->nid, $variable_base . 'name_plural', $content_type->name));
   if (module_exists('comment')) {
-    $content_type->comment = og_sm_variable_get(
-      $site->nid,
-      $variable_base . 'comment',
-      variable_get('comment_' . $content_type->type, COMMENT_NODE_OPEN)
-    );
+    $content_type->comment = variable_get('comment_' . $content_type->type, COMMENT_NODE_OPEN);
+    // The comment setting can only be overridden when the node type's comments
+    // are open.
+    if ($content_type->comment === COMMENT_NODE_OPEN) {
+      $content_type->comment = og_sm_variable_get($site->nid, $variable_base . 'comment', $content_type->comment);
+    }
   }
 
   return $content_type;
