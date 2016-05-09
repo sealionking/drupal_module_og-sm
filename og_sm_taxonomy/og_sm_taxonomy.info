@@ -4,6 +4,7 @@ package = "Organic Groups Site Manager"
 core = 7.x
 
 dependencies[] = og_sm
+dependencies[] = taxonomy
 
 ; Tests.
 files[] = tests/OgSmTaxonomyAdminTestCase.test
