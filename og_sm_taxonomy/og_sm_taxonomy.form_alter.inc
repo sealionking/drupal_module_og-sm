@@ -24,10 +24,7 @@ function _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names(array &$f
       continue;
     }
 
-    $title = drupal_render($element['view']);
-    $element['view'] = array(
-      '#markup' => $title . ' <small>(' . $site->title . ')</small>',
-    );
+    $element['view']['#suffix'] = ' <small>(' . $site->title . ')</small>';
   }
 }
 
