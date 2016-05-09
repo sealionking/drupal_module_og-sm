@@ -43,6 +43,13 @@ A new Site admin page is provided by this module:
 
 ## Installation
 1. Enable the module.
+2. Configure the alias for comments on admin/config/search/path/patterns:
+   - Comment paths : `[comment:node:site-path]/...`
+3. Delete and regenerate all content aliases.
+4. Setup the OG context providers on admin/config/group/context:
+  - Enable the "**Site Comment**" detection method.
+5. Grant user roles access to edit or delete existing Site comments.
+6. Grant organic group roles access to edit or delete existing Site comments.
 
 
 
