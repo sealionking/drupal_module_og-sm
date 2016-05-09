@@ -9,6 +9,12 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-41 : Added the og_sm_comment module.
 
 
+### Fixed
+- DMOGSM-16 : Added support for og_variables to the admin menu.
+- DMOGSM-16 : Removed the default OG UI admin overview page as this is replaced
+  by the functionality provided by og_sm_admin_menu.
+
+
 
 ## [7.x-1.0]
 ### Deleted
