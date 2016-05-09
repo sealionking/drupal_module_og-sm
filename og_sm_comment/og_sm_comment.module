@@ -157,8 +157,10 @@ function og_sm_comment_access($op, $comment) {
  * Implements hook_comment_insert().
  */
 function og_sm_comment_comment_insert($comment) {
-  // Automatically create an alias for new comments.
-  og_sm_comment_pathauto_update_alias($comment, 'insert');
+  if (module_exists('og_sm_path')) {
+    // Automatically create an alias for new comments.
+    og_sm_comment_pathauto_update_alias($comment, 'insert');
+  }
 }
 
 /**

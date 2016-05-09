@@ -25,6 +25,9 @@ This module and its submodules adds functionality to support:
 * Site administration menu that replaces the default admin toolbar when the user
   is in a
 
+### Included in og_sm_comment module
+* Site comment administration
+
 ### Included in og_sm_content module
 * Site content administration
 
