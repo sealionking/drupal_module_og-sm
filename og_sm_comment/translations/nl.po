@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-05-02 15:50+0100\n"
+"PO-Revision-Date: 2016-05-03 12:00+0100\n"
+"Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.6\n"
+
+msgid "Administer comments"
+msgstr "Reacties beheren"
+
+msgid "Manage the comments of this Site."
+msgstr "De reacties van deze Site beheren."
+
+msgid "Delete own comments"
+msgstr "Eigen reacties verwijderen."
+
+msgid "Allows the user to delete his/her own comments."
+msgstr "Laat een gebruiker toe zijn/haar eigen reacties te verwijderen."
+
+msgid "Delete all comments"
+msgstr "Alle reacties verwijderen."
+
+msgid "Allows the user to delete all comments."
+msgstr "Laat een gebruiker toe alle reacties te verwijderen."
+
+msgid "Site Comment"
+msgstr "Site Reactie"
+
+msgid "Determine Site context based on the fact that we are on a comment made on Site page or a Site content page."
+msgstr "Bepaal de Site context als de huidige pagina een comment is gemaakt op Site pagina of een Site inhoud pagina is."
+
+msgid "Updated URL alias for 1 comment."
+msgstr "URL-alias bijgewerkt voor 1 reactie."
+
+msgid "Updated URL aliases for @count comments."
+msgstr "URL-aliassen bijgewerkt voor @count reacties."
+
+msgid "Comments"
+msgstr "Reacties"
+
+msgid "Comment paths"
+msgstr "Reactie paden"
+
+msgid "Updated alias for comment @comment_id."
+msgstr "De URL-alias voor comment @comment_id is bijgewerkt."
+
+msgid "Allows the user to edit his/her own comments."
+msgstr "Laat een gebruiker toe zijn/haar eigen reacties te bewerken."
+
+msgid "Edit own comments"
+msgstr "Eigen reacties bewerken"
+
+msgid "Allows the user to edit all comments."
+msgstr "Laat een gebruiker toe alle reacties te bewerken."
+
+msgid "Edit all comments"
+msgstr "Alle reacties bewerken"
+
+msgid "There are no comments in this Site."
+msgstr "Er zijn geen reacties in deze Site."
+
+msgid "Comment ID"
+msgstr "Reactie-ID"
+
+msgid "Content ID"
+msgstr "Inhoud-ID"
+
+msgid "User ID"
+msgstr "Gebruikers-ID"
+
+msgid "Title content"
+msgstr "Titel inhoud"
+
+msgid "Comment contains"
+msgstr "Commentaar bevat"
+
+msgid "Title content contains"
+msgstr "Titel inhoud bevat"
+
+msgid "Organic Groups Site Manager"
+msgstr ""

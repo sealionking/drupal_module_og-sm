@@ -1,0 +1,291 @@
+<?php
+/**
+ * @file
+ * Site comment creation and administration functionality.
+ */
+
+/**
+ * Permissions.
+ */
+define('OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL', 'delete all comments');
+define('OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN', 'delete own comments');
+define('OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL', 'edit all comments');
+define('OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN', 'edit own comments');
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_comment_menu() {
+  $items['group/%/%og_sm_site/admin/comments'] = array(
+    'title' => 'Administer comments',
+    'page callback' => 'og_sm_comment_admin_overview',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'weight' => 10,
+    'file' => 'og_sm_comment.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function og_sm_comment_menu_alter(&$items) {
+  $items['comment/%/delete']['access callback'] = 'og_sm_comment_access';
+  $items['comment/%/delete']['access arguments'] = array('delete', 1);
+  $items['comment/%comment/edit']['access callback'] = 'og_sm_comment_access';
+}
+
+/**
+ * Implements hook_permission().
+ */
+function og_sm_comment_permission() {
+  // Create custom permissions for deleting comments so we don't have to rely on
+  // 'administer comments'.
+  return array(
+    OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN => array(
+      'title' => t('Delete own comments'),
+      'description' => t('Allows the user to delete his/her own comments.'),
+    ),
+    OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL => array(
+      'title' => t('Delete all comments'),
+      'description' => t('Allows the user to delete all comments.'),
+    ),
+    OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL => array(
+      'title' => t('Edit all comments'),
+      'description' => t('Allows the user to edit all comments.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_comment_og_permission() {
+  return array(
+    OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN => array(
+      'title' => t('Delete own comments'),
+      'description' => t('Allows the user to delete his/her own comments.'),
+    ),
+    OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL => array(
+      'title' => t('Delete all comments'),
+      'description' => t('Allows the user to delete all comments.'),
+    ),
+    OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL => array(
+      'title' => t('Edit all comments'),
+      'description' => t('Allows the user to edit all comments.'),
+    ),
+    OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN => array(
+      'title' => t('Edit own comments'),
+      'description' => t('Allows the user to edit his/her own comments.'),
+    ),
+  );
+}
+
+/**
+ * Determines whether the current user has access to a particular comment.
+ *
+ * @param string $op
+ *   The operation that is to be performed on the comment.
+ * @param object $comment
+ *   The comment object or id.
+ *
+ * @return bool
+ *   TRUE if the current user has access to the comment, FALSE otherwise.
+ */
+function og_sm_comment_access($op, $comment) {
+  global $user;
+
+  // Since comment paths don't always use placeholders it's possible that
+  // $comment is an id.
+  if (!is_object($comment)) {
+    $comment = comment_load($comment);
+  }
+  if (!$comment) {
+    return FALSE;
+  }
+
+  switch ($op) {
+    case 'delete':
+      if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL, $user)) {
+        return TRUE;
+      }
+      $site = og_sm_comment_get_site($comment);
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL, $user)) {
+        return TRUE;
+      }
+      if ($user->uid !== $comment->uid) {
+        return FALSE;
+      }
+      if ((int) $comment->status !== COMMENT_PUBLISHED) {
+        return FALSE;
+      }
+      if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user)) {
+        return TRUE;
+      }
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user)) {
+        return TRUE;
+      }
+      return FALSE;
+
+    case 'edit':
+      if (user_access(OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $user) || comment_access($op, $comment)) {
+        return TRUE;
+      }
+      $site = og_sm_comment_get_site($comment);
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $user)) {
+        return TRUE;
+      }
+      if ($user->uid !== $comment->uid) {
+        return FALSE;
+      }
+      if ((int) $comment->status !== COMMENT_PUBLISHED) {
+        return FALSE;
+      }
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $user)) {
+        return TRUE;
+      }
+      return FALSE;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_comment_insert().
+ */
+function og_sm_comment_comment_insert($comment) {
+  if (module_exists('og_sm_path')) {
+    // Automatically create an alias for new comments.
+    og_sm_comment_pathauto_update_alias($comment, 'insert');
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function og_sm_comment_views_api() {
+  return array("api" => "3.0");
+}
+
+/**
+ * Implements hook_og_context_negotiation_info().
+ */
+function og_sm_comment_og_context_negotiation_info() {
+  $providers = array();
+
+  $providers['og_sm_context_comment'] = array(
+    'name' => t('Site Comment'),
+    'description' => t('Determine Site context based on the fact that we are on a comment made on Site page or a Site content page.'),
+    'callback' => 'og_sm_comment_context_handler_comment',
+  );
+
+  return $providers;
+}
+
+/**
+ * Tries to get the context based on the comment.
+ *
+ * The site context is determined base on the fact that we are on a comment
+ * which has been made on a Site page or a Site content page.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_og_context_negotiation_info
+ */
+function og_sm_comment_context_handler_comment() {
+  // Get the content nid from the path.
+  $path = current_path();
+  preg_match('#^comment/([0-9]+)#', $path, $parts);
+  if (empty($parts[1])) {
+    return NULL;
+  }
+
+  // Get the Comment.
+  $comment = comment_load($parts[1]);
+  if (!$comment) {
+    return NULL;
+  }
+
+  $site = og_sm_comment_get_site($comment);
+  if ($site) {
+    return array('node' => array((int) $site->nid));
+  }
+
+  return NULL;
+}
+
+/**
+ * Get the Site object the Site comment belongs to.
+ *
+ * @param object $comment
+ *   The comment object.
+ *
+ * @return object|NULL
+ *   The site node (if any).
+ */
+function og_sm_comment_get_site($comment) {
+  $node = node_load($comment->nid);
+  if (!$node) {
+    return FALSE;
+  }
+
+  // Is the node a Site?
+  if (og_sm_is_site($node)) {
+    return $node;
+  }
+
+  // Is the node Site Content?
+  return og_sm_content_get_site($node);
+}
+
+/**
+ * Update the URL aliases for multiple comments.
+ *
+ * @param array $comment_ids
+ *   An array of comment IDs.
+ * @param string $op
+ *   Operation being performed on the comments ('insert', 'update' or
+ *   'bulkupdate').
+ * @param array $options
+ *   An optional array of additional options.
+ */
+function og_sm_comment_pathauto_update_alias_multiple(array $comment_ids, $op, array $options = array()) {
+  $options += array('message' => FALSE);
+
+  $comments = comment_load_multiple($comment_ids);
+  foreach ($comments as $comment) {
+    og_sm_comment_pathauto_update_alias($comment, $op, $options);
+  }
+
+  if (!empty($options['message'])) {
+    drupal_set_message(format_plural(count($comment_ids), 'Updated URL alias for 1 comment.', 'Updated URL aliases for @count comments.'));
+  }
+}
+
+/**
+ * Update the URL aliases for an individual comment.
+ *
+ * @param object $comment
+ *   A comment object.
+ * @param string $op
+ *   Operation being performed on the comment ('insert', 'update' or
+ *   'bulkupdate').
+ * @param array $options
+ *   An optional array of additional options.
+ */
+function og_sm_comment_pathauto_update_alias(stdClass $comment, $op, array $options = array()) {
+  $options += array('language' => pathauto_entity_language('comment', $comment));
+
+  // Skip processing if the comment has no pattern.
+  if (!pathauto_pattern_load_by_entity('comment', '', $options['language'])) {
+    return;
+  }
+
+  module_load_include('inc', 'pathauto');
+  $uri = entity_uri('comment', $comment);
+  pathauto_create_alias('comment', $op, $uri['path'], array('comment' => $comment), NULL, $options['language']);
+}

@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file
+ * Install, Update & Uninstall hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function og_sm_comment_install() {
+  if (module_exists('og_sm_path')) {
+    variable_set('pathauto_comment_pattern', '[comment:node:site-path]/comment/[comment:cid]');
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function og_sm_comment_uninstall() {
+  variable_del('pathauto_comment_pattern');
+}
