@@ -40,7 +40,7 @@ class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
   private $siteUser;
 
   /**
-   * Site user who can access unpublished site.
+   * Site user who can acces unpublished site.
    */
   private $siteUserWithAccess;
 

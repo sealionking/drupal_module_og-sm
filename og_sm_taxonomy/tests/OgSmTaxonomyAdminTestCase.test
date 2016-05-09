@@ -14,6 +14,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
    * @var object
    */
   private $siteNode;
+  private $siteNodeOther;
 
   /**
    * Vocabulary "categories" to run tests with.
@@ -101,6 +102,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Create the Site node.
     $this->siteNode = $this->ogSmCreateGroup($type);
+    $this->siteNodeOther = $this->ogSmCreateGroup($type);
 
     // Create vocabularies.
     $this->vocabCategories = $this->ogSmCreateSiteVocabulary('test_categories');
@@ -369,9 +371,21 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
 
     // Add some terms.
     $sites = array($this->siteNode);
-    $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
-    $this->ogSmCreateTerm($this->vocabCategories, 'term_2', $sites);
-    $this->ogSmCreateTerm($this->vocabCategories, 'term_3', $sites);
+    $term_1 = $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
+    $term_2 = $this->ogSmCreateTerm($this->vocabCategories, 'term_2', $sites);
+    $term_3 = $this->ogSmCreateTerm($this->vocabCategories, 'term_3', $sites);
+    // Change the weights.
+    $term_1->weight = 1;
+    taxonomy_term_save($term_1);
+    $term_2->weight = 1;
+    taxonomy_term_save($term_2);
+    $term_3->weight = 1;
+    taxonomy_term_save($term_3);
+
+    // Add some terms to another Site.
+    $sites = array($this->siteNodeOther);
+    $term_other = $this->ogSmCreateTerm($this->vocabCategories, 'term_other', array($this->siteNodeOther));
+    $term_other->weight = 9999;
 
     // Reset the order of the terms, we should return to the overview within the
     // Site context.
@@ -382,6 +396,18 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
       array(),
       'The user is redirected back to the Site vocabulary terms overview page.'
     );
+
+    // Check that we only changed the order of the Site terms, not of other
+    // Sites.
+    $term_1 = taxonomy_term_load($term_1->tid);
+    $this->assertEqual(0, $term_1->weight, 'Weight of term 1 is now 0.');
+    $term_2 = taxonomy_term_load($term_2->tid);
+    $this->assertEqual(0, $term_2->weight, 'Weight of term 2 is now 0.');
+    $term_3 = taxonomy_term_load($term_1->tid);
+    $this->assertEqual(0, $term_3->weight, 'Weight of term 3 is now 0.');
+
+    $term_other = taxonomy_term_load($term_other->tid);
+    $this->assertEqual(9999, $term_other->weight, 'Weight of term in other Site is not changed.');
 
     // Open the reset order confirmation page, using the cancel button should
     // redirect back to the Site vocabulary terms overview page.
