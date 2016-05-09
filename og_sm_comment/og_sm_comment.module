@@ -204,18 +204,8 @@ function og_sm_comment_context_handler_comment() {
   if (!$comment) {
     return NULL;
   }
-  $node = node_load($comment->nid);
-  if (!$node) {
-    return NULL;
-  }
 
-  // Is the node a Site?
-  if (og_sm_is_site($node)) {
-    return array('node' => array((int) $node->nid));
-  }
-
-  // Is the node Site Content?
-  $site = og_sm_content_get_site($node);
+  $site = og_sm_comment_get_site($comment);
   if ($site) {
     return array('node' => array((int) $site->nid));
   }
@@ -238,12 +228,13 @@ function og_sm_comment_get_site($comment) {
     return FALSE;
   }
 
-  $sites = og_sm_content_get_sites($node);
-  if (empty($sites)) {
-    return FALSE;
+  // Is the node a Site?
+  if (og_sm_is_site($node)) {
+    return $node;
   }
 
-  return reset($sites);
+  // Is the node Site Content?
+  return og_sm_content_get_site($node);
 }
 
 /**
