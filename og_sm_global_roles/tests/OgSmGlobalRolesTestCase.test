@@ -70,7 +70,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
   /**
    * Test getting the mappings between Site roles & Global roles.
    */
-  public function _testMappings() {
+  public function testMappings() {
     // Nothing in cache yet.
     $this->assertFalse(
       cache_get('og_sm_global_roles_mappings'),
@@ -97,7 +97,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
   /**
    * Test if the users get the proper roles.
    */
-  public function _testUserLoadRoles() {
+  public function testUserLoadRoles() {
     $expected = array(2);
     $this->assertEqual(
       $expected,
@@ -191,7 +191,6 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
       !empty(cache_get('og_sm_global_roles_mappings')->data),
       'The mappings cache is not empty.'
     );
-
 
     // Set the variable with Role ID's.
     variable_set(
