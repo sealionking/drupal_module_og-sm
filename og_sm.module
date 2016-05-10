@@ -349,12 +349,12 @@ function og_sm_content_get_sites($node) {
 /**
  * Get the Site object the Site content node belongs to.
  *
- * Is a node belongs to multiple Sites, only the first will be returned.
+ * If a content node belongs to multiple Sites, only the first will be returned.
  *
  * @param object $node
  *   The site content.
  *
- * @return object|NULL
+ * @return object|FALSE
  *   The site node (if any).
  */
 function og_sm_content_get_site($node) {

@@ -284,4 +284,5 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNameArticle, $this->siteUserArticle);
     $this->assertTrue($access, 'User 2 is allowed to add Article content.');
   }
+
 }

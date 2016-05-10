@@ -1,0 +1,81 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-05-04 14:55+0100\n"
+"PO-Revision-Date: 2016-05-04 14:55+0100\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.6\n"
+
+#: og_sm_taxonomy.admin.inc:20
+msgid "Vocabulary name"
+msgstr "Naam van woordenlijst"
+
+#: og_sm_taxonomy.admin.inc:22
+msgid "Operations"
+msgstr "Handelingen"
+
+#: og_sm_taxonomy.admin.inc:39
+msgid "list terms"
+msgstr "termen weergeven"
+
+#: og_sm_taxonomy.admin.inc:40
+msgid "add terms"
+msgstr "termen toevoegen"
+
+#: og_sm_taxonomy.og_sm.inc:36 og_sm_taxonomy.info:0
+msgid "Site Taxonomy"
+msgstr "Site Taxonomie"
+
+#: og_sm_taxonomy.og_sm.inc:37
+msgid "Manage taxonomy terms."
+msgstr "Beheer taxonomy termen"
+
+#: og_sm_taxonomy.tokens.inc:18
+msgid "Site Path"
+msgstr "Site Pad"
+
+#: og_sm_taxonomy.tokens.inc:19
+msgid "The path of the Site the term belongs to."
+msgstr "Het pad van de Site waar de term lid van is."
+
+#: og_sm_taxonomy.module:25
+msgid "Edit all taxonomy terms"
+msgstr "Beheer alle taxonomy termen"
+
+#: og_sm_taxonomy.module:26
+msgid "Edit the taxonomy terms of all Sites."
+msgstr "Beheer de taxonomy termen van alle Sites."
+
+#: og_sm_taxonomy.module:39;76
+msgid "Administer taxonomy"
+msgstr "Beheer taxonomy"
+
+#: og_sm_taxonomy.module:40
+msgid "Manage all taxonomy terms."
+msgstr "Beheer alle taxonomy termen."
+
+#: og_sm_taxonomy.module:48
+msgid "Edit terms in %name"
+msgstr "Termen in %name wijzigen"
+
+#: og_sm_taxonomy.module:52
+msgid "Edit all terms for the %name vocabulary."
+msgstr "Wijzig alle termen voor de %name woordenlijst."
+
+#: og_sm_taxonomy.module:95
+msgid "Add term"
+msgstr "Term toevoegen"
+
+#: og_sm_taxonomy.info:0
+msgid "Use global vocabularies with Site specific terms."
+msgstr "Gebruik globale woordenlijsten met Site specifieke termen."
+
+#: og_sm_taxonomy.info:0
+msgid "Organic Groups Site Manager"
+msgstr "Organic Groups Site Beheerder"
+
