@@ -22,6 +22,9 @@ class ogSmContentViewsHandlerFilterContentType extends views_handler_filter_in_o
       $types = og_sm_content_get_types();
       $options = array();
       foreach ($types as $type => $info) {
+        if ($site = og_sm_current_site()) {
+          $info = og_sm_content_get_type_info_by_site($site, $info);
+        }
         $options[$type] = t($info->name);
       }
 

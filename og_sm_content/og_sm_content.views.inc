@@ -16,4 +16,5 @@ function og_sm_content_views_data_alter(&$data) {
       'field' => 'type',
     ),
   );
+  $data['node']['type']['field']['handler'] = 'ogSmContentViewsHandlerFieldContentType';
 }

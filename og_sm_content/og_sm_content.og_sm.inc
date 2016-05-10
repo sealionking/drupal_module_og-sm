@@ -10,6 +10,15 @@
 function og_sm_content_og_sm_admin_menu() {
   $items = array();
 
+  // Administer content types.
+  $items['structure/content_types'] = array(
+    'title' => 'Content types',
+    'description' => 'Administer the content types for this Site.',
+    'href' => 'admin/structure/types',
+    'column' => 'left',
+    'weight' => 10,
+  );
+
   // Administer content.
   $items['content'] = array(
     'title' => 'Content',
@@ -34,6 +43,8 @@ function og_sm_content_og_sm_admin_menu() {
 
   // Make items translatable.
   if (FALSE) {
+    t('Content types');
+    t('Administer the content types for this Site.');
     t('Add content');
     t('Overview of all content types that can be created.');
     t('Manage content');

@@ -71,6 +71,15 @@ function og_sm_content_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
+  $items['group/%/%og_sm_site/admin/structure/types'] = array(
+    'title' => 'Administer content types',
+    'page callback' => 'og_sm_content_admin_overview_types',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'file' => $file_admin,
+  );
+
   $items['group/%/%og_sm_site/content/add'] = array(
     'title' => 'Add content',
     'page callback' => 'og_sm_content_add_overview',
@@ -83,11 +92,12 @@ function og_sm_content_menu() {
   );
 
   // Add menu callbacks for all the Site content types.
-  $base_path = 'group/%/%og_sm_site/content/add/';
+  $base_add_content_path = 'group/%/%og_sm_site/content/add/';
+  $base_adminster_type_path = 'group/%/%og_sm_site/admin/structure/types/';
   $types = og_sm_content_get_types();
   foreach ($types as $type) {
     $type_url_str = str_replace('_', '-', $type->type);
-    $items[$base_path . $type_url_str] = array(
+    $items[$base_add_content_path . $type_url_str] = array(
       'title' => $type->name,
       'title callback' => 'check_plain',
       'page callback' => 'og_sm_content_add_content',
@@ -97,6 +107,20 @@ function og_sm_content_menu() {
       'weight' => 11,
       'file' => $file_pages,
       'type' => MENU_LOCAL_TASK,
+    );
+
+    $items[$base_adminster_type_path . $type_url_str] = array(
+      'title' => $type->name,
+      'title callback' => 'check_plain',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array(
+        'og_sm_content_admin_overview_type_edit_form',
+        2,
+        6,
+      ),
+      'access callback' => 'og_sm_site_permission_access',
+      'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+      'file' => $file_admin,
     );
   }
 
@@ -181,11 +205,84 @@ function og_sm_content_get_types_by_site($site, $account = NULL) {
     if (!og_sm_site_permission_access($site, $permission, $account)) {
       continue;
     }
-
-    $types[$site_content_type->type] = $site_content_type;
+    $types[$site_content_type->type] = og_sm_content_get_type_info_by_site($site, $site_content_type);
   }
 
   return $types;
+}
+
+/**
+ * Fetches the site specific settings for a content type.
+ *
+ * @param object $site
+ *   The Site node.
+ * @param object|string $content_type
+ *   The content type object or machine name.
+ *
+ * @return object
+ *   The site specific content type object.
+ */
+function og_sm_content_get_type_info_by_site($site, $content_type) {
+  if (is_string($content_type)) {
+    $content_type = node_type_load($content_type);
+  }
+  $variable_base = 'og_sm_content_' . $content_type->type . '_';
+
+  $content_type->site_type = check_plain(og_sm_variable_get($site->nid, $variable_base . 'machine_name', $content_type->type));
+  $content_type->name = check_plain(og_sm_variable_get($site->nid, $variable_base . 'name', $content_type->name));
+  $content_type->name_plural = check_plain(og_sm_variable_get($site->nid, $variable_base . 'name_plural', $content_type->name));
+  if (module_exists('comment')) {
+    $content_type->comment = variable_get('comment_' . $content_type->type, COMMENT_NODE_OPEN);
+    // The comment setting can only be overridden when the node type's comments
+    // are open.
+    if ((int) $content_type->comment === COMMENT_NODE_OPEN) {
+      $content_type->comment = og_sm_variable_get($site->nid, $variable_base . 'comment', $content_type->comment);
+    }
+  }
+
+  return $content_type;
+}
+
+/**
+ * Fetches the site specific settings for a content type.
+ *
+ * @param object $node
+ *   The node to fetch the site specific content type info of.
+ *
+ * @return object|FALSE
+ *   The site specific content type object.
+ */
+function og_sm_content_get_type_info_by_node($node) {
+  if (!og_sm_content_is_site_content($node)) {
+    return FALSE;
+  }
+  $site = og_sm_content_get_site($node);
+  if ($site) {
+    return og_sm_content_get_type_info_by_site($site, $node->type);
+  }
+  return FALSE;
+}
+
+/**
+ * Fetches the original content type name based on the site specific alias.
+ *
+ * @param object $site
+ *   The Site node.
+ * @param string $content_type
+ *   The site specific content type alias.
+ *
+ * @return string|FALSE
+ *   The original content type name, FALSE if no match was found.
+ */
+function og_sm_content_get_original_type_by_site_alias_type($site, $content_type) {
+  $site_content_types = og_sm_content_get_types();
+  foreach ($site_content_types as $site_content_type) {
+    $site_content_type = og_sm_content_get_type_info_by_site($site, $site_content_type);
+    if ($site_content_type->site_type === $content_type) {
+      return $site_content_type->type;
+    }
+  }
+  return FALSE;
 }
 
 /**
@@ -294,10 +391,20 @@ function og_sm_content_admin_menu_items($site) {
  * Implements hook_url_outbound_alter().
  */
 function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
+  $site = FALSE;
+  // Rewrite all path which have the node type name in them, try to replace it
+  // with the site specific content type name.
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]*)#', $path, $parts)) {
+    if ($site = og_sm_site_load($parts[1])) {
+      $content_type = og_sm_content_get_type_info_by_site($site, $parts[3]);
+      $content_type_name = str_replace('_', '-', $content_type->site_type);
+      $path = str_replace($parts[3], $content_type_name, $path);
+    }
+  }
   // Support for og_sm_path module:
   // Rewrite all outgoing site admin paths for paths that do not have an alias.
   if (module_exists('og_sm_path') && preg_match('#^group/node/([0-9]+)(/content.*)#', $path, $parts)) {
-    $site = og_sm_site_load($parts[1]);
+    $site = $site ?: og_sm_site_load($parts[1]);
     if ($site) {
       $path = og_sm_path($site) . $parts[2];
     }
@@ -308,12 +415,23 @@ function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
  * Implements hook_url_inbound_alter().
  */
 function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language) {
+  $site = FALSE;
   // Support for og_sm_path module:
   // Translate an admin path without alias back to its original path.
   if (module_exists('og_sm_path') && preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
     $site = og_sm_path_load_site($parts[1]);
     if ($site) {
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
+    }
+  }
+  // Translate site specific node type paths back to their original path.
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]*)#', $path, $parts)) {
+    $site = $site ?: og_sm_site_load($parts[1]);
+    if ($site) {
+      $alias_type_name = str_replace('-', '_', $parts[3]);
+      $node_type_name = og_sm_content_get_original_type_by_site_alias_type($site, $alias_type_name);
+      $node_type_name = str_replace('_', '-', $node_type_name);
+      $path = str_replace($parts[3], $node_type_name, $path);
     }
   }
 }
@@ -355,5 +473,52 @@ function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
   }
   if (isset($form['options'])) {
     $form['options']['#access'] = $access;
+  }
+
+  $site = og_sm_current_site();
+  // If we are not in a site context don't bother overwriting the content type
+  // name.
+  if (!$site) {
+    return;
+  }
+  $content_type_info = og_sm_content_get_type_info_by_site($site, $node->type);
+
+  // Make sure the content type name alias is used on the node add/edit form.
+  if (empty($node->nid)) {
+    drupal_set_title(t('Create @name', array('@name' => $content_type_info->name)), PASS_THROUGH);
+  }
+  else {
+    $args = array(
+      '@type' => $content_type_info->name,
+      '@title' => $node->title,
+    );
+    drupal_set_title(t('<em>Edit @type</em> @title', $args), PASS_THROUGH);
+  }
+
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function og_sm_content_node_view($node, $view_mode, $langcode) {
+  if (!og_sm_content_is_site_content($node) || !module_exists('comment')) {
+    return;
+  }
+  // Remove the comment form from the node view if it is disabled for this site.
+  $site = og_sm_content_get_site($node);
+  $content_type = og_sm_content_get_type_info_by_site($site, $node->type);
+
+  if ($content_type->comment < COMMENT_NODE_OPEN) {
+    unset($node->content['comments']['comment_form']);
+    unset($node->content['links']['comment']['#links']['comment-add']);
+    if (!isset($node->content['links']['comment']['#links']['comment_forbidden'])) {
+      $node->content['links']['comment']['#links']['comment_forbidden'] = array(
+        'title' => theme('comment_post_forbidden', array('node' => $node)),
+        'html' => TRUE,
+      );
+    }
+  }
+  if ((int) $content_type->comment === COMMENT_NODE_HIDDEN) {
+    unset($node->content['comments']);
   }
 }
