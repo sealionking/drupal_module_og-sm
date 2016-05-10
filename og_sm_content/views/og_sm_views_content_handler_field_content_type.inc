@@ -7,13 +7,16 @@
 /**
  * Views handler to filter content by being a Site content type.
  */
+// @codingStandardsIgnoreStart
 class ogSmContentViewsHandlerFieldContentType extends views_handler_field_node_type {
+// @codingStandardsIgnoreEnd
 
   /**
    * {@inheritdoc}
    */
   // @codingStandardsIgnoreStart
   function render_name($data, $values) {
+  // @codingStandardsIgnoreEnd
     $site = og_sm_current_site();
     if (!$site) {
       return parent::render_name($data, $values);
@@ -24,5 +27,5 @@ class ogSmContentViewsHandlerFieldContentType extends views_handler_field_node_t
     }
     return $content_type->site_type;
   }
-  // @codingStandardsIgnoreEnd
+
 }
