@@ -85,18 +85,45 @@ function og_sm_comment_og_permission() {
 }
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_comment_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'entity_info_alter') {
+    // Move our hook implementation to the bottom.
+    $group = $implementations['og_sm_comment'];
+    unset($implementations['og_sm_comment']);
+    $implementations['og_sm_comment'] = $group;
+  }
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * @see og_sm_comment_module_implements_alter()
+ */
+function og_sm_comment_entity_info_alter(&$entity_info) {
+  $entity_info['comment']['access callback'] = 'og_sm_comment_access';
+}
+
+/**
  * Determines whether the current user has access to a particular comment.
  *
  * @param string $op
  *   The operation that is to be performed on the comment.
  * @param object $comment
  *   The comment object or id.
+ * @param object $account
+ *   (optional) The user account.
  *
  * @return bool
  *   TRUE if the current user has access to the comment, FALSE otherwise.
  */
-function og_sm_comment_access($op, $comment) {
+function og_sm_comment_access($op, $comment, $account = NULL) {
   global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
 
   // Since comment paths don't always use placeholders it's possible that
   // $comment is an id.
@@ -107,44 +134,65 @@ function og_sm_comment_access($op, $comment) {
     return FALSE;
   }
 
+  // When determining access to a comment, 'comment_access' does not take any
+  // access restrictions to the comment's associated node into account. If a
+  // comment has an associated node, the user must be able to view it in order
+  // to access the comment.
+  if (isset($comment->nid)) {
+    if (!entity_access('view', 'node', node_load($comment->nid), $account)) {
+      return FALSE;
+    }
+  }
+
+  // Comment administrators are allowed to perform all operations on all
+  // comments.
+  if (user_access('administer comments', $account)) {
+    return TRUE;
+  }
+
   switch ($op) {
+    case 'view':
+      return user_access('access comments', $account);
+
     case 'delete':
-      if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL, $user)) {
+
+      if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL, $account)) {
         return TRUE;
       }
       $site = og_sm_comment_get_site($comment);
-      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL, $user)) {
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_ALL, $account)) {
         return TRUE;
       }
-      if ($user->uid !== $comment->uid) {
+      if ($account->uid !== $comment->uid) {
         return FALSE;
       }
       if ((int) $comment->status !== COMMENT_PUBLISHED) {
         return FALSE;
       }
-      if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user)) {
+      if (user_access(OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $account)) {
         return TRUE;
       }
-      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $user)) {
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_DELETE_COMMENT_OWN, $account)) {
         return TRUE;
       }
       return FALSE;
 
+    case 'update':
     case 'edit':
-      if (user_access(OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $user) || comment_access($op, $comment)) {
+      if (user_access(OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $account) || comment_access($op, $comment)) {
         return TRUE;
       }
       $site = og_sm_comment_get_site($comment);
-      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $user)) {
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_ALL, $account)) {
         return TRUE;
       }
-      if ($user->uid !== $comment->uid) {
+      if ($account->uid !== $comment->uid) {
         return FALSE;
       }
       if ((int) $comment->status !== COMMENT_PUBLISHED) {
         return FALSE;
       }
-      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $user)) {
+      if ($site && og_sm_site_nid_permission_access($site->nid, OG_SM_COMMENT_PERM_EDIT_COMMENT_OWN, $account)) {
         return TRUE;
       }
       return FALSE;
