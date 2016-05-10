@@ -9,10 +9,13 @@
  *
  * @param array $form
  *   The form array.
+ *
+ * @return array
+ *   The form structure.
  */
 function og_sm_global_roles_settings($form) {
   $roles_global = _og_sm_global_roles_settings_global_roles();
-  $roles_groups = _og_sm_global_roles_settings_group_roles();
+  $roles_groups = _og_sm_global_roles_get_all_site_roles();
 
   $checkbox_options = $roles_global;
 
@@ -32,7 +35,23 @@ function og_sm_global_roles_settings($form) {
     );
   }
 
+  $form['#submit'][] = 'og_sm_global_roles_settings_submit_after';
+
   return system_settings_form($form);
+}
+
+/**
+ * Clear the mappings cache when the config has changed.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ *
+ * @see og_sm_global_roles_settings()
+ */
+function og_sm_global_roles_settings_submit_after(array $form, array $form_state) {
+  cache_clear_all('og_sm_global_roles_mappings', 'cache');
 }
 
 /**
@@ -55,27 +74,4 @@ function _og_sm_global_roles_settings_global_roles() {
   $roles_global = array_combine($role_names, $role_names);
 
   return $roles_global;
-}
-
-/**
- * Helper to get the site user roles.
- *
- * @return array
- *   Group roles keyed by their id.
- */
-function _og_sm_global_roles_settings_group_roles() {
-  $rows = db_select('og_role', 'ogr')
-    ->distinct()
-    ->fields('ogr', array('name'))
-    ->condition('ogr.group_type', 'node')
-    ->condition('ogr.group_bundle', og_sm_get_site_types())
-    ->execute();
-
-  $roles = array();
-  foreach ($rows as $row) {
-    $roles[$row->name] = $row->name;
-  }
-
-  ksort($roles);
-  return $roles;
 }

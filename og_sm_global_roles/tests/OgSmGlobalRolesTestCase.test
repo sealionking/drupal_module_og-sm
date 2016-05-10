@@ -60,7 +60,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
     // Combine both roles.
     variable_set(
       'og_sm_global_roles_role_site',
-      array($this->roleGlobal->rid => $this->roleGlobal->rid)
+      array($this->roleGlobal->name => $this->roleGlobal->name)
     );
 
     // Assign site role.
@@ -68,20 +68,156 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Test the Context Alias handler that reacts on aliases like [site-path]/...
+   * Test getting the mappings between Site roles & Global roles.
    */
-  public function testLoadRoles() {
+  public function _testMappings() {
+    // Nothing in cache yet.
+    $this->assertFalse(
+      cache_get('og_sm_global_roles_mappings'),
+      'Roles mappings cache is empty.'
+    );
+
+    // Load the mappings.
+    $mappings = og_sm_global_roles_mappings();
+    $expected = array(
+      'role_site' => array(
+        (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
+      ),
+    );
+    $this->assertEqual($expected, $mappings, 'Mappings are retrieved from variables.');
+
+    // Mappings should be stored in cache.
+    $this->assertEqual(
+      $expected,
+      cache_get('og_sm_global_roles_mappings')->data,
+      'Mappings are stored in the cache.'
+    );
+  }
+
+  /**
+   * Test if the users get the proper roles.
+   */
+  public function _testUserLoadRoles() {
     $expected = array(2);
-    $this->assertEqual($expected, array_keys($this->siteUser->roles));
-    $this->assertEqual($expected, array_keys($this->siteAdmin->roles));
+    $this->assertEqual(
+      $expected,
+      array_keys($this->siteUser->roles),
+      'Site User has the default roles.'
+    );
+    $this->assertEqual(
+      $expected,
+      array_keys($this->siteAdmin->roles),
+      'Site Admin has the default roles.'
+    );
 
     // Test loading extra roles.
     og_sm_global_roles_user_load_roles($this->site, $this->siteUser);
-    $this->assertEqual($expected, array_keys($this->siteUser->roles));
+    $this->assertEqual(
+      $expected,
+      array_keys($this->siteUser->roles),
+      'Site user does not get extra roles.'
+    );
 
     og_sm_global_roles_user_load_roles($this->site, $this->siteAdmin);
     $expected[] = $this->roleGlobal->rid;
-    $this->assertEqual($expected, array_keys($this->siteAdmin->roles));
+    $this->assertEqual(
+      $expected,
+      array_keys($this->siteAdmin->roles),
+      'Site admin has extra roles.'
+    );
+  }
+
+  /**
+   * Test the settings form.
+   */
+  public function testSettingsForm() {
+    $admin = $this->ogSmCreateAdminUser();
+    $this->drupalLogin($admin);
+    $path = 'admin/config/group/global-roles';
+
+    // Call the mappings once so the cache is hot.
+    og_sm_global_roles_mappings();
+    $this->assertTrue(
+      !empty(cache_get('og_sm_global_roles_mappings')->data),
+      'The mappings cache is not empty.'
+    );
+
+    // Check if all the roles are in the list.
+    $this->drupalGet($path);
+    $this->assertText('Site role : role_site', 'Role Site is in the settings form.');
+    $this->assertText('role_global', 'The global role is an option in the settings.');
+    $this->assertNoText('authenticated user', 'Authenticated user is not a form option.');
+
+    // Check if the existing mappings are set.
+    $this->assertNoFieldChecked('edit-og-sm-global-roles-administrator-member-role-global', 'Site Administrator member is not linked to role_global.');
+    $this->assertNoFieldChecked('edit-og-sm-global-roles-member-role-global', 'Site Member is not linked to role_global.');
+    $this->assertNoFieldChecked('edit-og-sm-global-roles-non-member-role-global', 'Site Non Member is not linked to role_global.');
+    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-role-global', 'Site role_site is mapped to role_global.');
+
+    // Update the settings.
+    $edit = array(
+      'og_sm_global_roles_role_site[administrator]' => 'administrator',
+      'og_sm_global_roles_role_site[role_global]' => 'role_global',
+    );
+    $this->drupalPost($path, $edit, 'Save configuration');
+    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-administrator', 'Site role_site is mapped to administrator.');
+    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-role-global', 'Site role_site is mapped to role_global.');
+
+    // Check if cache is cleared.
+    $this->assertFalse(
+      cache_get('og_sm_global_roles_mappings'),
+      'The mappings cache is empty.'
+    );
+
+    // Get the updated mapping.
+    $expected = array(
+      'role_site' => array(
+        3 => 3,
+        (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
+      ),
+    );
+    $this->assertEqual($expected, og_sm_global_roles_mappings(), 'Global Administrator role is in the mapping.');
+  }
+
+  /**
+   * Test update 7101.
+   */
+  public function testUpdate7101() {
+    module_load_include('install', 'og_sm_global_roles', 'og_sm_global_roles');
+
+    // Call the mappings once so the cache is hot.
+    og_sm_global_roles_mappings();
+    $this->assertTrue(
+      !empty(cache_get('og_sm_global_roles_mappings')->data),
+      'The mappings cache is not empty.'
+    );
+
+
+    // Set the variable with Role ID's.
+    variable_set(
+      'og_sm_global_roles_role_site',
+      array($this->roleGlobal->rid => $this->roleGlobal->rid)
+    );
+
+    // Run the update.
+    og_sm_global_roles_update_7101();
+
+    // Cache should be cleared.
+    $this->assertFalse(cache_get('og_sm_global_roles_mappings'), 'Mappings cache is cleared after update.');
+
+    // Mappings should have changed.
+    $expected = array($this->roleGlobal->name => $this->roleGlobal->name);
+    $this->assertEqual(
+      $expected,
+      variable_get('og_sm_global_roles_role_site', array()),
+      'Variable is updated to mapping by name.'
+    );
+    $expected = array(
+      'role_site' => array(
+        (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
+      ),
+    );
+    $this->assertEqual($expected, og_sm_global_roles_mappings(), 'Mapping is updated');
   }
 
 }
