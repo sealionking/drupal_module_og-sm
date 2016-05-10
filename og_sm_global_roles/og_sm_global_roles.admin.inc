@@ -50,6 +50,10 @@ function _og_sm_global_roles_settings_global_roles() {
     unset($roles_global[2]);
   }
 
+  // Use role names as array keys (unique id) for feature exports.
+  $role_names = array_values($roles_global);
+  $roles_global = array_combine($role_names, $role_names);
+
   return $roles_global;
 }
 
