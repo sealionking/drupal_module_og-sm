@@ -15,20 +15,20 @@
  */
 function og_sm_global_roles_settings($form) {
   $roles_global = _og_sm_global_roles_settings_global_roles();
-  $roles_groups = _og_sm_global_roles_get_all_site_roles();
+  $roles_sites = _og_sm_global_roles_get_all_site_roles();
 
   $checkbox_options = $roles_global;
 
-  foreach ($roles_groups as $role_group) {
-    $key = sprintf('og_sm_global_roles_%s', $role_group);
-    $args = array('%role' => $role_group);
+  foreach ($roles_sites as $role_site) {
+    $key = _og_sm_global_roles_variable_key($role_site);
+    $args = array('%role' => $role_site);
 
-    $form[$role_group] = array(
+    $form[$role_site] = array(
       '#type' => 'fieldset',
       '#title' => t('Site role : %role', $args),
       '#description' => t('Select what global roles a user should get within a Site when he gets the Site %role role.', $args),
     );
-    $form[$role_group][$key] = array(
+    $form[$role_site][$key] = array(
       '#type' => 'checkboxes',
       '#options' => $checkbox_options,
       '#default_value' => variable_get($key, array()),

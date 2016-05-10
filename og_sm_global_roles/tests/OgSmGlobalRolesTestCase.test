@@ -50,11 +50,11 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
 
     // Create global role.
     $this->roleGlobal = new stdClass();
-    $this->roleGlobal->name = 'role_global';
+    $this->roleGlobal->name = 'role global';
     user_role_save($this->roleGlobal);
 
     // Create Site role.
-    $this->roleSite = og_role_create('role_site', 'node', 0, $site_type);
+    $this->roleSite = og_role_create('role site', 'node', 0, $site_type);
     og_role_save($this->roleSite);
 
     // Combine both roles.
@@ -80,7 +80,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
     // Load the mappings.
     $mappings = og_sm_global_roles_mappings();
     $expected = array(
-      'role_site' => array(
+      'role site' => array(
         (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
       ),
     );
@@ -144,24 +144,24 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
 
     // Check if all the roles are in the list.
     $this->drupalGet($path);
-    $this->assertText('Site role : role_site', 'Role Site is in the settings form.');
-    $this->assertText('role_global', 'The global role is an option in the settings.');
+    $this->assertText('Site role : role site', 'Role Site is in the settings form.');
+    $this->assertText('role global', 'The global role is an option in the settings.');
     $this->assertNoText('authenticated user', 'Authenticated user is not a form option.');
 
     // Check if the existing mappings are set.
     $this->assertNoFieldChecked('edit-og-sm-global-roles-administrator-member-role-global', 'Site Administrator member is not linked to role_global.');
     $this->assertNoFieldChecked('edit-og-sm-global-roles-member-role-global', 'Site Member is not linked to role_global.');
     $this->assertNoFieldChecked('edit-og-sm-global-roles-non-member-role-global', 'Site Non Member is not linked to role_global.');
-    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-role-global', 'Site role_site is mapped to role_global.');
+    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-role-global', 'Site role site is mapped to role_global.');
 
     // Update the settings.
     $edit = array(
       'og_sm_global_roles_role_site[administrator]' => 'administrator',
-      'og_sm_global_roles_role_site[role_global]' => 'role_global',
+      'og_sm_global_roles_role_site[role global]' => 'role global',
     );
     $this->drupalPost($path, $edit, 'Save configuration');
-    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-administrator', 'Site role_site is mapped to administrator.');
-    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-role-global', 'Site role_site is mapped to role_global.');
+    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-administrator', 'Site role site is mapped to administrator.');
+    $this->assertFieldChecked('edit-og-sm-global-roles-role-site-role-global', 'Site role site is mapped to role_global.');
 
     // Check if cache is cleared.
     $this->assertFalse(
@@ -171,7 +171,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
 
     // Get the updated mapping.
     $expected = array(
-      'role_site' => array(
+      'role site' => array(
         3 => 3,
         (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
       ),
@@ -212,7 +212,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
       'Variable is updated to mapping by name.'
     );
     $expected = array(
-      'role_site' => array(
+      'role site' => array(
         (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
       ),
     );

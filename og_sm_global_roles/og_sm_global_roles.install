@@ -25,7 +25,7 @@ function og_sm_global_roles_update_7101() {
   // Replace link by global Role ID to link by global Role name.
   $group_roles = _og_sm_global_roles_get_all_site_roles();
   foreach ($group_roles as $role) {
-    $key = sprintf('og_sm_global_roles_%s', $role);
+    $key = _og_sm_global_roles_variable_key($role);
     $config = variable_get($key, array());
 
     if (empty($config)) {
