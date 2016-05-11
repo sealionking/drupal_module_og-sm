@@ -12,6 +12,22 @@ define('OG_SM_VARIABLE_CID_NAME', 'name:');
 define('OG_SM_VARIABLE_CACHE_BIN', 'cache_og_sm_variable');
 
 /**
+ * Implements hook_hook_info().
+ */
+function og_sm_variable_hook_info() {
+  $hooks = array(
+    'og_sm_variable_defaults' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_variable_defaults_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
  * Implements hook_flush_caches().
  */
 function og_sm_variable_flush_caches() {

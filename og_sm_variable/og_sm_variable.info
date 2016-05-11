@@ -7,3 +7,4 @@ dependencies[] = og
 
 ; Tests.
 files[] = tests/OgSmVariableTestCase.test
+files[] = tests/OgSmVariableDefaultsTestCase.test

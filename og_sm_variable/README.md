@@ -14,6 +14,7 @@ This module provides:
 * Get for all sites the values of a specific variable name.
 * Delete all variables at once for a Site.
 * Caching to speed up variable access.
+* Mechanism to define default variables to set when a new Site is created.
 
 
 
@@ -77,4 +78,42 @@ the Site node id.
 
 ```php
 $values = og_sm_variable_get_all_sites($name);
+```
+
+### Hooks to set the default variables for a new Site
+This module provides hooks to define the default variable values to set when a
+new Site is created.
+
+> The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
+
+#### hook_og_sm_variable_defaults($site)
+This hook is used to define default variables for the Site that is created and
+saved in the database.
+
+The hook should return an array of values keyed by their variable name.
+
+```php
+function my_module_og_sm_variable_defaults($site) {
+  $items = array(
+    'theme' => 'bartik',
+    'og_sm_content_article_comment' => COMMENT_NODE_OPEN,
+    'og_sm_content_article_machine_name' => 'news',
+    'og_sm_content_article_name' => 'news',
+    'og_sm_content_article_name_plural' => 'news',
+  );
+
+  return $items;
+}
+```
+
+#### hook_og_sm_variable_defaults_alter(&$items, $site)
+Use this hook to alter variables as defined by other modules.
+
+```php
+function my_module_og_sm_variable_defaults_alter(&$items, $site) {
+  $items['theme'] = 'my-theme';
+}
 ```
