@@ -152,10 +152,10 @@ class OgSmCommentTestCase extends OgSmWebTestCase {
 
     // Verify that the comment appears in the comment overview.
     $this->drupalGet('group/node/' . $this->site->nid . '/admin/comments');
-    $element = $this->xpath('//table[contains(@class, :class)]//td[contains(@class, :field_class)]//a[contains(text(), :text)]', array(
+    $element = $this->xpath('//table[contains(@class, :class)]//td[contains(@class, :field_class)]//input[contains(@value, :cid)]', array(
       ':class' => 'views-table',
-      ':field_class' => 'views-field-title',
-      ':text' => $comment->subject,
+      ':field_class' => 'views-field-views-bulk-operations',
+      ':cid' => $comment->cid,
     ));
     $this->assertTrue($element, 'The comment is shown in the site overview');
 
