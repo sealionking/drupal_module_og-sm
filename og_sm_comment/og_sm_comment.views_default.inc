@@ -164,7 +164,7 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['fields']['path']['table'] = 'node';
   $handler->display->display_options['fields']['path']['field'] = 'path';
   $handler->display->display_options['fields']['path']['relationship'] = 'nid';
-  $handler->display->display_options['fields']['path']['label'] = 'Pad';
+  $handler->display->display_options['fields']['path']['label'] = 'Path';
   $handler->display->display_options['fields']['path']['exclude'] = TRUE;
   $handler->display->display_options['fields']['path']['absolute'] = TRUE;
   /* Field: Comment: ID */
@@ -313,7 +313,7 @@ function og_sm_comment_views_default_views() {
     t('OG membership from node'),
     t('Comment'),
     t('- Choose an operation -'),
-    t('Pad'),
+    t('Path'),
     t('ID'),
     t('Title'),
     t('Author'),

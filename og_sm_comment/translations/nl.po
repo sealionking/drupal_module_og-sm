@@ -83,5 +83,17 @@ msgstr "Commentaar bevat"
 msgid "Title content contains"
 msgstr "Titel inhoud bevat"
 
+msgid "Path"
+msgstr "Pad"
+
+msgid "Author"
+msgstr "Auteur"
+
+msgid "edit"
+msgstr "bewerken"
+
+msgid "remove"
+msgstr "verwijderen"
+
 msgid "Organic Groups Site Manager"
 msgstr ""
