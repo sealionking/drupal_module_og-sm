@@ -8,7 +8,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   Sites.
 - DMOGSM-41 : Added the og_sm_comment module.
 - DMOGSM-13 : Added the og_sm_taxonomy module.
-
+- DMOGSM-12 : Added functionality to define default Site variable values when a
+  new Site is created.
 
 ### Fixed
 - DMOGSM-16 : Added support for og_variables to the admin menu.
