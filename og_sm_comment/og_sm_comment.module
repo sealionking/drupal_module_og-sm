@@ -139,7 +139,7 @@ function og_sm_comment_access($op, $comment, $account = NULL) {
   // comment has an associated node, the user must be able to view it in order
   // to access the comment.
   if (isset($comment->nid)) {
-    if (!entity_access('view', 'node', node_load($comment->nid), $account)) {
+    if (!node_access('view', node_load($comment->nid), $account)) {
       return FALSE;
     }
   }

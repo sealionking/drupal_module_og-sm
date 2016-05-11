@@ -67,7 +67,7 @@ class OgSmCommentTestCase extends OgSmWebTestCase {
     og_role_grant('node', $this->site->nid, $this->siteUser2->uid, $roles[OG_AUTHENTICATED_ROLE]);
 
     // Create a content type which is open for comments.
-    $this->ogSmCreateGroupContentNodeType($this->siteContentTypeName);
+    $this->siteContentTypeName = $this->ogSmCreateGroupContentNodeType();
   }
 
   /**
