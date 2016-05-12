@@ -9,30 +9,49 @@
  *
  * @param array $form
  *   The form array.
+ *
+ * @return array
+ *   The form structure.
  */
 function og_sm_global_roles_settings($form) {
   $roles_global = _og_sm_global_roles_settings_global_roles();
-  $roles_groups = _og_sm_global_roles_settings_group_roles();
+  $roles_sites = _og_sm_global_roles_get_all_site_roles();
 
   $checkbox_options = $roles_global;
 
-  foreach ($roles_groups as $role_group) {
-    $key = sprintf('og_sm_global_roles_%s', $role_group);
-    $args = array('%role' => $role_group);
+  foreach ($roles_sites as $role_site) {
+    $key = _og_sm_global_roles_variable_key($role_site);
+    $args = array('%role' => $role_site);
 
-    $form[$role_group] = array(
+    $form[$role_site] = array(
       '#type' => 'fieldset',
       '#title' => t('Site role : %role', $args),
       '#description' => t('Select what global roles a user should get within a Site when he gets the Site %role role.', $args),
     );
-    $form[$role_group][$key] = array(
+    $form[$role_site][$key] = array(
       '#type' => 'checkboxes',
       '#options' => $checkbox_options,
       '#default_value' => variable_get($key, array()),
     );
   }
 
+  $form['#submit'][] = 'og_sm_global_roles_settings_submit_after';
+
   return system_settings_form($form);
+}
+
+/**
+ * Clear the mappings cache when the config has changed.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ *
+ * @see og_sm_global_roles_settings()
+ */
+function og_sm_global_roles_settings_submit_after(array $form, array $form_state) {
+  cache_clear_all('og_sm_global_roles_mappings', 'cache');
 }
 
 /**
@@ -50,28 +69,9 @@ function _og_sm_global_roles_settings_global_roles() {
     unset($roles_global[2]);
   }
 
+  // Use role names as array keys (unique id) for feature exports.
+  $role_names = array_values($roles_global);
+  $roles_global = array_combine($role_names, $role_names);
+
   return $roles_global;
-}
-
-/**
- * Helper to get the site user roles.
- *
- * @return array
- *   Group roles keyed by their id.
- */
-function _og_sm_global_roles_settings_group_roles() {
-  $rows = db_select('og_role', 'ogr')
-    ->distinct()
-    ->fields('ogr', array('name'))
-    ->condition('ogr.group_type', 'node')
-    ->condition('ogr.group_bundle', og_sm_get_site_types())
-    ->execute();
-
-  $roles = array();
-  foreach ($rows as $row) {
-    $roles[$row->name] = $row->name;
-  }
-
-  ksort($roles);
-  return $roles;
 }

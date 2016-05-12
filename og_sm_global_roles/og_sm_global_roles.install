@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall hooks for og_sm_global_roles.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function og_sm_global_roles_uninstall() {
+  module_load_include('inc', 'og_sm_global_roles', 'og_sm_global_roles.admin');
+
+  // Delete all existing group-global role links.
+  $group_roles = _og_sm_global_roles_get_all_site_roles();
+  foreach ($group_roles as $role) {
+    $key = sprintf('og_sm_global_roles_%s', $role);
+    variable_del($key);
+  }
+}
+
+/**
+ * Upgrade existing group - global roles to by name instead of per ID.
+ */
+function og_sm_global_roles_update_7101() {
+  // Replace link by global Role ID to link by global Role name.
+  $group_roles = _og_sm_global_roles_get_all_site_roles();
+  foreach ($group_roles as $role) {
+    $key = _og_sm_global_roles_variable_key($role);
+    $config = variable_get($key, array());
+
+    if (empty($config)) {
+      continue;
+    }
+
+    // Replace the ID's by their names.
+    $new_config = array();
+    foreach ($config as $rid) {
+      $role = user_role_load($rid);
+      if (!$role) {
+        continue;
+      }
+
+      $new_config[$role->name] = $role->name;
+    }
+
+    variable_set($key, $new_config);
+  }
+
+  // Clear the mappings cache.
+  cache_clear_all('og_sm_global_roles_mappings', 'cache');
+}

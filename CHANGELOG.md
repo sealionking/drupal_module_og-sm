@@ -11,6 +11,11 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-12 : Added functionality to define default Site variable values when a
   new Site is created.
 
+### Changed
+- DMOGSM-36 : Changed storing the mapping between Global roles and Site roles by
+  role name instead of Role ID. Makes it easier to export the mapping using
+  features (strongarm).
+
 ### Fixed
 - DMOGSM-16 : Added support for og_variables to the admin menu.
 - DMOGSM-16 : Removed the default OG UI admin overview page as this is replaced
