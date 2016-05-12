@@ -117,31 +117,30 @@ function og_sm_global_roles_user_load_roles($site, $account) {
  */
 function og_sm_global_roles_mappings() {
   $cache = cache_get(__FUNCTION__);
-
-  if (!$cache) {
-    $mappings = array();
-
-    $site_roles = _og_sm_global_roles_get_all_site_roles();
-    foreach ($site_roles as $site_role) {
-      // The roles are saved by their name.
-      // We need to map them to their role ID's.
-      $global_roles = _og_sm_global_roles_variable_get_mapping($site_role);
-      foreach ($global_roles as $global_role_name) {
-        $role = user_role_load_by_name($global_role_name);
-        if (!$role) {
-          continue;
-        }
-
-        $rid = (int) $role->rid;
-        $mappings[$site_role][$rid] = $rid;
-      }
-    }
-
-    cache_set(__FUNCTION__, $mappings);
-    return $mappings;
+  if ($cache) {
+    return $cache->data;
   }
 
-  return $cache->data;
+  $mappings = array();
+
+  $site_roles = _og_sm_global_roles_get_all_site_roles();
+  foreach ($site_roles as $site_role) {
+    // The roles are saved by their name.
+    // We need to map them to their role ID's.
+    $global_roles = _og_sm_global_roles_variable_get_mapping($site_role);
+    foreach ($global_roles as $global_role_name) {
+      $role = user_role_load_by_name($global_role_name);
+      if (!$role) {
+        continue;
+      }
+
+      $rid = (int) $role->rid;
+      $mappings[$site_role][$rid] = $rid;
+    }
+  }
+
+  cache_set(__FUNCTION__, $mappings);
+  return $mappings;
 }
 
 /**
@@ -177,7 +176,7 @@ function _og_sm_global_roles_get_all_site_roles() {
  *   The variable key.
  */
 function _og_sm_global_roles_variable_key($site_role_name) {
-  $machine_name = strtolower($site_role_name);
+  $machine_name = drupal_strtolower($site_role_name);
   $machine_name = preg_replace('/[^a-z0-9_]+/', '_', $machine_name);
 
   return sprintf('og_sm_global_roles_%s', $machine_name);
