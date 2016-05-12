@@ -475,26 +475,37 @@ class OgSmContentTestCase extends OgSmWebTestCase {
 
     // Default configuration = Platform values.
     $type_article = clone $this->siteContentTypeArticle;
-    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+    $article_info = og_sm_content_get_type_info_by_site($this->site, $type_article);
     $this->assertEqual(
       $this->siteContentTypeArticle->type,
-      $articleInfo->site_type,
+      $article_info->site_type,
       'Default site_type = global content type Machine name.'
     );
     $this->assertEqual(
       $this->siteContentTypeArticle->name,
-      $articleInfo->name,
+      $article_info->name,
       'Default name = global content type Name.'
     );
     $this->assertEqual(
       $this->siteContentTypeArticle->name,
-      $articleInfo->name_plural,
+      $article_info->name_plural,
       'Default name_plural = global content type Name.'
     );
     $this->assertEqual(
       $this->siteContentTypeArticle->name,
-      $articleInfo->name_plural,
+      $article_info->name_plural,
       'Default name_plural = global content type Name.'
+    );
+
+    // Load info by type name.
+    $article_info_by_name = og_sm_content_get_type_info_by_site(
+      $this->site,
+      $type_article->type
+    );
+    $this->assertEqual(
+      $article_info,
+      $article_info_by_name,
+      'Function loads the type if the name is given instead of the object.'
     );
 
     // Set the comment default to open.
@@ -513,26 +524,26 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     og_sm_variable_set($this->site->nid, $key_base . 'comment', COMMENT_NODE_CLOSED);
 
     $type_article = clone $this->siteContentTypeArticle;
-    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+    $article_info = og_sm_content_get_type_info_by_site($this->site, $type_article);
 
     $this->assertEqual(
       'machine_name_test',
-      $articleInfo->site_type,
+      $article_info->site_type,
       'Machine name (type) is overridden by Site config.'
     );
     $this->assertEqual(
       'name_test',
-      $articleInfo->name,
+      $article_info->name,
       'Human name (name) is overridden by Site config.'
     );
     $this->assertEqual(
       'name_plural_test',
-      $articleInfo->name_plural,
+      $article_info->name_plural,
       'Human name plural (name_plural) is overridden by Site config.'
     );
     $this->assertEqual(
       COMMENT_NODE_CLOSED,
-      $articleInfo->comment,
+      $article_info->comment,
       'Comment settings (comment) is overridden by Site config.'
     );
 
@@ -541,19 +552,19 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     og_sm_variable_set($this->site->nid, $key_base . 'comment', COMMENT_NODE_OPEN);
 
     $type_article = clone $this->siteContentTypeArticle;
-    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+    $article_info = og_sm_content_get_type_info_by_site($this->site, $type_article);
     $this->assertEqual(
       COMMENT_NODE_HIDDEN,
-      $articleInfo->comment,
+      $article_info->comment,
       'Site Comment settings is overruled by stricter global config (hidden).'
     );
 
     variable_set('comment_' . $type_article->type, COMMENT_NODE_CLOSED);
     $type_article = clone $this->siteContentTypeArticle;
-    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+    $article_info = og_sm_content_get_type_info_by_site($this->site, $type_article);
     $this->assertEqual(
       COMMENT_NODE_CLOSED,
-      $articleInfo->comment,
+      $article_info->comment,
       'Site Comment settings is overruled by stricter global config (closed).'
     );
   }
