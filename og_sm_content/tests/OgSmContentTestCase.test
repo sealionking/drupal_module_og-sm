@@ -455,4 +455,107 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertText(t('Add new comment'));
   }
 
+  /**
+   * Test getting the Site specific content type settings.
+   */
+  public function testGetTypeInfoBySite() {
+    module_enable(array('comment'));
+    $this->resetAll();
+    $this->setUpContent();
+
+    // Content type outside Sites.
+    $noSiteContentType = $this->drupalCreateContentType();
+    $this->assertFalse(
+      og_sm_content_get_type_info_by_site(
+        $this->site,
+        $noSiteContentType->type
+      ),
+      'No info available for content types that are not availabe as Site content.'
+    );
+
+    // Default configuration = Platform values.
+    $type_article = clone $this->siteContentTypeArticle;
+    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+    $this->assertEqual(
+      $this->siteContentTypeArticle->type,
+      $articleInfo->site_type,
+      'Default site_type = global content type Machine name.'
+    );
+    $this->assertEqual(
+      $this->siteContentTypeArticle->name,
+      $articleInfo->name,
+      'Default name = global content type Name.'
+    );
+    $this->assertEqual(
+      $this->siteContentTypeArticle->name,
+      $articleInfo->name_plural,
+      'Default name_plural = global content type Name.'
+    );
+    $this->assertEqual(
+      $this->siteContentTypeArticle->name,
+      $articleInfo->name_plural,
+      'Default name_plural = global content type Name.'
+    );
+
+    // Set the comment default to open.
+    variable_set('comment_' . $type_article->type, COMMENT_NODE_OPEN);
+    $this->assertEqual(
+      variable_get('comment_' . $type_article->type, COMMENT_NODE_OPEN),
+      $type_article->comment,
+      'Comments get by default the same config as Global.'
+    );
+
+    // Site configuration overrides the configuration.
+    $key_base = 'og_sm_content_' . $this->siteContentTypeNameArticle . '_';
+    og_sm_variable_set($this->site->nid, $key_base . 'machine_name', 'machine_name_test');
+    og_sm_variable_set($this->site->nid, $key_base . 'name', 'name_test');
+    og_sm_variable_set($this->site->nid, $key_base . 'name_plural', 'name_plural_test');
+    og_sm_variable_set($this->site->nid, $key_base . 'comment', COMMENT_NODE_CLOSED);
+
+    $type_article = clone $this->siteContentTypeArticle;
+    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+
+    $this->assertEqual(
+      'machine_name_test',
+      $articleInfo->site_type,
+      'Machine name (type) is overridden by Site config.'
+    );
+    $this->assertEqual(
+      'name_test',
+      $articleInfo->name,
+      'Human name (name) is overridden by Site config.'
+    );
+    $this->assertEqual(
+      'name_plural_test',
+      $articleInfo->name_plural,
+      'Human name plural (name_plural) is overridden by Site config.'
+    );
+    $this->assertEqual(
+      COMMENT_NODE_CLOSED,
+      $articleInfo->comment,
+      'Comment settings (comment) is overridden by Site config.'
+    );
+
+    // Global comment configuration restricts Site configuration.
+    variable_set('comment_' . $type_article->type, COMMENT_NODE_HIDDEN);
+    og_sm_variable_set($this->site->nid, $key_base . 'comment', COMMENT_NODE_OPEN);
+
+    $type_article = clone $this->siteContentTypeArticle;
+    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+    $this->assertEqual(
+      COMMENT_NODE_HIDDEN,
+      $articleInfo->comment,
+      'Site Comment settings is overruled by stricter global config (hidden).'
+    );
+
+    variable_set('comment_' . $type_article->type, COMMENT_NODE_CLOSED);
+    $type_article = clone $this->siteContentTypeArticle;
+    $articleInfo = og_sm_content_get_type_info_by_site($this->site, $type_article);
+    $this->assertEqual(
+      COMMENT_NODE_CLOSED,
+      $articleInfo->comment,
+      'Site Comment settings is overruled by stricter global config (closed).'
+    );
+  }
+
 }
