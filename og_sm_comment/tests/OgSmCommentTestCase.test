@@ -23,7 +23,7 @@ class OgSmCommentTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Comment management'),
+      'name' => t('Site Comment : Management'),
       'description' => t('Tests the Site Comment management functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );

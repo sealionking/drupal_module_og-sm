@@ -59,6 +59,11 @@ function og_sm_content_admin_overview_types($site) {
 function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site, $content_type) {
   $info = og_sm_content_get_type_info_by_site($site, $content_type);
 
+  // Add info useful for form alter functions.
+  $form['#site'] = $site;
+  $form['#content_type'] = $content_type;
+
+  // Group the Content type name fields.
   $form['content_name'] = array(
     '#type' => 'fieldset',
     '#title' => t('Name'),
@@ -84,23 +89,6 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
     '#title' => t('Name plural'),
     '#default_value' => $info->name_plural,
   );
-
-  // Only relevant if comments are enabled by default for this content type.
-  if (module_exists('comment') && variable_get('comment_' . $info->type) == COMMENT_NODE_OPEN) {
-    $form[$key_base . 'comment'] = array(
-      '#type' => 'select',
-      '#title' => t('Comments'),
-      '#description' => t('Select whether the comment form can be shown for @content_type_plural.', array(
-        '@content_type_plural' => drupal_strtolower($info->name_plural),
-      )),
-      '#default_value' => $info->comment,
-      '#options' => array(
-        COMMENT_NODE_OPEN => t('Open'),
-        COMMENT_NODE_CLOSED => t('Closed'),
-        COMMENT_NODE_HIDDEN => t('Hidden'),
-      ),
-    );
-  }
 
   $form = og_sm_variable_settings_form($form, $form_state, $site);
 

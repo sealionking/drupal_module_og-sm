@@ -69,15 +69,4 @@ function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
   $type_info->name_plural = check_plain(
     og_sm_variable_get($site->nid, $key_base . 'name_plural', $type_info->name)
   );
-
-  // TODO: move comments to og_sm_comments.
-  if (module_exists('comment')) {
-    $type_info->comment = variable_get('comment_' . $type_info->type, COMMENT_NODE_OPEN);
-
-    // The comment setting can only be overridden when the node type's comments
-    // are open.
-    if ((int) $type_info->comment === COMMENT_NODE_OPEN) {
-      $type_info->comment = og_sm_variable_get($site->nid, $key_base . 'comment', $type_info->comment);
-    }
-  }
 }
