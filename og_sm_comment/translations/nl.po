@@ -33,11 +33,11 @@ msgstr "Reactie paden"
 
 #: og_sm_comment.pathauto.inc:27
 msgid "Default path pattern"
-msgstr "Standaard pad pattern"
+msgstr "Standaard pad patroon"
 
 #: og_sm_comment.pathauto.inc:73
 msgid "Updated alias for comment @comment_id."
-msgstr "De URL-alias voor comment @comment_id is bijgewerkt."
+msgstr "De URL-alias voor reactie @comment_id is bijgewerkt."
 
 #: og_sm_comment.views_default.inc:295
 msgid "Master"
@@ -141,7 +141,7 @@ msgstr "Auteur"
 
 #: og_sm_comment.views_default.inc:320
 msgid "Created"
-msgstr "Gecrëerd"
+msgstr "Gecreëerd"
 
 #: og_sm_comment.views_default.inc:321
 msgid "Actions"

@@ -234,7 +234,7 @@ function og_sm_content_get_types_by_site($site, $account = NULL) {
  *
  * @return object|FALSE
  *   The site specific content type object.
- *   FALSE if the content type machine name does nt exists.
+ *   FALSE if the content type machine name does not exists.
  */
 function og_sm_content_get_type_info_by_site($site, $content_type) {
   if (is_string($content_type)) {
