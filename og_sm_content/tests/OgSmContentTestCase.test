@@ -115,6 +115,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     foreach ($info as $name => $value) {
       og_sm_variable_set($site->nid, $variable_base . $name, $value);
     }
+    drupal_static_reset('og_sm_content_get_type_info_by_site');
   }
 
   /**
