@@ -144,6 +144,14 @@ content within a site.
 $site_content_types = og_sm_content_get_types();
 ```
 
+### Check if a content type can be used within a Site
+Helper function to check if a given content type (by its name) can be used to
+create content within a Site.
+
+```php
+$is_site_content_type = og_sm_content_is_site_content_type($type_name);
+```
+
 ### Check if content belongs to a Site
 Helper functions to get the Site (if any) of a given content item (node) belongs
 to.

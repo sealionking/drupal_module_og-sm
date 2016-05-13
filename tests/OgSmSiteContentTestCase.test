@@ -14,7 +14,7 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Content'),
+      'name' => t('Site : Content'),
       'description' => t('Tests Site Content nodes and helpers.'),
       'group' => t('Organic Groups Site Manager'),
     );
@@ -92,6 +92,23 @@ class OgSmSiteContentTestCase extends OgSmWebTestCase {
       $site_content_name_zzz => $site_content_type_zzz,
     );
     $this->assertEqual($expected, og_sm_content_get_types());
+  }
+
+  /**
+   * Test Content type is Site content type.
+   */
+  public function testIsSiteContentType() {
+    $notSiteContentType = $this->drupalCreateContentType()->type;
+    $isSiteContentType = $this->ogSmCreateGroupContentNodeType();
+
+    $this->assertFalse(
+      og_sm_content_is_site_content_type($notSiteContentType),
+      'Global content type without OG Audience field is not a Site content type.'
+    );
+    $this->assertTrue(
+      og_sm_content_is_site_content_type($isSiteContentType),
+      'Global content type with OG Audience field id Site content type.'
+    );
   }
 
 }

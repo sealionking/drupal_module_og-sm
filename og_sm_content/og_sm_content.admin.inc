@@ -57,43 +57,38 @@ function og_sm_content_admin_overview_types($site) {
  *   The form definition.
  */
 function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site, $content_type) {
-  $content_type = og_sm_content_get_type_info_by_site($site, $content_type);
-  $variable_base = 'og_sm_content_' . $content_type->type . '_';
-  $form[$variable_base . 'machine_name'] = array(
+  $info = og_sm_content_get_type_info_by_site($site, $content_type);
+
+  // Add info useful for form alter functions.
+  $form['#site'] = $site;
+  $form['#content_type'] = $content_type;
+
+  // Group the Content type name fields.
+  $form['content_name'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Name'),
+    '#weight' => -100,
+  );
+
+  $key_base = 'og_sm_content_' . $info->type . '_';
+  $form['content_name'][$key_base . 'machine_name'] = array(
     '#type' => 'machine_name',
     '#title' => t('Machine name'),
     '#machine_name' => array(
       'exists' => 'og_sm_content_type_site_machine_name_exists',
     ),
-    '#default_value' => $content_type->site_type,
+    '#default_value' => $info->site_type,
   );
-  $form[$variable_base . 'name'] = array(
+  $form['content_name'][$key_base . 'name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name singular'),
-    '#default_value' => $content_type->name,
+    '#default_value' => $info->name,
   );
-  $form[$variable_base . 'name_plural'] = array(
+  $form['content_name'][$key_base . 'name_plural'] = array(
     '#type' => 'textfield',
     '#title' => t('Name plural'),
-    '#default_value' => $content_type->name_plural,
+    '#default_value' => $info->name_plural,
   );
-
-  // Only relevant if comments are enabled by default for this content type.
-  if (module_exists('comment') && variable_get('comment_' . $content_type->type) == COMMENT_NODE_OPEN) {
-    $form[$variable_base . 'comment'] = array(
-      '#type' => 'select',
-      '#title' => t('Comments'),
-      '#description' => t('Select whether the comment form can be shown for @content_type_plural.', array(
-        '@content_type_plural' => drupal_strtolower($content_type->name_plural),
-      )),
-      '#default_value' => $content_type->comment,
-      '#options' => array(
-        COMMENT_NODE_OPEN => t('Open'),
-        COMMENT_NODE_CLOSED => t('Closed'),
-        COMMENT_NODE_HIDDEN => t('Hidden'),
-      ),
-    );
-  }
 
   $form = og_sm_variable_settings_form($form, $form_state, $site);
 
@@ -111,6 +106,10 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
  *   The current form state.
  */
 function og_sm_content_admin_overview_type_edit_form_submit($form, &$form_state) {
+  // Clear the statis cache.
+  drupal_static_reset('og_sm_content_get_type_info_by_site');
+
+  // Update the path aliases.
   if (module_exists('og_sm_path')) {
     // Update all existing path aliases in line with the new content type name.
     module_load_include('inc', 'og_sm_path', 'og_sm_path.batch');

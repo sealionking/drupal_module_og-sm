@@ -333,6 +333,20 @@ function og_sm_content_get_types() {
 }
 
 /**
+ * Check if a given content type is a Site content type.
+ *
+ * @param string $content_type_name
+ *   The content type name to check.
+ *
+ * @return bool
+ *   Is Site content type.
+ */
+function og_sm_content_is_site_content_type($content_type_name) {
+  $types = og_sm_content_get_types();
+  return array_key_exists($content_type_name, $types);
+}
+
+/**
  * Get all the Sites a node belongs to.
  *
  * @param object $node

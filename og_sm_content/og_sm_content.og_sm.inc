@@ -53,3 +53,20 @@ function og_sm_content_og_sm_admin_menu() {
 
   return $items;
 }
+
+/**
+ * Implements hook_og_sm_content_type_info_alter().
+ */
+function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
+  $key_base = 'og_sm_content_' . $type_info->type . '_';
+
+  $type_info->site_type = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'machine_name', $type_info->type)
+  );
+  $type_info->name = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'name', $type_info->name)
+  );
+  $type_info->name_plural = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'name_plural', $type_info->name)
+  );
+}

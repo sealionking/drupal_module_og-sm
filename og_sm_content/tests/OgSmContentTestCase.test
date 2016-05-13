@@ -115,6 +115,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     foreach ($info as $name => $value) {
       og_sm_variable_set($site->nid, $variable_base . $name, $value);
     }
+    drupal_static_reset('og_sm_content_get_type_info_by_site');
   }
 
   /**
@@ -364,95 +365,6 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertFalse($access, 'User 2 is not allowed to add Page content.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNameArticle, $this->siteUserArticle);
     $this->assertTrue($access, 'User 2 is allowed to add Article content.');
-  }
-
-  /**
-   * Test setting site specific info for a content type.
-   */
-  public function testSiteSpecificContentType() {
-    module_enable(array('og_sm_comment'));
-    $this->resetAll();
-
-    // Setup test data.
-    $this->setUpContent();
-    $this->setUpUsers();
-    // Setup site specific content type info.
-    $content_type_name = 'Llama';
-    $this->setupSiteSpecificContentType($this->site, $this->siteContentTypeNameArticle, array(
-      'name' => $content_type_name,
-    ));
-
-    // Login as admin user.
-    $this->drupalLogin($this->userAdmin);
-
-    // Check if then content type name on the node add page has been replaced.
-    $base_path = 'group/node/' . $this->site->nid;
-    $path_add_article = $base_path . '/content/add/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
-    $this->drupalGet($path_add_article);
-    $this->assertResponse(200);
-    $this->assertText(t('Create @name', array('@name' => $content_type_name)));
-
-    // Check if then content type name on the node edit page has been replaced.
-    $node = $this->ogSmCreateGroupContent($this->siteContentTypeNameArticle, array($this->site));
-    $this->drupalGet('node/' . $node->nid . '/edit');
-    $this->assertRaw(t('<em>Edit @type</em> @title', array(
-      '@type' => $content_type_name,
-      '@title' => $node->title,
-    )));
-
-    // Check if the comment form is rendered.
-    $this->drupalGet('node/' . $node->nid);
-    $this->assertText(t('Add new comment'));
-    // Create comment.
-    $comment_edit = array(
-      'subject' => $this->randomName(),
-      'comment_body[und][0][value]' => $this->randomName(),
-    );
-    $this->drupalPost(NULL, $comment_edit, t('Save'));
-    $this->assertText($comment_edit['subject']);
-
-    // Hide the comments via the site specific settings.
-    $this->setupSiteSpecificContentType($this->site, $this->siteContentTypeNameArticle, array(
-      'comment' => COMMENT_NODE_HIDDEN,
-    ));
-    // Verify that the comment form and previous comments are not rendered
-    // anymore.
-    $this->drupalGet('node/' . $node->nid);
-    $this->assertNoText(t('Add new comment'));
-    $this->assertNoText($comment_edit['subject']);
-
-    // Close the comment form, this means existing comments are still shown but
-    // the comment form itself is not displayed.
-    $this->setupSiteSpecificContentType($this->site, $this->siteContentTypeNameArticle, array(
-      'comment' => COMMENT_NODE_CLOSED,
-    ));
-    // Verify that the comment form is not shown anymore but the existing
-    // comments are still there.
-    $this->drupalGet('node/' . $node->nid);
-    $this->assertNoText(t('Add new comment'));
-    $this->assertText($comment_edit['subject']);
-
-    // Verify that these changes have no effect on another site.
-    $second_site = $this->ogSmCreateGroup($this->siteType);
-
-    // Check if then content type name on the node add page has been replaced.
-    $base_path = 'group/node/' . $second_site->nid;
-    $path_add_article = $base_path . '/content/add/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
-    $this->drupalGet($path_add_article);
-    $this->assertResponse(200);
-    $this->assertText(t('Create @name', array('@name' => $this->siteContentTypeNameArticle)));
-
-    // Check if then content type name on the node edit page has been replaced.
-    $node = $this->ogSmCreateGroupContent($this->siteContentTypeNameArticle, array($second_site));
-    $this->drupalGet('node/' . $node->nid . '/edit');
-    $this->assertRaw(t('<em>Edit @type</em> @title', array(
-      '@type' => $this->siteContentTypeNameArticle,
-      '@title' => $node->title,
-    )));
-
-    // Check if the comment form is rendered.
-    $this->drupalGet('node/' . $node->nid);
-    $this->assertText(t('Add new comment'));
   }
 
 }

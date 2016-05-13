@@ -5,6 +5,19 @@
  */
 
 /**
+ * Implements hook_hook_info().
+ */
+function og_sm_content_hook_info() {
+  $hooks = array(
+    'og_sm_content_type_info_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
  * Implements hook_module_implements_alter().
  */
 function og_sm_content_module_implements_alter(&$implementations, $hook) {
@@ -219,28 +232,30 @@ function og_sm_content_get_types_by_site($site, $account = NULL) {
  * @param object|string $content_type
  *   The content type object or machine name.
  *
- * @return object
+ * @return object|FALSE
  *   The site specific content type object.
+ *   FALSE if the content type machine name does not exists.
  */
 function og_sm_content_get_type_info_by_site($site, $content_type) {
   if (is_string($content_type)) {
     $content_type = node_type_load($content_type);
   }
-  $variable_base = 'og_sm_content_' . $content_type->type . '_';
-
-  $content_type->site_type = check_plain(og_sm_variable_get($site->nid, $variable_base . 'machine_name', $content_type->type));
-  $content_type->name = check_plain(og_sm_variable_get($site->nid, $variable_base . 'name', $content_type->name));
-  $content_type->name_plural = check_plain(og_sm_variable_get($site->nid, $variable_base . 'name_plural', $content_type->name));
-  if (module_exists('comment')) {
-    $content_type->comment = variable_get('comment_' . $content_type->type, COMMENT_NODE_OPEN);
-    // The comment setting can only be overridden when the node type's comments
-    // are open.
-    if ((int) $content_type->comment === COMMENT_NODE_OPEN) {
-      $content_type->comment = og_sm_variable_get($site->nid, $variable_base . 'comment', $content_type->comment);
-    }
+  if (!$content_type) {
+    FALSE;
   }
 
-  return $content_type;
+  $infos = &drupal_static(__FUNCTION__, array());
+  $key = sprintf('%s:%d', $content_type->type, $site->nid);
+
+  if (!isset($infos[$key])) {
+    // We create a clone of the original record to avoid altering the data in
+    // the global content type cache.
+    $type_info = clone $content_type;
+    drupal_alter('og_sm_content_type_info', $type_info, $site);
+    $infos[$key] = $type_info;
+  }
+
+  return $infos[$key];
 }
 
 /**
@@ -397,7 +412,11 @@ function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
   if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]*)#', $path, $parts)) {
     if ($site = og_sm_site_load($parts[1])) {
       $content_type = og_sm_content_get_type_info_by_site($site, $parts[3]);
-      $content_type_name = str_replace('_', '-', $content_type->site_type);
+      $type_name = (!$content_type)
+        ? $parts[3]
+        : $content_type->site_type;
+
+      $content_type_name = drupal_html_class($type_name);
       $path = str_replace($parts[3], $content_type_name, $path);
     }
   }
@@ -457,13 +476,21 @@ function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
     return;
   }
 
+  // Only if there is Site specific info (= is Site content type).
+  $node = $form_state['node'];
+  $content_type_info = og_sm_content_get_type_info_by_site($site, $node->type);
+  if (!$content_type_info) {
+    echo "NO INFO FOUND FOR " . $node->type;
+    return;
+  }
+
+  echo "INFO FOUND";
+
   // Normally the permission "administer nodes" is required to change the node
   // author, options, etc. That global role might not be granted in a Site
   // context. We add an extra check on the Site role "administer site" to allow
   // access to these fields.
   $access = user_access('administer nodes') || og_sm_site_permission_access($site, 'administer site');
-  $node = $form_state['node'];
-
   if (isset($form['revision_information'])) {
     $form['revision_information']['#access'] = $node->revision || $access;
     $form['revision_information']['revision']['#access'] = $access;
@@ -475,14 +502,6 @@ function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
     $form['options']['#access'] = $access;
   }
 
-  $site = og_sm_current_site();
-  // If we are not in a site context don't bother overwriting the content type
-  // name.
-  if (!$site) {
-    return;
-  }
-  $content_type_info = og_sm_content_get_type_info_by_site($site, $node->type);
-
   // Make sure the content type name alias is used on the node add/edit form.
   if (empty($node->nid)) {
     drupal_set_title(t('Create @name', array('@name' => $content_type_info->name)), PASS_THROUGH);
@@ -493,32 +512,5 @@ function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
       '@title' => $node->title,
     );
     drupal_set_title(t('<em>Edit @type</em> @title', $args), PASS_THROUGH);
-  }
-
-}
-
-/**
- * Implements hook_node_view().
- */
-function og_sm_content_node_view($node, $view_mode, $langcode) {
-  if (!og_sm_content_is_site_content($node) || !module_exists('comment')) {
-    return;
-  }
-  // Remove the comment form from the node view if it is disabled for this site.
-  $site = og_sm_content_get_site($node);
-  $content_type = og_sm_content_get_type_info_by_site($site, $node->type);
-
-  if ($content_type->comment < COMMENT_NODE_OPEN) {
-    unset($node->content['comments']['comment_form']);
-    unset($node->content['links']['comment']['#links']['comment-add']);
-    if (!isset($node->content['links']['comment']['#links']['comment_forbidden'])) {
-      $node->content['links']['comment']['#links']['comment_forbidden'] = array(
-        'title' => theme('comment_post_forbidden', array('node' => $node)),
-        'html' => TRUE,
-      );
-    }
-  }
-  if ((int) $content_type->comment === COMMENT_NODE_HIDDEN) {
-    unset($node->content['comments']);
   }
 }
