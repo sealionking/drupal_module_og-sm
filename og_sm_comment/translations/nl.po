@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2016-05-03 12:00+0100\n"
-"Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
+"PO-Revision-Date: 2016-05-13 13:04+0100\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -11,89 +11,248 @@ msgstr ""
 "Language: nl\n"
 "X-Generator: Poedit 1.8.6\n"
 
-msgid "Administer comments"
-msgstr "Reacties beheren"
+#: og_sm_comment.admin.inc:18
+msgid "Administer Site"
+msgstr "Beheer Site"
 
+#: og_sm_comment.og_sm.inc:21 og_sm_comment.module:20
+msgid "Administer comments"
+msgstr "Commentaren beheren"
+
+#: og_sm_comment.og_sm.inc:22
 msgid "Manage the comments of this Site."
 msgstr "De reacties van deze Site beheren."
 
-msgid "Delete own comments"
-msgstr "Eigen reacties verwijderen."
-
-msgid "Allows the user to delete his/her own comments."
-msgstr "Laat een gebruiker toe zijn/haar eigen reacties te verwijderen."
-
-msgid "Delete all comments"
-msgstr "Alle reacties verwijderen."
-
-msgid "Allows the user to delete all comments."
-msgstr "Laat een gebruiker toe alle reacties te verwijderen."
-
-msgid "Site Comment"
-msgstr "Site Reactie"
-
-msgid "Determine Site context based on the fact that we are on a comment made on Site page or a Site content page."
-msgstr "Bepaal de Site context als de huidige pagina een comment is gemaakt op Site pagina of een Site inhoud pagina is."
-
-msgid "Updated URL alias for 1 comment."
-msgstr "URL-alias bijgewerkt voor 1 reactie."
-
-msgid "Updated URL aliases for @count comments."
-msgstr "URL-aliassen bijgewerkt voor @count reacties."
-
+#: og_sm_comment.pathauto.inc:13 og_sm_comment.module:312;329
 msgid "Comments"
 msgstr "Reacties"
 
+#: og_sm_comment.pathauto.inc:26
 msgid "Comment paths"
 msgstr "Reactie paden"
 
+#: og_sm_comment.pathauto.inc:27
+msgid "Default path pattern"
+msgstr "Standaard pad pattern"
+
+#: og_sm_comment.pathauto.inc:73
 msgid "Updated alias for comment @comment_id."
 msgstr "De URL-alias voor comment @comment_id is bijgewerkt."
 
-msgid "Allows the user to edit his/her own comments."
-msgstr "Laat een gebruiker toe zijn/haar eigen reacties te bewerken."
+#: og_sm_comment.views_default.inc:295
+msgid "Master"
+msgstr "Hoofd"
 
-msgid "Edit own comments"
-msgstr "Eigen reacties bewerken"
+#: og_sm_comment.views_default.inc:296
+msgid "more"
+msgstr "meer"
 
-msgid "Allows the user to edit all comments."
-msgstr "Laat een gebruiker toe alle reacties te bewerken."
+#: og_sm_comment.views_default.inc:297
+msgid "Submit"
+msgstr "Toepassen"
 
-msgid "Edit all comments"
-msgstr "Alle reacties bewerken"
+#: og_sm_comment.views_default.inc:298
+msgid "Reset"
+msgstr "Resetten"
 
+#: og_sm_comment.views_default.inc:299
+msgid "Sort by"
+msgstr "Sorteer op"
+
+#: og_sm_comment.views_default.inc:300
+msgid "Ascending"
+msgstr "Oplopend"
+
+#: og_sm_comment.views_default.inc:301
+msgid "Descending"
+msgstr "Aflopend"
+
+#: og_sm_comment.views_default.inc:302
+msgid "Items per page"
+msgstr "Items per pagina"
+
+#: og_sm_comment.views_default.inc:303
+msgid "- All -"
+msgstr "- Alle -"
+
+#: og_sm_comment.views_default.inc:304
+msgid "Start"
+msgstr "Start"
+
+#: og_sm_comment.views_default.inc:305
+msgid "« first"
+msgstr "« eerste"
+
+#: og_sm_comment.views_default.inc:306
+msgid "‹ previous"
+msgstr "‹ vorige"
+
+#: og_sm_comment.views_default.inc:307
+msgid "next ›"
+msgstr "volgende ›"
+
+#: og_sm_comment.views_default.inc:308
+msgid "last »"
+msgstr "laatste »"
+
+#: og_sm_comment.views_default.inc:309
+msgid "Show @start - @end of @total"
+msgstr "Toon @start - @end van @total"
+
+#: og_sm_comment.views_default.inc:310
 msgid "There are no comments in this Site."
 msgstr "Er zijn geen reacties in deze Site."
 
-msgid "Comment ID"
-msgstr "Reactie-ID"
+#: og_sm_comment.views_default.inc:311
+msgid "Content"
+msgstr "Inhoud"
 
-msgid "Content ID"
-msgstr "Inhoud-ID"
+#: og_sm_comment.views_default.inc:312
+msgid "author"
+msgstr "auteur"
 
-msgid "User ID"
-msgstr "Gebruikers-ID"
+#: og_sm_comment.views_default.inc:313
+msgid "OG membership from node"
+msgstr "OG lidmaatschap van node"
 
-msgid "Title content"
-msgstr "Titel inhoud"
+#: og_sm_comment.views_default.inc:314
+msgid "Comment"
+msgstr "Reactie"
 
-msgid "Comment contains"
-msgstr "Commentaar bevat"
+#: og_sm_comment.views_default.inc:315
+msgid "- Choose an operation -"
+msgstr "- Kies een actie -"
 
-msgid "Title content contains"
-msgstr "Titel inhoud bevat"
-
+#: og_sm_comment.views_default.inc:316
 msgid "Path"
 msgstr "Pad"
 
+#: og_sm_comment.views_default.inc:317
+msgid "ID"
+msgstr "ID"
+
+#: og_sm_comment.views_default.inc:318
+msgid "Title"
+msgstr "Titel"
+
+#: og_sm_comment.views_default.inc:319
 msgid "Author"
 msgstr "Auteur"
 
+#: og_sm_comment.views_default.inc:320
+msgid "Created"
+msgstr "Gecrëerd"
+
+#: og_sm_comment.views_default.inc:321
+msgid "Actions"
+msgstr "Acties"
+
+#: og_sm_comment.views_default.inc:322 views/og_sm_comment_handler_field_comment_link_edit.inc:44
 msgid "edit"
 msgstr "bewerken"
 
+#: og_sm_comment.views_default.inc:323
 msgid "remove"
 msgstr "verwijderen"
 
-msgid "Organic Groups Site Manager"
+#: og_sm_comment.views_default.inc:324
+msgid "All"
+msgstr "Alle"
+
+#: og_sm_comment.views_default.inc:325
+msgid "Title content contains"
+msgstr "Titel inhoud bevat"
+
+#: og_sm_comment.views_default.inc:326
+msgid "Comment contains"
+msgstr "Commentaar bevat"
+
+#: og_sm_comment.module:49;69
+msgid "Delete own comments"
+msgstr "Eigen reacties verwijderen."
+
+#: og_sm_comment.module:50;70
+msgid "Allows the user to delete his/her own comments."
+msgstr "Laat een gebruiker toe zijn/haar eigen reacties te verwijderen."
+
+#: og_sm_comment.module:53;73
+msgid "Delete all comments"
+msgstr "Alle reacties verwijderen."
+
+#: og_sm_comment.module:54;74
+msgid "Allows the user to delete all comments."
+msgstr "Laat een gebruiker toe alle reacties te verwijderen."
+
+#: og_sm_comment.module:57;77
+msgid "Edit all comments"
+msgstr "Alle reacties bewerken"
+
+#: og_sm_comment.module:58;78
+msgid "Allows the user to edit all comments."
+msgstr "Laat een gebruiker toe alle reacties te bewerken."
+
+#: og_sm_comment.module:81
+msgid "Edit own comments"
+msgstr "Eigen reacties bewerken"
+
+#: og_sm_comment.module:82
+msgid "Allows the user to edit his/her own comments."
+msgstr "Laat een gebruiker toe zijn/haar eigen reacties te bewerken."
+
+#: og_sm_comment.module:180
+msgid "Site Comment"
+msgstr "Site Reactie"
+
+#: og_sm_comment.module:181
+msgid "Determine Site context based on the fact that we are on a comment made on Site page or a Site content page."
 msgstr ""
+"Bepaal de Site context als de huidige pagina een comment is gemaakt op "
+"Site pagina of een Site inhoud pagina is."
+
+#: og_sm_comment.module:316
+msgid "Select whether the comment form can be shown for @content_type_plural."
+msgstr ""
+"Selecteer of het reactie formulier mag getoond worden voor "
+"@content_type_plural."
+
+#: og_sm_comment.module:321
+msgid "Hidden: No comments are allowed, and past comments are hidden."
+msgstr "Verborgen: Geen commentaren toegelaten, bestaande commentaren zijn verborgen."
+
+#: og_sm_comment.module:322
+msgid "Closed: No comments are allowed, but any past comments remain visible."
+msgstr "Gesloten: Geen commentaren toegelaten, bestaande commentaren worden weergegeven."
+
+#: og_sm_comment.module:323
+msgid "Open: Any future content of this type is open to new comments."
+msgstr "Open: Commentaren op alle nieuwe inhoud van dit type is toegelaten."
+
+#: og_sm_comment.module:333
+msgid "Open"
+msgstr "Open"
+
+#: og_sm_comment.module:334
+msgid "Closed"
+msgstr "Gesloten"
+
+#: og_sm_comment.module:335
+msgid "Hidden"
+msgstr "Verborgen"
+
+#: og_sm_comment.module:265
+msgid "Updated URL alias for 1 comment."
+msgid_plural "Updated URL aliases for @count comments."
+msgstr[0] "URL-alias bijgewerkt voor 1 reactie."
+msgstr[1] "URL-aliassen bijgewerkt voor @count reacties."
+
+#: og_sm_comment.info:0
+msgid "Site Comments"
+msgstr "Site commentaren"
+
+#: og_sm_comment.info:0
+msgid "Site comment creation and administration."
+msgstr "Site commentaren aanmaken en beheren."
+
+#: og_sm_comment.info:0
+msgid "Organic Groups Site Manager"
+msgstr "Organic Groups Site Beheerder"

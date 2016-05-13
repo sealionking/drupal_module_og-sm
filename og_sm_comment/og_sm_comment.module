@@ -313,13 +313,21 @@ function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(&$
   );
 
   $key = 'og_sm_content_' . $info->type . '_comment';
+  $description = t(
+    'Select whether the comment form can be shown for @content_type_plural.',
+    array('@content_type_plural' => drupal_strtolower($info->name_plural))
+  );
+  $help = array(
+    t('Hidden: No comments are allowed, and past comments are hidden.'),
+    t('Closed: No comments are allowed, but any past comments remain visible.'),
+    t('Open: Any future content of this type is open to new comments.'),
+  );
+  $description .= '<ul><li>' . implode('</li><li>', $help) . '</li></ul>';
+
   $form['content_comments'][$key] = array(
     '#type' => 'select',
     '#title' => t('Comments'),
-    '#description' => t(
-      'Select whether the comment form can be shown for @content_type_plural.',
-      array('@content_type_plural' => drupal_strtolower($info->name_plural))
-    ),
+    '#description' => $description,
     '#default_value' => $info->comment,
     '#options' => array(
       COMMENT_NODE_OPEN => t('Open'),
