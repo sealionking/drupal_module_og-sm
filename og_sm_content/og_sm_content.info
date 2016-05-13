@@ -12,3 +12,4 @@ files[] = views/og_sm_views_content_handler_field_content_type.inc
 
 ; Tests.
 files[] = tests/OgSmContentTestCase.test
+files[] = tests/OgSmContentTypeTestCase.test
