@@ -130,6 +130,51 @@ class OgSmCommentTestCase extends OgSmWebTestCase {
   }
 
   /**
+   * Test the og_sm_comment_access() callback.
+   */
+  public function testCommentAccessCallback() {
+    $node = $this->ogSmCreateGroupContent($this->siteContentTypeName, array($this->site));
+    $comment = $this->createComment($node, $this->siteUser1);
+
+    // Verify that user 1 can view, delete and edit his own comment.
+    $access = og_sm_comment_access('view', $comment, $this->siteUser1);
+    $this->assertTrue($access, 'User 1 can view his own comment');
+    $access = og_sm_comment_access('delete', $comment, $this->siteUser1);
+    $this->assertTrue($access, 'User 1 can delete his own comment');
+    $access = og_sm_comment_access('edit', $comment, $this->siteUser1);
+    $this->assertTrue($access, 'User 1 can edit his own comment');
+
+    // Verify that user 2 can view the comment of user 1 but cannot delete or
+    // edit it.
+    $access = og_sm_comment_access('view', $comment, $this->siteUser2);
+    $this->assertTrue($access, 'User 2 can view the comment of user 1');
+    $access = og_sm_comment_access('delete', $comment, $this->siteUser2);
+    $this->assertFalse($access, 'User 2 cannot delete the comment of user 1');
+    $access = og_sm_comment_access('edit', $comment, $this->siteUser2);
+    $this->assertFalse($access, 'User 2 cannot edit the comment of user 1');
+
+    // Verify that the site-admin can edit and delete the comment of user 1.
+    $access = og_sm_comment_access('delete', $comment, $this->siteAdmin);
+    $this->assertTrue($access, 'Site-admin can delete the comment of user 1');
+    $access = og_sm_comment_access('edit', $comment, $this->siteAdmin);
+    $this->assertTrue($access, 'Site-admin can edit the comment of user 1');
+
+    // Verify that user 1 cannot delete or edit his comment anymore when he
+    // doesn't have access to the node on which the comment was made.
+    drupal_static_reset('node_access');
+    $node->status = NODE_NOT_PUBLISHED;
+    node_save($node);
+    $access = node_access('view', $node, $this->siteUser1);
+    $this->assertFalse($access, 'User 1 cannot access the node on which the comment was made');
+    $access = og_sm_comment_access('view', $comment, $this->siteUser1);
+    $this->assertFalse($access, 'User 1 cannot view his own comment');
+    $access = og_sm_comment_access('delete', $comment, $this->siteUser1);
+    $this->assertFalse($access, 'User 1 cannot delete his own comment');
+    $access = og_sm_comment_access('edit', $comment, $this->siteUser1);
+    $this->assertFalse($access, 'User 1 cannot edit his own comment');
+  }
+
+  /**
    * Test the site comment overview.
    */
   public function testCommentOverview() {
