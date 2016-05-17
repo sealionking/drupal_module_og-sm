@@ -502,7 +502,7 @@ function og_sm_taxonomy_og_context_handler_term() {
  *   The Term id.
  *
  * @return array
- *   ARray of Site NID's the term belongs to.
+ *   Array of Site NID's the term belongs to.
  */
 function _og_sm_taxonomy_get_site_nids_by_tid($tid) {
   $nids = db_select('og_membership', 'ogm')
