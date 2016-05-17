@@ -246,7 +246,7 @@ function og_sm_path_og_context_negotiation_info() {
  */
 function og_sm_path_context_handler_path() {
   // Get the alias of the current URL.
-  $page_alias = drupal_get_path_alias(current_path());
+  $page_alias = ltrim(url(current_path()), '/');
   $parts = explode('/', $page_alias);
   $site_path = reset($parts);
 
