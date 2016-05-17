@@ -494,9 +494,10 @@ function og_sm_taxonomy_og_context_handler_term() {
 }
 
 /**
- * Helper function to load the Site node by the Term ID.
+ * Helper function to load the Site node ID's by the Term ID.
  *
- * Will only return the Site node if the membership is active.
+ * Will only return the Site node ID's if the membership is active
+ * AND if the node type is one of the Site types.
  *
  * @param int $tid
  *   The Term id.
@@ -505,15 +506,17 @@ function og_sm_taxonomy_og_context_handler_term() {
  *   Array of Site NID's the term belongs to.
  */
 function _og_sm_taxonomy_get_site_nids_by_tid($tid) {
-  $nids = db_select('og_membership', 'ogm')
+  $query = db_select('og_membership', 'ogm')
     ->fields('ogm', array('gid'))
     ->condition('ogm.type', OG_MEMBERSHIP_TYPE_DEFAULT)
     ->condition('ogm.etid', $tid)
     ->condition('ogm.entity_type', 'taxonomy_term')
     ->condition('ogm.group_type', 'node')
-    ->condition('ogm.state', 1)
-    ->execute()
-    ->fetchCol();
+    ->condition('ogm.state', 1);
 
-  return $nids;
+  /* @var $query SelectQuery */
+  $query->join('node', 'n', 'ogm.gid = n.nid');
+  $query->condition('n.type', og_sm_get_site_types());
+
+  return $query->execute()->fetchCol();
 }
