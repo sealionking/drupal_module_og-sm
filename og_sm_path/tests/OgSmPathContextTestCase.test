@@ -69,7 +69,7 @@ class OgSmPathContextTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Path context'),
+      'name' => t('Site Path : Context'),
       'description' => t('Tests OG Context provider based on the Site Path.'),
       'group' => t('Organic Groups Site Manager'),
     );
@@ -131,6 +131,10 @@ class OgSmPathContextTestCase extends OgSmWebTestCase {
     $_GET['q'] = 'whatever/foo/bar/biz/baz';
     $this->assertNull(og_sm_path_context_handler_path());
     $_GET['q'] = $this->nodeSitePath . '/whatever/foo/bar/biz/baz';
+    $this->assertEqual($expected, og_sm_path_context_handler_path());
+
+    // Test with URL Outbound alter.
+    $_GET['q'] = 'group/node/' . $this->nodeSite->nid . '/admin/test';
     $this->assertEqual($expected, og_sm_path_context_handler_path());
   }
 

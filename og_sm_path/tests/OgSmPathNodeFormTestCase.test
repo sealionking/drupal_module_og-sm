@@ -73,7 +73,7 @@ class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Path node form'),
+      'name' => t('Site Path : Node form'),
       'description' => t('Tests Site Path node form settings.'),
       'group' => t('Organic Groups Site Manager'),
     );
