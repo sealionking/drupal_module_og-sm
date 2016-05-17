@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-04 14:55+0100\n"
-"PO-Revision-Date: 2016-05-04 14:55+0100\n"
+"PO-Revision-Date: 2016-05-17 15:11+0100\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,9 +27,21 @@ msgstr "termen weergeven"
 msgid "add terms"
 msgstr "termen toevoegen"
 
-#: og_sm_taxonomy.og_sm.inc:36 og_sm_taxonomy.info:0
-msgid "Site Taxonomy"
-msgstr "Site Taxonomie"
+#: og_sm_taxonomy.form_alter.inc:90
+msgid "Reset vocabulary %name to alphabetical order."
+msgstr "Zet woordenlijst %name terug naar alfabetische volgorde."
+
+#: og_sm_taxonomy.form_alter.inc:94
+msgid "taxonomy"
+msgstr "taxonomie"
+
+#: og_sm_taxonomy.form_alter.inc:94
+msgid "Reset vocabulary %name to alphabetical order for Site %site_name."
+msgstr "Herstel sorteren van de woordenlijst %name volgens alfabet voor Site %site_name."
+
+#: og_sm_taxonomy.og_sm.inc:36
+msgid "Taxonomy"
+msgstr "Taxonomie"
 
 #: og_sm_taxonomy.og_sm.inc:37
 msgid "Manage taxonomy terms."
@@ -67,9 +79,21 @@ msgstr "Termen in %name wijzigen"
 msgid "Edit all terms for the %name vocabulary."
 msgstr "Wijzig alle termen voor de %name woordenlijst."
 
+#: og_sm_taxonomy.module:463
+msgid "Site Taxonomy Terms"
+msgstr "Site Woordenlijst Termen"
+
+#: og_sm_taxonomy.module:464
+msgid "Determine Site context based on the fact that a Term belongs to a Site."
+msgstr "Detecteer de Site context gebaseerd op het feit of een Term deel uitmaakt van een Site."
+
 #: og_sm_taxonomy.module:95
 msgid "Add term"
 msgstr "Term toevoegen"
+
+#: og_sm_taxonomy.info:0
+msgid "Site Taxonomy"
+msgstr "Site Taxonomie"
 
 #: og_sm_taxonomy.info:0
 msgid "Use global vocabularies with Site specific terms."

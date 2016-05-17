@@ -450,3 +450,73 @@ function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state,
     _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names($form);
   }
 }
+
+/**
+ * Implements hook_og_context_negotiation_info().
+ *
+ * Add context negotiation info based on the path alias.
+ */
+function og_sm_taxonomy_og_context_negotiation_info() {
+  $providers = array();
+
+  $providers['og_sm_taxonomy_term'] = array(
+    'name' => t('Site Taxonomy Terms'),
+    'description' => t('Determine Site context based on the fact that a Term belongs to a Site.'),
+    'callback' => 'og_sm_taxonomy_og_context_handler_term',
+  );
+
+  return $providers;
+}
+
+/**
+ * Tries to get the context based on the fact that we are on a Site term page.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_context_negotiation_info
+ */
+function og_sm_taxonomy_og_context_handler_term() {
+  // Get the content term from the path.
+  $path = current_path();
+  preg_match('#^taxonomy/term/([0-9]+)#', $path, $parts);
+  if (empty($parts[1])) {
+    return NULL;
+  }
+
+  // Is the term Site Content?
+  $site_nids = _og_sm_taxonomy_get_site_nids_by_tid($parts[1]);
+  if ($site_nids) {
+    return array('node' => $site_nids);
+  }
+
+  return NULL;
+}
+
+/**
+ * Helper function to load the Site node ID's by the Term ID.
+ *
+ * Will only return the Site node ID's if the membership is active
+ * AND if the node type is one of the Site types.
+ *
+ * @param int $tid
+ *   The Term id.
+ *
+ * @return array
+ *   Array of Site NID's the term belongs to.
+ */
+function _og_sm_taxonomy_get_site_nids_by_tid($tid) {
+  $query = db_select('og_membership', 'ogm')
+    ->fields('ogm', array('gid'))
+    ->condition('ogm.type', OG_MEMBERSHIP_TYPE_DEFAULT)
+    ->condition('ogm.etid', $tid)
+    ->condition('ogm.entity_type', 'taxonomy_term')
+    ->condition('ogm.group_type', 'node')
+    ->condition('ogm.state', 1);
+
+  /* @var $query SelectQuery */
+  $query->join('node', 'n', 'ogm.gid = n.nid');
+  $query->condition('n.type', og_sm_get_site_types());
+
+  return $query->execute()->fetchCol();
+}
