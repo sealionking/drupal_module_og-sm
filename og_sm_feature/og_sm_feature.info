@@ -1,0 +1,10 @@
+name = Site Feature(s)
+description = "Enable/Disable functionality per Site."
+package = "Organic Groups Site Manager"
+core = 7.x
+
+dependencies[] = og_sm
+dependencies[] = og_sm_variable
+
+; Tests.
+files[] = tests/OgSmFeatureApiTestCase.test

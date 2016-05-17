@@ -1,0 +1,58 @@
+<?php
+/**
+ * @file
+ * Feature module file.
+ */
+
+/**
+ * Implements hook_hook_info().
+ */
+function og_sm_feature_hook_info() {
+  $hooks = array(
+    'og_sm_feature_info' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_feature_info_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
+ * Get the information about all features.
+ *
+ * The information titles & description will be available in the current
+ * language.
+ *
+ * @return array
+ *   The information array grouped per feature.
+ */
+function og_sm_feature_info() {
+  // Check if we already cached the information.
+  $cid = __FUNCTION__;
+  $cache = cache_get($cid);
+  if ($cache) {
+    return $cache->data;
+  }
+
+  $items = array();
+  $modules = module_implements('og_sm_feature_info');
+  foreach ($modules as $module) {
+    $module_items = call_user_func($module . '_og_sm_feature_info');
+    if ($module_items) {
+      $module_items['module'] = $module;
+      $items = array_merge($items, $module_items);
+    }
+  }
+
+  // Allow modules to alter information from each other.
+  drupal_alter('og_sm_feature_info', $items, $site);
+
+  // Store in cache.
+  cache_set($cid, $items);
+
+  // Return data.
+  return $items;
+}

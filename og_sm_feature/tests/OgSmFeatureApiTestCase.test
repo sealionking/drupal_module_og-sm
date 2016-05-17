@@ -1,0 +1,62 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Feature API.
+ */
+
+/**
+ * Tests about the API to check features.
+ */
+class OgSmFeatureApiTestCase extends OgSmWebTestCase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Feature : API'),
+      'description' => t('Tests OG Site Manager Feature API.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_feature_test');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test collection of the info.
+   */
+  public function testFeatureInfo() {
+    // Not called yet => not cached.
+    $this->assertFalse(
+      cache_get('og_sm_feature_info'),
+      'As long as the og_sm_info function is not called, no data in cache.'
+    );
+
+    $expected = array(
+      'news' => array(
+        'title' => 'News',
+        'description' => 'News content and overviews.',
+        'configuration' => 'admin/feature/news-test',
+        'default status' => FALSE,
+        'module' => 'og_sm_feature_test',
+      ),
+    );
+    $info = og_sm_feature_info();
+    $this->assertEqual($expected, $info, 'Collected info from the implemented hooks.');
+
+    // Info should be cached.
+    $this->assertEqual(
+      $expected,
+      cache_get('og_sm_feature_info')->data,
+      'From the moment the og_sm_feature_info function is called, data is cached.'
+    );
+  }
+
+}
