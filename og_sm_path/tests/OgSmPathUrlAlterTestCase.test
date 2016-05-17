@@ -27,7 +27,7 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Path URL alter'),
+      'name' => t('Site Path : URL alter'),
       'description' => t('Tests Site Path URL in/outbound alters.'),
       'group' => t('Organic Groups Site Manager'),
     );

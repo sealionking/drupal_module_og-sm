@@ -34,7 +34,7 @@ class OgSmPathTokensCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Path tokens'),
+      'name' => t('Site Path : Tokens'),
       'description' => t('Tests Site Path tokens.'),
       'group' => t('Organic Groups Site Manager'),
     );

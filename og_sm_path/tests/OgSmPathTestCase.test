@@ -18,7 +18,7 @@ class OgSmPathTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Path'),
+      'name' => t('Site Path : API'),
       'description' => t('Tests Site Path functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );
