@@ -10,6 +10,8 @@ This module provides:
 * Select only from terms within the Site when creating content.
 * A token provider for terms within a Site (used for path aliases). Only
   available when the **og_sm_path module** is enabled.
+* A Organic Groups context handler to get the context by the Sites a taxonomy
+  term belongs to.
 
 > **NOTE** : vocabulary terms will be automatically filtered to only those
 > related to the current Site context.
@@ -30,6 +32,8 @@ This module provides:
 2. Create a global vocabulary.
 3. Add the Organic Groups audience field to the vocabulary.
 4. Grant Organic Groups roles the proper taxonomy permissions.
+5. Setup the OG context providers on admin/config/group/context:
+   - Enable the "**Site Taxonomy Term**" detection method.
 
 
 ### Configure auto path aliases for terms
