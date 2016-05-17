@@ -101,7 +101,7 @@ class OgSmTaxonomyContextTestCase extends OgSmTaxonomyWebTestCase {
    * Test the context handler.
    */
   public function testContextHandlerTerm() {
-    // Outsite a Site.
+    // Outside a Site.
     $_GET['q'] = 'taxonomy/term/' . $this->termCategoryWithoutSite->tid;
     $this->assertNull(
       og_sm_taxonomy_og_context_handler_term(),
