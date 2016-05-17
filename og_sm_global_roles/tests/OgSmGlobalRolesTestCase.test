@@ -209,10 +209,70 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
     $this->assertEqual(
       $expected,
       variable_get('og_sm_global_roles_role_site', array()),
-      'Variable is updated to mapping by name.'
+      'Variable is updated to mapping by name, variable name is all underscore.'
+    );
+    $this->assertFalse(
+      variable_get('og_sm_global_roles_role-site', FALSE),
+      'Old variable is deleted from the database'
     );
     $expected = array(
       'role site' => array(
+        (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
+      ),
+    );
+    $this->assertEqual($expected, og_sm_global_roles_mappings(), 'Mapping is updated');
+  }
+
+  /**
+   * Test update 7102.
+   */
+  public function testUpdate7102() {
+    module_load_include('install', 'og_sm_global_roles', 'og_sm_global_roles');
+    $mapping = array($this->roleGlobal->rid => $this->roleGlobal->rid);
+
+    // Add extra role & mapping.
+    $role_site_manager = og_role_create('site-manager', 'node', 0, $this->site->type);
+    og_role_save($role_site_manager);
+    variable_set('og_sm_global_roles_site-manager', $mapping);
+
+    // Set the variable with Role ID's.
+    $this->assertEqual(
+      $mapping,
+      variable_get('og_sm_global_roles_site-manager'),
+      'Variable is set with - instead of _.'
+    );
+    $this->assertFalse(
+      variable_get('og_sm_global_roles_site_manager', FALSE),
+      'There is no variable with underscores.'
+    );
+
+    // Run the update.
+    og_sm_global_roles_update_7102();
+
+    // Cache should be cleared.
+    $this->assertFalse(
+      cache_get('og_sm_global_roles_mappings'),
+      'Mappings cache is cleared after update.'
+    );
+
+    // The variable name should have changed from - to _.
+    $expected = array($this->roleGlobal->name => $this->roleGlobal->name);
+    $this->assertEqual(
+      $expected,
+      variable_get('og_sm_global_roles_site_manager'),
+      'Variable is updated to mapping by name, variable name is all underscore.'
+    );
+    $this->assertFalse(
+      variable_get('og_sm_global_roles_site-manager', FALSE),
+      'Old variable is deleted from the database.'
+    );
+
+    // Check all mappings.
+    $expected = array(
+      'role site' => array(
+        (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
+      ),
+      'site-manager' => array(
         (int) $this->roleGlobal->rid => (int) $this->roleGlobal->rid,
       ),
     );
