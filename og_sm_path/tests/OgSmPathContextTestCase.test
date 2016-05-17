@@ -132,10 +132,6 @@ class OgSmPathContextTestCase extends OgSmWebTestCase {
     $this->assertNull(og_sm_path_context_handler_path());
     $_GET['q'] = $this->nodeSitePath . '/whatever/foo/bar/biz/baz';
     $this->assertEqual($expected, og_sm_path_context_handler_path());
-
-    // Test with URL Outbound alter.
-    $_GET['q'] = 'group/node/' . $this->nodeSite->nid . '/admin/test';
-    $this->assertEqual($expected, og_sm_path_context_handler_path());
   }
 
 }
