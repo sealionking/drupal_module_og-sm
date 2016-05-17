@@ -2,6 +2,12 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
+## [Unreleased]
+### Added
+- DMOGSM-12 : Functionality to enable/disable & configure features per Site.
+
+
+
 ## [7.x-1.1]
 ### Added
 - DMOGSM-37 : Added permissions to limit access to change the path of existing

@@ -8,6 +8,12 @@
  * Tests about the API to check features.
  */
 class OgSmFeatureApiTestCase extends OgSmWebTestCase {
+  /**
+   * Site node object.
+   *
+   * @var object
+   */
+  private $siteNode;
 
   /**
    * {@inheritdoc}
@@ -27,6 +33,11 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     // Enable required modules.
     $modules = array('og_sm_feature_test');
     parent::setUp($modules);
+
+    // Create a Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $this->siteNode = $this->ogSmCreateGroup($type);
   }
 
   /**
@@ -39,6 +50,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
       'As long as the og_sm_info function is not called, no data in cache.'
     );
 
+    // Collect the info.
     $expected = array(
       'news' => array(
         'title' => 'News',
@@ -56,6 +68,79 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
       $expected,
       cache_get('og_sm_feature_info')->data,
       'From the moment the og_sm_feature_info function is called, data is cached.'
+    );
+
+    // Check if a feature exists.
+    $this->assertFalse(
+      og_sm_feature_exists('foobar'),
+      'FooBar feature does not exist.'
+    );
+    $this->assertTrue(
+      og_sm_feature_exists('news'),
+      'News feature does exist.'
+    );
+  }
+
+  /**
+   * Test enable/disabling features.
+   */
+  public function testEnableDisable() {
+    $site = $this->siteNode;
+    $sid = $this->siteNode->nid;
+
+    // Test creating the feature variable key.
+    $this->assertEqual(
+      'og_sm_feature_news',
+      og_sm_feature_variable_key('news'),
+      'Variable key for "news" is "og_sm_feature_news".'
+    );
+    $this->assertEqual(
+      'og_sm_feature_long_name_with_spaces_and_dashes',
+      og_sm_feature_variable_key('Long Name with spaces-and-dashes'),
+      'Variable key for "Long Name with spaces-end-dashes" is "og_sm_feature_long_name_with_spaces_and_dashes".'
+    );
+
+    // Enable a non existing feature.
+    og_sm_feature_site_enable($site, 'foobar');
+    $this->assertNull(
+      og_sm_variable_get($sid, 'og_sm_feature_foobar', NULL),
+      'Not possible to enable a not existing feature.'
+    );
+
+    // Enable an existing feature.
+    $this->assertNull(
+      og_sm_variable_get($sid, 'og_sm_feature_news', NULL),
+      'No feature variable set for News.'
+    );
+    og_sm_feature_site_enable($site, 'news');
+    $this->assertTrue(
+      og_sm_variable_get($sid, 'og_sm_feature_news', FALSE),
+      'Enabled the News feature for Site ' . $site->title . '.'
+    );
+
+    // Disable a non existing feature.
+    og_sm_feature_site_disable($site, 'foobar');
+    $this->assertNull(
+      og_sm_variable_get($sid, 'og_sm_feature_foobar', NULL),
+      'Not possible to disable a not existing feature.'
+    );
+
+    // Disable an existing feature.
+    og_sm_feature_site_disable($site, 'news');
+    $this->assertFalse(
+      og_sm_variable_get($sid, 'og_sm_feature_news', NULL),
+      'Disabled the News feature for Site ' . $site->title . '.'
+    );
+
+    // Test the feature status.
+    $this->assertFalse(
+      og_sm_feature_site_is_enabled($site, 'news'),
+      'News feature is not enabled.'
+    );
+    og_sm_feature_site_enable($site, 'news');
+    $this->assertTrue(
+      og_sm_feature_site_is_enabled($site, 'news'),
+      'News feature is enabled.'
     );
   }
 

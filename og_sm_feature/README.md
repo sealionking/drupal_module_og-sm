@@ -31,11 +31,27 @@ API to retrieve the status of a feature.
 
 
 ## API
+### Get information of all features
+Get information about all features.
+
+```php
+$info = og_sm_feature_info();
+```
+
+
+### Check if a feature exists
+Check if a feature exists by its name.
+
+```php
+$exists = og_sm_feature_exists('feature name');
+```
+
+
 ### Enable a feature for a Site
 Enable a feature for the given Site.
 
 ```php
-og_sm_feature_enable($site, 'feature name');
+og_sm_feature_site_enable($site, 'feature name');
 ```
 
 
@@ -43,7 +59,7 @@ og_sm_feature_enable($site, 'feature name');
 Enable a feature for the given Site.
 
 ```php
-og_sm_feature_disable($site, 'feature name');
+og_sm_feature_site_disable($site, 'feature name');
 ```
 
 
@@ -51,7 +67,7 @@ og_sm_feature_disable($site, 'feature name');
 Check if a feature is enabled for a given Site.
 
 ```php
-$is_enabled = og_sm_feature_is_enabled($site, 'feature name');
+$is_enabled = og_sm_feature_site_is_enabled($site, 'feature name');
 ```
 
 

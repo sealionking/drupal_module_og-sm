@@ -5,6 +5,11 @@
  */
 
 /**
+ * Variable "Namespace" to store the og_sm_feature settings.
+ */
+define('OG_SM_FEATURE_NAMESPACE', 'og_sm_feature_%s');
+
+/**
  * Implements hook_hook_info().
  */
 function og_sm_feature_hook_info() {
@@ -41,18 +46,103 @@ function og_sm_feature_info() {
   $modules = module_implements('og_sm_feature_info');
   foreach ($modules as $module) {
     $module_items = call_user_func($module . '_og_sm_feature_info');
+    foreach (array_keys($module_items) as $item_key) {
+      $module_items[$item_key]['module'] = $module;
+    }
+
     if ($module_items) {
-      $module_items['module'] = $module;
       $items = array_merge($items, $module_items);
     }
   }
 
   // Allow modules to alter information from each other.
-  drupal_alter('og_sm_feature_info', $items, $site);
+  drupal_alter('og_sm_feature_info', $items);
 
   // Store in cache.
   cache_set($cid, $items);
 
   // Return data.
   return $items;
+}
+
+/**
+ * Check if a feature exists by its name.
+ *
+ * This will check in the og_sm_feature_info() array if the feature is
+ * listed.
+ *
+ * @param string $feature_name
+ *   The feature name.
+ *
+ * @return bool
+ *   Exists TRUE/FALSE.
+ */
+function og_sm_feature_exists($feature_name) {
+  $features = og_sm_feature_info();
+  return array_key_exists($feature_name, $features);
+}
+
+/**
+ * Enable a feature for the given Site.
+ *
+ * @param object $site
+ *   The Site node object.
+ * @param string $feature_name
+ *   The name of the feature.
+ */
+function og_sm_feature_site_enable($site, $feature_name) {
+  if (!og_sm_feature_exists($feature_name)) {
+    return;
+  }
+
+  $variable_key = og_sm_feature_variable_key($feature_name);
+  og_sm_variable_set($site->nid, $variable_key, TRUE);
+}
+
+/**
+ * Disable a feature for the given Site.
+ *
+ * @param object $site
+ *   The Site node object.
+ * @param string $feature_name
+ *   The name of the feature.
+ */
+function og_sm_feature_site_disable($site, $feature_name) {
+  if (!og_sm_feature_exists($feature_name)) {
+    return;
+  }
+
+  $variable_key = og_sm_feature_variable_key($feature_name);
+  og_sm_variable_set($site->nid, $variable_key, FALSE);
+}
+
+/**
+ * Check if a feature is enabled for the given Site.
+ *
+ * @param object $site
+ *   The Site node object.
+ * @param string $feature_name
+ *   The name of the feature.
+ *
+ * @return bool
+ *   Is enabled TRUE/FALSE.
+ */
+function og_sm_feature_site_is_enabled($site, $feature_name) {
+  $variable_key = og_sm_feature_variable_key($feature_name);
+  return (bool) og_sm_variable_get($site->nid, $variable_key, FALSE);
+}
+
+/**
+ * Helper to create the variable name for a feature.
+ *
+ * @param string $feature_name
+ *   The feature name to create the variable key for.
+ *
+ * @return string
+ *   The variable key.
+ */
+function og_sm_feature_variable_key($feature_name) {
+  $clean_name = trim(strtolower($feature_name));
+  $clean_name = preg_replace('/[^\da-z]/i', '_', $clean_name);
+  return sprintf(OG_SM_FEATURE_NAMESPACE, $clean_name);
 }
