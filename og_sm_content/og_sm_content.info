@@ -1,13 +1,15 @@
 name = Site Content
 description = "Site content creation and administration."
 package = "Organic Groups Site Manager"
-version = "7.x-1.x-dev"
 core = 7.x
 
 dependencies[] = og_sm
+dependencies[] = og_sm_variable
 
 ; Views plugins.
 files[] = views/og_sm_views_content_handler_filter_content_type.inc
+files[] = views/og_sm_views_content_handler_field_content_type.inc
 
 ; Tests.
 files[] = tests/OgSmContentTestCase.test
+files[] = tests/OgSmContentTypeTestCase.test

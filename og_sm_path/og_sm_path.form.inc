@@ -33,6 +33,11 @@ function _og_sm_path_form_node_site_form_alter(array &$form, array &$form_state)
     '#field_prefix' => url('<front>', array('absolute' => TRUE)),
   );
 
+  // Check access to the Site path field.
+  if (!empty($site->nid) && !og_sm_path_access_change_path($site)) {
+    $form['site_path']['#access'] = FALSE;
+  }
+
   // Disable access to the pathauto settings as we use the Site Path value here!
   $form['path']['#access'] = FALSE;
 }

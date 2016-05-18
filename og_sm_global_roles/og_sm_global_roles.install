@@ -1,0 +1,88 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall hooks for og_sm_global_roles.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function og_sm_global_roles_uninstall() {
+  module_load_include('inc', 'og_sm_global_roles', 'og_sm_global_roles.admin');
+
+  // Delete all existing group-global role links.
+  $group_roles = _og_sm_global_roles_get_all_site_roles();
+  foreach ($group_roles as $role) {
+    $key = sprintf('og_sm_global_roles_%s', $role);
+    variable_del($key);
+  }
+}
+
+/**
+ * Upgrade existing group - global roles to by name instead of per ID.
+ */
+function og_sm_global_roles_update_7101() {
+  // Replace link by global Role ID to link by global Role name.
+  $group_roles = _og_sm_global_roles_get_all_site_roles();
+  foreach ($group_roles as $role) {
+    $key = _og_sm_global_roles_variable_key($role);
+    $config = variable_get($key, array());
+
+    if (empty($config)) {
+      continue;
+    }
+
+    // Replace the ID's by their names.
+    $new_config = array();
+    foreach ($config as $rid) {
+      // Only if the rid is a number.
+      if (!is_numeric($rid)) {
+        continue;
+      }
+
+      // Only if there is a role.
+      $role = user_role_load($rid);
+      if (!$role) {
+        continue;
+      }
+
+      $new_config[$role->name] = $role->name;
+    }
+
+    if (!empty($new_config)) {
+      variable_set($key, $new_config);
+    }
+  }
+
+  // Clear the mappings cache.
+  cache_clear_all('og_sm_global_roles_mappings', 'cache');
+}
+
+/**
+ * Fix global role variables using the old format.
+ */
+function og_sm_global_roles_update_7102() {
+  $group_roles = _og_sm_global_roles_get_all_site_roles();
+  foreach ($group_roles as $role) {
+    $bad_key = sprintf('og_sm_global_roles_%s', $role);
+    $good_key = _og_sm_global_roles_variable_key($role);
+
+    // Only if there is a - in the name.
+    if (!preg_match('/-/', $bad_key)) {
+      continue;
+    }
+
+    // Only if there is a variable in the DB.
+    $config = variable_get($bad_key, FALSE);
+    if (!$config) {
+      continue;
+    }
+
+    // Replace the variable.
+    variable_set($good_key, $config);
+    variable_del($bad_key);
+  }
+
+  // Re-Run the previous mapping fix.
+  og_sm_global_roles_update_7101();
+}

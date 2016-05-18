@@ -41,8 +41,7 @@ class OgSmWebTestCase extends DrupalWebTestCase {
       'disabled' => 0,
       'orig_type' => $name,
     );
-    $this->assertEqual(SAVED_NEW, node_type_save($info));
-
+    node_type_save($info);
     return $name;
   }
 
@@ -187,7 +186,6 @@ class OgSmWebTestCase extends DrupalWebTestCase {
 
     // Create a user with all administrator permissions.
     $administrator = $this->ogSmCreateGroupUser($permissions);
-    $this->verbose(print_r($administrator, TRUE));
 
     // Add the administrator role to the user.
     $administrator->roles[$index] = 'administrator';

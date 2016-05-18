@@ -1,7 +1,6 @@
 name = Site Manager Path
 description = "Functionality to create a Site Path Prefix for all Site related pages."
 package = "Organic Groups Site Manager"
-version = "7.x-1.x-dev"
 core = 7.x
 
 dependencies[] = og_sm

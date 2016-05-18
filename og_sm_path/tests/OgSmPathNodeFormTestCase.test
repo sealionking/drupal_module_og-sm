@@ -9,16 +9,71 @@
  */
 class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
   /**
+   * None Site content type.
+   */
+  private $typeNotSite;
+
+  /**
+   * Site content type.
+   */
+  private $typeIsSite;
+
+  /**
    * The Site node to test with.
    */
-  private $nodeSite;
+  private $siteNode;
+
+  /**
+   * Extra Site node to test with.
+   */
+  private $siteNode2;
+
+  /**
+   * The admin user to test with.
+   */
+  private $userAdministrator;
+
+  /**
+   * The user that is the owner to test with.
+   */
+  private $site2OwnerWithoutPermission;
+
+  /**
+   * The user that is the owner to test with.
+   */
+  private $siteOwnerWithPermission;
+
+  /**
+   * Global user with Change All permission.
+   */
+  private $userWithoutChangeAllPermission;
+
+  /**
+   * Global user with Change All permission.
+   */
+  private $userWithChangeAllPermission;
+
+  /**
+   * Site user with admin rights.
+   */
+  private $siteAdministrator;
+
+  /**
+   * The user with permission to test with.
+   */
+  private $siteUserWithoutChangePermissions;
+
+  /**
+   * The site user without the permission to test with.
+   */
+  private $siteUserWithChangePermission;
 
   /**
    * {@inheritdoc}
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Path node form'),
+      'name' => t('Site Path : Node form'),
       'description' => t('Tests Site Path node form settings.'),
       'group' => t('Organic Groups Site Manager'),
     );
@@ -31,27 +86,152 @@ class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
     // Enable required modules.
     $modules = array('og_sm_path');
     parent::setUp($modules);
+
+    // Disable full access for Site owners.
+    variable_set('og_group_manager_full_access', FALSE);
+
+    // Create users.
+    $this->userAdministrator = $this->ogSmCreateAdminUser();
+    $this->userWithoutChangeAllPermission = $this->drupalCreateUser(
+      array('bypass node access', 'administer nodes')
+    );
+    $this->userWithChangeAllPermission = $this->drupalCreateUser(
+      array(
+        'bypass node access',
+        'administer nodes',
+        OG_SM_PATH_PERM_CHANGE_PATH_ALL,
+      )
+    );
+
+    // Site owner.
+    $this->site2OwnerWithoutPermission = $this->drupalCreateUser();
+    $this->siteOwnerWithPermission = $this->drupalCreateUser(
+      array(OG_SM_PATH_PERM_CHANGE_PATH_OWN)
+    );
+
+    // Create Sites.
+    $this->typeNotSite = $this->ogSmCreateGroupNodeType('not_site_type');
+    $this->typeIsSite  = $this->ogSmCreateGroupNodeType('is_site_type');
+    og_sm_site_type_add($this->typeIsSite);
+    $this->siteNode = $this->ogSmCreateGroup(
+      $this->typeIsSite,
+      array('uid' => $this->siteOwnerWithPermission->uid)
+    );
+    $this->siteNode2 = $this->ogSmCreateGroup(
+      $this->typeIsSite,
+      array('uid' => $this->site2OwnerWithoutPermission->uid)
+    );
+
+    // Site user with admin permissions.
+    $site_role_admin = og_role_create('site admin', 'node', 0, $this->typeIsSite);
+    og_role_save($site_role_admin);
+    og_role_grant_permissions($site_role_admin->rid, array('administer group'));
+    $this->siteAdministrator = $this->ogSmCreateGroupUser(
+      array(),
+      array($this->siteNode)
+    );
+    og_role_grant(
+      'node',
+      $this->siteNode->nid,
+      $this->siteAdministrator->uid,
+      $site_role_admin->rid
+    );
+
+    // Site user with edit but NO path change permissions.
+    $site_role_edit = og_role_create('site edit', 'node', 0, $this->typeIsSite);
+    og_role_save($site_role_edit);
+    og_role_grant_permissions($site_role_edit->rid, array('update group'));
+    $this->siteUserWithoutChangePermissions = $this->ogSmCreateGroupUser(
+      array(),
+      array($this->siteNode)
+    );
+    og_role_grant(
+      'node',
+      $this->siteNode->nid,
+      $this->siteUserWithoutChangePermissions->uid,
+      $site_role_edit->rid
+    );
+
+    // Site user with change path permissions.
+    $site_role_change_path = og_role_create('site change path', 'node', 0, $this->typeIsSite);
+    og_role_save($site_role_change_path);
+    og_role_grant_permissions(
+      $site_role_change_path->rid,
+      array('update group', OG_SM_PATH_OG_PERM_CHANGE_PATH)
+    );
+    $this->siteUserWithChangePermission = $this->ogSmCreateGroupUser(
+      array(),
+      array($this->siteNode)
+    );
+    og_role_grant(
+      'node',
+      $this->siteNode->nid,
+      $this->siteUserWithChangePermission->uid,
+      $site_role_change_path->rid
+    );
+  }
+
+  /**
+   * Test the permissions helper.
+   */
+  public function testAccessChangePath() {
+    // Global permissions.
+    $this->assertTrue(
+      og_sm_path_access_change_path($this->siteNode, $this->userAdministrator),
+      'The platform administrator should have access.'
+    );
+    $this->assertFalse(
+      og_sm_path_access_change_path($this->siteNode, $this->userWithoutChangeAllPermission),
+      'Users without the global change all paths permission should NOT have access.'
+    );
+    $this->assertTrue(
+      og_sm_path_access_change_path($this->siteNode, $this->userWithChangeAllPermission),
+      'Users with the global change all paths permission should have access.'
+    );
+
+    // Site owner without change path permission.
+    $this->assertFalse(
+      og_sm_path_access_change_path($this->siteNode2, $this->site2OwnerWithoutPermission),
+      'Site owner without global change own permission should NOT have access.'
+    );
+
+    // Site owner with permission.
+    $this->assertTrue(
+      og_sm_path_access_change_path($this->siteNode, $this->siteOwnerWithPermission),
+      'Site owner with the global change own permission should have access.'
+    );
+
+    // Site member without permission.
+    $this->assertFalse(
+      og_sm_path_access_change_path($this->siteNode, $this->siteUserWithoutChangePermissions),
+      'Site member without the Site change path permission should NOT have access.'
+    );
+
+    // Site member with permission.
+    $this->assertTrue(
+      og_sm_path_access_change_path($this->siteNode, $this->siteUserWithChangePermission),
+      'Site member with the Site change path permission should have access.'
+    );
   }
 
   /**
    * Test the node form.
    */
   public function testSiteNodeForm() {
-    $administrator = $this->ogSmCreateAdminUser();
-    $this->drupalLogin($administrator);
+    // As Administrator.
+    $this->drupalLogin($this->userAdministrator);
 
     // Test non-site node forms.
-    $this->ogSmCreateGroupNodeType('not_site_type');
     $this->drupalGet('node/add/not-site-type');
-    $this->assertNoFieldById('edit-site-path');
-    $this->assertFieldById('edit-path-alias');
+    $this->assertResponse(200);
+    $this->assertNoFieldById('edit-site-path', NULL, 'No Site Path field for non Site content types.');
+    $this->assertFieldById('edit-path-alias', NULL, 'Path alias field should ba available.');
 
     // Test site node form.
-    $site_type = $this->ogSmCreateGroupNodeType('is_site_type');
-    og_sm_site_type_add($site_type);
     $this->drupalGet('node/add/is-site-type');
-    $this->assertFieldById('edit-site-path');
-    $this->assertNoFieldById('edit-path-alias');
+    $this->assertResponse(200);
+    $this->assertFieldById('edit-site-path', NULL, 'Site Path field available for Site content types.');
+    $this->assertNoFieldById('edit-path-alias', NULL, 'Path alias field not available.');
 
     // Create a new Site, check if the path is saved.
     $edit = array(
@@ -60,12 +240,12 @@ class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
     );
     $this->drupalPost('node/add/is-site-type', $edit, 'Save');
     $site_nid = db_select('node', 'n')
-      ->condition('n.type', $site_type)
+      ->condition('n.type', $this->typeIsSite)
       ->condition('n.title', $edit['title'])
       ->fields('n', array('nid'))
       ->execute()
       ->fetchField();
-    $this->assertEqual($edit['site_path'], og_sm_variable_get($site_nid, 'path'));
+    $this->assertEqual($edit['site_path'], og_sm_variable_get($site_nid, 'path'), 'Site path is saved as Site variable');
 
     // Creating a new Site with an existing path should result in a form error.
     $edit = array(
@@ -73,7 +253,10 @@ class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
       'site_path' => 'site-node-test-me',
     );
     $this->drupalPost('node/add/is-site-type', $edit, 'Save');
-    $this->assertText('The Site path site-node-test-me is already in use.');
+    $this->assertText(
+      'The Site path site-node-test-me is already in use.',
+      'Error message when a Site with the same path exists.'
+    );
 
     // Creating a new Site with an invalid path should result in a form error.
     $edit = array(
@@ -81,7 +264,29 @@ class OgSmPathNodeFormTestCase extends OgSmWebTestCase {
       'site_path' => 'site path not valid',
     );
     $this->drupalPost('node/add/is-site-type', $edit, 'Save');
-    $this->assertText('The Site path may contain only lowercase letters, numbers and dashes.');
+    $this->assertText(
+      'The Site path may contain only lowercase letters, numbers and dashes.',
+      'Error message about the format of the Site path.'
+    );
+
+    // The site path should be in the edit form for users with the proper
+    // permissions.
+    $this->drupalGet('node/' . $site_nid . '/edit');
+    $this->assertFieldById('edit-site-path', NULL, 'Site path should be in the node edit form.');
+
+    // Test with user who has no change path permissions.
+    $this->drupalLogin($this->userWithoutChangeAllPermission);
+
+    // Should have access to the field when creating new Sites.
+    $this->drupalGet('node/add/is-site-type');
+    $this->assertResponse(200);
+    $this->assertFieldById('edit-site-path', NULL, 'Site Path field available for Site content types.');
+    $this->assertNoFieldById('edit-path-alias', NULL, 'Path alias field not available.');
+
+    // Site path should not be shown when editing existing Sites.
+    $this->drupalGet('node/' . $site_nid . '/edit');
+    $this->assertResponse(200);
+    $this->assertNoFieldById('edit-site-path', NULL, 'Site path should NOT be in the node edit form.');
   }
 
 }

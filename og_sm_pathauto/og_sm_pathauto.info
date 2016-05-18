@@ -1,0 +1,5 @@
+name = Site Pathauto
+description = "DO NOT USE : is replaced by the Site Manager Path (og_sm_path) module. This module is only here to support upgrades."
+package = "Organic Groups Site Manager"
+core = 7.x
+hidden = 1

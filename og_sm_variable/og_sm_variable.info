@@ -1,10 +1,10 @@
 name = Site Variable
 description = "Site specific configuration variables."
 package = "Organic Groups Site Manager"
-version = "7.x-1.x-dev"
 core = 7.x
 
 dependencies[] = og
 
 ; Tests.
 files[] = tests/OgSmVariableTestCase.test
+files[] = tests/OgSmVariableDefaultsTestCase.test

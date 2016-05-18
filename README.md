@@ -23,7 +23,10 @@ This module and its submodules adds functionality to support:
 
 ### Included in og_sm_admin_menu module
 * Site administration menu that replaces the default admin toolbar when the user
-  is in a
+  is in a Site context.
+
+### Included in og_sm_comment module
+* Site comment administration
 
 ### Included in og_sm_content module
 * Site content administration
@@ -43,6 +46,11 @@ This module and its submodules adds functionality to support:
   Site path changes.
 * Altering the `group/node/nid/admin/...` paths to `[site-path]/admin/...`.
 
+### Included in og_sm_taxonomy module
+* Support global vocabularies with Site specific terms.
+* Manage terms per Site.
+* Select only from terms within the Site when creating content.
+
 ### Included in og_sm_theme module
 * Set the theme per Site.
 
@@ -53,7 +61,6 @@ This module and its submodules adds functionality to support:
 
 ### Todo
 * Support for User profile & settings per Site (Site User).
-* Taxonomy terms per Site.
 * Site features: enable functionality per site (eg. Site A has blogs, Site B
   not).
 * Site Content settings per Site (eg. Site A enables commenting on Blog posts,
@@ -135,6 +142,14 @@ content within a site.
 
 ```php
 $site_content_types = og_sm_content_get_types();
+```
+
+### Check if a content type can be used within a Site
+Helper function to check if a given content type (by its name) can be used to
+create content within a Site.
+
+```php
+$is_site_content_type = og_sm_content_is_site_content_type($type_name);
 ```
 
 ### Check if content belongs to a Site

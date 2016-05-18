@@ -13,7 +13,7 @@ Add new content within a Site context:
 
 
 ### TIP: Aliases for node/NID/edit & node/NID/delete
-This module does not provide path alaises for `node/NID/edit` and
+This module does not provide path aliases for `node/NID/edit` and
 `node/NID/delete` paths.
 
 Install the [Extended Path Aliases][link-path_alias_xt] module to provide this
@@ -102,6 +102,64 @@ Create the URI to the node creation form for the specified Site and node type:
 ```php
 $uri = og_sm_content_add_uri($site, 'article');
 ```
+
+
+### Get the Site specific content type Info
+The content type information and settings can be overwritten within a Site. Use
+this function to get the information specific for the given Site.
+
+
+The information can be collected by passing the content type object.
+```php
+$info = og_sm_content_get_type_info_by_site($ite, $content_type);
+```
+
+Or by the content type machine name (type).
+```php
+$info = og_sm_content_get_type_info_by_site($ite, 'article');
+```
+
+
+
+## Hooks
+
+> The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
+
+
+### Provide/alter the Site specific content type information
+
+This module provides a hook to alter the content type information specific for
+the usage within a Site.
+
+Example:
+
+```php
+/**
+ * Implements hook_og_sm_content_type_info_alter().
+ *
+ * @param object $type_info
+ *   The content type info as object.
+ * @param object $site
+ *   The Site node object.
+ */
+function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
+  $key_base = 'og_sm_content_' . $type_info->type . '_';
+
+  $type_info->site_type = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'machine_name', $type_info->type)
+  );
+  $type_info->name = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'name', $type_info->name)
+  );
+  $type_info->name_plural = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'name_plural', $type_info->name)
+  );
+}
+```
+
 
 
 ## Contributed module support

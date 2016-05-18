@@ -1,7 +1,6 @@
 name = Site Manager
 description = "Support to setup a platform supporting multiple (sub)sites using Organic Groups."
 package = "Organic Groups Site Manager"
-version = "7.x-1.x-dev"
 core = 7.x
 
 dependencies[] = og

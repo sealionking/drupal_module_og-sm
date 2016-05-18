@@ -113,7 +113,6 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
   }
 }
 
-
 /**
  * Load a Site node by its Node ID.
  *
@@ -334,6 +333,20 @@ function og_sm_content_get_types() {
 }
 
 /**
+ * Check if a given content type is a Site content type.
+ *
+ * @param string $content_type_name
+ *   The content type name to check.
+ *
+ * @return bool
+ *   Is Site content type.
+ */
+function og_sm_content_is_site_content_type($content_type_name) {
+  $types = og_sm_content_get_types();
+  return array_key_exists($content_type_name, $types);
+}
+
+/**
  * Get all the Sites a node belongs to.
  *
  * @param object $node
@@ -350,12 +363,12 @@ function og_sm_content_get_sites($node) {
 /**
  * Get the Site object the Site content node belongs to.
  *
- * Is a node belongs to multiple Sites, only the first will be returned.
+ * If a content node belongs to multiple Sites, only the first will be returned.
  *
  * @param object $node
  *   The site content.
  *
- * @return object|NULL
+ * @return object|FALSE
  *   The site node (if any).
  */
 function og_sm_content_get_site($node) {
@@ -396,7 +409,6 @@ function og_sm_content_is_site_member($node, $site) {
   return !empty($sites[$site->nid]);
 }
 
-
 /**
  * Get all the sites a User belongs to.
  *
@@ -427,7 +439,6 @@ function og_sm_user_is_member_of_site($account, $site) {
   return !empty($sites[$site->nid]);
 }
 
-
 /**
  * Helper function to get a list of Site objects from a list of group id's.
  *
@@ -457,7 +468,6 @@ function _og_sm_filter_sites_from_groups(array $groups) {
   return $sites;
 }
 
-
 /**
  * Implements hook_node_type_delete().
  */
@@ -469,7 +479,7 @@ function og_sm_node_type_delete($info) {
 /**
  * Implements hook_node_view().
  */
-function hook_node_view($node, $view_mode, $langcode) {
+function og_sm_node_view($node, $view_mode, $langcode) {
   // Only for Site node types.
   if (!og_sm_is_site($node)) {
     return;

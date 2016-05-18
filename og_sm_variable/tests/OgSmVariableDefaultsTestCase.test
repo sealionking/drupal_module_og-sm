@@ -1,0 +1,55 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Variables.
+ */
+
+/**
+ * Tests about the variable defaults when new Site is created.
+ */
+class OgSmVariableDefaultsTestCase extends OgSmWebTestCase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Variable : Defaults'),
+      'description' => t('Tests default Variables when a new Site is created.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_variable_test');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test the defaults hooks during Site creation.
+   */
+  public function testVariableDefaultsOnSiteCreation() {
+    // Create a new Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $site = $this->ogSmCreateGroup($type);
+
+    // Get the default variables as they should be have set during Site insert.
+    module_load_include('inc', 'og_sm_variable_test', 'og_sm_variable_test.og_sm');
+    $defaults = og_sm_variable_test_og_sm_variable_defaults($site);
+
+    // Validate if the defaults are there.
+    foreach ($defaults as $name => $value) {
+      $this->assertEqual(
+        $value,
+        og_sm_variable_get($site->nid, $name),
+        'Site variable "' . $name . '"" is set to the default value "' . $value . '".'
+      );
+    }
+  }
+
+}

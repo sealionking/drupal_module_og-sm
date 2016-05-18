@@ -2,6 +2,26 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
+## [7.x-1.1]
+### Added
+- DMOGSM-37 : Added permissions to limit access to change the path of existing
+  Sites.
+- DMOGSM-41 : Added the og_sm_comment module.
+- DMOGSM-13 : Added the og_sm_taxonomy module.
+- DMOGSM-12 : Added functionality to define default Site variable values when a
+  new Site is created.
+
+### Changed
+- DMOGSM-36 : Changed storing the mapping between Global roles and Site roles by
+  role name instead of Role ID. Makes it easier to export the mapping using
+  features (strongarm).
+
+### Fixed
+- DMOGSM-16 : Added support for og_variables to the admin menu.
+- DMOGSM-16 : Removed the default OG UI admin overview page as this is replaced
+  by the functionality provided by og_sm_admin_menu.
+
+
 
 ## [7.x-1.0]
 ### Deleted
@@ -117,7 +137,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
-[7.x-1.0-alpha8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0%0D7.x-1.0-alpha8#diff
+[7.x-1.1]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.1%0D7.x-1.0#diff
+[7.x-1.0]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0%0D7.x-1.0-alpha8#diff
 [7.x-1.0-alpha8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha8%0D7.x-1.0-alpha7#diff
 [7.x-1.0-alpha7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha7%0D7.x-1.0-alpha6#diff
 [7.x-1.0-alpha6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha6%0D7.x-1.0-alpha5#diff

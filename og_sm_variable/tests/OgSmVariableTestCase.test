@@ -8,13 +8,14 @@
  * Tests about the node type settings.
  */
 class OgSmVariableTestCase extends OgSmWebTestCase {
+
   /**
    * {@inheritdoc}
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Variable'),
-      'description' => t('Tests Site Variables.'),
+      'name' => t('Site Variable : API'),
+      'description' => t('Tests Site Variables API.'),
       'group' => t('Organic Groups Site Manager'),
     );
   }

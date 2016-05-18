@@ -80,15 +80,14 @@ function og_sm_global_roles_user_load_roles($site, $account) {
   }
 
   // Load the extra roles.
+  $mappings = og_sm_global_roles_mappings();
   $extra_roles = array();
   foreach ($og_roles as $og_role) {
-    $key = sprintf('og_sm_global_roles_%s', $og_role);
-    $roles = array_filter(variable_get($key, array()));
-    if (empty($roles)) {
+    if (empty($mappings[$og_role])) {
       continue;
     }
 
-    $extra_roles = array_merge($extra_roles, $roles);
+    $extra_roles = array_merge($extra_roles, $mappings[$og_role]);
   }
 
   if (!$extra_roles) {
@@ -108,4 +107,91 @@ function og_sm_global_roles_user_load_roles($site, $account) {
 
     $account->roles[$rid] = $global_roles[$rid];
   }
+}
+
+/**
+ * Load all the mappings between Site roles & Global roles.
+ *
+ * @return array
+ *   Array with all site roles who have global roles mappings.
+ */
+function og_sm_global_roles_mappings() {
+  $cache = cache_get(__FUNCTION__);
+  if ($cache) {
+    return $cache->data;
+  }
+
+  $mappings = array();
+
+  $site_roles = _og_sm_global_roles_get_all_site_roles();
+  foreach ($site_roles as $site_role) {
+    // The roles are saved by their name.
+    // We need to map them to their role ID's.
+    $global_roles = _og_sm_global_roles_variable_get_mapping($site_role);
+    foreach ($global_roles as $global_role_name) {
+      $role = user_role_load_by_name($global_role_name);
+      if (!$role) {
+        continue;
+      }
+
+      $rid = (int) $role->rid;
+      $mappings[$site_role][$rid] = $rid;
+    }
+  }
+
+  cache_set(__FUNCTION__, $mappings);
+  return $mappings;
+}
+
+/**
+ * Helper to get all the Site user roles.
+ *
+ * @return array
+ *   Group roles keyed by their id.
+ */
+function _og_sm_global_roles_get_all_site_roles() {
+  $rows = db_select('og_role', 'ogr')
+    ->distinct()
+    ->fields('ogr', array('name'))
+    ->condition('ogr.group_type', 'node')
+    ->condition('ogr.group_bundle', og_sm_get_site_types())
+    ->execute();
+
+  $roles = array();
+  foreach ($rows as $row) {
+    $roles[$row->name] = $row->name;
+  }
+
+  ksort($roles);
+  return $roles;
+}
+
+/**
+ * Create a variable name from a Site role name.
+ *
+ * @param string $site_role_name
+ *   The site role name to create the variable name from.
+ *
+ * @return string
+ *   The variable key.
+ */
+function _og_sm_global_roles_variable_key($site_role_name) {
+  $machine_name = drupal_strtolower($site_role_name);
+  $machine_name = preg_replace('/[^a-z0-9_]+/', '_', $machine_name);
+
+  return sprintf('og_sm_global_roles_%s', $machine_name);
+}
+
+/**
+ * Get a mapping from the variables.
+ *
+ * @param string $site_role_name
+ *   The site role name to create the variable name from.
+ *
+ * @return array
+ *   The mapping.
+ */
+function _og_sm_global_roles_variable_get_mapping($site_role_name) {
+  $key = _og_sm_global_roles_variable_key($site_role_name);
+  return array_filter(variable_get($key, array()));
 }

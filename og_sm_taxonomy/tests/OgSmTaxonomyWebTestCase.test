@@ -1,0 +1,72 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Taxonomies.
+ */
+
+/**
+ * Tests about the Site Taxonomy API.
+ */
+class OgSmTaxonomyWebTestCase extends OgSmWebTestCase {
+
+  /**
+   * Helper to create a taxonomy with OG field.
+   *
+   * @param string $name
+   *   The machine name for the taxonomy.
+   *
+   * @return object
+   *   The vocabulary object.
+   */
+  public function ogSmCreateSiteVocabulary($name) {
+    // Create the vocabulary.
+    $vocab = new stdClass();
+    $vocab->name = $name;
+    $vocab->description = 'Test the ' . $name;
+    $vocab->machine_name = $name;
+    taxonomy_vocabulary_save($vocab);
+
+    // Add the group field.
+    og_create_field(OG_AUDIENCE_FIELD, 'taxonomy_term', $name);
+
+    return $vocab;
+  }
+
+  /**
+   * Helper to create a term.
+   *
+   * @param object $vocabulary
+   *   The vocabulary to create the term for.
+   * @param string $name
+   *   The term name.
+   * @param array $sites
+   *   The optional array of Sites the term belongs to.
+   *
+   * @return object
+   *   The created term.
+   */
+  public function ogSmCreateTerm($vocabulary, $name, $sites = array()) {
+    $term = (object) array(
+      'vid' => $vocabulary->vid,
+      'name' => $name,
+      'description' => sprintf('Test term for %s vocabulary', $vocabulary->machine_name),
+    );
+    taxonomy_term_save($term);
+
+    // Add the group memberships (if any).
+    foreach ($sites as $site) {
+      og_group(
+        'node',
+        $site->nid,
+        array(
+          'entity_type' => 'taxonomy_term',
+          'entity' => $term,
+          'field_name' => OG_AUDIENCE_FIELD,
+        )
+      );
+    }
+
+    return taxonomy_term_load($term->tid);
+  }
+
+}

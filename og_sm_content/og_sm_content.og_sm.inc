@@ -10,6 +10,15 @@
 function og_sm_content_og_sm_admin_menu() {
   $items = array();
 
+  // Administer content types.
+  $items['structure/content_types'] = array(
+    'title' => 'Content types',
+    'description' => 'Administer the content types for this Site.',
+    'href' => 'admin/structure/types',
+    'column' => 'left',
+    'weight' => 10,
+  );
+
   // Administer content.
   $items['content'] = array(
     'title' => 'Content',
@@ -34,6 +43,8 @@ function og_sm_content_og_sm_admin_menu() {
 
   // Make items translatable.
   if (FALSE) {
+    t('Content types');
+    t('Administer the content types for this Site.');
     t('Add content');
     t('Overview of all content types that can be created.');
     t('Manage content');
@@ -41,4 +52,21 @@ function og_sm_content_og_sm_admin_menu() {
   }
 
   return $items;
+}
+
+/**
+ * Implements hook_og_sm_content_type_info_alter().
+ */
+function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
+  $key_base = 'og_sm_content_' . $type_info->type . '_';
+
+  $type_info->site_type = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'machine_name', $type_info->type)
+  );
+  $type_info->name = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'name', $type_info->name)
+  );
+  $type_info->name_plural = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'name_plural', $type_info->name)
+  );
 }
