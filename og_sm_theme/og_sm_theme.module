@@ -5,7 +5,7 @@
  */
 
 // Permission access the site theme settings.
-define('OG_SM_THEME_PERMISSION_SITE_ADMINISTER_THEMES', 'administer site themes');
+define('OG_SM_THEME_PERMISSION_SITE_ADMINISTER_THEME', 'administer site theme');
 
 /**
  * Implements hook_hook_info().
@@ -25,9 +25,9 @@ function og_sm_theme_hook_info() {
  */
 function og_sm_theme_og_permission() {
   return array(
-    OG_SM_THEME_PERMISSION_SITE_ADMINISTER_THEMES => array(
-      'title' => t('Administer Site themes'),
-      'description' => t('Administer the Site themes.'),
+    OG_SM_THEME_PERMISSION_SITE_ADMINISTER_THEME => array(
+      'title' => t('Administer Site theme'),
+      'description' => t('Allows the user to administer the Site theme.'),
       'roles' => array(OG_AUTHENTICATED_ROLE),
       'default role' => array(OG_ADMINISTRATOR_ROLE),
     ),
