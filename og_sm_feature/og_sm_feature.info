@@ -8,3 +8,4 @@ dependencies[] = og_sm_variable
 
 ; Tests.
 files[] = tests/OgSmFeatureApiTestCase.test
+files[] = tests/OgSmFeatureAdminTestCase.test

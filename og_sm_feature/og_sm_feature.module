@@ -10,6 +10,11 @@
 define('OG_SM_FEATURE_NAMESPACE', 'og_sm_feature_%s');
 
 /**
+ * Permission to manage the Site features.
+ */
+define('OG_SM_FEATURE_OG_PERM_ADMIN', 'Administer features');
+
+/**
  * Implements hook_hook_info().
  */
 function og_sm_feature_hook_info() {
@@ -23,6 +28,41 @@ function og_sm_feature_hook_info() {
   );
 
   return $hooks;
+}
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_sm_feature_og_permission() {
+  return array(
+    OG_SM_FEATURE_OG_PERM_ADMIN => array(
+      'title' => t('Administer Features'),
+      'description' => t('Enable/disable Site features.'),
+      'roles' => array(OG_AUTHENTICATED_ROLE),
+      'default role' => array(OG_ADMINISTRATOR_ROLE),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_feature_menu() {
+  $file = 'og_sm_feature.admin.inc';
+
+  $items = array();
+  $items['group/%/%og_sm_site/admin/features'] = array(
+    'title' => 'Features',
+    'description' => 'Enable/Disable features.',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_feature_admin_overview', 2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_FEATURE_OG_PERM_ADMIN),
+    'file' => $file,
+  );
+
+  return $items;
 }
 
 /**
