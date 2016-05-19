@@ -11,10 +11,13 @@ function og_sm_feature_test_og_sm_feature_info() {
   $items = array();
 
   $items['news'] = array(
-    'title' => 'News',
+    'name' => 'News',
     'description' => 'News content and overviews.',
-    'configuration' => 'admin/feature/news',
-    'default status' => TRUE,
+    'configuration' => 'admin/features/news',
+    'default status' => FALSE,
+  );
+  $items['articles'] = array(
+    'name' => 'Articles',
   );
 
   return $items;
@@ -24,6 +27,6 @@ function og_sm_feature_test_og_sm_feature_info() {
  * Implements hook_og_sm_feature_info_alter().
  */
 function og_sm_feature_test_og_sm_feature_info_alter(&$info) {
-  $info['news']['configuration'] = 'admin/feature/news-test';
-  $info['news']['default status'] = FALSE;
+  $info['news']['configuration'] = 'admin/features/news-test';
+  $info['news']['default status'] = TRUE;
 }

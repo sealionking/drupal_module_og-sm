@@ -103,9 +103,9 @@ function hook_og_sm_feature_info() {
   $items = array();
 
   $items['news'] = array(
-    'title' => 'News',
+    'name' => 'News',
     'description' => 'News content and overviews.',
-    'configuration' => 'admin/feature/news',
+    'configuration' => 'admin/features/news',
     'default status' => TRUE,
   );
 
@@ -126,7 +126,7 @@ hook.
  *   The information collected by the hook_og_sm_feature_info() hook.
  */
 function hook_og_sm_feature_info_alter(&$info) {
-  $info['news']['configuration'] = 'admin/feature/news-test';
+  $info['news']['configuration'] = 'admin/features/news-test';
   $info['news']['default status'] = FALSE;
 }
 ```

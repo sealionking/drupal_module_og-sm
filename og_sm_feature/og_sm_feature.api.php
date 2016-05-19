@@ -29,7 +29,7 @@ function hook_og_sm_feature_info() {
   $items = array();
 
   $items['news'] = array(
-    'title' => 'News',
+    'name' => 'News',
     'description' => 'News content and overviews.',
     'configuration' => 'admin/feature/news',
     'default status' => TRUE,

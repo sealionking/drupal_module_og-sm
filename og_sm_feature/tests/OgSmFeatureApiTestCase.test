@@ -53,11 +53,16 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     // Collect the info.
     $expected = array(
       'news' => array(
-        'title' => 'News',
+        'name' => 'News',
         'description' => 'News content and overviews.',
-        'configuration' => 'admin/feature/news-test',
+        'configuration' => 'admin/features/news-test',
+        'default status' => TRUE,
+      ),
+      'articles' => array(
+        'name' => 'Articles',
+        'description' => NULL,
+        'configuration' => NULL,
         'default status' => FALSE,
-        'module' => 'og_sm_feature_test',
       ),
     );
     $info = og_sm_feature_info();

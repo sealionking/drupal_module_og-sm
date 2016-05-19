@@ -47,7 +47,12 @@ function og_sm_feature_info() {
   foreach ($modules as $module) {
     $module_items = call_user_func($module . '_og_sm_feature_info');
     foreach (array_keys($module_items) as $item_key) {
-      $module_items[$item_key]['module'] = $module;
+      // Add defaults.
+      $module_items[$item_key] += array(
+        'description' => NULL,
+        'configuration' => NULL,
+        'default status' => FALSE,
+      );
     }
 
     if ($module_items) {
