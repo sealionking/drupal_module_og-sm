@@ -26,7 +26,7 @@ function og_sm_feature_admin_overview(array $form, array &$form_state) {
   // Get a list of all available features.
   $features = og_sm_feature_info();
   if (!$features) {
-    drupal_set_message(t('No features available on this platform'), 'warning');
+    drupal_set_message(t('No features available on this platform.'), 'warning');
     $form['no_features'] = array(
       '#markup' => t('There are no features available'),
       '#prefix' => '<div class="warning">',

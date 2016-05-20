@@ -1,5 +1,5 @@
 name = Site Feature(s)
-description = "Enable/Disable functionality per Site."
+description = "Enable/disable Site features."
 package = "Organic Groups Site Manager"
 core = 7.x
 
