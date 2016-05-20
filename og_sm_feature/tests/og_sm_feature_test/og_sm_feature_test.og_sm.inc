@@ -15,7 +15,6 @@ function og_sm_feature_test_og_sm_feature_info() {
     'description' => 'News content and overviews.',
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
-    'default status' => FALSE,
   );
   $items['articles'] = array(
     'name' => 'Articles',
@@ -30,5 +29,4 @@ function og_sm_feature_test_og_sm_feature_info() {
 function og_sm_feature_test_og_sm_feature_info_alter(&$info) {
   $info['news']['global configuration'] = 'admin/config/group/features/news-test';
   $info['news']['site configuration'] = 'admin/features/news-test';
-  $info['news']['default status'] = TRUE;
 }

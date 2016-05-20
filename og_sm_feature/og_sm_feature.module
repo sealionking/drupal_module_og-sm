@@ -117,7 +117,6 @@ function og_sm_feature_info() {
         'description' => NULL,
         'global configuration' => NULL,
         'site configuration' => NULL,
-        'default status' => FALSE,
       );
     }
 

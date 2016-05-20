@@ -82,31 +82,32 @@ $is_enabled = og_sm_feature_site_is_enabled($site, 'feature name');
 ### Inform the platform about feature(s)
 The module provides a hook to allow modules to inform about their feature(s).
 
+The info hook should return an array with an info array per feature (one info
+hook can return multiple features).
+
+The info array contains following information:
+* **title** : The feature title. Do not translate the title, this will be done by
+  the og_sm_feature module.
+* **description** : The feature description. Do not translate the description, this
+  will be done by the og_sm_feature module.
+* **global configuration** : An optional path to the a configuration page to set the
+  global defaults for a feature.
+* **site configuration** : An optional path to change the configuration of the
+  feature specific for the Site. The path should be specified without the
+  `group/node/NID/` path prefix as it will be appended automatically.
+
 ```php
-/**
- * Inform the platform about the available feature(s).
- *
- * @return array
- *   Array containing the information about the feature(s).
- *   The Array has following content:
- *   - title : The feature title. Do not translate the title, this will be done
- *     by the og_sm_feature module.
- *   - description : The feature description. Do not translate the description,
- *     this will be done by the og_sm_feature module.
- *   - configuration : An optional path to change the configuration of the
- *     feature specific for the Site. The path should be specified without the
- *     group/node/NID/ path prefix as it is appended automatically.
- *   - default status : The default enabled status (TRUE/FALSE) of a feature
- *     when a new Site is created.
- */
 function hook_og_sm_feature_info() {
   $items = array();
 
   $items['news'] = array(
     'name' => 'News',
     'description' => 'News content and overviews.',
-    'configuration' => 'admin/features/news',
-    'default status' => TRUE,
+    'global configuration' => 'admin/config/group/features/news',
+    'site configuration' => 'admin/features/news',
+  );
+  $items['articles'] = array(
+    'name' => 'Articles',
   );
 
   return $items;
@@ -115,18 +116,11 @@ function hook_og_sm_feature_info() {
 
 
 ### Alter the feature(s) info
-Hook to alter the information collected using the hook_og_sm_feature_info()
-hook.
+Hook to alter the information collected from the hook_og_sm_feature_info()
+hooks.
 
 ```php
-/**
- * Alter the features information.
- *
- * @param array $info
- *   The information collected by the hook_og_sm_feature_info() hook.
- */
 function hook_og_sm_feature_info_alter(&$info) {
-  $info['news']['configuration'] = 'admin/features/news-test';
-  $info['news']['default status'] = FALSE;
+  $info['news']['site configuration'] = 'admin/features/news-test';
 }
 ```

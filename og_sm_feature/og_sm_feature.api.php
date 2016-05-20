@@ -19,11 +19,11 @@
  *     by the og_sm_feature module.
  *   - description : The feature description. Do not translate the description,
  *     this will be done by the og_sm_feature module.
- *   - configuration : An optional path to change the configuration of the
+ *   - global configuration : An optional path to the a configuration page to
+ *     set the global defaults for a feature.
+ *   - site configuration : An optional path to change the configuration of the
  *     feature specific for the Site. The path should be specified without the
- *     group/node/NID/ path prefix as it is appended automatically.
- *   - default status : The default enabled status (TRUE/FALSE) of a feature
- *     when a new Site is created.
+ *     group/node/NID/ path prefix as it will be appended automatically.
  */
 function hook_og_sm_feature_info() {
   $items = array();
@@ -31,8 +31,11 @@ function hook_og_sm_feature_info() {
   $items['news'] = array(
     'name' => 'News',
     'description' => 'News content and overviews.',
-    'configuration' => 'admin/feature/news',
-    'default status' => TRUE,
+    'global configuration' => 'admin/config/group/features/news',
+    'site configuration' => 'admin/features/news',
+  );
+  $items['articles'] = array(
+    'name' => 'Articles',
   );
 
   return $items;
@@ -45,7 +48,7 @@ function hook_og_sm_feature_info() {
  *   The information collected by the hook_og_sm_feature_info() hook.
  */
 function hook_og_sm_feature_info_alter(&$info) {
-  $info['news']['configuration'] = 'admin/feature/news-test';
+  $info['news']['site configuration'] = 'admin/feature/news-test';
   $info['news']['default status'] = FALSE;
 }
 

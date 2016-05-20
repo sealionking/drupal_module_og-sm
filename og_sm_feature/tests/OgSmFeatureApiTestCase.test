@@ -46,14 +46,12 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
         'description' => 'News content and overviews.',
         'global configuration' => 'admin/config/group/features/news-test',
         'site configuration' => 'admin/features/news-test',
-        'default status' => TRUE,
       ),
       'articles' => array(
         'name' => 'Articles',
         'description' => NULL,
         'global configuration' => NULL,
         'site configuration' => NULL,
-        'default status' => FALSE,
       ),
     );
     $info = og_sm_feature_info();
