@@ -33,25 +33,28 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
    * Test collection of the info.
    */
   public function testFeatureInfo() {
+    global $language;
+    $cid = 'og_sm_feature_info:' . $language->language;
+
     // Not called yet => not cached.
     $this->assertFalse(
-      cache_get('og_sm_feature_info'),
+      cache_get($cid),
       'As long as the og_sm_info function is not called, no data in cache.'
     );
 
     // Collect the info.
     $expected = array(
-      'news' => array(
-        'name' => 'News',
-        'description' => 'News content and overviews.',
-        'global configuration' => 'admin/config/group/features/news-test',
-        'site configuration' => 'admin/features/news-test',
-      ),
       'articles' => array(
         'name' => 'Articles',
         'description' => NULL,
         'global configuration' => NULL,
         'site configuration' => NULL,
+      ),
+      'news' => array(
+        'name' => 'News',
+        'description' => 'News content and overviews.',
+        'global configuration' => 'admin/config/group/features/news-test',
+        'site configuration' => 'admin/features/news-test',
       ),
     );
     $info = og_sm_feature_info();
@@ -60,7 +63,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     // Info should be cached.
     $this->assertEqual(
       $expected,
-      cache_get('og_sm_feature_info')->data,
+      cache_get($cid)->data,
       'From the moment the og_sm_feature_info function is called, data is cached.'
     );
 

@@ -11,13 +11,13 @@ function og_sm_feature_test_og_sm_feature_info() {
   $items = array();
 
   $items['news'] = array(
-    'name' => 'News',
-    'description' => 'News content and overviews.',
+    'name' => t('News'),
+    'description' => t('News content and overviews.'),
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
   );
   $items['articles'] = array(
-    'name' => 'Articles',
+    'name' => t('Articles'),
   );
 
   return $items;

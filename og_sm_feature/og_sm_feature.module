@@ -100,8 +100,12 @@ function og_sm_feature_menu() {
  *   The information array grouped per feature.
  */
 function og_sm_feature_info() {
+  // We cache per language as the name & description are translated and the
+  // items are ordered by their translated name.
+  global $language;
+  $cid = __FUNCTION__ . ':' . $language->language;
+
   // Check if we already cached the information.
-  $cid = __FUNCTION__;
   $cache = cache_get($cid);
   if ($cache) {
     return $cache->data;
@@ -128,11 +132,21 @@ function og_sm_feature_info() {
   // Allow modules to alter information from each other.
   drupal_alter('og_sm_feature_info', $items);
 
+  // Order the items by name.
+  uasort($items, 'og_sm_feature_info_sort');
+
   // Store in cache.
   cache_set($cid, $items);
 
   // Return data.
   return $items;
+}
+
+/**
+ * Array sorting callback; sorts info by their name.
+ */
+function og_sm_feature_info_sort($a, $b) {
+  return strcasecmp($a['name'], $b['name']);
 }
 
 /**

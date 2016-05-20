@@ -15,10 +15,8 @@
  * @return array
  *   Array containing the information about the feature(s).
  *   The Array has following content:
- *   - title : The feature title. Do not translate the title, this will be done
- *     by the og_sm_feature module.
- *   - description : The feature description. Do not translate the description,
- *     this will be done by the og_sm_feature module.
+ *   - title : The feature title.
+ *   - description : The feature description.
  *   - global configuration : An optional path to the a configuration page to
  *     set the global defaults for a feature.
  *   - site configuration : An optional path to change the configuration of the
@@ -29,8 +27,8 @@ function hook_og_sm_feature_info() {
   $items = array();
 
   $items['news'] = array(
-    'name' => 'News',
-    'description' => 'News content and overviews.',
+    'name' => t('News'),
+    'description' => t('News content and overviews.'),
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
   );
