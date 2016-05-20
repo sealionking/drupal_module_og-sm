@@ -8,12 +8,6 @@
  * Tests about the API to check features.
  */
 class OgSmFeatureApiTestCase extends OgSmWebTestCase {
-  /**
-   * Site node object.
-   *
-   * @var object
-   */
-  private $siteNode;
 
   /**
    * {@inheritdoc}
@@ -33,11 +27,6 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     // Enable required modules.
     $modules = array('og_sm_feature_test');
     parent::setUp($modules);
-
-    // Create a Site.
-    $type = $this->ogSmCreateGroupNodeType();
-    og_sm_site_type_add($type);
-    $this->siteNode = $this->ogSmCreateGroup($type);
   }
 
   /**
@@ -55,13 +44,15 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
       'news' => array(
         'name' => 'News',
         'description' => 'News content and overviews.',
-        'configuration' => 'admin/features/news-test',
+        'global configuration' => 'admin/config/group/features/news-test',
+        'site configuration' => 'admin/features/news-test',
         'default status' => TRUE,
       ),
       'articles' => array(
         'name' => 'Articles',
         'description' => NULL,
-        'configuration' => NULL,
+        'global configuration' => NULL,
+        'site configuration' => NULL,
         'default status' => FALSE,
       ),
     );
@@ -90,8 +81,11 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
    * Test enable/disabling features.
    */
   public function testEnableDisable() {
-    $site = $this->siteNode;
-    $sid = $this->siteNode->nid;
+    // Create a Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $site = $this->ogSmCreateGroup($type);
+    $sid = $site->nid;
 
     // Test creating the feature variable key.
     $this->assertEqual(
@@ -146,6 +140,34 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     $this->assertTrue(
       og_sm_feature_site_is_enabled($site, 'news'),
       'News feature is enabled.'
+    );
+  }
+
+  /**
+   * Test default features (globally defined) when new site is created.
+   */
+  public function testDefaultFeaturesWhenNewSiteIsCreated() {
+    // Set the default features.
+    variable_set(og_sm_feature_variable_key('news'), 0);
+    variable_set(og_sm_feature_variable_key('articles'), 1);
+
+    // Create a new Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $site = $this->ogSmCreateGroup($type);
+
+    // Check if the default features are enabled.
+    $this->assertNull(
+      og_sm_variable_get($site->nid, og_sm_feature_variable_key('news')),
+      'No Site feature variable saved for not by default enabled features.'
+    );
+    $this->assertFalse(
+      og_sm_feature_site_is_enabled($site, 'news'),
+      'News is not enabled by default.'
+    );
+    $this->assertTrue(
+      og_sm_feature_site_is_enabled($site, 'articles'),
+      'Article feature is enabled by default.'
     );
   }
 

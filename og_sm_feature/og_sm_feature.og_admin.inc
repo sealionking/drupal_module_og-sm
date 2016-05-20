@@ -1,24 +1,29 @@
 <?php
 /**
  * @file
- * Global Administrative pages for og_sm_feature.
+ * OG Administrative pages for og_sm_feature.
  */
 
 /**
- * Form to set the default feature status for new Sites.
+ * Form to get an overview to enable/disable features.
  *
  * @param array $form
  *   The form structure.
  * @param array $form_state
  *   The current form state.
+ * @param object $site
+ *   The Site node object.
  *
  * @return array
  *   The form structure.
  */
-function og_sm_feature_admin_overview(array $form, array &$form_state) {
+function og_sm_feature_og_admin_overview(array $form, array &$form_state, $site) {
+  // Add the site to the form.
+  $form['#site'] = $site;
+
   // Information above the form.
   $form['info'] = array(
-    '#markup' => t('Select the features that will be enabled by default when a new Site is created.'),
+    '#markup' => t('Select the features to use on the Site.'),
     '#prefix' => '<p>',
     '#suffix' => '</p>',
   );
@@ -39,10 +44,8 @@ function og_sm_feature_admin_overview(array $form, array &$form_state) {
   $options = array();
   $defaults = array();
   foreach ($features as $name => $info) {
-    $options[$name] = _og_sm_feature_admin_overview_row($info);
-
-    $key = og_sm_feature_variable_key($name);
-    $defaults[$name] = (int) variable_get($key, 0);
+    $options[$name] = _og_sm_feature_og_admin_overview_row($site, $info);
+    $defaults[$name] = (int) og_sm_feature_site_is_enabled($site, $name);
   }
 
   // Add the table data to the form.
@@ -69,13 +72,15 @@ function og_sm_feature_admin_overview(array $form, array &$form_state) {
 /**
  * Create a feature row for the features overview form.
  *
+ * @param object $site
+ *   The Site object to create the row for.
  * @param array $info
  *   The feature information.
  *
  * @return array
  *   The row structure.
  */
-function _og_sm_feature_admin_overview_row(array $info) {
+function _og_sm_feature_og_admin_overview_row($site, array $info) {
   // Create the row data array.
   $row_data = array(
     'feature' => array(
@@ -94,10 +99,10 @@ function _og_sm_feature_admin_overview_row(array $info) {
 
   // Create the config link (if any).
   $config = NULL;
-  if (!empty($info['global configuration'])) {
+  if (!empty($info['site configuration'])) {
     $config = l(
       t('Configuration'),
-      $info['global configuration'],
+      'group/node/' . $site->nid . '/' . $info['site configuration'],
       array('query' => drupal_get_destination())
     );
   }
@@ -117,13 +122,18 @@ function _og_sm_feature_admin_overview_row(array $info) {
  * @param array $form_state
  *   The form state.
  */
-function og_sm_feature_admin_overview_submit(array $form, array $form_state) {
+function og_sm_feature_og_admin_overview_submit(array $form, array $form_state) {
+  $site = $form['#site'];
   $features = $form_state['values']['features'];
 
   foreach ($features as $name => $state) {
-    $key = og_sm_feature_variable_key($name);
-    variable_set($key, (int) !empty($state));
+    if (empty($state)) {
+      og_sm_feature_site_disable($site, $name);
+      continue;
+    }
+
+    og_sm_feature_site_enable($site, $name);
   }
 
-  drupal_set_message(t('Saved default Feature statuses.'));
+  drupal_set_message(t('Saved Feature statuses.'));
 }

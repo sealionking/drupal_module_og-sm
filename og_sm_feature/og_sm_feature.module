@@ -10,9 +10,14 @@
 define('OG_SM_FEATURE_NAMESPACE', 'og_sm_feature_%s');
 
 /**
- * Permission to manage the Site features.
+ * Global permission to manage the default features.
  */
-define('OG_SM_FEATURE_OG_PERM_ADMIN', 'Administer features');
+define('OG_SM_FEATURE_PERM_ADMINISTER_SITE_FEATURES', 'administer site features');
+
+/**
+ * OG permission to manage the Site features.
+ */
+define('OG_SM_FEATURE_OG_PERM_ADMINISTER_FEATURES', 'administer features');
 
 /**
  * Implements hook_hook_info().
@@ -31,11 +36,23 @@ function og_sm_feature_hook_info() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function og_sm_feature_permission() {
+  return array(
+    OG_SM_FEATURE_PERM_ADMINISTER_SITE_FEATURES => array(
+      'title' => t('Administer Features'),
+      'description' => t('Manage the global Site features settings.'),
+    ),
+  );
+}
+
+/**
  * Implements hook_og_permission().
  */
 function og_sm_feature_og_permission() {
   return array(
-    OG_SM_FEATURE_OG_PERM_ADMIN => array(
+    OG_SM_FEATURE_OG_PERM_ADMINISTER_FEATURES => array(
       'title' => t('Administer Features'),
       'description' => t('Enable/disable Site features.'),
       'roles' => array(OG_AUTHENTICATED_ROLE),
@@ -48,18 +65,26 @@ function og_sm_feature_og_permission() {
  * Implements hook_menu().
  */
 function og_sm_feature_menu() {
-  $file = 'og_sm_feature.admin.inc';
-
   $items = array();
+
+  $items['admin/config/group/features'] = array(
+    'title' => 'OG Features',
+    'description' => 'Configuration of the OG features.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_feature_admin_overview'),
+    'access arguments' => array(OG_SM_FEATURE_PERM_ADMINISTER_SITE_FEATURES),
+    'file' => 'og_sm_feature.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
   $items['group/%/%og_sm_site/admin/features'] = array(
     'title' => 'Features',
     'description' => 'Enable/Disable features.',
-    'type' => MENU_CALLBACK,
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('og_sm_feature_admin_overview', 2),
+    'page arguments' => array('og_sm_feature_og_admin_overview', 2),
     'access callback' => 'og_sm_site_permission_access',
-    'access arguments' => array(2, OG_SM_FEATURE_OG_PERM_ADMIN),
-    'file' => $file,
+    'access arguments' => array(2, OG_SM_FEATURE_OG_PERM_ADMINISTER_FEATURES),
+    'file' => 'og_sm_feature.og_admin.inc',
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
@@ -90,7 +115,8 @@ function og_sm_feature_info() {
       // Add defaults.
       $module_items[$item_key] += array(
         'description' => NULL,
-        'configuration' => NULL,
+        'global configuration' => NULL,
+        'site configuration' => NULL,
         'default status' => FALSE,
       );
     }
