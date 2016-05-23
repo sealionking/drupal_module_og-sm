@@ -19,7 +19,7 @@
  */
 function og_sm_feature_og_admin_overview(array $form, array &$form_state, $site) {
   // Add the site to the form.
-  $form['#site'] = $site;
+  $form_state['site'] = $site;
 
   // Information above the form.
   $form['info'] = array(
@@ -123,7 +123,7 @@ function _og_sm_feature_og_admin_overview_row($site, array $info) {
  *   The form state.
  */
 function og_sm_feature_og_admin_overview_submit(array $form, array $form_state) {
-  $site = $form['#site'];
+  $site = $form_state['site'];
   $features = $form_state['values']['features'];
 
   foreach ($features as $name => $state) {
