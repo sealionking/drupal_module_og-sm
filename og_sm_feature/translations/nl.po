@@ -13,7 +13,7 @@ msgstr ""
 
 #: og_sm_feature.admin.inc:21
 msgid "Select the features that will be enabled by default when a new Site is created."
-msgstr "Selecteer de functied die standaard geactiveerd worden bij het aanmaken van een nieuwe Site."
+msgstr "Selecteer de functies die standaard geactiveerd worden bij het aanmaken van een nieuwe Site."
 
 #: og_sm_feature.admin.inc:29 og_sm_feature.og_admin.inc:34
 msgid "No features available on this platform."
