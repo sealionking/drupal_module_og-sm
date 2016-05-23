@@ -264,3 +264,59 @@ function og_sm_feature_variable_key($feature_name) {
   $clean_name = preg_replace('/[^\da-z]/i', '_', $clean_name);
   return sprintf(OG_SM_FEATURE_NAMESPACE, $clean_name);
 }
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function og_sm_feature_ctools_plugin_api($module, $api) {
+  if ($module == 'context' && $api == 'plugins') {
+    return array('version' => 3);
+  }
+}
+
+/**
+ * Implements hook_context_plugins().
+ */
+function og_sm_feature_context_plugins() {
+  $plugins = array();
+  $plugins['og_sm_feature_condition_status'] = array(
+    'handler' => array(
+      'path' => drupal_get_path('module', 'og_sm_feature') . '/plugins',
+      'file' => 'OgSmFeatureContextConditionStatus.inc',
+      'class' => 'OgSmFeatureContextConditionStatus',
+      'parent' => 'context_condition',
+    ),
+  );
+  return $plugins;
+}
+
+/**
+ * Implements hook_context_registry().
+ */
+function og_sm_feature_context_registry() {
+  return array(
+    'conditions' => array(
+      'og_sm_feature_condition_status' => array(
+        'title' => t('OG SM Feature Status'),
+        'description' => t('Set this context when a Site feature is enabled.'),
+        'plugin' => 'og_sm_feature_condition_status',
+      ),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_context_page_reaction().
+ */
+function og_sm_feature_context_page_reaction() {
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  $plugin = context_get_plugin('condition', 'og_sm_feature_condition_status');
+  if ($plugin) {
+    $plugin->execute($site);
+  }
+}
