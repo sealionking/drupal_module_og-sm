@@ -246,12 +246,12 @@ msgstr[0] "URL-alias bijgewerkt voor 1 reactie."
 msgstr[1] "URL-aliassen bijgewerkt voor @count reacties."
 
 #: og_sm_comment.module:70
-msgid "Administer site comments"
-msgstr "Beheer site commentaren"
+msgid "Administer comments"
+msgstr "Beheer commentaren"
 
 #: og_sm_comment.module:71
-msgid "Allows the user administer site comments."
-msgstr "Laat de gebruiker toe om site commentaren te beheren."
+msgid "Administer all comments within a Site."
+msgstr "Beheer alle reacties binnen een Site."
 
 #: og_sm_comment.info:0
 msgid "Site Comments"

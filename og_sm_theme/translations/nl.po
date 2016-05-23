@@ -113,9 +113,9 @@ msgid "The configuration options have been saved."
 msgstr ""
 
 #: og_sm_theme.module:29
-msgid "Administer Site theme"
-msgstr "Beheer Site thema"
+msgid "Administer theme"
+msgstr "Beheer thema"
 
 #: og_sm_theme.module:30
 msgid "Allows the user to administer the Site theme."
-msgstr "Laat de gebruiker to om het site thema te beheren."
+msgstr "Laat de gebruiker toe om het Site thema te beheren."

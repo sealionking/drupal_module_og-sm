@@ -5,13 +5,13 @@
  */
 
 // Permission access the site content type settings.
-define('OG_SM_PERMISSION_SITE_ADMINISTER_CONTENT_TYPES', 'administer site content types');
+define('OG_SM_CONTENT_OG_PERM_ADMINISTER_CONTENT_TYPES', 'administer content types');
 
 // Permission access the site content overview.
-define('OG_SM_PERMISSION_SITE_ACCESS_CONTENT_OVERVIEW', 'access site content overview');
+define('OG_SM_CONTENT_OG_PERM_ACCESS_CONTENT_OVERVIEW', 'access content overview');
 
 // Permission access the site content overview.
-define('OG_SM_PERMISSION_SITE_ACCESS_MY_CONTENT_OVERVIEW', 'access site my content overview');
+define('OG_SM_CONTENT_OG_PERM_ACCESS_MY_CONTENT_OVERVIEW', 'access my content overview');
 
 /**
  * Implements hook_hook_info().
@@ -52,27 +52,26 @@ function og_sm_content_admin_paths() {
  */
 function og_sm_content_og_permission() {
   return array(
-    OG_SM_PERMISSION_SITE_ADMINISTER_CONTENT_TYPES => array(
-      'title' => t('Administer Site content types'),
+    OG_SM_CONTENT_OG_PERM_ADMINISTER_CONTENT_TYPES => array(
+      'title' => t('Administer content types'),
       'description' => t('Administer the Site content types.'),
       'roles' => array(OG_AUTHENTICATED_ROLE),
       'default role' => array(OG_ADMINISTRATOR_ROLE),
     ),
-    OG_SM_PERMISSION_SITE_ACCESS_CONTENT_OVERVIEW => array(
-      'title' => t('Access the content overview page'),
-      'description' => t('Get an overview of all site content.'),
+    OG_SM_CONTENT_OG_PERM_ACCESS_CONTENT_OVERVIEW => array(
+      'title' => t('Access content overview'),
+      'description' => t('Get an overview of all Site content.'),
       'roles' => array(OG_AUTHENTICATED_ROLE),
       'default role' => array(OG_ADMINISTRATOR_ROLE),
     ),
-    OG_SM_PERMISSION_SITE_ACCESS_MY_CONTENT_OVERVIEW => array(
-      'title' => t('Access the my content overview page'),
-      'description' => t('Get an overview of all site content created by the current user.'),
+    OG_SM_CONTENT_OG_PERM_ACCESS_MY_CONTENT_OVERVIEW => array(
+      'title' => t('Access my content overview page'),
+      'description' => t('Get an overview of all Site content created by the current user.'),
       'roles' => array(OG_AUTHENTICATED_ROLE),
       'default role' => array(OG_ADMINISTRATOR_ROLE),
     ),
   );
 }
-
 
 /**
  * Implements hook_menu().
@@ -87,7 +86,7 @@ function og_sm_content_menu() {
     'page callback' => 'og_sm_content_admin_overview',
     'page arguments' => array(2),
     'access callback' => 'og_sm_site_permission_access',
-    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ACCESS_CONTENT_OVERVIEW),
+    'access arguments' => array(2, OG_SM_CONTENT_OG_PERM_ACCESS_CONTENT_OVERVIEW),
     'weight' => 11,
     'file' => $file_admin,
   );
@@ -103,7 +102,7 @@ function og_sm_content_menu() {
     'page callback' => 'og_sm_content_admin_overview_my',
     'page arguments' => array(2),
     'access callback' => 'og_sm_site_permission_access',
-    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ACCESS_MY_CONTENT_OVERVIEW),
+    'access arguments' => array(2, OG_SM_CONTENT_OG_PERM_ACCESS_MY_CONTENT_OVERVIEW),
     'weight' => 10,
     'file' => $file_admin,
     'type' => MENU_LOCAL_TASK,
@@ -125,7 +124,7 @@ function og_sm_content_menu() {
     'page callback' => 'og_sm_content_admin_overview_types',
     'page arguments' => array(2),
     'access callback' => 'og_sm_site_permission_access',
-    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMINISTER_CONTENT_TYPES),
+    'access arguments' => array(2, OG_SM_CONTENT_OG_PERM_ADMINISTER_CONTENT_TYPES),
     'file' => $file_admin,
   );
 
@@ -168,7 +167,7 @@ function og_sm_content_menu() {
         6,
       ),
       'access callback' => 'og_sm_site_permission_access',
-      'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMINISTER_CONTENT_TYPES),
+      'access arguments' => array(2, OG_SM_CONTENT_OG_PERM_ADMINISTER_CONTENT_TYPES),
       'file' => $file_admin,
     );
   }
