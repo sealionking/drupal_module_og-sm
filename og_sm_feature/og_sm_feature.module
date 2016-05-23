@@ -297,7 +297,7 @@ function og_sm_feature_context_registry() {
   return array(
     'conditions' => array(
       'og_sm_feature_condition_status' => array(
-        'title' => t('OG SM Feature Status'),
+        'title' => t('OG SM Feature status'),
         'description' => t('Set this context when a Site feature is enabled.'),
         'plugin' => 'og_sm_feature_condition_status',
       ),

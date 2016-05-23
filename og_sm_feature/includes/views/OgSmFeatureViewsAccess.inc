@@ -76,7 +76,7 @@ class OgSmFeatureViewsAccess extends views_plugin_access {
       '#title' => t('Feature'),
       '#default_value' => $this->options['feature'],
       '#description' => t(
-        'Only views that have an enabled feature will be accessible.'
+        'Only sites which have the selected feature enabled will be able to access this display.'
       ),
     );
   }

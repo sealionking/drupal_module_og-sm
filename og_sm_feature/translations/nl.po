@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-20 13:57+0100\n"
-"PO-Revision-Date: 2016-05-20 13:57+0100\n"
+"PO-Revision-Date: 2016-05-23 15:50+0100\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -13,7 +13,9 @@ msgstr ""
 
 #: og_sm_feature.admin.inc:21
 msgid "Select the features that will be enabled by default when a new Site is created."
-msgstr "Selecteer de functies die standaard geactiveerd worden bij het aanmaken van een nieuwe Site."
+msgstr ""
+"Selecteer de functies die standaard geactiveerd worden bij het "
+"aanmaken van een nieuwe Site."
 
 #: og_sm_feature.admin.inc:29 og_sm_feature.og_admin.inc:34
 msgid "No features available on this platform."
@@ -55,6 +57,14 @@ msgstr "Features"
 msgid "Manage Site features."
 msgstr "Beheer Site functionaliteiten."
 
+#: og_sm_feature.views.inc:14
+msgid "OG SM Feature"
+msgstr "OG SM Feature"
+
+#: og_sm_feature.views.inc:15
+msgid "Checks access based on the status of a feature."
+msgstr "Controleert toegang op basis van functionaliteit."
+
 #: og_sm_feature.module:44;56
 msgid "Administer Features"
 msgstr "Beheer Functionaliteiten"
@@ -63,9 +73,17 @@ msgstr "Beheer Functionaliteiten"
 msgid "Manage the global Site features settings."
 msgstr "Beheer de globale Site functionaliteit instellingen."
 
-#: og_sm_feature.module:57
+#: og_sm_feature.module:57 og_sm_feature.info:0
 msgid "Enable/disable Site features."
 msgstr "(Des)Activeren van Site functionaliteiten."
+
+#: og_sm_feature.module:300
+msgid "OG SM Feature status"
+msgstr "OG SM Functionaliteit status"
+
+#: og_sm_feature.module:301
+msgid "Set this context when a Site feature is enabled."
+msgstr "Activeer context als een Site functionaliteit actief is."
 
 #: og_sm_feature.module:71
 msgid "OG Features"
@@ -86,4 +104,3 @@ msgstr "Site functionaliteit(en)"
 #: og_sm_feature.info:0
 msgid "Organic Groups Site Manager"
 msgstr "Organic Groups Site Beheerder"
-
