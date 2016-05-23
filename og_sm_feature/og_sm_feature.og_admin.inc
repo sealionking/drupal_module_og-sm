@@ -136,4 +136,7 @@ function og_sm_feature_og_admin_overview_submit(array $form, array $form_state) 
   }
 
   drupal_set_message(t('Saved Feature statuses.'));
+
+  // Enable/disabeling the feature requires menu rebuild.
+  menu_rebuild();
 }
