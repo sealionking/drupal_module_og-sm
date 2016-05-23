@@ -17,6 +17,10 @@ Interface per Site to enable/disable available features.
 API to retrieve the status of a feature.
 
 
+### Views access plugin
+Views access plugin to validate if the feature is enabled (OG SM Feature).
+
+
 
 ## Requirements
 * Organic Groups Site Manager
@@ -68,6 +72,24 @@ Check if a feature is enabled for a given Site.
 
 ```php
 $is_enabled = og_sm_feature_site_is_enabled($site, 'feature name');
+```
+
+
+### Access callback based on feature status
+This module provides an access callback (use in menu callbacks) to grant access
+based on the fact that a feature is enabled.
+
+Use without providing the Site, this will use the current Site (if any) from OG
+context.
+
+```php
+$has_access = og_sm_feature_access('feature name');
+```
+
+Optionally pass the Site object:
+
+```php
+$has_access = og_sm_feature_access('feature name', $site);
 ```
 
 

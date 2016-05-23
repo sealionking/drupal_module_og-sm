@@ -142,6 +142,29 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
       og_sm_feature_site_is_enabled($site, 'news'),
       'News feature is enabled.'
     );
+
+    // Test the access callback.
+    og_sm_feature_site_enable($site, 'news');
+    og_sm_feature_site_disable($site, 'articles');
+    $this->assertTrue(
+      og_sm_feature_access('news', $site),
+      'Access granted if the feature is enabled for given Site.'
+    );
+    $this->assertFalse(
+      og_sm_feature_access('articles', $site),
+      'Access not granted if the feature is disabled for given Site.'
+    );
+
+    // Test the access callback using the current Site from OG context.
+    $this->ogSmSetOgContextToGroup($site);
+    $this->assertTrue(
+      og_sm_feature_access('news'),
+      'Access granted if the feature is enabled for given Site.'
+    );
+    $this->assertFalse(
+      og_sm_feature_access('articles'),
+      'Access not granted if the feature is disabled for given Site.'
+    );
   }
 
   /**
