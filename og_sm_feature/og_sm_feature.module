@@ -305,7 +305,6 @@ function og_sm_feature_context_registry() {
   );
 }
 
-
 /**
  * Implements hook_context_page_reaction().
  */

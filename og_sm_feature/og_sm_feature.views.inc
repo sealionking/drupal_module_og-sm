@@ -20,5 +20,3 @@ function og_sm_feature_views_plugins() {
   );
   return $plugins;
 }
-
-

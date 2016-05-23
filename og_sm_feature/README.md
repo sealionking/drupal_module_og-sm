@@ -21,6 +21,10 @@ API to retrieve the status of a feature.
 Views access plugin to validate if the feature is enabled (OG SM Feature).
 
 
+### Context condition plugin
+Context condition plugin to validate if a Site has one or more features enabled.
+
+
 
 ## Requirements
 * Organic Groups Site Manager
