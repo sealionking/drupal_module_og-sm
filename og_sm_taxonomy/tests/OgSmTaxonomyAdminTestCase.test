@@ -453,7 +453,8 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     );
 
     // Check if the term is created linked to the Site.
-    $term = array_shift(taxonomy_get_term_by_name('test_term_post'));
+    $term = taxonomy_get_term_by_name('test_term_post');
+    $term = array_shift($term);
     $this->assertTrue(
       og_sm_taxonomy_term_is_site_member($term, $this->siteNode),
       'The term is a member of the Site.'

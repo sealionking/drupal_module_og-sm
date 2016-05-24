@@ -62,6 +62,10 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
       $this->ogSmCreateGroupContentNodeType()
     );
     variable_set('comment_' . $this->nodeTypeSiteContent->type, COMMENT_NODE_OPEN);
+
+    // Disable all contexts to avoid notices.
+    variable_set('og_context_negotiation_group_context', array());
+    variable_set('og_context_providers_weight_group_context', array());
   }
 
   /**
