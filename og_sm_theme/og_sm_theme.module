@@ -45,7 +45,7 @@ function og_sm_theme_menu() {
     'page callback' => 'og_sm_theme_themes_page',
     'page arguments' => array(2),
     'access callback' => 'og_sm_site_permission_access',
-    'access arguments' => array(2, OG_SM_THEME_PERMISSION_SITE_ADMINISTER_THEMES),
+    'access arguments' => array(2, OG_SM_THEME_OG_PERM_ADMINISTER_THEME),
     'file' => 'og_sm_theme.admin.inc',
   );
 
