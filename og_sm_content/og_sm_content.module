@@ -419,11 +419,18 @@ function og_sm_content_admin_menu_items($site) {
 
   $weight = 1;
   foreach ($types as $type) {
+    $path = og_sm_content_add_uri($site, $type->type);
+
+    // Checks a path exists and the current user has access to it.
+    if (!drupal_valid_path($path)) {
+      continue;
+    }
+
     $key = 'node/add/' . $type->type;
     $sort[$type->name] = $key;
     $items[$key] = array(
       '#title' => $type->name,
-      '#href' => url(og_sm_content_add_uri($site, $type->type)),
+      '#href' => url($path),
       '#options' => array(
         'attributes' => array(),
         'alias' => TRUE,

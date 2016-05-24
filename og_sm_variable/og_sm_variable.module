@@ -326,7 +326,16 @@ function og_sm_variable_settings_form(array $form, array &$form_state, $site) {
   if (!empty($_POST) && form_get_errors()) {
     drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
   }
-  $form['#submit'][] = 'og_sm_variable_settings_form_submit';
+
+  // Make sure that saving the values comes first!
+  $submit = (isset($form['#submit']) && is_array($form['#submit']))
+    ? $form['#submit']
+    : FALSE;
+
+  $form['#submit'] = array('og_sm_variable_settings_form_submit');
+  if ($submit) {
+    $form['#submit'] = array_merge($form['#submit'], $submit);
+  }
 
   // By default, render the form using theme_system_settings_form().
   if (!isset($form['#theme'])) {

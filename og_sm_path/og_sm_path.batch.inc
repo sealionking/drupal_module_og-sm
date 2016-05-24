@@ -86,7 +86,6 @@ function og_sm_path_site_alias_update_content_process($site_nid, &$context) {
  */
 function og_sm_path_site_alias_update_menu_process($site_nid, &$context) {
   menu_rebuild();
-  menu_cache_clear_all();
 
   if (module_exists('admin_menu')) {
     admin_menu_flush_caches();
