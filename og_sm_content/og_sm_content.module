@@ -421,7 +421,7 @@ function og_sm_content_admin_menu_items($site) {
   foreach ($types as $type) {
     $path = og_sm_content_add_uri($site, $type->type);
 
-    // Check if user has access to create new content.
+    // Checks a path exists and the current user has access to it.
     if (!drupal_valid_path($path)) {
       continue;
     }
