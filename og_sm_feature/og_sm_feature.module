@@ -107,7 +107,8 @@ function og_sm_feature_views_api() {
  * @param string $feature
  *   The feature name.
  * @param object $site
- *   Optional site to check the access for.
+ *   Optional site to check the access for. If no Site is provided, the current
+ *   Site from OG context will be used.
  *
  * @return bool
  *   Has access.
@@ -153,6 +154,7 @@ function og_sm_feature_info() {
       // Add defaults.
       $module_items[$item_key] += array(
         'description' => NULL,
+        'content types' => array(),
         'global configuration' => NULL,
         'site configuration' => NULL,
       );

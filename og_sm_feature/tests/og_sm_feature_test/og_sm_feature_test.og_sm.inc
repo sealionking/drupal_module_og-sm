@@ -13,6 +13,7 @@ function og_sm_feature_test_og_sm_feature_info() {
   $items['news'] = array(
     'name' => t('News'),
     'description' => t('News content and overviews.'),
+    'content types' => array('news'),
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
   );

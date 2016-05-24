@@ -114,6 +114,8 @@ hook can return multiple features).
 The info array contains following information:
 * **title** : The feature title.
 * **description** : The feature description.
+* **content type** : Array of content type machine names provided by the
+  feature.
 * **global configuration** : An optional path to the a configuration page to set the
   global defaults for a feature.
 * **site configuration** : An optional path to change the configuration of the
@@ -127,6 +129,7 @@ function hook_og_sm_feature_info() {
   $items['news'] = array(
     'name' => t('News'),
     'description' => t('News content and overviews.'),
+    'content types' => array('news'),
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
   );
