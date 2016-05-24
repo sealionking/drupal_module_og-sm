@@ -91,12 +91,77 @@ function og_sm_feature_menu() {
 }
 
 /**
- * Implements hook_views_api().
+ * Implements hook_menu_alter().
+ *
+ * Alter menu items access checks if they are related to features.
  */
-function og_sm_feature_views_api() {
-  return array(
-    'api' => 3,
-  );
+function og_sm_feature_menu_alter(&$items) {
+  // Only required if the Content module is enabled.
+  if (!module_exists('og_sm_content')) {
+    return;
+  }
+
+  $features = og_sm_feature_info();
+  foreach ($features as $feature => $info) {
+    if (empty($info['content types'])) {
+      continue;
+    }
+
+    // Alter the access callbacks for content types.
+    foreach ($info['content types'] as $content_type) {
+      $path_add = 'group/%/%og_sm_site/content/add/' . $content_type;
+      $items[$path_add]['access callback'] = 'og_sm_feature_access_content_add';
+      $items[$path_add]['access arguments'] = array(2, $feature, 5);
+
+      $path_type = 'group/%/%og_sm_site/admin/structure/types/' . $content_type;
+      $items[$path_type]['access callback'] = 'og_sm_feature_access_admin_content_type';
+      $items[$path_type]['access arguments'] = array(2, $feature);
+    }
+  }
+}
+
+/**
+ * Custom access callback for adding new content within a Site.
+ *
+ * @param object $site
+ *   The Site object.
+ * @param string $feature
+ *   The feature name.
+ * @param string $node_type
+ *   The Node type.
+ * @param object $account
+ *   The optional account to test the access for.
+ *
+ * @return bool
+ *   Has access TRUE/FALSE.
+ */
+function og_sm_feature_access_content_add($site, $feature, $node_type, $account = NULL) {
+  if (!og_sm_feature_site_is_enabled($site, $feature)) {
+    return FALSE;
+  }
+
+  return og_sm_content_add_content_access($site, $node_type, $account);
+}
+
+/**
+ * Custom access callback for administrating a content type within a Site.
+ *
+ * @param object $site
+ *   The Site object.
+ * @param string $feature
+ *   The feature name.
+ * @param object $account
+ *   The optional account to test the access for.
+ *
+ * @return bool
+ *   Has access TRUE/FALSE.
+ */
+function og_sm_feature_access_admin_content_type($site, $feature, $account = NULL) {
+  if (!og_sm_feature_site_is_enabled($site, $feature)) {
+    return FALSE;
+  }
+
+  return og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $account);
 }
 
 /**
@@ -265,6 +330,16 @@ function og_sm_feature_variable_key($feature_name) {
   $clean_name = trim(strtolower($feature_name));
   $clean_name = preg_replace('/[^\da-z]/i', '_', $clean_name);
   return sprintf(OG_SM_FEATURE_NAMESPACE, $clean_name);
+}
+
+
+/**
+ * Implements hook_views_api().
+ */
+function og_sm_feature_views_api() {
+  return array(
+    'api' => 3,
+  );
 }
 
 /**
