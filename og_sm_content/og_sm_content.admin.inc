@@ -19,13 +19,17 @@ function og_sm_content_admin_overview_types($site) {
 
   $rows = array();
   foreach (og_sm_content_get_types_by_site($site) as $machine_name => $content_type) {
+    // Check if user has access to edit the content type.
+    $path = 'group/node/' . $site->nid . '/admin/structure/types/' . $machine_name;
+    if (!drupal_valid_path($path)) {
+      continue;
+    }
+
     $rows[] = array(
       $content_type->site_type,
       $content_type->name,
       $content_type->name_plural,
-      l(t('Edit'), 'group/node/' . $site->nid . '/admin/structure/types/' . $machine_name, array(
-        'query' => drupal_get_destination(),
-      )),
+      l(t('Edit'), $path, array('query' => drupal_get_destination())),
     );
   }
 

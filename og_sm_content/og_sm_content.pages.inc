@@ -31,10 +31,16 @@ function og_sm_content_add_overview($site) {
   // Show list of node types the user can create.
   $options = array();
   foreach ($types as $type) {
+    // Check if user has access to create new content.
+    $path = og_sm_content_add_uri($site, $type->type);
+    if (!drupal_valid_path($path)) {
+      continue;
+    }
+
     $options[$type->type] = array(
       'title' => filter_xss($type->name),
       'description' => $type->description,
-      'href' => og_sm_content_add_uri($site, $type->type),
+      'href' => $path,
       'localized_options' => array(),
     );
   }
