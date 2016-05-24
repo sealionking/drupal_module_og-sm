@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2016-05-13 13:04+0100\n"
-"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
+"PO-Revision-Date: 2016-05-18 13:04+0100\n"
+"Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -244,6 +244,14 @@ msgid "Updated URL alias for 1 comment."
 msgid_plural "Updated URL aliases for @count comments."
 msgstr[0] "URL-alias bijgewerkt voor 1 reactie."
 msgstr[1] "URL-aliassen bijgewerkt voor @count reacties."
+
+#: og_sm_comment.module:70
+msgid "Administer comments"
+msgstr "Beheer commentaren"
+
+#: og_sm_comment.module:71
+msgid "Administer all comments within a Site."
+msgstr "Beheer alle reacties binnen een Site."
 
 #: og_sm_comment.info:0
 msgid "Site Comments"
