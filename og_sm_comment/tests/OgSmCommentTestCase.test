@@ -49,7 +49,7 @@ class OgSmCommentTestCase extends OgSmWebTestCase {
     og_role_grant_permissions($roles[OG_ADMINISTRATOR_ROLE], array(
       OG_SM_COMMENT_OG_PERM_DELETE_ALL_COMMENTS,
       OG_SM_COMMENT_OG_PERM_DELETE_OWN_COMMENTS,
-      'administer group',
+      OG_SM_COMMENT_OG_PERM_ADMINISTER_COMMENTS,
     ));
     og_role_grant_permissions($roles[OG_AUTHENTICATED_ROLE], array(
       OG_SM_COMMENT_OG_PERM_DELETE_OWN_COMMENTS,
