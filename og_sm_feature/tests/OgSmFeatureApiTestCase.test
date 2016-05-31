@@ -1,0 +1,200 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Feature API.
+ */
+
+/**
+ * Tests about the API to check features.
+ */
+class OgSmFeatureApiTestCase extends OgSmWebTestCase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Feature : API'),
+      'description' => t('Tests OG Site Manager Feature API.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_feature_test');
+    parent::setUp($modules);
+  }
+
+  /**
+   * Test collection of the info.
+   */
+  public function testFeatureInfo() {
+    global $language;
+    $cid = 'og_sm_feature_info:' . $language->language;
+
+    // Not called yet => not cached.
+    $this->assertFalse(
+      cache_get($cid),
+      'As long as the og_sm_info function is not called, no data in cache.'
+    );
+
+    // Collect the info.
+    $expected = array(
+      'articles' => array(
+        'name' => 'Articles',
+        'description' => NULL,
+        'content types' => array(),
+        'global configuration' => NULL,
+        'site configuration' => NULL,
+      ),
+      'news' => array(
+        'name' => 'News',
+        'description' => 'News content and overviews.',
+        'content types' => array('news'),
+        'global configuration' => 'admin/config/group/features/news-test',
+        'site configuration' => 'admin/features/news-test',
+      ),
+    );
+    $info = og_sm_feature_info();
+    $this->assertEqual($expected, $info, 'Collected info from the implemented hooks.');
+
+    // Info should be cached.
+    $this->assertEqual(
+      $expected,
+      cache_get($cid)->data,
+      'From the moment the og_sm_feature_info function is called, data is cached.'
+    );
+
+    // Check if a feature exists.
+    $this->assertFalse(
+      og_sm_feature_exists('foobar'),
+      'FooBar feature does not exist.'
+    );
+    $this->assertTrue(
+      og_sm_feature_exists('news'),
+      'News feature does exist.'
+    );
+  }
+
+  /**
+   * Test enable/disabling features.
+   */
+  public function testEnableDisable() {
+    // Create a Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $site = $this->ogSmCreateGroup($type);
+    $sid = $site->nid;
+
+    // Test creating the feature variable key.
+    $this->assertEqual(
+      'og_sm_feature_news',
+      og_sm_feature_variable_key('news'),
+      'Variable key for "news" is "og_sm_feature_news".'
+    );
+    $this->assertEqual(
+      'og_sm_feature_long_name_with_spaces_and_dashes',
+      og_sm_feature_variable_key('Long Name with spaces-and-dashes'),
+      'Variable key for "Long Name with spaces-end-dashes" is "og_sm_feature_long_name_with_spaces_and_dashes".'
+    );
+
+    // Enable a non existing feature.
+    og_sm_feature_site_enable($site, 'foobar');
+    $this->assertNull(
+      og_sm_variable_get($sid, 'og_sm_feature_foobar', NULL),
+      'Not possible to enable a not existing feature.'
+    );
+
+    // Enable an existing feature.
+    $this->assertNull(
+      og_sm_variable_get($sid, 'og_sm_feature_news', NULL),
+      'No feature variable set for News.'
+    );
+    og_sm_feature_site_enable($site, 'news');
+    $this->assertTrue(
+      og_sm_variable_get($sid, 'og_sm_feature_news', FALSE),
+      'Enabled the News feature for Site ' . $site->title . '.'
+    );
+
+    // Disable a non existing feature.
+    og_sm_feature_site_disable($site, 'foobar');
+    $this->assertNull(
+      og_sm_variable_get($sid, 'og_sm_feature_foobar', NULL),
+      'Not possible to disable a not existing feature.'
+    );
+
+    // Disable an existing feature.
+    og_sm_feature_site_disable($site, 'news');
+    $this->assertFalse(
+      og_sm_variable_get($sid, 'og_sm_feature_news', NULL),
+      'Disabled the News feature for Site ' . $site->title . '.'
+    );
+
+    // Test the feature status.
+    $this->assertFalse(
+      og_sm_feature_site_is_enabled($site, 'news'),
+      'News feature is not enabled.'
+    );
+    og_sm_feature_site_enable($site, 'news');
+    $this->assertTrue(
+      og_sm_feature_site_is_enabled($site, 'news'),
+      'News feature is enabled.'
+    );
+
+    // Test the access callback.
+    og_sm_feature_site_enable($site, 'news');
+    og_sm_feature_site_disable($site, 'articles');
+    $this->assertTrue(
+      og_sm_feature_access('news', $site),
+      'Access granted if the feature is enabled for given Site.'
+    );
+    $this->assertFalse(
+      og_sm_feature_access('articles', $site),
+      'Access not granted if the feature is disabled for given Site.'
+    );
+
+    // Test the access callback using the current Site from OG context.
+    $this->ogSmSetOgContextToGroup($site);
+    $this->assertTrue(
+      og_sm_feature_access('news'),
+      'Access granted if the feature is enabled for given Site.'
+    );
+    $this->assertFalse(
+      og_sm_feature_access('articles'),
+      'Access not granted if the feature is disabled for given Site.'
+    );
+  }
+
+  /**
+   * Test default features (globally defined) when new site is created.
+   */
+  public function testDefaultFeaturesWhenNewSiteIsCreated() {
+    // Set the default features.
+    variable_set(og_sm_feature_variable_key('news'), 0);
+    variable_set(og_sm_feature_variable_key('articles'), 1);
+
+    // Create a new Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $site = $this->ogSmCreateGroup($type);
+
+    // Check if the default features are enabled.
+    $this->assertNull(
+      og_sm_variable_get($site->nid, og_sm_feature_variable_key('news')),
+      'No Site feature variable saved for not by default enabled features.'
+    );
+    $this->assertFalse(
+      og_sm_feature_site_is_enabled($site, 'news'),
+      'News is not enabled by default.'
+    );
+    $this->assertTrue(
+      og_sm_feature_site_is_enabled($site, 'articles'),
+      'Article feature is enabled by default.'
+    );
+  }
+
+}

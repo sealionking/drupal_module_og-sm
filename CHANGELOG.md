@@ -2,6 +2,12 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
+## [7.x-1.2]
+### Added
+- DMOGSM-12 : Functionality to enable/disable & configure features per Site.
+
+
+
 ## [7.x-1.1]
 ### Added
 - DMOGSM-37 : Added permissions to limit access to change the path of existing
@@ -137,6 +143,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.2%0D7.x-1.1#diff
 [7.x-1.1]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.1%0D7.x-1.0#diff
 [7.x-1.0]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0%0D7.x-1.0-alpha8#diff
 [7.x-1.0-alpha8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha8%0D7.x-1.0-alpha7#diff
