@@ -394,11 +394,13 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
     if (empty($condition['field'])) {
       continue;
     }
-    if ($condition['field'] !== 't.vid') {
-      continue;
+    if ($condition['field'] == 't.vid') {
+      $vocabulary = taxonomy_vocabulary_load($condition['value']);
     }
-
-    $vocabulary = taxonomy_vocabulary_load($condition['value']);
+    elseif ($condition['field'] == 'tv.machine_name') {
+      // Views stores the vocabulary condition as machine name.
+      $vocabulary = taxonomy_vocabulary_machine_name_load($condition['value']);
+    }
   }
   if (!$vocabulary) {
     return;
