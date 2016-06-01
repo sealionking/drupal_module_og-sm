@@ -1,6 +1,9 @@
 # Changelog
 All Notable changes to **Organic Groups Site Manager** module suite.
 
+## [Unreleased]
+### Fixed
+- WEBSECOND-248 : Added Views exposed filters support for og_sm_taxonomy.
 
 ## [7.x-1.2]
 ### Added
