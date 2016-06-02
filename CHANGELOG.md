@@ -2,6 +2,10 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [Unreleased]
+### Added
+- DMOGSM-57 : Added extra permissions so Site Users can get granted to delete
+  Site terms.
+
 ### Fixed
 - WEBSECOND-248 : Added Views exposed filters support for og_sm_taxonomy.
 

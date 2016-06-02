@@ -332,7 +332,6 @@ function og_sm_feature_variable_key($feature_name) {
   return sprintf(OG_SM_FEATURE_NAMESPACE, $clean_name);
 }
 
-
 /**
  * Implements hook_views_api().
  */
