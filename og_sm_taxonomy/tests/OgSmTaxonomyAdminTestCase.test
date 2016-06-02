@@ -134,12 +134,12 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
       $site_role_all->rid
     );
 
-    // Site user who can manage only categories.
+    // Site user who can manage only categories (edit).
     $site_role_categories = og_role_create('site taxonomy categories', 'node', 0, $type);
     og_role_save($site_role_categories);
     og_role_grant_permissions(
       $site_role_categories->rid,
-      array(sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, 'test_categories'))
+      array(sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, 'test_categories'))
     );
     $this->siteUserPermissionCategories = $this->ogSmCreateGroupUser(
       array(),
@@ -152,12 +152,15 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
       $site_role_categories->rid
     );
 
-    // Site user who can manage only tags.
+    // Site user who can manage only tags (edit & delete).
     $site_role_tags = og_role_create('site taxonomy tags', 'node', 0, $type);
     og_role_save($site_role_tags);
     og_role_grant_permissions(
       $site_role_tags->rid,
-      array(sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, 'test_tags'))
+      array(
+        sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, 'test_tags'),
+        sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_DELETE, 'test_tags'),
+      )
     );
     $this->siteUserPermissionTags = $this->ogSmCreateGroupUser(
       array(),
@@ -241,7 +244,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
         $this->vocabCategories,
         $this->userAdministrator
       ),
-      'Site Taxonomy administrate vocabulary : Global administrators have always access.'
+      'Site Taxonomy edit vocabulary : Global administrators have always access.'
     );
 
     // Global user without permissions should not have access.
@@ -251,7 +254,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
         $this->vocabTags,
         $this->userPermissionNone
       ),
-      'Site Taxonomy administrate vocabulary : Global user without permissions has no access.'
+      'Site Taxonomy edit vocabulary : Global user without permissions has no access.'
     );
 
     // Global user with the permission should have access.
@@ -261,7 +264,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
         $this->vocabCategories,
         $this->userPermissionAll
       ),
-      'Site Taxonomy administrate vocabulary : Global user with permission has access.'
+      'Site Taxonomy edit vocabulary : Global user with permission has access.'
     );
 
     // Site users without permissions should not have access.
@@ -271,7 +274,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
         $this->vocabCategories,
         $this->siteUserPermissionNone
       ),
-      'Site Taxonomy administrate vocabulary : Site user without permissions has no access.'
+      'Site Taxonomy edit vocabulary : Site user without permissions has no access.'
     );
 
     // Site users with all taxonomy permission should have access.
@@ -281,7 +284,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
         $this->vocabTags,
         $this->siteUserPermissionAll
       ),
-      'Site Taxonomy administrate vocabulary : Site user with edit all permissions has access.'
+      'Site Taxonomy edit vocabulary : Site user with edit all permissions has access.'
     );
 
     // Site users with at taxonomy specific permission.
@@ -291,7 +294,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
         $this->vocabCategories,
         $this->siteUserPermissionCategories
       ),
-      'Site Taxonomy administrate vocabulary : Site user with vocabulary specific permissions has access to it.'
+      'Site Taxonomy edit vocabulary : Site user with vocabulary specific permissions has access to it.'
     );
 
     // Site user with taxonomy he has no access to.
@@ -301,7 +304,80 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
         $this->vocabTags,
         $this->siteUserPermissionCategories
       ),
-      'Site Taxonomy administrate vocabulary : Site user without vocabulary specific permissions has no access to it.'
+      'Site Taxonomy edit vocabulary : Site user without vocabulary specific permissions has no access to it.'
+    );
+  }
+
+  /**
+   * Test access to delete a term.
+   */
+  public function testTaxonomyAdministrationVocabularyDeleteAccess() {
+    // Add some terms.
+    $sites = array($this->siteNode);
+    $term_cat = $this->ogSmCreateTerm($this->vocabCategories, 'term_cat', $sites);
+    $term_tag = $this->ogSmCreateTerm($this->vocabTags, 'term_tag', $sites);
+
+    // Global Administrators should always have access.
+    $this->assertTrue(
+      og_sm_taxonomy_term_delete_access(
+        $term_cat,
+        $this->userAdministrator
+      ),
+      'Site Taxonomy delete term : Global administrators have always access.'
+    );
+
+    // Global user without permissions should not have access.
+    $this->assertFalse(
+      og_sm_taxonomy_term_delete_access(
+        $term_cat,
+        $this->userPermissionNone
+      ),
+      'Site Taxonomy delete term : Global user without permissions has no access.'
+    );
+
+    // Global user with the permission should have access.
+    $this->assertTrue(
+      og_sm_taxonomy_term_delete_access(
+        $term_cat,
+        $this->userPermissionAll
+      ),
+      'Site Taxonomy delete term : Global user with permission has access.'
+    );
+
+    // Site users without permissions should not have access.
+    $this->assertFalse(
+      og_sm_taxonomy_term_delete_access(
+        $term_cat,
+        $this->siteUserPermissionNone
+      ),
+      'Site Taxonomy delete term : Site user without permissions has no access.'
+    );
+
+    // Site users with all taxonomy permission should have access.
+    $this->assertTrue(
+      og_sm_taxonomy_term_delete_access(
+        $term_cat,
+        $this->siteUserPermissionAll
+      ),
+      'Site Taxonomy delete term : Site user with edit all permissions has access.'
+    );
+
+    // Site users with taxonomy specific permission.
+    $this->assertTrue(
+      og_sm_taxonomy_term_delete_access(
+        $term_tag,
+        $this->siteUserPermissionTags
+      ),
+      'Site Taxonomy delete term : Site user with vocabulary specific permissions has access to it.'
+    );
+
+    // Site user with taxonomy edit but no delete access.
+    $this->assertFalse(
+      og_sm_taxonomy_term_delete_access(
+        $term_cat,
+        $this->siteUserPermissionCategories
+      ),
+      'Site Taxonomy delete term : Site user without vocabulary specific permissions has no access to it.'
     );
   }
 
@@ -383,7 +459,6 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     taxonomy_term_save($term_3);
 
     // Add some terms to another Site.
-    $sites = array($this->siteNodeOther);
     $term_other = $this->ogSmCreateTerm($this->vocabCategories, 'term_other', array($this->siteNodeOther));
     $term_other->weight = 9999;
 
@@ -464,7 +539,7 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
   /**
    * Test editing a vocabulary term.
    */
-  public function testTaxonomyAdministrationtermEdit() {
+  public function testTaxonomyAdministrationTermEdit() {
     $sites = array($this->siteNode);
     $term = $this->ogSmCreateTerm($this->vocabCategories, 'term_1', $sites);
     $path_edit = 'taxonomy/term/' . $term->tid . '/edit';
@@ -514,6 +589,76 @@ class OgSmTaxonomyAdminTestCase extends OgSmTaxonomyWebTestCase {
     $this->drupalLogin($this->siteUserPermissionTags);
     $this->drupalGet($path_edit);
     $this->assertResponse(403, 'Site Taxonomy term edit : Site user without categories permissions has no access.');
+  }
+
+  /**
+   * Test deleting a Site taxonomy term.
+   */
+  public function testTaxonomyAdministrationTermDelete() {
+    // Create some tags to test with.
+    $sites = array($this->siteNode);
+    $term_cat = $this->ogSmCreateTerm($this->vocabCategories, 'term_cat', $sites);
+    $path_cat_edit = 'taxonomy/term/' . $term_cat->tid . '/edit';
+    $term_tag = $this->ogSmCreateTerm($this->vocabTags, 'term_tag', $sites);
+    $path_tag_edit = 'taxonomy/term/' . $term_tag->tid . '/edit';
+
+    // Administrator has always access to the delete button.
+    $this->drupalLogin($this->userAdministrator);
+    $this->drupalGet($path_cat_edit);
+    $this->assertFieldById('edit-delete', t('Delete'), 'Site Taxonomy term delete : Administrator has always access.');
+    $this->drupalPost($path_cat_edit, array(), t('Delete'));
+    $this->assertText(
+      'Are you sure you want to delete the term ' . $term_cat->name,
+      'Site Taxonomy term delete : Administrator has access to delete confirmation form.'
+    );
+
+    // Global user with proper permissions.
+    $this->drupalLogin($this->userPermissionAll);
+    $this->drupalGet($path_cat_edit);
+    $this->assertFieldById('edit-delete', t('Delete'), 'Site Taxonomy term delete : Global user with edit all has access.');
+    $this->drupalPost($path_cat_edit, array(), t('Delete'));
+    $this->assertText(
+      'Are you sure you want to delete the term ' . $term_cat->name,
+      'Site Taxonomy term delete : Global user with edit all has access to delete confirmation form.'
+    );
+
+    // Site user who can manage all.
+    $this->drupalLogin($this->siteUserPermissionAll);
+    $this->drupalGet($path_cat_edit);
+    $this->assertFieldById('edit-delete', t('Delete'), 'Site Taxonomy term delete : Site user with edit all has access.');
+    $this->drupalPost($path_cat_edit, array(), t('Delete'));
+    $this->assertText(
+      'Are you sure you want to delete the term ' . $term_cat->name,
+      'Site Taxonomy term delete : Site user with edit all has access to delete confirmation form.'
+    );
+
+    // Site user with edit but no delete access.
+    $this->drupalLogin($this->siteUserPermissionCategories);
+    $this->drupalGet($path_cat_edit);
+    $this->assertNoFieldById('edit-delete', t('Delete'), 'Site Taxonomy term delete : Site user with only edit permission has no access.');
+
+    // Site user with edit and delete vocabulary term access.
+    $this->drupalLogin($this->siteUserPermissionTags);
+    $this->drupalGet($path_tag_edit);
+    $this->assertFieldById('edit-delete', t('Delete'), 'Site Taxonomy term delete : Site user with delete permission has access.');
+    $this->drupalPost($path_tag_edit, array(), t('Delete'));
+    $this->assertText(
+      'Are you sure you want to delete the term ' . $term_tag->name,
+      'Site Taxonomy term delete : Site user with delete permission has access to delete confirmation form.'
+    );
+
+    // Check redirect once the term is deleted.
+    $path_tags = 'group/node/' . $this->siteNode->nid . '/admin/taxonomy/test_tags';
+    $this->drupalPost(NULL, array(), t('Delete'));
+    $this->assertRaw(
+      t('Deleted term %name.', array('%name' => $term_tag->name)),
+      'Taxonomy term (tag) deleted.'
+    );
+    $this->assertUrl(
+      $path_tags,
+      array(),
+      'The user is redirected back to the Site Tags overview page.'
+    );
   }
 
   /**
