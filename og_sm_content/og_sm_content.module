@@ -176,6 +176,41 @@ function og_sm_content_menu() {
 }
 
 /**
+ * Implements hook_node_access().
+ *
+ * We are adding our own hook_node_access implementation since we don't want
+ * site members to be able to access the global node add/edit forms.
+ */
+function og_sm_content_node_access($node, $op, $account) {
+  if (!in_array($op, array('create', 'update', 'delete'))) {
+    return NODE_ACCESS_IGNORE;
+  }
+
+  $type = is_string($node) ? $node : (is_array($node) ? $node['type'] : $node->type);
+  if (!og_sm_content_is_site_content_type($type)) {
+    // We don't want to intervene if this is not a site content type.
+    return NODE_ACCESS_IGNORE;
+  }
+
+  // We want to fetch the context from the path rather then the node since we
+  // don't want to give citizen access to the global node edit forms.
+  $site = og_sm_current_site();
+  if ($site) {
+    // If we are within a site context we let og_node_access verify the access.
+    return NODE_ACCESS_IGNORE;
+  }
+
+  // Since og_node_access will return NODE_ACCESS_ALLOW, we need to make sure
+  // that that the result of node_node_access is interpreted as a
+  // NODE_ACCESS_DENY rather then a NODE_ACCESS_IGNORE. node_node_access will
+  // only check the global permissions.
+  if (node_node_access($node, $op, $account) === NODE_ACCESS_IGNORE) {
+    return NODE_ACCESS_DENY;
+  }
+  return NODE_ACCESS_IGNORE;
+}
+
+/**
  * Implements hook_menu_alter().
  */
 function og_sm_content_menu_alter(&$items) {
