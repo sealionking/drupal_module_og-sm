@@ -1,0 +1,55 @@
+<?php
+/**
+ * @file
+ * Install, Uninstall and update hooks.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function og_sm_profile_schema() {
+  $schema['og_sm_profile'] = array(
+    'description' => 'OG profile',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for a group profile.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      // @todo: Check why we use a site's ID rather then it's machine name,
+      // probably this is unnecessary with the inclusion of og_sm_features.
+      'group_name' => array(
+        'description' => "The group's machine name.",
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'The user identifier.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the profile was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'group_name__uid' => array('group_name', 'uid'),
+    ),
+    'indexes' => array(
+      'group_name' => array('group_name'),
+      'created' => array('created'),
+    ),
+  );
+
+  $schema['cache_og_sm_profile'] = drupal_get_schema_unprocessed('system', 'cache');
+
+  return $schema;
+}

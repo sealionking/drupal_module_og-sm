@@ -1,0 +1,6 @@
+name = User Profile
+description = "Site specific user profiles."
+package = "Organic Groups Site Manager"
+core = 7.x
+
+dependencies[] = og

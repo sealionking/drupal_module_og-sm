@@ -1,0 +1,315 @@
+<?php
+/**
+ * @file
+ * OG SM Profile.
+ */
+
+/**
+ * Our own cache bin to store loaded profiles.
+ */
+define('OG_SM_PROFILE_CACHE_BIN', 'cache_og_sm_profile');
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_profile_menu() {
+  $items = array();
+
+  $items['node/%og_sm_site/profile'] = array(
+    'title callback' => 'og_sm_profile_page_title',
+    'title arguments' => array(1),
+    'page callback' => 'og_sm_profile_page',
+    'page arguments' => array(1),
+    'access callback' => 'og_sm_profile_page_access',
+    'access arguments' => array(1),
+    'file' => 'og_sm_profile.pages.inc',
+    'type' => MENU_CALLBACK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+  $items['node/%og_sm_site/profile/view'] = array(
+    'title' => 'View',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  // Don't use node/x/x/edit, the path will trigger the theme setting that
+  // enabled the admin theme.
+  $items['node/%og_sm_site/profile/modify'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_profile_edit_form', 1),
+    'access callback' => 'og_sm_profile_page_access',
+    'access arguments' => array(1),
+    'file' => 'og_sm_profile.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function og_sm_profile_permission() {
+  return array(
+    'access group user profiles' => array(
+      'title' => t('Allows a user to view other users group profiles'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Menu item title callback for the 'profile' path.
+ *
+ * Privileged users should see the other "User profile", but authenticated users
+ * are expected to see "My profile".
+ */
+function og_sm_profile_page_title($site) {
+  return user_is_logged_in() ? t('My "@group" account', array('@group' => $site->title)) : t('User account');
+}
+
+/**
+ * Custom access check to see if we can see the profile page.
+ *
+ * @param object $site
+ *   The site node.
+ *
+ * @return bool
+ *   Whether the user can access the page.
+ */
+function og_sm_profile_page_access($site) {
+  // @todo implement viewing other profile with user_access('access group user profiles');
+  return user_is_logged_in();
+}
+
+/**
+ * Clear all profiles from cache for a user.
+ *
+ * @param int $uid
+ *   User uid for which to purge the cached profiles.
+ */
+function _og_sm_profile_clear_profile_cache($uid = NULL) {
+  if (!$uid) {
+    cache_clear_all(NULL, OG_SM_PROFILE_CACHE_BIN);
+  }
+  else {
+    cache_clear_all($uid . ':', OG_SM_PROFILE_CACHE_BIN, TRUE);
+  }
+}
+
+/**
+ * Create a site user profile.
+ *
+ * @param string $group_machine_name
+ *   The machine name of the group.
+ * @param int $uid
+ *   The user id of the user.
+ *
+ * @return object
+ *   The profile object.
+ *
+ * @throws \Exception
+ * @throws \InvalidMergeQueryException
+ */
+function og_sm_profile_create($group_machine_name, $uid) {
+
+  $profile = array(
+    'group_name' => $group_machine_name,
+    'uid' => $uid,
+    'created' => REQUEST_TIME,
+  );
+
+  // @todo: Document in og_sm_profile.api.php.
+  module_invoke_all('og_sm_profile_presave', $profile);
+
+  $return = db_merge('og_sm_profile')
+    ->key(array('group_name' => $group_machine_name, 'uid' => $uid))
+    ->fields($profile)
+    ->execute();
+
+  $profile = (object) $profile;
+  if ($return == SAVED_NEW) {
+    // Get profile id.
+    $profile->id = db_select('og_sm_profile')
+      ->fields('og_sm_profile', array('id'))
+      ->condition('group_name', $group_machine_name)
+      ->condition('uid', $uid)
+      ->execute()->fetchField();
+    // @todo: Document in og_sm_profile.api.php.
+    module_invoke_all('og_sm_profile_insert', $profile);
+  }
+  else {
+    // @todo: Document in og_sm_profile.api.php.
+    module_invoke_all('og_sm_profile_update', $profile);
+  }
+  return $profile;
+}
+
+/**
+ * Deletes a profile.
+ *
+ * @param int $uid
+ *   The user id of the user.
+ * @param string|NULL $group_machine_name
+ *   (optional) The machine name of the group.
+ */
+function og_sm_profile_delete($uid, $group_machine_name = NULL) {
+  $query = db_delete('og_sm_profile')
+    ->condition('uid', $uid);
+  if ($group_machine_name) {
+    $query->condition('group_name', $group_machine_name);
+  }
+  $query->execute();
+
+  // @todo: Document in og_sm_profile.api.php.
+  module_invoke_all('og_sm_profile_delete', $uid, $group_machine_name);
+
+  _og_sm_profile_clear_profile_cache($uid);
+}
+
+/**
+ * Implements hook_user_delete().
+ */
+function og_sm_profile_user_delete($account) {
+  og_sm_profile_delete($account->uid);
+}
+
+/**
+ * Returns the profile of the user from the OG context.
+ *
+ * @param int $uid
+ *   The uid of the profile to load.
+ * @param bool $autocreate
+ *   Should profiles be created when they don't exist?
+ *
+ * @return object|NULL
+ *   The site user profile.
+ */
+function og_sm_profile_load_from_context($uid = NULL, $autocreate = TRUE) {
+  // If no uid supplied, use the global user.
+  if (!$uid) {
+    $uid = $GLOBALS['user']->uid;
+    // Skip the anonymous user.
+    if (!$uid) {
+      return NULL;
+    }
+  }
+
+  $site = og_sm_current_site();
+  if (!$site) {
+    return NULL;
+  }
+
+  // To keep this lightweight, we can choose not to create a profile.
+  if ($autocreate) {
+    return og_sm_profile_get_or_create($site->group_name, $uid);
+  }
+  else {
+    return og_sm_profile_load($site->group_name, $uid);
+  }
+}
+
+/**
+ * Retrieves a site user profile.
+ *
+ * This function will always return a profile for a site user. If a user has no
+ * profile yet, one will be created.
+ *
+ * @param string $group_machine_name
+ *   The machine name of the group.
+ * @param int $uid
+ *   The user id of the user.
+ *
+ * @return object
+ *   The site user profile.
+ */
+function og_sm_profile_get_or_create($group_machine_name, $uid) {
+  $profile = og_sm_profile_load($group_machine_name, $uid);
+  if (!isset($profile->id)) {
+    $new_profile = og_sm_profile_create($group_machine_name, $uid);
+    // Merge in the defaults for new profiles.
+    $profile = (object) array_merge((array) $profile, (array) $new_profile);
+  }
+  return $profile;
+}
+
+/**
+ * Return s a fully loaded site user profile.
+ *
+ * @param string $group_machine_name
+ *   The machine name of the group.
+ * @param int $uid
+ *   The user id of the user.
+ * @param bool $reset
+ *   Skip loading from caches.
+ *
+ * @return mixed
+ *   The loaded profile a user within a site.
+ */
+function og_sm_profile_load($group_machine_name, $uid, $reset = FALSE) {
+
+  $cid = $uid . ':' . $group_machine_name;
+  static $drupal_static_fast;
+  if (!isset($drupal_static_fast)) {
+    $drupal_static_fast['profiles'] = &drupal_static(__FUNCTION__);
+  }
+  $profiles = &$drupal_static_fast['profiles'];
+  if (!isset($profiles[$cid]) || $reset) {
+    if (!$reset && $cache = cache_get($cid, OG_SM_PROFILE_CACHE_BIN)) {
+      $profile = $cache->data;
+    }
+    else {
+      $profile = db_select('og_sm_profile', 'gp')
+        ->fields('gp')
+        ->condition('group_name', $group_machine_name)
+        ->condition('uid', $uid)
+        ->execute()
+        ->fetchObject();
+
+      // Allow other modules to alter a profile.
+      $profile = is_object($profile) ? $profile : new stdClass();
+      drupal_alter('og_sm_profile', $profile);
+
+      if (isset($profile->id)) {
+        cache_set($cid, $profile, OG_SM_PROFILE_CACHE_BIN);
+      }
+    }
+    $profiles[$cid] = $profile;
+  }
+  // Allow other modules to react on profile load.
+  module_invoke_all('og_sm_profile_load', $profiles[$cid]);
+
+  return $profiles[$cid];
+}
+
+/**
+ * Implements hook_flush_caches().
+ */
+function og_sm_profile_flush_caches() {
+  return array(OG_SM_PROFILE_CACHE_BIN);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function og_sm_profile_theme() {
+  return array(
+    'og_sm_profile_page' => array(
+      'template' => 'templates/og_sm_profile_page',
+      'variables' => array(
+        'name' => NULL,
+        'email' => NULL,
+        'sections' => array(),
+      ),
+    ),
+    'og_sm_profile_page_section' => array(
+      'variables' => array(
+        'label' => NULL,
+        'elements' => NULL,
+      ),
+      'file' => 'og_sm_profile.theme.inc',
+    ),
+  );
+}
