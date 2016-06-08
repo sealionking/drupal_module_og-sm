@@ -12,7 +12,7 @@ define('OG_SM_PROFILE_CACHE_BIN', 'cache_og_sm_profile');
 /**
  * Implements hook_hook_info().
  */
-function og_sm_content_hook_info() {
+function og_sm_profile_hook_info() {
   $hooks = array(
     'og_sm_profile_view' => array(
       'group' => 'og_sm',
@@ -54,6 +54,23 @@ function og_sm_profile_menu() {
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
+  $items['node/%og_sm_site/profile/%user'] = array(
+    'title callback' => 'og_sm_profile_page_title',
+    'title arguments' => array(1, 3),
+    'page callback' => 'og_sm_profile_page',
+    'page arguments' => array(1, 3),
+    'access callback' => 'og_sm_profile_page_access',
+    'access arguments' => array(1),
+    'file' => 'og_sm_profile.pages.inc',
+    'type' => MENU_CALLBACK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    // By assigning a different menu name, this item (and all registered child
+    // paths) are no longer considered as children of 'user'. When accessing the
+    // user account pages, the preferred menu link that is used to build the
+    // active trail (breadcrumb) will be found in this menu (unless there is
+    // more specific link), so the link to 'user' will not be in the breadcrumb.
+    'menu_name' => 'navigation',
+  );
   $items['node/%og_sm_site/profile/view'] = array(
     'title' => 'View',
     'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -94,7 +111,7 @@ function og_sm_profile_permission() {
  * Privileged users should see the other "User profile", but authenticated users
  * are expected to see "My profile".
  */
-function og_sm_profile_page_title($site) {
+function og_sm_profile_page_title($site, $user = NULL) {
   return user_is_logged_in() ? t('My "@group" account', array('@group' => $site->title)) : t('User account');
 }
 
@@ -327,8 +344,6 @@ function og_sm_profile_theme() {
     'og_sm_profile_page' => array(
       'template' => 'templates/og_sm_profile_page',
       'variables' => array(
-        'name' => NULL,
-        'email' => NULL,
         'sections' => array(),
       ),
     ),
@@ -338,6 +353,31 @@ function og_sm_profile_theme() {
         'elements' => NULL,
       ),
       'file' => 'og_sm_profile.theme.inc',
+    ),
+  );
+}
+
+/**
+ * Render callback for the basic info profile section.
+ *
+ * @param object $profile
+ *   The site user profile.
+ *
+ * @return array
+ *   Renderable array to build the section markup.
+ */
+function og_sm_profile_section_basic_info($profile) {
+  $user = user_load($profile->uid);
+  return array(
+    '#theme' => 'og_sm_profile_page_section',
+    '#label' => t('Profile'),
+    '#elements' => array(
+      'basic_info' => array(
+        '#type' => 'html_tag',
+        '#tag' => 'address',
+        '#value' => $user->mail,
+        '#label' => $user->name,
+      ),
     ),
   );
 }

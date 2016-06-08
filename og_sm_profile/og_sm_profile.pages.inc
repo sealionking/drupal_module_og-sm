@@ -5,33 +5,71 @@
  */
 
 /**
+ * Returns sections info to build the user profile page.
+ *
+ * @return array
+ *   An array of section info arrays, each section info array can contain the
+ *   following attributes:
+ *   - "render callback": The function to call to display the section on the
+ *     profile page.
+ *   - "weight": (optional) The weight of the section.
+ */
+function og_sm_profile_get_sections_info() {
+  // Check if we already cached the information.
+  $cache = cache_get(__FUNCTION__);
+  if ($cache) {
+    return $cache->data;
+  }
+
+  $sections_info = module_invoke_all('og_sm_profile_view');
+  drupal_alter('og_sm_profile_view', $sections_info);
+
+  // Store in cache.
+  cache_set(__FUNCTION__, $sections_info);
+
+  // Return data.
+  return $sections_info;
+}
+
+/**
  * The site user profile page.
  *
  * @param object $site
  *   The site node.
+ * @param object $account
+ *   (optional) The user object.
  *
  * @return array
  *   Renderable array of profile data.
  */
-function og_sm_profile_page($site) {
-  global $user;
+function og_sm_profile_page($site, $account = NULL) {
+  if (!isset($account)) {
+    global $user;
+    $account = $user;
+  }
 
   $path = array(
     l(og_sm_profile_page_title($site), 'node/' . $site->nid . '/profile'),
   );
   og_set_breadcrumb('node', $site->nid, $path);
 
-  $profile = og_sm_profile_load_from_context(NULL, FALSE);
+  $profile = og_sm_profile_load_from_context($account->uid, FALSE);
+  $sections_info = og_sm_profile_get_sections_info();
 
-  // Allow other modules to add extra elements.
-  $sections = module_invoke_all('og_sm_profile_view', $profile);
-  // Allow other modules to alter the elements.
-  drupal_alter('og_sm_profile_view', $sections, $profile);
+  $sections = array();
+  foreach ($sections_info as $section_info) {
+    if (!isset($section_info['render callback'])) {
+      continue;
+    }
+    $render_callback = $section_info['render callback'];
+    if (!function_exists($render_callback)) {
+      continue;
+    }
+    $sections[] = call_user_func($render_callback, $profile);
+  }
 
   return array(
     '#theme' => 'og_sm_profile_page',
-    '#name' => $user->name,
-    '#email' => $user->mail,
     '#sections' => $sections,
   );
 }

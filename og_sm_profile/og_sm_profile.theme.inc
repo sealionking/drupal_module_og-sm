@@ -24,7 +24,6 @@ function theme_og_sm_profile_page_section($variables) {
         'class' => 'field field--profile',
         'id' => drupal_html_id($element_name),
       ),
-      '#weight' => $element['#weight'] ? $element['#weight'] : 0,
     );
     if (isset($element['#label'])) {
       $container['label'] = array(
