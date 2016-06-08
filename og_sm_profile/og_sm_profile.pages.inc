@@ -84,11 +84,18 @@ function og_sm_profile_page($site, $account = NULL) {
  *   The current form state.
  * @param object $site
  *   The site node.
+ * @param object $account
+ *   (optional) The user object.
  *
  * @return array
  *   The form structure.
  */
-function og_sm_profile_edit_form($form, &$form_state, $site) {
+function og_sm_profile_edit_form($form, &$form_state, $site, $account = NULL) {
+  if (!isset($account)) {
+    global $user;
+    $account = $user;
+  }
+
   // Breadcrumbs.
   $context = og_context();
   og_set_breadcrumb('node', $context['gid'], array(
@@ -99,7 +106,7 @@ function og_sm_profile_edit_form($form, &$form_state, $site) {
   $form['#prefix'] = '<div class="l-primary">';
   $form['#suffix'] = '</div>';
 
-  $profile = og_sm_profile_load_from_context();
+  $profile = og_sm_profile_load_from_context($account->uid);
   $form_state['profile'] = $profile;
 
   // Every module with profile data should alter this form and add their own

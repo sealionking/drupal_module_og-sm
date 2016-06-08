@@ -32,8 +32,13 @@ function og_sm_profile_hook_info() {
     'og_sm_profile_delete' => array(
       'group' => 'og_sm',
     ),
+    'og_sm_profile_load' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_profile_alter' => array(
+      'group' => 'og_sm',
+    ),
   );
-
   return $hooks;
 }
 
@@ -49,7 +54,7 @@ function og_sm_profile_menu() {
     'page callback' => 'og_sm_profile_page',
     'page arguments' => array(1),
     'access callback' => 'og_sm_profile_page_access',
-    'access arguments' => array(1),
+    'access arguments' => array('view'),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -60,7 +65,7 @@ function og_sm_profile_menu() {
     'page callback' => 'og_sm_profile_page',
     'page arguments' => array(1, 3),
     'access callback' => 'og_sm_profile_page_access',
-    'access arguments' => array(1),
+    'access arguments' => array('view', 3),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -84,10 +89,20 @@ function og_sm_profile_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('og_sm_profile_edit_form', 1),
     'access callback' => 'og_sm_profile_page_access',
-    'access arguments' => array(1),
+    'access arguments' => array('edit'),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+  $items['node/%og_sm_site/profile/%user/modify'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_profile_edit_form', 1, 3),
+    'access callback' => 'og_sm_profile_page_access',
+    'access arguments' => array('edit', 3),
+    'file' => 'og_sm_profile.pages.inc',
+    'type' => MENU_CALLBACK,
+    'menu_name' => 'navigation',
   );
 
   return $items;
@@ -111,22 +126,51 @@ function og_sm_profile_permission() {
  * Privileged users should see the other "User profile", but authenticated users
  * are expected to see "My profile".
  */
-function og_sm_profile_page_title($site, $user = NULL) {
-  return user_is_logged_in() ? t('My "@group" account', array('@group' => $site->title)) : t('User account');
+function og_sm_profile_page_title($site, $account = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  if ($user->uid == $account->uid) {
+    return t('My "@group" account', array('@group' => $site->title));
+  }
+  return t('User account');
 }
 
 /**
  * Custom access check to see if we can see the profile page.
  *
- * @param object $site
- *   The site node.
+ * @param string $op
+ *   The access operation, "view", "edit" or "cancel".
+ * @param object|NULL $account
+ *   (optional) The user object.
  *
  * @return bool
  *   Whether the user can access the page.
  */
-function og_sm_profile_page_access($site) {
-  // @todo implement viewing other profile with user_access('access group user profiles');
-  return user_is_logged_in();
+function og_sm_profile_page_access($op, $account = NULL) {
+  global $user;
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  switch ($op) {
+    case 'view':
+      if ($user->uid == $account->uid) {
+        return TRUE;
+      }
+      return user_access('access group user profiles');
+
+    case 'edit':
+      return user_edit_access($account);
+
+    case 'cancel':
+      return user_cancel_access($account);
+  }
+
+  return FALSE;
 }
 
 /**
@@ -315,6 +359,7 @@ function og_sm_profile_load($group_machine_name, $uid, $reset = FALSE) {
 
       // Allow other modules to alter a profile.
       $profile = is_object($profile) ? $profile : new stdClass();
+      // @todo: Document.
       drupal_alter('og_sm_profile', $profile);
 
       if (isset($profile->id)) {
@@ -324,6 +369,7 @@ function og_sm_profile_load($group_machine_name, $uid, $reset = FALSE) {
     $profiles[$cid] = $profile;
   }
   // Allow other modules to react on profile load.
+  // @todo: Document.
   module_invoke_all('og_sm_profile_load', $profiles[$cid]);
 
   return $profiles[$cid];
