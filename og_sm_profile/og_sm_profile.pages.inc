@@ -23,6 +23,7 @@ function og_sm_profile_get_sections_info() {
 
   $sections_info = module_invoke_all('og_sm_profile_view');
   drupal_alter('og_sm_profile_view', $sections_info);
+  uasort($sections_info, 'drupal_sort_weight');
 
   // Store in cache.
   cache_set(__FUNCTION__, $sections_info);

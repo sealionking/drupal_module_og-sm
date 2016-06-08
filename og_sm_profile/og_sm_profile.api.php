@@ -26,8 +26,12 @@
  * @see og_sm_profile_page()
  */
 function hook_og_sm_profile_view() {
-  // @todo: Add example.
-  return array();
+  return array(
+    'basic_info' => array(
+      'render callback' => 'og_sm_profile_section_basic_info',
+      'weight' => 0,
+    ),
+  );
 }
 
 /**
@@ -44,7 +48,7 @@ function hook_og_sm_profile_view() {
  * @see og_sm_profile_page()
  */
 function hook_og_sm_profile_view_alter(&$sections) {
-  // @todo: Add example.
+  $sections['basic_info']['weight'] = 5;
 }
 
 /**
