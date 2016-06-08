@@ -50,22 +50,20 @@ function og_sm_profile_menu() {
 
   $items['node/%og_sm_site/profile'] = array(
     'title callback' => 'og_sm_profile_page_title',
-    'title arguments' => array(1),
     'page callback' => 'og_sm_profile_page',
-    'page arguments' => array(1),
     'access callback' => 'og_sm_profile_page_access',
     'access arguments' => array('view'),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
-  $items['node/%og_sm_site/profile/%user'] = array(
+  $items['profile/%og_sm_profile'] = array(
     'title callback' => 'og_sm_profile_page_title',
-    'title arguments' => array(1, 3),
+    'title arguments' => array(1),
     'page callback' => 'og_sm_profile_page',
-    'page arguments' => array(1, 3),
+    'page arguments' => array(1),
     'access callback' => 'og_sm_profile_page_access',
-    'access arguments' => array('view', 3),
+    'access arguments' => array('view', 1),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -76,7 +74,7 @@ function og_sm_profile_menu() {
     // more specific link), so the link to 'user' will not be in the breadcrumb.
     'menu_name' => 'navigation',
   );
-  $items['node/%og_sm_site/profile/view'] = array(
+  $items['group/%/%og_sm_site/profile/view'] = array(
     'title' => 'View',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
@@ -84,22 +82,22 @@ function og_sm_profile_menu() {
 
   // Don't use node/x/x/edit, the path will trigger the theme setting that
   // enabled the admin theme.
-  $items['node/%og_sm_site/profile/modify'] = array(
+  $items['group/%/%og_sm_site/profile/modify'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('og_sm_profile_edit_form', 1),
+    'page arguments' => array('og_sm_profile_edit_form', 2),
     'access callback' => 'og_sm_profile_page_access',
     'access arguments' => array('edit'),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
-  $items['node/%og_sm_site/profile/%user/modify'] = array(
+  $items['group/%/%og_sm_site/profile/%user/modify'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('og_sm_profile_edit_form', 1, 3),
+    'page arguments' => array('og_sm_profile_edit_form', 2, 4),
     'access callback' => 'og_sm_profile_page_access',
-    'access arguments' => array('edit', 3),
+    'access arguments' => array('edit', 4),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_CALLBACK,
     'menu_name' => 'navigation',
@@ -126,14 +124,15 @@ function og_sm_profile_permission() {
  * Privileged users should see the other "User profile", but authenticated users
  * are expected to see "My profile".
  */
-function og_sm_profile_page_title($site, $account = NULL) {
+function og_sm_profile_page_title($profile) {
   global $user;
 
-  if (!isset($account)) {
-    $account = $user;
+  if (!isset($profile)) {
+    $profile = og_sm_profile_load_from_context(NULL, FALSE);
   }
 
-  if ($user->uid == $account->uid) {
+  if ($user->uid == $profile->uid) {
+    $site = node_load($profile->site_nid);
     return t('My "@group" account', array('@group' => $site->title));
   }
   return t('User account');
@@ -191,8 +190,8 @@ function _og_sm_profile_clear_profile_cache($uid = NULL) {
 /**
  * Create a site user profile.
  *
- * @param string $group_machine_name
- *   The machine name of the group.
+ * @param int $site_nid
+ *   The site nid.
  * @param int $uid
  *   The user id of the user.
  *
@@ -202,10 +201,10 @@ function _og_sm_profile_clear_profile_cache($uid = NULL) {
  * @throws \Exception
  * @throws \InvalidMergeQueryException
  */
-function og_sm_profile_create($group_machine_name, $uid) {
+function og_sm_profile_create($site_nid, $uid) {
 
   $profile = array(
-    'group_name' => $group_machine_name,
+    'site_nid' => $site_nid,
     'uid' => $uid,
     'created' => REQUEST_TIME,
   );
@@ -214,7 +213,7 @@ function og_sm_profile_create($group_machine_name, $uid) {
   module_invoke_all('og_sm_profile_presave', $profile);
 
   $return = db_merge('og_sm_profile')
-    ->key(array('group_name' => $group_machine_name, 'uid' => $uid))
+    ->key(array('site_nid' => $site_nid, 'uid' => $uid))
     ->fields($profile)
     ->execute();
 
@@ -223,7 +222,7 @@ function og_sm_profile_create($group_machine_name, $uid) {
     // Get profile id.
     $profile->id = db_select('og_sm_profile')
       ->fields('og_sm_profile', array('id'))
-      ->condition('group_name', $group_machine_name)
+      ->condition('site_nid', $site_nid)
       ->condition('uid', $uid)
       ->execute()->fetchField();
     // @todo: Document in og_sm_profile.api.php.
@@ -241,19 +240,19 @@ function og_sm_profile_create($group_machine_name, $uid) {
  *
  * @param int $uid
  *   The user id of the user.
- * @param string|NULL $group_machine_name
+ * @param string|NULL $site_nid
  *   (optional) The machine name of the group.
  */
-function og_sm_profile_delete($uid, $group_machine_name = NULL) {
+function og_sm_profile_delete($uid, $site_nid = NULL) {
   $query = db_delete('og_sm_profile')
     ->condition('uid', $uid);
-  if ($group_machine_name) {
-    $query->condition('group_name', $group_machine_name);
+  if ($site_nid) {
+    $query->condition('site_nid', $site_nid);
   }
   $query->execute();
 
   // @todo: Document in og_sm_profile.api.php.
-  module_invoke_all('og_sm_profile_delete', $uid, $group_machine_name);
+  module_invoke_all('og_sm_profile_delete', $uid, $site_nid);
 
   _og_sm_profile_clear_profile_cache($uid);
 }
@@ -293,10 +292,10 @@ function og_sm_profile_load_from_context($uid = NULL, $autocreate = TRUE) {
 
   // To keep this lightweight, we can choose not to create a profile.
   if ($autocreate) {
-    return og_sm_profile_get_or_create($site->group_name, $uid);
+    return og_sm_profile_get_or_create($site->site_nid, $uid);
   }
   else {
-    return og_sm_profile_load($site->group_name, $uid);
+    return og_sm_profile_load($site->site_nid, $uid);
   }
 }
 
@@ -306,18 +305,18 @@ function og_sm_profile_load_from_context($uid = NULL, $autocreate = TRUE) {
  * This function will always return a profile for a site user. If a user has no
  * profile yet, one will be created.
  *
- * @param string $group_machine_name
- *   The machine name of the group.
+ * @param int $site_nid
+ *   The site node id.
  * @param int $uid
  *   The user id of the user.
  *
  * @return object
  *   The site user profile.
  */
-function og_sm_profile_get_or_create($group_machine_name, $uid) {
-  $profile = og_sm_profile_load($group_machine_name, $uid);
+function og_sm_profile_get_or_create($site_nid, $uid) {
+  $profile = og_sm_profile_load($site_nid, $uid);
   if (!isset($profile->id)) {
-    $new_profile = og_sm_profile_create($group_machine_name, $uid);
+    $new_profile = og_sm_profile_create($site_nid, $uid);
     // Merge in the defaults for new profiles.
     $profile = (object) array_merge((array) $profile, (array) $new_profile);
   }
@@ -327,8 +326,8 @@ function og_sm_profile_get_or_create($group_machine_name, $uid) {
 /**
  * Return s a fully loaded site user profile.
  *
- * @param string $group_machine_name
- *   The machine name of the group.
+ * @param int $site_nid
+ *   The site node id.
  * @param int $uid
  *   The user id of the user.
  * @param bool $reset
@@ -337,9 +336,9 @@ function og_sm_profile_get_or_create($group_machine_name, $uid) {
  * @return mixed
  *   The loaded profile a user within a site.
  */
-function og_sm_profile_load($group_machine_name, $uid, $reset = FALSE) {
+function og_sm_profile_load($site_nid, $uid, $reset = FALSE) {
 
-  $cid = $uid . ':' . $group_machine_name;
+  $cid = $uid . ':' . $site_nid;
   static $drupal_static_fast;
   if (!isset($drupal_static_fast)) {
     $drupal_static_fast['profiles'] = &drupal_static(__FUNCTION__);
@@ -352,7 +351,7 @@ function og_sm_profile_load($group_machine_name, $uid, $reset = FALSE) {
     else {
       $profile = db_select('og_sm_profile', 'gp')
         ->fields('gp')
-        ->condition('group_name', $group_machine_name)
+        ->condition('site_nid', $site_nid)
         ->condition('uid', $uid)
         ->execute()
         ->fetchObject();

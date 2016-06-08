@@ -129,7 +129,7 @@ function og_sm_profile_edit_form($form, &$form_state, $site, $account = NULL) {
  */
 function og_sm_profile_edit_form_submit($form, &$form_state) {
   $profile = $form_state['profile'];
-  cache_clear_all($profile->uid . ':' . $profile->group_name, OG_SM_PROFILE_CACHE_BIN);
+  cache_clear_all($profile->uid . ':' . $profile->site_nid, OG_SM_PROFILE_CACHE_BIN);
 
   drupal_set_message(t('Your profile has been saved'));
 }
