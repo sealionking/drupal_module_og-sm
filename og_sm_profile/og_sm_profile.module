@@ -10,6 +10,34 @@
 define('OG_SM_PROFILE_CACHE_BIN', 'cache_og_sm_profile');
 
 /**
+ * Implements hook_hook_info().
+ */
+function og_sm_content_hook_info() {
+  $hooks = array(
+    'og_sm_profile_view' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_profile_view_alter' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_profile_presave' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_profile_insert' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_profile_update' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_profile_delete' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
  * Implements hook_menu().
  */
 function og_sm_profile_menu() {
