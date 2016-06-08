@@ -48,8 +48,7 @@ function og_sm_profile_hook_info() {
 function og_sm_profile_menu() {
   $items = array();
 
-  $items['node/%og_sm_site/profile'] = array(
-    'title callback' => 'og_sm_profile_page_title',
+  $items['group/%/%og_sm_site/profile'] = array(
     'page callback' => 'og_sm_profile_page',
     'access callback' => 'og_sm_profile_page_access',
     'access arguments' => array('view'),
@@ -57,8 +56,25 @@ function og_sm_profile_menu() {
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
+  $items['group/%/%og_sm_site/profile/view'] = array(
+    'title' => 'View',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  // Don't use node/x/x/edit, the path will trigger the theme setting that
+  // enabled the admin theme.
+  $items['group/%/%og_sm_site/profile/modify'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_profile_edit_form'),
+    'access callback' => 'og_sm_profile_page_access',
+    'access arguments' => array('edit'),
+    'file' => 'og_sm_profile.pages.inc',
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+
   $items['profile/%og_sm_profile'] = array(
-    'title callback' => 'og_sm_profile_page_title',
     'title arguments' => array(1),
     'page callback' => 'og_sm_profile_page',
     'page arguments' => array(1),
@@ -66,41 +82,16 @@ function og_sm_profile_menu() {
     'access arguments' => array('view', 1),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_CALLBACK,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    // By assigning a different menu name, this item (and all registered child
-    // paths) are no longer considered as children of 'user'. When accessing the
-    // user account pages, the preferred menu link that is used to build the
-    // active trail (breadcrumb) will be found in this menu (unless there is
-    // more specific link), so the link to 'user' will not be in the breadcrumb.
-    'menu_name' => 'navigation',
-  );
-  $items['group/%/%og_sm_site/profile/view'] = array(
-    'title' => 'View',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -10,
   );
 
-  // Don't use node/x/x/edit, the path will trigger the theme setting that
-  // enabled the admin theme.
-  $items['group/%/%og_sm_site/profile/modify'] = array(
+  $items['profile/%og_sm_profile/modify'] = array(
     'title' => 'Edit',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('og_sm_profile_edit_form', 2),
+    'page arguments' => array('og_sm_profile_edit_form', 1),
     'access callback' => 'og_sm_profile_page_access',
-    'access arguments' => array('edit'),
-    'file' => 'og_sm_profile.pages.inc',
-    'type' => MENU_LOCAL_TASK,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-  );
-  $items['group/%/%og_sm_site/profile/%user/modify'] = array(
-    'title' => 'Edit',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('og_sm_profile_edit_form', 2, 4),
-    'access callback' => 'og_sm_profile_page_access',
-    'access arguments' => array('edit', 4),
+    'access arguments' => array('edit', 1),
     'file' => 'og_sm_profile.pages.inc',
     'type' => MENU_CALLBACK,
-    'menu_name' => 'navigation',
   );
 
   return $items;
@@ -127,10 +118,6 @@ function og_sm_profile_permission() {
 function og_sm_profile_page_title($profile) {
   global $user;
 
-  if (!isset($profile)) {
-    $profile = og_sm_profile_load_from_context(NULL, FALSE);
-  }
-
   if ($user->uid == $profile->uid) {
     $site = node_load($profile->site_nid);
     return t('My "@group" account', array('@group' => $site->title));
@@ -143,16 +130,19 @@ function og_sm_profile_page_title($profile) {
  *
  * @param string $op
  *   The access operation, "view", "edit" or "cancel".
- * @param object|NULL $account
- *   (optional) The user object.
+ * @param object|NULL $profile
+ *   (optional) The site profile object.
  *
  * @return bool
  *   Whether the user can access the page.
  */
-function og_sm_profile_page_access($op, $account = NULL) {
+function og_sm_profile_page_access($op, $profile = NULL) {
   global $user;
-  if (!isset($account)) {
+  if (!isset($profile)) {
     $account = $user;
+  }
+  else {
+    $account = user_load($profile->uid);
   }
 
   switch ($op) {
@@ -287,15 +277,15 @@ function og_sm_profile_load_from_context($uid = NULL, $autocreate = TRUE) {
 
   $site = og_sm_current_site();
   if (!$site) {
-    return NULL;
+    return;
   }
 
   // To keep this lightweight, we can choose not to create a profile.
   if ($autocreate) {
-    return og_sm_profile_get_or_create($site->site_nid, $uid);
+    return og_sm_profile_get_or_create($site->nid, $uid);
   }
   else {
-    return og_sm_profile_load($site->site_nid, $uid);
+    return og_sm_profile_load($site->nid, $uid);
   }
 }
 
@@ -357,7 +347,12 @@ function og_sm_profile_load($site_nid, $uid, $reset = FALSE) {
         ->fetchObject();
 
       // Allow other modules to alter a profile.
-      $profile = is_object($profile) ? $profile : new stdClass();
+      $empty_profile = (object) array(
+        'site_nid' => $site_nid,
+        'uid' => $uid,
+        'created' => REQUEST_TIME,
+      );
+      $profile = is_object($profile) ? $profile : $empty_profile;
       // @todo: Document.
       drupal_alter('og_sm_profile', $profile);
 
