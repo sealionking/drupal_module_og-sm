@@ -14,7 +14,7 @@ msgstr ""
 #: og_sm_feature.admin.inc:21
 msgid "Select the features that will be enabled by default when a new Site is created."
 msgstr ""
-"Selecteer de functies die standaard geactiveerd worden bij het "
+"Selecteer de functionaliteiten die standaard geactiveerd worden bij het "
 "aanmaken van een nieuwe Site."
 
 #: og_sm_feature.admin.inc:29 og_sm_feature.og_admin.inc:34
@@ -27,7 +27,7 @@ msgstr "Geen functionaliteiten beschikbaar."
 
 #: og_sm_feature.admin.inc:52 og_sm_feature.og_admin.inc:55
 msgid "Feature"
-msgstr "Functionaliteit"
+msgstr "Feature"
 
 #: og_sm_feature.admin.inc:63 og_sm_feature.og_admin.inc:66
 msgid "Save"
@@ -87,7 +87,7 @@ msgstr "Activeer context als een Site functionaliteit actief is."
 
 #: og_sm_feature.module:71
 msgid "OG Features"
-msgstr "OG Functionaliteiten"
+msgstr "OG Features"
 
 #: og_sm_feature.module:72
 msgid "Configuration of the OG features."
