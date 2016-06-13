@@ -51,6 +51,7 @@ function og_sm_profile_menu() {
   $items['group/%/%og_sm_site/profile'] = array(
     'title callback' => 'og_sm_profile_page_title',
     'page callback' => 'og_sm_profile_page',
+    'page arguments' => array(),
     'access callback' => 'og_sm_profile_page_access',
     'access arguments' => array('view'),
     'file' => 'og_sm_profile.pages.inc',
@@ -238,7 +239,6 @@ function og_sm_profile_create($site_nid, $uid) {
     'created' => REQUEST_TIME,
   );
 
-  // @todo: Document in og_sm_profile.api.php.
   module_invoke_all('og_sm_profile_presave', $profile);
 
   $return = db_merge('og_sm_profile')
@@ -254,11 +254,9 @@ function og_sm_profile_create($site_nid, $uid) {
       ->condition('site_nid', $site_nid)
       ->condition('uid', $uid)
       ->execute()->fetchField();
-    // @todo: Document in og_sm_profile.api.php.
     module_invoke_all('og_sm_profile_insert', $profile);
   }
   else {
-    // @todo: Document in og_sm_profile.api.php.
     module_invoke_all('og_sm_profile_update', $profile);
   }
   return $profile;
@@ -280,7 +278,6 @@ function og_sm_profile_delete($uid, $site_nid = NULL) {
   }
   $query->execute();
 
-  // @todo: Document in og_sm_profile.api.php.
   module_invoke_all('og_sm_profile_delete', $uid, $site_nid);
 
   _og_sm_profile_clear_profile_cache($uid);
@@ -376,6 +373,25 @@ function og_sm_profile_load($profile_id) {
   module_invoke_all('og_sm_profile_load', $profile);
 
   return $profile;
+}
+
+/**
+ * Returns an array of fully loaded site user profiles.
+ *
+ * @param array $profile_ids
+ *   An array of profile ids.
+ *
+ * @return array
+ *   The array of loaded profiles user objects within a site.
+ */
+function og_sm_profile_load_multiple($profile_ids) {
+  // @todo: Implement decently.
+  $profiles = array();
+  foreach ($profile_ids as $profile_id) {
+    $profiles[] = og_sm_profile_load($profile_id);
+  }
+
+  return $profiles;
 }
 
 /**
@@ -511,4 +527,50 @@ function og_sm_profile_url_inbound_alter(&$path, $original_path, $path_language)
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
     }
   }
+}
+
+/**
+ * Update the URL aliases for multiple profiles.
+ *
+ * @param array $profile_ids
+ *   An array of profile IDs.
+ * @param string $op
+ *   Operation being performed on the profiles ('insert', 'update' or
+ *   'bulkupdate').
+ * @param array $options
+ *   An optional array of additional options.
+ */
+function og_sm_profile_pathauto_update_alias_multiple(array $profile_ids, $op, array $options = array()) {
+  $options += array('message' => FALSE);
+
+  $profiles = og_sm_profile_load_multiple($profile_ids);
+  foreach ($profiles as $profile) {
+    og_sm_profile_pathauto_update_alias($profile, $op, $options);
+  }
+
+  if (!empty($options['message'])) {
+    drupal_set_message(format_plural(count($profile_ids), 'Updated URL alias for 1 profile.', 'Updated URL aliases for @count profiles.'));
+  }
+}
+
+/**
+ * Update the URL aliases for an individual profile.
+ *
+ * @param object $profile
+ *   A profile object.
+ * @param string $op
+ *   Operation being performed on the profile ('insert', 'update' or
+ *   'bulkupdate').
+ * @param array $options
+ *   An optional array of additional options.
+ */
+function og_sm_profile_pathauto_update_alias($profile, $op, array $options = array()) {
+  // Skip processing if the profile has no pattern.
+  if (!pathauto_pattern_load_by_entity('og_sm_profile')) {
+    return;
+  }
+
+  module_load_include('inc', 'pathauto');
+  $path = 'profile/' . $profile->id;
+  pathauto_create_alias('og_sm_profile', $op, $path, array('og_sm_profile' => $profile));
 }

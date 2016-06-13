@@ -42,7 +42,7 @@ function og_sm_profile_get_sections_info() {
  *   Renderable array of profile data.
  */
 function og_sm_profile_page($profile = NULL) {
-  if (!isset($profile)) {
+  if (!isset($profile) || !is_object($profile)) {
     $profile = og_sm_profile_load_from_context(NULL, FALSE);
   }
   $site = node_load($profile->site_nid);
@@ -81,13 +81,13 @@ function og_sm_profile_page($profile = NULL) {
  * @param array $form_state
  *   The current form state.
  * @param object $profile
- *   The site profile pbject.
+ *   The site profile object.
  *
  * @return array
  *   The form structure.
  */
 function og_sm_profile_edit_form($form, &$form_state, $profile = NULL) {
-  if (!isset($profile)) {
+  if (!isset($profile) || !is_object($profile)) {
     $profile = og_sm_profile_load_from_context();
   }
   $site = og_sm_site_load($profile->site_nid);

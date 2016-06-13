@@ -52,5 +52,61 @@ function hook_og_sm_profile_view_alter(&$sections) {
 }
 
 /**
+ * A site user profile is about to be created or updated.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $profile
+ *   The site user profile object.
+ */
+function hook_og_sm_profile_presave($profile) {
+
+}
+
+/**
+ * A site user profile was created.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $profile
+ *   The site user profile object.
+ */
+function hook_og_sm_profile_insert($profile) {
+
+}
+
+/**
+ * A site user profile was updated.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $profile
+ *   The site user profile object.
+ */
+function hook_og_sm_profile_update($profile) {
+
+}
+
+/**
+ * A site user profile was deleted.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $profile
+ *   The site user profile object.
+ */
+function hook_og_sm_profile_delete($profile) {
+
+}
+
+/**
  * @} End of "addtogroup hooks".
  */
