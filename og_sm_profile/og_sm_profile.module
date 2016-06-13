@@ -49,6 +49,7 @@ function og_sm_profile_menu() {
   $items = array();
 
   $items['group/%/%og_sm_site/profile'] = array(
+    'title callback' => 'og_sm_profile_page_title',
     'page callback' => 'og_sm_profile_page',
     'access callback' => 'og_sm_profile_page_access',
     'access arguments' => array('view'),
@@ -75,6 +76,7 @@ function og_sm_profile_menu() {
   );
 
   $items['profile/%og_sm_profile'] = array(
+    'title callback' => 'og_sm_profile_page_title',
     'title arguments' => array(1),
     'page callback' => 'og_sm_profile_page',
     'page arguments' => array(1),
@@ -110,19 +112,56 @@ function og_sm_profile_permission() {
 }
 
 /**
- * Menu item title callback for the 'profile' path.
+ * Implements hook_og_context_negotiation_info().
+ */
+function og_sm_profile_og_context_negotiation_info() {
+  $providers = array();
+
+  $providers['og_sm_context_profile'] = array(
+    'name' => t('Site User Profile'),
+    'description' => t('Determine Site context based on the fact that we are on a user profile linked to a Site.'),
+    'callback' => 'og_sm_profile_context_handler_profile',
+  );
+
+  return $providers;
+}
+
+/**
+ * Tries to get the context based on the profile.
  *
- * Privileged users should see the other "User profile", but authenticated users
- * are expected to see "My profile".
+ * The site context is determined based on the fact that we are on a profile
+ * which is linked to a Site.
+ *
+ * @return array|NULL
+ *   Contexts grouped by the entity type.
+ *
+ * @see og_sm_profile_og_context_negotiation_info
+ */
+function og_sm_profile_context_handler_profile() {
+  $path = current_path();
+  preg_match('#^profile/([0-9]+)#', $path, $parts);
+  if (empty($parts[1])) {
+    return NULL;
+  }
+
+  // Get the Profile.
+  $profile = og_sm_profile_load($parts[1]);
+  if ($profile) {
+    return array('node' => array((int) $profile->site_nid));
+  }
+
+  return NULL;
+}
+
+/**
+ * Menu item title callback for the 'profile' path.
  */
 function og_sm_profile_page_title($profile) {
-  global $user;
-
-  if ($user->uid == $profile->uid) {
-    $site = node_load($profile->site_nid);
-    return t('My "@group" account', array('@group' => $site->title));
+  if (!is_object($profile)) {
+    return '';
   }
-  return t('User account');
+  $account = user_load($profile->uid);
+  return format_username($account);
 }
 
 /**
@@ -285,7 +324,7 @@ function og_sm_profile_load_from_context($uid = NULL, $autocreate = TRUE) {
     return og_sm_profile_get_or_create($site->nid, $uid);
   }
   else {
-    return og_sm_profile_load($site->nid, $uid);
+    return og_sm_profile_load_by_uid($site->nid, $uid);
   }
 }
 
@@ -304,7 +343,7 @@ function og_sm_profile_load_from_context($uid = NULL, $autocreate = TRUE) {
  *   The site user profile.
  */
 function og_sm_profile_get_or_create($site_nid, $uid) {
-  $profile = og_sm_profile_load($site_nid, $uid);
+  $profile = og_sm_profile_load_by_uid($site_nid, $uid);
   if (!isset($profile->id)) {
     $new_profile = og_sm_profile_create($site_nid, $uid);
     // Merge in the defaults for new profiles.
@@ -314,7 +353,33 @@ function og_sm_profile_get_or_create($site_nid, $uid) {
 }
 
 /**
- * Return s a fully loaded site user profile.
+ * Returns a fully loaded site user profile.
+ *
+ * @param int $profile_id
+ *   The site user profile id.
+ *
+ * @return mixed
+ *   The loaded profile of a user within a site.
+ */
+function og_sm_profile_load($profile_id) {
+
+  $profile = db_select('og_sm_profile', 'gp')
+    ->fields('gp')
+    ->condition('id', $profile_id)
+    ->execute()
+    ->fetchObject();
+
+  if (!$profile) {
+    return FALSE;
+  }
+  drupal_alter('og_sm_profile', $profile);
+  module_invoke_all('og_sm_profile_load', $profile);
+
+  return $profile;
+}
+
+/**
+ * Returns a fully loaded site user profile based on a user id and site id.
  *
  * @param int $site_nid
  *   The site node id.
@@ -326,7 +391,7 @@ function og_sm_profile_get_or_create($site_nid, $uid) {
  * @return mixed
  *   The loaded profile a user within a site.
  */
-function og_sm_profile_load($site_nid, $uid, $reset = FALSE) {
+function og_sm_profile_load_by_uid($site_nid, $uid, $reset = FALSE) {
 
   $cid = $uid . ':' . $site_nid;
   static $drupal_static_fast;
@@ -385,6 +450,7 @@ function og_sm_profile_theme() {
       'template' => 'templates/og_sm_profile_page',
       'variables' => array(
         'sections' => array(),
+        'profile' => NULL,
       ),
     ),
     'og_sm_profile_page_section' => array(
@@ -420,4 +486,29 @@ function og_sm_profile_section_basic_info($profile) {
       ),
     ),
   );
+}
+
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function og_sm_profile_url_outbound_alter(&$path, &$options, $original_path) {
+  // Rewrite all outgoing site admin paths for paths that do not have an alias.
+  if (module_exists('og_sm_path') && preg_match('#^group/node/([0-9]+)(/profile.*)#', $path, $parts)) {
+    $site = og_sm_site_load($parts[1]);
+    if ($site) {
+      $path = og_sm_path($site) . $parts[2];
+    }
+  }
+}
+
+/**
+ * Implements hook_url_inbound_alter().
+ */
+function og_sm_profile_url_inbound_alter(&$path, $original_path, $path_language) {
+  if (module_exists('og_sm_path') && preg_match('#^([\w/_-]+)(/profile.*)#', $path, $parts)) {
+    $site = og_sm_path_load_site($parts[1]);
+    if ($site) {
+      $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
+    }
+  }
 }

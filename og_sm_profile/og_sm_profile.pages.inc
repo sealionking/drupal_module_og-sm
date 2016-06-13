@@ -47,13 +47,8 @@ function og_sm_profile_page($profile = NULL) {
   }
   $site = node_load($profile->site_nid);
 
-  $title = og_sm_profile_page_title($profile);
-  // We're not using title callback since we can't load the profile from context
-  // then.
-  drupal_set_title($title);
-
   $path = array(
-    l($title, 'node/' . $site->nid . '/profile'),
+    l(og_sm_profile_page_title($profile), 'node/' . $site->nid . '/profile'),
   );
   og_set_breadcrumb('node', $site->nid, $path);
 
@@ -73,6 +68,7 @@ function og_sm_profile_page($profile = NULL) {
 
   return array(
     '#theme' => 'og_sm_profile_page',
+    '#profile' => $profile,
     '#sections' => $sections,
   );
 }
@@ -94,12 +90,15 @@ function og_sm_profile_edit_form($form, &$form_state, $profile = NULL) {
   if (!isset($profile)) {
     $profile = og_sm_profile_load_from_context();
   }
+  $site = og_sm_site_load($profile->site_nid);
+  if (!$site) {
+    return array();
+  }
 
   // Breadcrumbs.
-  $site_id = $profile->site_nid;
-  og_set_breadcrumb('node', $site_id, array(
-    l(og_sm_profile_page_title($profile), 'node/' . $site_id . '/profile'),
-    l(t('Edit'), 'node/' . $site_id . '/profile/modify'),
+  og_set_breadcrumb('node', $site->nid, array(
+    l(og_sm_profile_page_title($profile), 'node/' . $site->nid . '/profile'),
+    l(t('Edit'), 'node/' . $site->nid . '/profile/modify'),
   ));
 
   $form['#prefix'] = '<div class="l-primary">';
