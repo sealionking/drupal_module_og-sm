@@ -106,6 +106,22 @@ EOT;
 }
 
 /**
+ * Alter the taxonomy add form.
+ *
+ * Adds the is_new property to fix entityreference autocomplete access check.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ */
+function _og_sm_taxonomy_form_taxonomy_form_term_alter_add(array $form, array &$form_state) {
+  // Set the entity state to is_new so the entityreference_prepopulate module
+  // access check is working properly.
+  $form_state['term']->is_new = TRUE;
+}
+
+/**
  * Alter the taxonomy term form.
  *
  * Adds the option to delete terms based on the OG permissions.
