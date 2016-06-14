@@ -429,7 +429,6 @@ function og_sm_profile_load_by_uid($site_nid, $uid, $reset = FALSE) {
         'created' => REQUEST_TIME,
       );
       $profile = is_object($profile) ? $profile : $empty_profile;
-      // @todo: Document.
       drupal_alter('og_sm_profile', $profile);
 
       if (isset($profile->id)) {
@@ -439,7 +438,6 @@ function og_sm_profile_load_by_uid($site_nid, $uid, $reset = FALSE) {
     $profiles[$cid] = $profile;
   }
   // Allow other modules to react on profile load.
-  // @todo: Document.
   module_invoke_all('og_sm_profile_load', $profiles[$cid]);
 
   return $profiles[$cid];

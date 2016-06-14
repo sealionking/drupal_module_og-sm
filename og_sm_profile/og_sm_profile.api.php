@@ -108,5 +108,33 @@ function hook_og_sm_profile_delete($profile) {
 }
 
 /**
+ * Alert a site user profile before it's stored in cache.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $profile
+ *   The site user profile object.
+ */
+function hook_og_sm_profile_alter($profile) {
+
+}
+
+/**
+ * A site user profile was loaded.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $profile
+ *   The site user profile object.
+ */
+function hook_og_sm_profile_load($profile) {
+
+}
+
+/**
  * @} End of "addtogroup hooks".
  */
