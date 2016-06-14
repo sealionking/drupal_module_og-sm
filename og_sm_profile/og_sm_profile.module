@@ -354,12 +354,14 @@ function og_sm_profile_get_or_create($site_nid, $uid) {
  *
  * @param int $profile_id
  *   The site user profile id.
+ * @param bool $reset
+ *   (optional) Skip loading from caches, defaults to FALSE.
  *
  * @return mixed
  *   The loaded profile of a user within a site.
  */
-function og_sm_profile_load($profile_id) {
-  $profiles = og_sm_profile_load_multiple(array($profile_id));
+function og_sm_profile_load($profile_id, $reset = T) {
+  $profiles = og_sm_profile_load_multiple(array($profile_id), $reset);
   return $profiles ? reset($profiles) : FALSE;
 }
 
@@ -368,23 +370,25 @@ function og_sm_profile_load($profile_id) {
  *
  * @param array $profile_ids
  *   An array of profile ids.
+ * @param bool $reset
+ *   (optional) Skip loading from caches, defaults to FALSE.
  *
  * @return array
  *   The array of loaded profiles user objects within a site.
  */
-function og_sm_profile_load_multiple($profile_ids) {
-  $profiles = db_select('og_sm_profile', 'gp')
+function og_sm_profile_load_multiple($profile_ids, $reset = FALSE) {
+  $profiles_data = db_select('og_sm_profile', 'gp')
     ->fields('gp')
     ->condition('id', $profile_ids)
     ->execute()
     ->fetchAllAssoc('id');
 
-  if (!$profiles) {
+  if (!$profiles_data) {
     return array();
   }
-  foreach ($profiles as $profile) {
-    drupal_alter('og_sm_profile', $profile);
-    module_invoke_all('og_sm_profile_load', $profile);
+  $profiles = array();
+  foreach ($profiles_data as $profile_data) {
+    $profiles[] = og_sm_profile_load_by_uid($profile_data->site_nid, $profile_data->uid, $reset);
   }
   return $profiles;
 }
@@ -397,7 +401,7 @@ function og_sm_profile_load_multiple($profile_ids) {
  * @param int $uid
  *   The user id of the user.
  * @param bool $reset
- *   Skip loading from caches.
+ *   (optional) Skip loading from caches, defaults to FALSE.
  *
  * @return mixed
  *   The loaded profile a user within a site.
