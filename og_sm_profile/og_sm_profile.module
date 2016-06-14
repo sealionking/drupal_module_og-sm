@@ -359,20 +359,8 @@ function og_sm_profile_get_or_create($site_nid, $uid) {
  *   The loaded profile of a user within a site.
  */
 function og_sm_profile_load($profile_id) {
-
-  $profile = db_select('og_sm_profile', 'gp')
-    ->fields('gp')
-    ->condition('id', $profile_id)
-    ->execute()
-    ->fetchObject();
-
-  if (!$profile) {
-    return FALSE;
-  }
-  drupal_alter('og_sm_profile', $profile);
-  module_invoke_all('og_sm_profile_load', $profile);
-
-  return $profile;
+  $profiles = og_sm_profile_load_multiple(array($profile_id));
+  return $profiles ? reset($profiles) : FALSE;
 }
 
 /**
@@ -385,12 +373,19 @@ function og_sm_profile_load($profile_id) {
  *   The array of loaded profiles user objects within a site.
  */
 function og_sm_profile_load_multiple($profile_ids) {
-  // @todo: Implement decently.
-  $profiles = array();
-  foreach ($profile_ids as $profile_id) {
-    $profiles[] = og_sm_profile_load($profile_id);
-  }
+  $profiles = db_select('og_sm_profile', 'gp')
+    ->fields('gp')
+    ->condition('id', $profile_ids)
+    ->execute()
+    ->fetchAllAssoc('id');
 
+  if (!$profiles) {
+    return array();
+  }
+  foreach ($profiles as $profile) {
+    drupal_alter('og_sm_profile', $profile);
+    module_invoke_all('og_sm_profile_load', $profile);
+  }
   return $profiles;
 }
 

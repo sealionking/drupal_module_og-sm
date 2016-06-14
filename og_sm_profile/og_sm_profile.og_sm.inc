@@ -15,3 +15,12 @@ function og_sm_profile_og_sm_profile_view() {
     ),
   );
 }
+
+/**
+ * Implements hook_og_sm_profile_insert().
+ */
+function og_sm_profile_og_sm_profile_insert($profile) {
+  if (module_exists('pathauto')) {
+    og_sm_profile_pathauto_update_alias($profile, 'insert');
+  }
+}
