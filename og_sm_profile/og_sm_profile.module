@@ -106,7 +106,7 @@ function og_sm_profile_menu() {
 function og_sm_profile_permission() {
   return array(
     'access group user profiles' => array(
-      'title' => t('Access site user profiles'),
+      'title' => t('Access Site user profiles'),
       'description' => t('Allows a user to view other users group profiles'),
       'restrict access' => TRUE,
     ),

@@ -11,17 +11,17 @@
 function og_sm_profile_token_info() {
   $type = array(
     'name' => t('Site User Profiles'),
-    'description' => t('Tokens for user profiles linked to the site.'),
+    'description' => t('Tokens for user profiles linked to the Site.'),
     'needs-data' => 'og_sm_profile',
   );
 
   $tokens['id'] = array(
     'name' => t('Profile ID'),
-    'description' => t('The unique ID of the site user profile.'),
+    'description' => t('The unique ID of the Site user profile.'),
   );
   $tokens['site'] = array(
     'name' => t("Site"),
-    'description' => t("The site to which the profile is linked."),
+    'description' => t("The Site to which the profile is linked."),
     'type' => 'node',
   );
   $tokens['user'] = array(

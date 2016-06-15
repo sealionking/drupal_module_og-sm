@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-06-07 14:51+0100\n"
-"PO-Revision-Date: 2016-06-07 14:51+0100\n"
+"PO-Revision-Date: 2016-06-15 14:51+0100\n"
 "Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -11,25 +11,112 @@ msgstr ""
 "Language: nl\n"
 "X-Generator: Poedit 1.8.6\n"
 
-#: og_sm_profile.module:57
+#: og_sm_profile.pages.inc:101 og_sm_profile.module:69;91
+msgid "Edit"
+msgstr "Bewerken"
+
+#: og_sm_profile.pages.inc:113
+msgid "Save"
+msgstr "Opslaan"
+
+#: og_sm_profile.pages.inc:131
+msgid "Your profile has been saved"
+msgstr "Je profiel werd bewaard"
+
+#: og_sm_profile.pathauto.inc:13 og_sm_profile.tokens.inc:13
+msgid "Site User Profiles"
+msgstr "Site gebruikersprofielen"
+
+#: og_sm_profile.pathauto.inc:26
+msgid "Site User Profile paths"
+msgstr "Site gebruikersprofielen paden"
+
+#: og_sm_profile.pathauto.inc:27
+msgid "Default path pattern"
+msgstr "Standaard pad patroon"
+
+#: og_sm_profile.pathauto.inc:72
+msgid "Updated alias for profile @profile_id."
+msgstr "De URL-alias voor profiel @profile_id is bijgewerkt."
+
+#: og_sm_profile.tokens.inc:14
+msgid "Tokens for user profiles linked to the Site."
+msgstr "Tokens voor gebruikersprofielen die op met Site gelinked zijn."
+
+#: og_sm_profile.tokens.inc:19
+msgid "Profile ID"
+msgstr "Profiel ID"
+
+#: og_sm_profile.tokens.inc:20
+msgid "The unique ID of the Site user profile."
+msgstr "Het unieke ID van het Site gebruikersprofiel."
+
+#: og_sm_profile.tokens.inc:23
+msgid "Site"
+msgstr "Site"
+
+#: og_sm_profile.tokens.inc:24
+msgid "The Site to which the profile is linked."
+msgstr "De Site waaraan het gebruikersprofiel gelinked is."
+
+#: og_sm_profile.tokens.inc:28
+msgid "User"
+msgstr "Gebruiker"
+
+#: og_sm_profile.tokens.inc:29
+msgid "The user to which the profile is linked."
+msgstr "De gebruiker waaraan het profiel gelinked is."
+
+#: og_sm_profile.tokens.inc:33
+msgid "Date created"
+msgstr "Aanmaakdatum"
+
+#: og_sm_profile.tokens.inc:34
+msgid "The date the profile was created."
+msgstr "De datum waarop het profiel is aangemaakt."
+
+#: og_sm_profile.module:109
+msgid "Access Site user profiles"
+msgstr "Toegang tot Site gebruikersprofielen"
+
+#: og_sm_profile.module:110
 msgid "Allows a user to view other users group profiles"
 msgstr "Laat gebruikers toe profielen van andere gebruikers te bekijken"
 
-#: og_sm_profile.module:70
-msgid "My \"@group\" account"
-msgstr "Mijn \"@group\" account"
+#: og_sm_profile.module:123
+msgid "Site User Profile"
+msgstr "Site gebruikersprofiel"
 
-#: og_sm_profile.module:70
-msgid "Edit my \"@group\" account"
-msgstr "Mijn \"@group\" account bewerken"
+#: og_sm_profile.module:124
+msgid ""
+"Determine Site context based on the fact that we are on a user profile "
+"linked to a Site."
+msgstr ""
+"Bepaal de Site context als de huidige pagina een profiel is gelinked aan een "
+"Site."
 
-#: og_sm_profile.module:70
-msgid "User account"
-msgstr "Gebruikersaccount"
+#: og_sm_profile.module:493
+msgid "Profile"
+msgstr "Profiel"
 
-#: og_sm_profile.module:70
-msgid "Edit user account"
-msgstr "Gebruikersaccount bewerken"
+#: og_sm_profile.module:550
+msgid "Updated URL alias for 1 profile."
+msgid_plural "Updated URL aliases for @count profiles."
+msgstr[0] "URL-alias bijgewerkt voor 1 profiel."
+msgstr[1] "URL-aliassen bijgewerkt voor @count profielen."
 
-msgid "Your profile has been saved"
-msgstr "Je profiel werd bewaard"
+#: og_sm_profile.module:62
+msgid "View"
+msgstr "Weergeven"
+
+#: og_sm_profile.info:0
+msgid "User Profile"
+msgstr "Gebruikersprofiel"
+
+#: og_sm_profile.info:0
+msgid "Site specific user profiles."
+msgstr "Site specifieke user profielen."
+
+#: og_sm_profile.info:0
+msgid "Organic Groups Site Manager"
+msgstr ""
