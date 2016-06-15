@@ -106,7 +106,8 @@ function og_sm_profile_menu() {
 function og_sm_profile_permission() {
   return array(
     'access group user profiles' => array(
-      'title' => t('Allows a user to view other users group profiles'),
+      'title' => t('Access site user profiles'),
+      'description' => t('Allows a user to view other users group profiles'),
       'restrict access' => TRUE,
     ),
   );
@@ -360,7 +361,7 @@ function og_sm_profile_get_or_create($site_nid, $uid) {
  * @return mixed
  *   The loaded profile of a user within a site.
  */
-function og_sm_profile_load($profile_id, $reset = T) {
+function og_sm_profile_load($profile_id, $reset = TRUE) {
   $profiles = og_sm_profile_load_multiple(array($profile_id), $reset);
   return $profiles ? reset($profiles) : FALSE;
 }
