@@ -1,7 +1,7 @@
 # Changelog
 All Notable changes to **Organic Groups Site Manager** module suite.
 
-## [Unreleased]
+## [7.x-1.3]
 ### Added
 - DMOGSM-57 : Added extra permissions so Site Users can get granted to delete
   Site terms.
@@ -10,6 +10,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - WEBSECOND-248 : Added Views exposed filters support for og_sm_taxonomy.
 - DMOGSM-60 : Added fix for entityreference_prepopulate and Site taxonomy terms
   that are created with hidden group fields.
+
+
 
 ## [7.x-1.2]
 ### Added
@@ -152,9 +154,10 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.3%0D7.x-1.2#diff
 [7.x-1.2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.2%0D7.x-1.1#diff
 [7.x-1.1]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.1%0D7.x-1.0#diff
-[7.x-1.0]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0%0D7.x-1.0-alpha8#diff
+[7.x-1.0]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/commits/tag/7.x-1.0%0D7.x-1.0-alpha8#diff
 [7.x-1.0-alpha8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha8%0D7.x-1.0-alpha7#diff
 [7.x-1.0-alpha7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha7%0D7.x-1.0-alpha6#diff
 [7.x-1.0-alpha6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.0-alpha6%0D7.x-1.0-alpha5#diff
