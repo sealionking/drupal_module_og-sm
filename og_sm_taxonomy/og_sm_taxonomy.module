@@ -13,7 +13,8 @@ define('OG_SM_TAXONOMY_PERM_ALL', 'edit all site taxonomies');
  * OG permissions.
  */
 define('OG_SM_TAXONOMY_OG_PERM_ALL', 'edit all taxonomy terms');
-define('OG_SM_TAXONOMY_OG_PERM_VOCAB', 'edit terms in %s');
+define('OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT', 'edit terms in %s');
+define('OG_SM_TAXONOMY_OG_PERM_VOCAB_DELETE', 'delete terms in %s');
 
 /**
  * Implements hook_permission().
@@ -42,15 +43,26 @@ function og_sm_taxonomy_og_permission() {
 
   $vocabularies = og_sm_taxonomy_get_vocabularies();
   foreach ($vocabularies as $vocabulary) {
-    $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, $vocabulary->machine_name);
+    $perm_edit = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, $vocabulary->machine_name);
+    $perm_delete = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_DELETE, $vocabulary->machine_name);
 
-    $items[$perm] = array(
+    $items[$perm_edit] = array(
       'title' => t(
         'Edit terms in %name',
         array('%name' => $vocabulary->machine_name)
       ),
       'description' => t(
         'Edit all terms for the %name vocabulary.',
+        array('%name' => $vocabulary->name)
+      ),
+    );
+    $items[$perm_delete] = array(
+      'title' => t(
+        'Delete terms in %name',
+        array('%name' => $vocabulary->machine_name)
+      ),
+      'description' => t(
+        'Delete all terms for the %name vocabulary.',
         array('%name' => $vocabulary->name)
       ),
     );
@@ -163,7 +175,7 @@ function og_sm_taxonomy_admin_vocabulary_overview_access($site, $account = NULL)
   // Check access to edit one of the vocabularies.
   $vocabularies = array_keys(og_sm_taxonomy_get_vocabularies());
   foreach ($vocabularies as $vocabulary) {
-    $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, $vocabulary);
+    $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, $vocabulary);
     if (og_sm_site_permission_access($site, $perm, $account)) {
       return TRUE;
     }
@@ -195,7 +207,7 @@ function og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account = N
   }
 
   // Vocabulary specific.
-  $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB, $vocabulary->machine_name);
+  $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, $vocabulary->machine_name);
   if (og_sm_site_permission_access($site, $perm, $account)) {
     return TRUE;
   }
@@ -222,6 +234,45 @@ function og_sm_taxonomy_term_edit_access($term, $account = NULL) {
 
   $vocabulary = taxonomy_vocabulary_load($term->vid);
   return og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account);
+}
+
+/**
+ * Access callback to check access to delete taxonomy terms.
+ *
+ * @param object $term
+ *   The term to edit.
+ * @param object $account
+ *   Optional account to validate the access for.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_taxonomy_term_delete_access($term, $account = NULL) {
+  $vocabulary = taxonomy_vocabulary_load($term->vid);
+
+  // If not belongs to Site, use global permissions.
+  $site = og_sm_taxonomy_term_get_site($term);
+  if (!$site) {
+    return user_access('delete terms in ' . $vocabulary->vid) || user_access('administer taxonomy');
+  }
+
+  // Has all Sites permission?
+  if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
+    return TRUE;
+  }
+
+  // Has administrator permissions?
+  if (og_sm_site_permission_access($site, OG_SM_TAXONOMY_OG_PERM_ALL, $account)) {
+    return TRUE;
+  }
+
+  // Vocabulary specific delete permission?
+  $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_DELETE, $vocabulary->machine_name);
+  if (og_sm_site_permission_access($site, $perm, $account)) {
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 /**
@@ -394,11 +445,13 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
     if (empty($condition['field'])) {
       continue;
     }
-    if ($condition['field'] !== 't.vid') {
-      continue;
+    if ($condition['field'] == 't.vid') {
+      $vocabulary = taxonomy_vocabulary_load($condition['value']);
     }
-
-    $vocabulary = taxonomy_vocabulary_load($condition['value']);
+    elseif ($condition['field'] == 'tv.machine_name') {
+      // Views stores the vocabulary condition as machine name.
+      $vocabulary = taxonomy_vocabulary_machine_name_load($condition['value']);
+    }
   }
   if (!$vocabulary) {
     return;
@@ -435,6 +488,10 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
 
 /**
  * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters the vocabulary terms overview page.
+ *
+ * @see taxonomy_overview_terms()
  */
 function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state, $form_id) {
   // If alphabetically term order confirmation form is shown: make sure that the
@@ -448,6 +505,29 @@ function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state,
   if (!og_sm_current_site()) {
     form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
     _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names($form);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters the form to edit a single term.
+ *
+ * @see taxonomy_form_term()
+ */
+function og_sm_taxonomy_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) {
+  $term = $form_state['term'];
+
+  // Only for add forms.
+  if (empty($term->tid)) {
+    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
+    _og_sm_taxonomy_form_taxonomy_form_term_alter_add($form, $form_state);
+  }
+
+  // Only for edit forms and when term belongs to a Site.
+  if (!empty($term->tid) && og_sm_taxonomy_term_is_site_term($term)) {
+    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
+    _og_sm_taxonomy_form_taxonomy_form_term_alter_delete($form, $form_state);
   }
 }
 

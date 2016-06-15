@@ -173,6 +173,8 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $path_overview = 'group/node/' . $this->site->nid . '/content/add';
     $path_add_page = $path_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNamePage);
     $path_add_article = $path_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
+    $global_path_add_page = 'node/add/' . preg_replace('/_/', '-', $this->siteContentTypeNamePage);
+    $global_path_add_article = 'node/add/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
 
     // Not logged in.
     $this->drupalGet($path_overview);
@@ -201,6 +203,10 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertResponse(200, 'User is allowed to add Page content.');
     $this->drupalGet($path_add_article);
     $this->assertResponse(200, 'User is allowed to add Article content.');
+    $this->drupalGet($global_path_add_page);
+    $this->assertResponse(200, 'User is allowed to add Page content via the global node add form.');
+    $this->drupalGet($global_path_add_article);
+    $this->assertResponse(200, 'User is allowed to add Article content via the global node add form.');
 
     // User with access to all content.
     $this->verbose('Log in as user who can create pages & articles.');
@@ -211,6 +217,10 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertResponse(200, 'User is allowed to add Page content.');
     $this->drupalGet($path_add_article);
     $this->assertResponse(200, 'User is allowed to add Article content.');
+    $this->drupalGet($global_path_add_page);
+    $this->assertResponse(403, 'User is not allowed to add Page content via the global node add form.');
+    $this->drupalGet($global_path_add_article);
+    $this->assertResponse(403, 'User is not allowed to add Article content via the global node add form.');
 
     // User with access to only articles.
     $this->verbose('Log in as user who can create only articles.');
@@ -221,6 +231,10 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertResponse(403, 'User is not allowed to add Page content.');
     $this->drupalGet($path_add_article);
     $this->assertResponse(200, 'User is allowed to add Article content.');
+    $this->drupalGet($global_path_add_page);
+    $this->assertResponse(403, 'User is not allowed to add Page content via the global node add form.');
+    $this->drupalGet($global_path_add_article);
+    $this->assertResponse(403, 'User is not allowed to add Article content via the global node add form.');
   }
 
   /**
@@ -365,6 +379,32 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertFalse($access, 'User 2 is not allowed to add Page content.');
     $access = og_sm_content_add_content_access($this->site, $this->siteContentTypeNameArticle, $this->siteUserArticle);
     $this->assertTrue($access, 'User 2 is allowed to add Article content.');
+  }
+
+  /**
+   * Test the hook_node_access() implementation in og_sm_content.
+   */
+  public function testNodeAccessCallback() {
+    // Setup test data.
+    $this->setUpContent();
+    $this->setUpUsers();
+    $site_content_node = $this->ogSmCreateGroupContent($this->siteContentTypeNamePage, array($this->site));
+
+    // Admin user.
+    $access = og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->userAdmin);
+    $this->assertTrue($access, 'Admin user is allowed to add Page content via the global node add form.');
+    $access = og_sm_content_node_access($site_content_node, 'create', $this->userAdmin);
+    $this->assertTrue($access, 'Admin user is allowed to edit Page content via the global node edit form.');
+    $access = og_sm_content_node_access($site_content_node, 'delete', $this->userAdmin);
+    $this->assertTrue($access, 'Admin user is allowed to delete Page content via the global node delete form.');
+
+    // Site user with access to all content.
+    $access = og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->siteUserPageArticle);
+    $this->assertTrue($access, 'User 1 is not allowed to add Page content via the global node add form.');
+    $access = og_sm_content_node_access($site_content_node, 'create', $this->siteUserPageArticle);
+    $this->assertTrue($access, 'User 1 is not allowed to edit Page content via the global node edit form.');
+    $access = og_sm_content_node_access($site_content_node, 'delete', $this->siteUserPageArticle);
+    $this->assertTrue($access, 'User 1 is not allowed to delete Page content via the global node delete form.');
   }
 
 }

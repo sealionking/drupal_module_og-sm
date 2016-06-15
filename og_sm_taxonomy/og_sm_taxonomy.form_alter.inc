@@ -104,3 +104,57 @@ EOT;
   // Set the proper redirect.
   $form_state['redirect'] = current_path();
 }
+
+/**
+ * Alter the taxonomy add form.
+ *
+ * Adds the is_new property to fix entityreference prepopulate access check.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ */
+function _og_sm_taxonomy_form_taxonomy_form_term_alter_add(array $form, array &$form_state) {
+  // Set the entity state to is_new so the entityreference_prepopulate module
+  // access check is working properly.
+  $form_state['term']->is_new = TRUE;
+}
+
+/**
+ * Alter the taxonomy term form.
+ *
+ * Adds the option to delete terms based on the OG permissions.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ */
+function _og_sm_taxonomy_form_taxonomy_form_term_alter_delete(array &$form, array &$form_state) {
+  $term = $form_state['term'];
+
+  // Alter the delete access check.
+  $form['actions']['delete']['#access'] = og_sm_taxonomy_term_delete_access($term);
+
+  // Alter the confirmation form targets.
+  if (isset($form_state['confirm_delete'])) {
+    $form['actions']['cancel']['#href'] = current_path();
+    $form['#submit'][] = 'og_sm_taxonomy_form_taxonomy_form_term_alter_delete_submit';
+  }
+}
+
+/**
+ * Custom form submit handler to set the redirect target to the terms overview.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_taxonomy_form_taxonomy_form_term_alter_delete_submit(array $form, array &$form_state) {
+  $term = $form_state['term'];
+  $site = og_sm_taxonomy_term_get_site($term);
+  $vocabulary = taxonomy_vocabulary_load($term->vid);
+  $form_state['redirect'] = 'group/node/' . $site->nid . '/admin/taxonomy/' . $vocabulary->machine_name;
+}
