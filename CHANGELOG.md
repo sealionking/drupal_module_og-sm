@@ -8,6 +8,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ### Fixed
 - WEBSECOND-248 : Added Views exposed filters support for og_sm_taxonomy.
+- DMOGSM-60 : Added fix for entityreference_prepopulate and Site taxonomy terms
+  that are created with hidden group fields.
 
 ## [7.x-1.2]
 ### Added

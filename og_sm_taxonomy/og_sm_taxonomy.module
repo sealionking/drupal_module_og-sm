@@ -518,6 +518,12 @@ function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state,
 function og_sm_taxonomy_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) {
   $term = $form_state['term'];
 
+  // Only for add forms.
+  if (empty($term->tid)) {
+    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
+    _og_sm_taxonomy_form_taxonomy_form_term_alter_add($form, $form_state);
+  }
+
   // Only for edit forms and when term belongs to a Site.
   if (!empty($term->tid) && og_sm_taxonomy_term_is_site_term($term)) {
     form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
