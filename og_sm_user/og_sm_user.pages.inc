@@ -14,15 +14,15 @@
  *     profile page.
  *   - "weight": (optional) The weight of the section.
  */
-function og_sm_profile_get_sections_info() {
+function og_sm_user_get_sections_info() {
   // Check if we already cached the information.
   $cache = cache_get(__FUNCTION__);
   if ($cache) {
     return $cache->data;
   }
 
-  $sections_info = module_invoke_all('og_sm_profile_view');
-  drupal_alter('og_sm_profile_view', $sections_info);
+  $sections_info = module_invoke_all('og_sm_user_view');
+  drupal_alter('og_sm_user_view', $sections_info);
   uasort($sections_info, 'drupal_sort_weight');
 
   // Store in cache.
@@ -35,30 +35,26 @@ function og_sm_profile_get_sections_info() {
 /**
  * The site user profile page.
  *
- * @param object $profile
- *   (optional) The site profile object.
+ * @param object $site
+ *   (optional) The site node.
+ * @param object $account
+ *   (optional) The user object.
  *
  * @return array
  *   Renderable array of profile data.
  */
-function og_sm_profile_page($profile = NULL) {
-  if (!isset($profile) || !is_object($profile)) {
-    $profile = og_sm_profile_load_from_context(NULL, FALSE);
-  }
-  if (!$profile) {
-    return array();
-  }
-  $site = node_load($profile->site_nid);
-  if (!$site) {
-    return array();
+function og_sm_user_page($site, $account = NULL) {
+  global $user;
+  if (!isset($account)) {
+    $account = $user;
   }
 
   $path = array(
-    l(og_sm_profile_page_title($profile), 'node/' . $site->nid . '/profile'),
+    l(format_username($account), 'node/' . $site->nid . '/profile'),
   );
   og_set_breadcrumb('node', $site->nid, $path);
 
-  $sections_info = og_sm_profile_get_sections_info();
+  $sections_info = og_sm_user_get_sections_info();
 
   $sections = array();
   foreach ($sections_info as $section_info) {
@@ -69,12 +65,11 @@ function og_sm_profile_page($profile = NULL) {
     if (!function_exists($render_callback)) {
       continue;
     }
-    $sections[] = call_user_func($render_callback, $profile);
+    $sections[] = call_user_func($render_callback, $site, $account);
   }
-
   return array(
-    '#theme' => 'og_sm_profile_page',
-    '#profile' => $profile,
+    '#theme' => 'og_sm_user_page',
+    '#user' => $account,
     '#sections' => $sections,
   );
 }

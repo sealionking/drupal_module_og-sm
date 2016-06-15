@@ -1,0 +1,81 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_profile module.
+ */
+
+/**
+ * Tests about the OG SM Profile module.
+ */
+class OgSmProfileTestCase extends OgSmWebTestCase {
+  /**
+   * Test data.
+   */
+  protected $site;
+  protected $siteType;
+  protected $siteAdmin;
+  protected $siteUser1;
+  protected $siteUser2;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site User Profile'),
+      'description' => t('Tests the Site User Profile functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_profile');
+    parent::setUp($modules);
+
+    // Create site.
+    $this->siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($this->siteType);
+    $this->site = $site = $this->ogSmCreateGroup($this->siteType);
+    $sites = array($site);
+
+    $roles = array_flip(og_roles('node', $this->siteType));
+
+    // Grant comments permissions to og group roles.
+    og_role_grant_permissions($roles[OG_ADMINISTRATOR_ROLE], array(
+      OG_SM_PROFILE_PERM_ACCESS_ALL_PROFILES,
+    ));
+
+    // Create Site admin.
+    $this->siteAdmin = $this->ogSmCreateGroupUser(array(), $sites);
+    og_role_grant('node', $this->site->nid, $this->siteAdmin->uid, $roles[OG_ADMINISTRATOR_ROLE]);
+
+    // Create Site users.
+    $this->siteUser1 = $this->ogSmCreateGroupUser(array(), $sites);
+    $this->siteUser2 = $this->ogSmCreateGroupUser(array(), $sites);
+
+  }
+
+  /**
+   * Test viewing site user profiles.
+   */
+  public function testViewUserProfile() {
+    $context_providers = og_context_negotiation_info();
+    $group_context_providers = array(
+      $context_providers['og_sm_context_profile'],
+    );
+    og_context_negotiation_set($group_context_providers);
+
+    $site_path = 'group/node/' . $this->site->nid;
+    $this->drupalGet($site_path . '/profile');
+    $this->assertResponse(403, 'An anonymous user can access his own profile page.');
+
+    $this->drupalLogin($this->siteUser1);
+    die;
+    $this->drupalGet($site_path . '/profile');
+  }
+
+}

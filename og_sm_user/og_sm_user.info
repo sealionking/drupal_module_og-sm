@@ -1,4 +1,4 @@
-name = Site User Profile
+name = Site User
 description = "Site specific user profiles."
 package = "Organic Groups Site Manager"
 core = 7.x
@@ -6,4 +6,4 @@ core = 7.x
 dependencies[] = og_sm
 
 ; Tests.
-files[] = tests/OgSmProfileTestCase.test
+files[] = tests/OgSmUserTestCase.test

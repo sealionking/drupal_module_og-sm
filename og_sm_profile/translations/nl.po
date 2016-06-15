@@ -110,8 +110,8 @@ msgid "View"
 msgstr "Weergeven"
 
 #: og_sm_profile.info:0
-msgid "User Profile"
-msgstr "Gebruikersprofiel"
+msgid "Site User Profile"
+msgstr "Site Gebruikersprofiel"
 
 #: og_sm_profile.info:0
 msgid "Site specific user profiles."

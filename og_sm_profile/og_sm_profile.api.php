@@ -17,7 +17,7 @@
  * your .module file cleaner and makes the platform load less code by default.
  *
  * @return array
- *   Array of section ifo, with the section machine name as key. Possible
+ *   Array of section info, with the section machine name as key. Possible
  *   attributes:
  *   - "render callback": The function to call to display the section on the
  *     profile page.

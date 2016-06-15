@@ -1,0 +1,151 @@
+<?php
+/**
+ * @file
+ * OG SM User.
+ */
+
+/**
+ * Implements hook_hook_info().
+ */
+function og_sm_user_hook_info() {
+  $hooks = array(
+    'og_sm_user_view' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_user_view_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+  return $hooks;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_user_menu() {
+  $items = array();
+
+  $items['group/%/%og_sm_site/profile'] = array(
+    'title callback' => 'user_menu_title',
+    'page callback' => 'og_sm_user_page',
+    'page arguments' => array(2),
+    // @todo: access checks.
+    'access callback' => TRUE,
+    'file' => 'og_sm_user.pages.inc',
+    'type' => MENU_CALLBACK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+  $items['group/%/%og_sm_site/profile/view'] = array(
+    'title' => 'View',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+//  // Don't use node/x/x/edit, the path will trigger the theme setting that
+//  // enabled the admin theme.
+//  $items['group/%/%og_sm_site/profile/modify'] = array(
+//    'title' => 'Edit',
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('og_sm_profile_edit_form'),
+//    'access callback' => 'og_sm_profile_page_access',
+//    'access arguments' => array('edit'),
+//    'file' => 'og_sm_profile.pages.inc',
+//    'type' => MENU_LOCAL_TASK,
+//    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+//  );
+//
+//  $items['profile/%og_sm_profile'] = array(
+//    'title callback' => 'og_sm_profile_page_title',
+//    'title arguments' => array(1),
+//    'page callback' => 'og_sm_profile_page',
+//    'page arguments' => array(1),
+//    'access callback' => 'og_sm_profile_page_access',
+//    'access arguments' => array('view', 1),
+//    'file' => 'og_sm_profile.pages.inc',
+//    'type' => MENU_CALLBACK,
+//  );
+//
+//  $items['profile/%og_sm_profile/modify'] = array(
+//    'title' => 'Edit',
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('og_sm_profile_edit_form', 1),
+//    'access callback' => 'og_sm_profile_page_access',
+//    'access arguments' => array('edit', 1),
+//    'file' => 'og_sm_profile.pages.inc',
+//    'type' => MENU_CALLBACK,
+//  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function og_sm_user_theme() {
+  return array(
+    'og_sm_user_page' => array(
+      'template' => 'templates/og_sm_user_page',
+      'variables' => array(
+        'sections' => array(),
+        'user' => NULL,
+      ),
+    ),
+    'og_sm_user_page_section' => array(
+      'variables' => array(
+        'label' => NULL,
+        'elements' => NULL,
+      ),
+      'file' => 'og_sm_user.theme.inc',
+    ),
+  );
+}
+
+/**
+ * Render callback for the basic info profile section.
+ *
+ * @param object $site
+ *   The site node.
+ * @param object
+ *   The user object.
+ *
+ * @return array
+ *   Renderable array to build the section markup.
+ */
+function og_sm_user_section_basic_info($site, $account) {
+  return array(
+    '#theme' => 'og_sm_user_page_section',
+    '#label' => t('Profile'),
+    '#elements' => array(
+      'basic_info' => array(
+        '#type' => 'html_tag',
+        '#tag' => 'address',
+        '#value' => $account->mail,
+        '#label' => $account->name,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_url_outbound_alter().
+ */
+function og_sm_user_url_outbound_alter(&$path, &$options, $original_path) {
+  // Rewrite all outgoing site admin paths for paths that do not have an alias.
+  if (module_exists('og_sm_path') && preg_match('#^group/node/([0-9]+)(/profile.*)#', $path, $parts)) {
+    $site = og_sm_site_load($parts[1]);
+    if ($site) {
+      $path = og_sm_path($site) . $parts[2];
+    }
+  }
+}
+
+/**
+ * Implements hook_url_inbound_alter().
+ */
+function og_sm_user_url_inbound_alter(&$path, $original_path, $path_language) {
+  if (module_exists('og_sm_path') && preg_match('#^([\w/_-]+)(/profile.*)#', $path, $parts)) {
+    $site = og_sm_path_load_site($parts[1]);
+    if ($site) {
+      $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
+    }
+  }
+}

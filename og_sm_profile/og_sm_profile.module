@@ -10,6 +10,11 @@
 define('OG_SM_PROFILE_CACHE_BIN', 'cache_og_sm_profile');
 
 /**
+ * Permissions.
+ */
+define('OG_SM_PROFILE_PERM_ACCESS_ALL_PROFILES', 'access group user profiles');
+
+/**
  * Implements hook_hook_info().
  */
 function og_sm_profile_hook_info() {
@@ -105,7 +110,7 @@ function og_sm_profile_menu() {
  */
 function og_sm_profile_permission() {
   return array(
-    'access group user profiles' => array(
+    OG_SM_PROFILE_PERM_ACCESS_ALL_PROFILES => array(
       'title' => t('Access Site user profiles'),
       'description' => t('Allows a user to view other users group profiles'),
       'restrict access' => TRUE,
@@ -146,8 +151,8 @@ function og_sm_profile_context_handler_profile() {
     return NULL;
   }
 
-  // Get the Profile.
-  $profile = og_sm_profile_load($parts[1]);
+  // Get the Membership.
+  $profile = og_membership_load($parts[1]);
   if ($profile) {
     return array('node' => array((int) $profile->site_nid));
   }
@@ -160,6 +165,9 @@ function og_sm_profile_context_handler_profile() {
  */
 function og_sm_profile_page_title($profile) {
   if (!is_object($profile)) {
+    $profile = og_sm_profile_load_from_context();
+  }
+  if (!$profile) {
     return '';
   }
   $account = user_load($profile->uid);
@@ -179,19 +187,26 @@ function og_sm_profile_page_title($profile) {
  */
 function og_sm_profile_page_access($op, $profile = NULL) {
   global $user;
-  if (!isset($profile)) {
-    $account = $user;
+  // An anonymous use can never have his own profile page so a profile should
+  // always be supplied.
+  if ($user->uid === 0 && empty($profile)) {
+    return FALSE;
   }
-  else {
-    $account = user_load($profile->uid);
+  if (!is_object($profile)) {
+    $profile = og_sm_profile_load_from_context();
   }
+  if (!$profile) {
+    return FALSE;
+  }
+
+  $account = user_load($profile->uid);
 
   switch ($op) {
     case 'view':
-      if ($user->uid == $account->uid) {
+      if ($user->uid == $account->uid && $user->uid > 0) {
         return TRUE;
       }
-      return user_access('access group user profiles');
+      return user_access(OG_SM_PROFILE_PERM_ACCESS_ALL_PROFILES);
 
     case 'edit':
       return user_edit_access($account);
@@ -321,9 +336,7 @@ function og_sm_profile_load_from_context($uid = NULL, $autocreate = TRUE) {
   if ($autocreate) {
     return og_sm_profile_get_or_create($site->nid, $uid);
   }
-  else {
-    return og_sm_profile_load_by_uid($site->nid, $uid);
-  }
+  return og_sm_profile_load_by_uid($site->nid, $uid);
 }
 
 /**
@@ -408,6 +421,26 @@ function og_sm_profile_load_multiple($profile_ids, $reset = FALSE) {
  *   The loaded profile a user within a site.
  */
 function og_sm_profile_load_by_uid($site_nid, $uid, $reset = FALSE) {
+
+  $query = new EntityFieldQuery();
+
+  $query->entityCondition('entity_type', 'og_membership')
+    ->propertyCondition('entity_type', 'user')
+    ->propertyCondition('gid', $site_nid)
+    ->propertyCondition('etid', $uid);
+
+  $result = $query->execute();
+
+  if (isset($result['og_membership'])) {
+    $id = reset($result['og_membership']);
+    return og_membership_load($id);
+  }
+
+  $empty_membership = (object) array(
+    'gid' => $site_nid,
+    'etid' => $uid,
+  );
+  return $empty_membership;
 
   $cid = $uid . ':' . $site_nid;
   static $drupal_static_fast;
