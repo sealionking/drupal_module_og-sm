@@ -108,7 +108,7 @@ EOT;
 /**
  * Alter the taxonomy add form.
  *
- * Adds the is_new property to fix entityreference autocomplete access check.
+ * Adds the is_new property to fix entityreference prepopulate access check.
  *
  * @param array $form
  *   The form structure.
