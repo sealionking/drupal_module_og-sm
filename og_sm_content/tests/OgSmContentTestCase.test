@@ -414,14 +414,14 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertEqual(
       NODE_ACCESS_IGNORE,
       og_sm_content_node_access($this->siteType, 'create', $this->siteUserPageArticle),
-      'No Node Access check for delete.'
+      'No Node Access check for non Site content types.'
     );
 
     // User should not be allowed to create content outside a Site context.
     $this->assertEqual(
       NODE_ACCESS_DENY,
       og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->siteUserPageArticle),
-      'User 1 is not allowed to add Page content via the global node add form.'
+      'Users are not allowed to create Site content outside a Site context.'
     );
 
     // No check when Site context is active.
@@ -429,7 +429,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
     $this->assertEqual(
       NODE_ACCESS_IGNORE,
       og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->siteUserPageArticle),
-      'No Node Access check for delete.'
+      'No Node Access check when inside a Site context.'
     );
   }
 
