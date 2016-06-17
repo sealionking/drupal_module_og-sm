@@ -3,6 +3,11 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [Unreleased]
+### Fixed
+- DMOGSM-63 : Too strict node access check on group content types.
+
+
 
 ## [7.x-1.3]
 ### Added
