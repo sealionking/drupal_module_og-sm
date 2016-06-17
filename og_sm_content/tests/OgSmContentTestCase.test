@@ -36,7 +36,7 @@ class OgSmContentTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Content management'),
+      'name' => t('Site Content : Management'),
       'description' => t('Tests the Site Content management functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );
@@ -383,28 +383,54 @@ class OgSmContentTestCase extends OgSmWebTestCase {
 
   /**
    * Test the hook_node_access() implementation in og_sm_content.
+   *
+   * We don't need to test this for users with special roles/permissions as
+   * these are already granted access on Drupal level.
+   *
+   * We are testing here on unit-level.
    */
   public function testNodeAccessCallback() {
     // Setup test data.
     $this->setUpContent();
     $this->setUpUsers();
-    $site_content_node = $this->ogSmCreateGroupContent($this->siteContentTypeNamePage, array($this->site));
+    $site_content_node = $this->ogSmCreateGroupContent(
+      $this->siteContentTypeNamePage,
+      array($this->site)
+    );
 
-    // Admin user.
-    $access = og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->userAdmin);
-    $this->assertTrue($access, 'Admin user is allowed to add Page content via the global node add form.');
-    $access = og_sm_content_node_access($site_content_node, 'create', $this->userAdmin);
-    $this->assertTrue($access, 'Admin user is allowed to edit Page content via the global node edit form.');
-    $access = og_sm_content_node_access($site_content_node, 'delete', $this->userAdmin);
-    $this->assertTrue($access, 'Admin user is allowed to delete Page content via the global node delete form.');
+    // Function does not check other operations then create.
+    $this->assertEqual(
+      NODE_ACCESS_IGNORE,
+      og_sm_content_node_access($site_content_node, 'update', $this->siteUserPageArticle),
+      'No Node Access check for update.'
+    );
+    $this->assertEqual(
+      NODE_ACCESS_IGNORE,
+      og_sm_content_node_access($site_content_node, 'delete', $this->siteUserPageArticle),
+      'No Node Access check for delete.'
+    );
 
-    // Site user with access to all content.
-    $access = og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->siteUserPageArticle);
-    $this->assertTrue($access, 'User 1 is not allowed to add Page content via the global node add form.');
-    $access = og_sm_content_node_access($site_content_node, 'create', $this->siteUserPageArticle);
-    $this->assertTrue($access, 'User 1 is not allowed to edit Page content via the global node edit form.');
-    $access = og_sm_content_node_access($site_content_node, 'delete', $this->siteUserPageArticle);
-    $this->assertTrue($access, 'User 1 is not allowed to delete Page content via the global node delete form.');
+    // No check if not a Site content type.
+    $this->assertEqual(
+      NODE_ACCESS_IGNORE,
+      og_sm_content_node_access($this->siteType, 'create', $this->siteUserPageArticle),
+      'No Node Access check for non Site content types.'
+    );
+
+    // User should not be allowed to create content outside a Site context.
+    $this->assertEqual(
+      NODE_ACCESS_DENY,
+      og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->siteUserPageArticle),
+      'Users are not allowed to create Site content outside a Site context.'
+    );
+
+    // No check when Site context is active.
+    $this->ogSmSetOgContextToGroup($this->site);
+    $this->assertEqual(
+      NODE_ACCESS_IGNORE,
+      og_sm_content_node_access($this->siteContentTypeNamePage, 'create', $this->siteUserPageArticle),
+      'No Node Access check when inside a Site context.'
+    );
   }
 
 }
