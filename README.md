@@ -60,6 +60,9 @@ This module and its submodules adds functionality to support:
 ### Included in og_sm_theme module
 * Set the theme per Site.
 
+### Included in og_sm_user module
+* Site feature that creates site specific user profiles.
+
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
 * Get/Set/Delete Site specific variables.
