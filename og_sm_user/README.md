@@ -14,5 +14,3 @@ site context.
 ## Installation
 1. Enable the module.
 2. Enable the "User profile" feature at `[site-path]/admin/features`.
-
-[link-path_alias_xt]: https://www.drupal.org/project/path_alias_xt
