@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains theme functions for og_sm_profile module.
+ * Contains theme functions for og_sm_user module.
  */
 
 /**

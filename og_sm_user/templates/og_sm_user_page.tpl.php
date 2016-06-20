@@ -9,8 +9,8 @@
  *   An array of renderable arrays containing section info.
  */
 ?>
-<div class="l-primary og-sm-profile">
-  <div class="og-sm-profile__sections">
+<div class="l-primary og-sm-user">
+  <div class="og-sm-user__sections">
     <?php print drupal_render($sections) ?>
   </div>
 </div>

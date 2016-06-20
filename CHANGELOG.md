@@ -13,6 +13,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ### Added
 - DMOGSM-57 : Added extra permissions so Site Users can get granted to delete
   Site terms.
+- DMOGSM-5: Added the og_sm_user module to have a user profile per site.
 
 
 ### Fixed

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Pages for the og_sm_profile module.
+ * Pages for the og_sm_user module.
  */
 
 /**
@@ -21,8 +21,8 @@ function og_sm_user_get_sections_info() {
     return $cache->data;
   }
 
-  $sections_info = module_invoke_all('og_sm_user_view');
-  drupal_alter('og_sm_user_view', $sections_info);
+  $sections_info = module_invoke_all('og_sm_user_profile_info');
+  drupal_alter('og_sm_user_profile_info', $sections_info);
   uasort($sections_info, 'drupal_sort_weight');
 
   // Store in cache.
@@ -36,7 +36,7 @@ function og_sm_user_get_sections_info() {
  * The site user profile page.
  *
  * @param object $site
- *   (optional) The site node.
+ *   The site node.
  * @param object $account
  *   (optional) The user object.
  *
@@ -50,7 +50,7 @@ function og_sm_user_page($site, $account = NULL) {
   }
 
   $path = array(
-    l(format_username($account), 'node/' . $site->nid . '/profile'),
+    l(format_username($account), 'group/node/' . $site->nid . '/profile/' . $account->uid),
   );
   og_set_breadcrumb('node', $site->nid, $path);
 
@@ -81,34 +81,28 @@ function og_sm_user_page($site, $account = NULL) {
  *   The form structure.
  * @param array $form_state
  *   The current form state.
- * @param object $profile
- *   The site profile object.
+ * @param object $site
+ *   The site node.
+ * @param object $account
+ *   (optional) The user object.
  *
  * @return array
  *   The form structure.
  */
-function og_sm_profile_edit_form($form, &$form_state, $profile = NULL) {
-  if (!isset($profile) || !is_object($profile)) {
-    $profile = og_sm_profile_load_from_context();
-  }
-  if (!$profile) {
-    return array();
-  }
-  $site = og_sm_site_load($profile->site_nid);
-  if (!$site) {
-    return array();
+function og_sm_user_edit_form($form, &$form_state, $site, $account = NULL) {
+  global $user;
+  if (!isset($account)) {
+    $account = $user;
   }
 
   // Breadcrumbs.
   og_set_breadcrumb('node', $site->nid, array(
-    l(og_sm_profile_page_title($profile), 'node/' . $site->nid . '/profile'),
-    l(t('Edit'), 'node/' . $site->nid . '/profile/modify'),
+    l(format_username($account), 'group/node/' . $site->nid . '/profile/' . $account->uid),
+    l(t('Edit'), 'group/node/' . $site->nid . '/profile/' . $account->uid . '/modify'),
   ));
 
-  $form['#prefix'] = '<div class="l-primary">';
-  $form['#suffix'] = '</div>';
-
-  $form_state['profile'] = $profile;
+  $form_state['user'] = $account;
+  $form_state['site'] = $site;
 
   // Every module with profile data should alter this form and add their own
   // elements with own validate and submit handlers.
@@ -118,19 +112,4 @@ function og_sm_profile_edit_form($form, &$form_state, $profile = NULL) {
     '#weight' => 100,
   );
   return $form;
-}
-
-/**
- * Submit handler for the profile form.
- *
- * @param array $form
- *   The form structure.
- * @param array $form_state
- *   The current form state.
- */
-function og_sm_profile_edit_form_submit($form, &$form_state) {
-  $profile = $form_state['profile'];
-  cache_clear_all($profile->uid . ':' . $profile->site_nid, OG_SM_PROFILE_CACHE_BIN);
-
-  drupal_set_message(t('Your profile has been saved'));
 }
