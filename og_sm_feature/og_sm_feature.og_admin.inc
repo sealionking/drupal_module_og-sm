@@ -125,9 +125,21 @@ function _og_sm_feature_og_admin_overview_row($site, array $info) {
 function og_sm_feature_og_admin_overview_submit(array $form, array $form_state) {
   $site = $form_state['site'];
   $features = $form_state['values']['features'];
+  $changed = FALSE;
 
   foreach ($features as $name => $state) {
-    if (empty($state)) {
+    $old = og_sm_feature_site_is_enabled($site, $name);
+    $new = !empty($state);
+
+    // Check if feature state did change.
+    if ($old === $new) {
+      continue;
+    }
+
+    $changed = TRUE;
+
+    // Feature is enabled?
+    if (!$new) {
       og_sm_feature_site_disable($site, $name);
       continue;
     }
@@ -135,8 +147,13 @@ function og_sm_feature_og_admin_overview_submit(array $form, array $form_state) 
     og_sm_feature_site_enable($site, $name);
   }
 
+  // Show some user feedback regardless if we actually needed to change feature
+  // states.
   drupal_set_message(t('Saved Feature statuses.'));
 
-  // Enable/disabeling the feature requires menu rebuild.
-  menu_rebuild();
+  // If feature states changed we need to clear some cache.
+  if ($changed) {
+    og_sm_site_cache_clear_all($site);
+    menu_rebuild();
+  }
 }
