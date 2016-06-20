@@ -37,11 +37,11 @@ msgstr "Weergeven"
 
 #: og_sm_user.info:0
 msgid "Site User"
-msgstr ""
+msgstr "Site Gebruiker"
 
 #: og_sm_user.info:0
 msgid "Site specific user profiles."
-msgstr ""
+msgstr "Site specifieke gebruikersprofielen."
 
 #: og_sm_user.info:0
 msgid "Organic Groups Site Manager"
