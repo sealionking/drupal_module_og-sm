@@ -151,7 +151,7 @@ function og_sm_feature_og_admin_overview_submit(array $form, array $form_state) 
   // states.
   drupal_set_message(t('Saved Feature statuses.'));
 
-  // If feature states changed we need to clear some cache.
+  // If feature states changed we need to clear some caches.
   if ($changed) {
     og_sm_site_cache_clear_all($site);
     menu_rebuild();
