@@ -69,6 +69,7 @@ function og_sm_path_og_sm_site_delete($site) {
  * Clears all page cache based on the Site prefix.
  */
 function og_sm_path_og_sm_site_cache_clear_all($site) {
-  $url = url(og_sm_path($site), array('absolute' => TRUE));
-  cache_clear_all($url, 'cache_page', TRUE);
+  global $base_root;
+  $cid = $base_root . request_uri() . og_sm_path($site);
+  cache_clear_all($cid, 'cache_page', TRUE);
 }
