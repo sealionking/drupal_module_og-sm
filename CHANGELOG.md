@@ -6,6 +6,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ## [Unreleased]
 ### Fixed
 - DMOGSM-63 : Too strict node access check on group content types.
+- DMOGSM-64 : Added callback and hook to clear all cache for a specific Site.
 
 
 

@@ -117,6 +117,17 @@ Get the currently active Site node:
 $site = og_sm_current_site();
 ```
 
+### Clear all cache for Site
+Clear all cache for one site.
+
+This function does not clear the cache itself, it calls all the implemented
+hook_og_sm_site_cache_clear_all() hooks so modules can clear their specific
+cached Site parts.
+
+```php
+og_sm_site_cache_clear_all($site);
+```
+
 ### Site types
 Get a list of node types that are Site node types:
 ```php
@@ -214,6 +225,25 @@ These functions can be used in Menu items ($account is optional):
   by Site node id and permission name.
 
 
+## Hooks
+The og_sm module provides multiple hooks to make it easier to alter
+functionality when a Site is involved.
+
+> The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
+
+
+### Clear all Site cache
+When `og_sm_site_cache_clear_all()` is called, it will not clear any cache
+itself. It will call all implemented `hook_og_sm_site_cache_clear_all()` hooks
+so modules can clear the Site parts they have cached.
+
+* `hook_og_sm_site_cache_clear_all($site)` : Cache clear call is called for the
+  given Site.
+
+
 ### Site node type action hooks
 The module triggers hooks when a node type is being added or removed as being a
 Site node type.
@@ -222,11 +252,6 @@ Site node type.
   type.
 * `hook_og_sm_site_type_remove($type)` : Site node type is no longer a Site
   type.
-
-> The hook can be put in the `yourmodule.module` OR in the
-> `yourmodule.og_sm.inc` file.
-> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
-> .module file cleaner and makes the platform load less code by default.
 
 
 ### Site action hooks
