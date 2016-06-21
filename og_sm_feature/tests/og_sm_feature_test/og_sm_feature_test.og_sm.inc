@@ -20,6 +20,10 @@ function og_sm_feature_test_og_sm_feature_info() {
   $items['articles'] = array(
     'name' => t('Articles'),
   );
+  $items['news and blogs'] = array(
+    'name' => t('News and Blogs'),
+    'content types' => array('news', 'blog_post'),
+  );
 
   return $items;
 }

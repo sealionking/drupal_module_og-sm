@@ -114,13 +114,15 @@ hook can return multiple features).
 The info array contains following information:
 * **title** : The feature title.
 * **description** : The feature description.
-* **content type** : Array of content type machine names provided by the
-  feature.
 * **global configuration** : An optional path to the a configuration page to set the
   global defaults for a feature.
 * **site configuration** : An optional path to change the configuration of the
   feature specific for the Site. The path should be specified without the
   `group/node/NID/` path prefix as it will be appended automatically.
+* **content types** : An optional array of content types (machine names) that
+  belong to the feature. The content types will be hidden and access to create
+  them will be declined if it belongs to a feature and tat feature is not
+  enabled.
 
 ```php
 function hook_og_sm_feature_info() {

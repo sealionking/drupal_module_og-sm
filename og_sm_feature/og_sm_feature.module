@@ -97,25 +97,18 @@ function og_sm_feature_menu() {
  */
 function og_sm_feature_menu_alter(&$items) {
   // Only required if the Content module is enabled.
-  if (!module_exists('og_sm_content')) {
-    return;
-  }
+  if (module_exists('og_sm_content')) {
+    $content_types = og_sm_feature_info_content_types();
+    foreach ($content_types as $content_type => $features) {
+      $feature_names = array_keys($features);
 
-  $features = og_sm_feature_info();
-  foreach ($features as $feature => $info) {
-    if (empty($info['content types'])) {
-      continue;
-    }
-
-    // Alter the access callbacks for content types.
-    foreach ($info['content types'] as $content_type) {
       $path_add = 'group/%/%og_sm_site/content/add/' . $content_type;
       $items[$path_add]['access callback'] = 'og_sm_feature_access_content_add';
-      $items[$path_add]['access arguments'] = array(2, $feature, 5);
+      $items[$path_add]['access arguments'] = array(2, $feature_names, 5);
 
       $path_type = 'group/%/%og_sm_site/admin/structure/types/' . $content_type;
       $items[$path_type]['access callback'] = 'og_sm_feature_access_admin_content_type';
-      $items[$path_type]['access arguments'] = array(2, $feature);
+      $items[$path_type]['access arguments'] = array(2, $feature_names);
     }
   }
 }
@@ -125,8 +118,8 @@ function og_sm_feature_menu_alter(&$items) {
  *
  * @param object $site
  *   The Site object.
- * @param string $feature
- *   The feature name.
+ * @param array $features
+ *   Array of feature names.
  * @param string $node_type
  *   The Node type.
  * @param object $account
@@ -135,12 +128,18 @@ function og_sm_feature_menu_alter(&$items) {
  * @return bool
  *   Has access TRUE/FALSE.
  */
-function og_sm_feature_access_content_add($site, $feature, $node_type, $account = NULL) {
-  if (!og_sm_feature_site_is_enabled($site, $feature)) {
+function og_sm_feature_access_content_add($site, array $features, $node_type, $account = NULL) {
+  if (!og_sm_content_add_content_access($site, $node_type, $account)) {
     return FALSE;
   }
 
-  return og_sm_content_add_content_access($site, $node_type, $account);
+  foreach ($features as $feature) {
+    if (og_sm_feature_site_is_enabled($site, $feature)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
 }
 
 /**
@@ -148,20 +147,26 @@ function og_sm_feature_access_content_add($site, $feature, $node_type, $account 
  *
  * @param object $site
  *   The Site object.
- * @param string $feature
- *   The feature name.
+ * @param array $features
+ *   Array of feature names.
  * @param object $account
  *   The optional account to test the access for.
  *
  * @return bool
  *   Has access TRUE/FALSE.
  */
-function og_sm_feature_access_admin_content_type($site, $feature, $account = NULL) {
-  if (!og_sm_feature_site_is_enabled($site, $feature)) {
+function og_sm_feature_access_admin_content_type($site, array $features, $account = NULL) {
+  if (!og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $account)) {
     return FALSE;
   }
 
-  return og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $account);
+  foreach ($features as $feature) {
+    if (og_sm_feature_site_is_enabled($site, $feature)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
 }
 
 /**
@@ -248,6 +253,58 @@ function og_sm_feature_info() {
  */
 function og_sm_feature_info_sort($a, $b) {
   return strcasecmp($a['name'], $b['name']);
+}
+
+/**
+ * Get all the content types that belong to features.
+ *
+ * @return array
+ *   This will return an array keyed by the content type machine name and having
+ *   an array of features it belongs to.
+ */
+function og_sm_feature_info_content_types() {
+  return _og_sm_feature_info_by_key('content types');
+}
+
+
+/**
+ * Helper to get info grouped by feature info array key.
+ *
+ * @param string $key
+ *   The info key to group the info by.
+ *
+ * @return array
+ *   The information with the unique key values as array key and an array of
+ *   features that have that value as the array item values.
+ */
+function _og_sm_feature_info_by_key($key) {
+  $info = &drupal_static(__FUNCTION__ . ':' . $key, FALSE);
+  if (is_array($info)) {
+    return $info;
+  }
+
+  $info = array();
+  $features = og_sm_feature_info();
+  foreach ($features as $feature_name => $feature_info) {
+    if (empty($feature_info[$key])) {
+      continue;
+    }
+
+    $key_values = $feature_info[$key];
+    if (!is_array($key_values)) {
+      $key_values = array($key_values);
+    }
+
+    foreach ($key_values as $key_value) {
+      if (!isset($info[$key_value])) {
+        $info[$key_value] = array();
+      }
+
+      $info[$key_value][$feature_name] = $feature_info;
+    }
+  }
+
+  return $info;
 }
 
 /**

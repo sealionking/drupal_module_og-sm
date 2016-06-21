@@ -1,0 +1,138 @@
+<?php
+/**
+ * @file
+ * Tests about the Site Feature menu alters.
+ */
+
+/**
+ * Tests about the menu alters.
+ */
+class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
+  /**
+   * Site node object.
+   *
+   * @var object
+   */
+  private $siteNode;
+
+  /**
+   * Admin user to test with.
+   *
+   * @var object
+   */
+  private $userAdministrator;
+
+  /**
+   * Global user to test the global configuration.
+   *
+   * @var object
+   */
+  private $userWithGlobalPermission;
+
+  /**
+   * Site member.
+   *
+   * @var object
+   */
+  private $siteMember;
+
+  /**
+   * Site administrator.
+   *
+   * @var object
+   */
+  private $siteAdministrator;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Feature : Menu alter'),
+      'description' => t('Tests OG Site Manager Feature menu alters.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_feature_test', 'og_sm_content', 'og_sm_taxonomy');
+    parent::setUp($modules);
+
+    // Create a Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    $this->siteNode = $this->ogSmCreateGroup($type);
+
+    // Create the news content type.
+    $this->ogSmCreateGroupContentNodeType('news');
+
+    // Create site member.
+    $sites = array($this->siteNode);
+    $this->siteMember = $this->ogSmCreateGroupUser(array(), $sites);
+
+    // Create site administrator.
+    $this->siteAdministrator = $this->ogSmCreateGroupUser(array(), $sites);
+    $site_admin_role = og_role_create('site_admin_role', 'node', 0, $type);
+    og_role_save($site_admin_role);
+    og_role_grant_permissions(
+      $site_admin_role->rid,
+      array(
+        OG_SM_FEATURE_OG_PERM_ADMINISTER_FEATURES,
+        OG_SM_PERMISSION_SITE_ADMIN,
+        'create news content'
+      )
+    );
+    og_role_grant('node', $this->siteNode->nid, $this->siteAdministrator->uid, $site_admin_role->rid);
+
+    // Disable all contexts to avoid notices.
+    variable_set('og_context_negotiation_group_context', array());
+    variable_set('og_context_providers_weight_group_context', array());
+  }
+
+  /**
+   * Test access callback to add content.
+   */
+  public function testNodeAccessCallback() {
+    $account = $this->siteAdministrator;
+    $site = $this->siteNode;
+    $features = array('news', 'news and blogs');
+    $url_news_add = 'group/node/' . $site->nid . '/content/add/news';
+    $url_news_type = 'group/node/' . $site->nid . '/admin/structure/types/news';
+
+    $this->drupalLogin($account);
+
+    // No feature having the news content type enabled.
+    $this->assertFalse(
+      og_sm_feature_access_content_add($this->siteNode, $features, 'news', $account),
+      'No access to add content when related feature(s) are not enabled.'
+    );
+    $this->drupalGet($url_news_add);
+    $this->assertResponse(403, 'No access to add news content when feature(s) are not enabled.');
+    $this->assertFalse(
+      og_sm_feature_access_admin_content_type($this->siteNode, $features),
+      'No access to manage content type when related feature(s) are not enabled.'
+    );
+    $this->drupalGet($url_news_type);
+    $this->assertResponse(403, 'No access to edit news content type when feature(s) are not enabled.');
+
+    // Enable feature having news as content type.
+    og_sm_feature_site_enable($site, 'news');
+    $this->assertTrue(
+      og_sm_feature_access_content_add($this->siteNode, $features, 'news', $account),
+      'User has access to add content when related feature(s) are not enabled.'
+    );
+    $this->drupalGet($url_news_add);
+    $this->assertResponse(200, 'Access to add news content when feature(s) are not enabled.');
+    $this->assertTrue(
+      og_sm_feature_access_admin_content_type($this->siteNode, $features),
+      'User has access to manage content type when related feature(s) are not enabled.'
+    );
+    $this->drupalGet($url_news_type);
+    $this->assertResponse(200, 'Access to edit news content type when feature(s) are not enabled.');
+  }
+
+}

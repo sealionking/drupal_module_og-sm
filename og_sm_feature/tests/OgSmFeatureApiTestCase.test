@@ -39,7 +39,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     // Not called yet => not cached.
     $this->assertFalse(
       cache_get($cid),
-      'As long as the og_sm_info function is not called, no data in cache.'
+      'As long as the og_sm_feature_info function is not called, no data in cache.'
     );
 
     // Collect the info.
@@ -57,6 +57,13 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
         'content types' => array('news'),
         'global configuration' => 'admin/config/group/features/news-test',
         'site configuration' => 'admin/features/news-test',
+      ),
+      'news and blogs' => array(
+        'name' => 'News and Blogs',
+        'content types' => array('news', 'blog_post'),
+        'description' => NULL,
+        'global configuration' => NULL,
+        'site configuration' => NULL,
       ),
     );
     $info = og_sm_feature_info();
@@ -77,6 +84,55 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     $this->assertTrue(
       og_sm_feature_exists('news'),
       'News feature does exist.'
+    );
+  }
+
+  /**
+   * Test getting the information grouped by the content types.
+   */
+  public function testFeatureInfoByContentTypes() {
+    $cid = '_og_sm_feature_info_by_key:content types';
+    $this->assertFalse(
+      drupal_static($cid, FALSE),
+      'As long as the og_sm_feature_info_content_types function is not called, no data in cache.'
+    );
+
+    // Collect the info.
+    $expected = array(
+      'news' => array(
+        'news' => array(
+          'name' => 'News',
+          'description' => 'News content and overviews.',
+          'content types' => array('news'),
+          'global configuration' => 'admin/config/group/features/news-test',
+          'site configuration' => 'admin/features/news-test',
+        ),
+        'news and blogs' => array(
+          'name' => 'News and Blogs',
+          'content types' => array('news', 'blog_post'),
+          'description' => NULL,
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+      'blog_post' => array(
+        'news and blogs' => array(
+          'name' => 'News and Blogs',
+          'content types' => array('news', 'blog_post'),
+          'description' => NULL,
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+    );
+    $info = og_sm_feature_info_content_types();
+    $this->assertEqual($expected, $info, 'Collected content types info from the implemented hooks.');
+
+    // Info should be cached.
+    $this->assertEqual(
+      $expected,
+      drupal_static($cid, FALSE),
+      'From the moment the og_sm_feature_info_content_types function is called, data is cached.'
     );
   }
 

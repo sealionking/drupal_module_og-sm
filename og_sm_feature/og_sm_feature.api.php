@@ -22,6 +22,10 @@
  *   - site configuration : An optional path to change the configuration of the
  *     feature specific for the Site. The path should be specified without the
  *     group/node/NID/ path prefix as it will be appended automatically.
+ *   - content types : An optional array of content types (machine names) that
+ *     belong to the feature. The content types will be hidden and access to
+ *     create them will be declined if it belongs to a feature and tat feature
+ *     is not enabled.
  */
 function hook_og_sm_feature_info() {
   $items = array();
@@ -31,7 +35,9 @@ function hook_og_sm_feature_info() {
     'description' => t('News content and overviews.'),
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
+    'content types' => array('idea'),
   );
+
   $items['articles'] = array(
     'name' => 'Articles',
   );
