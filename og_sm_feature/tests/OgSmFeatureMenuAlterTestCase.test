@@ -56,11 +56,11 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
     // Create the news content type.
     $this->ogSmCreateGroupContentNodeType('news');
 
-    // Create site member.
-    $sites = array($this->siteNode);
-    $this->siteMember = $this->ogSmCreateGroupUser(array(), $sites);
+    // Create vocabularies.
+    $this->vocabCategories = $this->ogSmCreateGroupVocabulary('categories');
 
     // Create site administrator.
+    $sites = array($this->siteNode);
     $this->siteAdministrator = $this->ogSmCreateGroupUser(array(), $sites);
     $site_admin_role = og_role_create('site_admin_role', 'node', 0, $type);
     og_role_save($site_admin_role);
@@ -69,7 +69,6 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
       array(
         OG_SM_FEATURE_OG_PERM_ADMINISTER_FEATURES,
         OG_SM_CONTENT_OG_PERM_ADMINISTER_CONTENT_TYPES,
-        //OG_SM_PERMISSION_SITE_ADMIN,
         OG_SM_TAXONOMY_OG_PERM_ALL,
         'create news content',
       )
@@ -82,12 +81,11 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Test access callback to add content.
+   * Test access callback and menu alter to add content & edit content types.
    */
-  public function testNodeAccessCallback() {
+  public function testNodeAccessCallbackAndMenuAlter() {
     $account = $this->siteAdministrator;
     $site = $this->siteNode;
-    $features = array('news', 'news and blogs');
     $url_news_add = 'group/node/' . $site->nid . '/content/add/news';
     $url_news_type = 'group/node/' . $site->nid . '/admin/structure/types/news';
 
@@ -95,13 +93,13 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
 
     // No feature having the news content type enabled.
     $this->assertFalse(
-      og_sm_feature_access_content_add($this->siteNode, $features, 'news', $account),
+      og_sm_feature_access_content_add($this->siteNode, 'news', $account),
       'No access to add content when related feature(s) are not enabled.'
     );
     $this->drupalGet($url_news_add);
     $this->assertResponse(403, 'No access to add news content when feature(s) are not enabled.');
     $this->assertFalse(
-      og_sm_feature_access_admin_content_type($this->siteNode, $features),
+      og_sm_feature_access_admin_content_type($this->siteNode, 'news'),
       'No access to manage content type when related feature(s) are not enabled.'
     );
     $this->drupalGet($url_news_type);
@@ -110,13 +108,13 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
     // Enable feature having news as content type.
     og_sm_feature_site_enable($site, 'news');
     $this->assertTrue(
-      og_sm_feature_access_content_add($this->siteNode, $features, 'news', $account),
+      og_sm_feature_access_content_add($this->siteNode, 'news', $account),
       'User has access to add content when related feature(s) are not enabled.'
     );
     $this->drupalGet($url_news_add);
     $this->assertResponse(200, 'Access to add news content when feature(s) are not enabled.');
     $this->assertTrue(
-      og_sm_feature_access_admin_content_type($this->siteNode, $features),
+      og_sm_feature_access_admin_content_type($this->siteNode, 'news'),
       'User has access to manage content type when related feature(s) are not enabled.'
     );
     $this->drupalGet($url_news_type);

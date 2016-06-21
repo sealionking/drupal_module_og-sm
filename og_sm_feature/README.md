@@ -79,6 +79,28 @@ $is_enabled = og_sm_feature_site_is_enabled($site, 'feature name');
 ```
 
 
+### Check if a content type is enabled
+Check if a content type is enabled within a Site. This is done by checking if
+one of the features the content type belongs to is enabled.
+
+Content types that don't belong to any feature will always be seen as enabled.
+
+```php
+$is_enabled = og_sm_feature_site_content_type_is_enabled($site, 'news');
+```
+
+
+### Check if a vocabulary is enabled
+Check if a vocabulary is enabled within a Site. This is done by checking if one
+of the features the vocabulary belongs to is enabled.
+
+Vocabularies that don't belong to any feature will always be seen as enabled.
+
+```php
+$is_enabled = og_sm_feature_site_vocabulary_is_enabled($site, 'tags');
+```
+
+
 ### Access callback based on feature status
 This module provides an access callback (use in menu callbacks) to grant access
 based on the fact that a feature is enabled.
@@ -134,9 +156,10 @@ function hook_og_sm_feature_info() {
   $items['news'] = array(
     'name' => t('News'),
     'description' => t('News content and overviews.'),
-    'content types' => array('news'),
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
+    'content types' => array('news'),
+    'vocabularies' => array('tags', 'categories'),
   );
   $items['articles'] = array(
     'name' => 'Articles',
