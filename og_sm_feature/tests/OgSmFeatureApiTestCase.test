@@ -46,6 +46,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     $expected = array(
       'articles' => array(
         'name' => 'Articles',
+        'vocabularies' => array('categories', 'tags'),
         'description' => NULL,
         'content types' => array(),
         'global configuration' => NULL,
@@ -57,10 +58,12 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
         'content types' => array('news'),
         'global configuration' => 'admin/config/group/features/news-test',
         'site configuration' => 'admin/features/news-test',
+        'vocabularies' => array(),
       ),
       'news and blogs' => array(
         'name' => 'News and Blogs',
         'content types' => array('news', 'blog_post'),
+        'vocabularies' => array('tags'),
         'description' => NULL,
         'global configuration' => NULL,
         'site configuration' => NULL,
@@ -90,7 +93,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
   /**
    * Test getting the information grouped by the content types.
    */
-  public function testFeatureInfoByContentTypes() {
+  public function testFeatureInfoContentTypes() {
     $cid = '_og_sm_feature_info_by_key:content types';
     $this->assertFalse(
       drupal_static($cid, FALSE),
@@ -106,10 +109,12 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
           'content types' => array('news'),
           'global configuration' => 'admin/config/group/features/news-test',
           'site configuration' => 'admin/features/news-test',
+          'vocabularies' => array(),
         ),
         'news and blogs' => array(
           'name' => 'News and Blogs',
           'content types' => array('news', 'blog_post'),
+          'vocabularies' => array('tags'),
           'description' => NULL,
           'global configuration' => NULL,
           'site configuration' => NULL,
@@ -119,6 +124,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
         'news and blogs' => array(
           'name' => 'News and Blogs',
           'content types' => array('news', 'blog_post'),
+          'vocabularies' => array('tags'),
           'description' => NULL,
           'global configuration' => NULL,
           'site configuration' => NULL,
@@ -137,9 +143,73 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
   }
 
   /**
+   * Test getting the information grouped by the vocabulary names.
+   */
+  public function testFeatureInfoVocabularyNames() {
+    $cid = '_og_sm_feature_info_by_key:vocabularies';
+    $this->assertFalse(
+      drupal_static($cid, FALSE),
+      'As long as the og_sm_feature_info_vocabularies function is not called, no data in cache.'
+    );
+
+    // Collect the info.
+    $expected = array(
+      'categories' => array(
+        'articles' => array(
+          'name' => 'Articles',
+          'vocabularies' => array(
+            0 => 'categories',
+            1 => 'tags',
+          ),
+          'description' => NULL,
+          'content types' => array(),
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+      'tags' => array(
+        'articles' => array(
+          'name' => 'Articles',
+          'vocabularies' => array(
+            0 => 'categories',
+            1 => 'tags',
+          ),
+          'description' => NULL,
+          'content types' => array(),
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+        'news and blogs' => array(
+          'name' => 'News and Blogs',
+          'content types' => array(
+            0 => 'news',
+            1 => 'blog_post',
+          ),
+          'vocabularies' => array(
+            0 => 'tags',
+          ),
+          'description' => NULL,
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+    );
+    $info = og_sm_feature_info_vocabularies();
+    $this->verbose(var_export($info, TRUE));
+    $this->assertEqual($expected, $info, 'Collected content types info from the implemented hooks.');
+
+    // Info should be cached.
+    $this->assertEqual(
+      $expected,
+      drupal_static($cid, FALSE),
+      'From the moment the og_sm_feature_info_vocabularies function is called, data is cached.'
+    );
+  }
+
+  /**
    * Test enable/disabling features.
    */
-  public function testEnableDisable() {
+  public function _testEnableDisable() {
     // Create a Site.
     $type = $this->ogSmCreateGroupNodeType();
     og_sm_site_type_add($type);
@@ -228,7 +298,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
   /**
    * Test default features (globally defined) when new site is created.
    */
-  public function testDefaultFeaturesWhenNewSiteIsCreated() {
+  public function _testDefaultFeaturesWhenNewSiteIsCreated() {
     // Set the default features.
     variable_set(og_sm_feature_variable_key('news'), 0);
     variable_set(og_sm_feature_variable_key('articles'), 1);

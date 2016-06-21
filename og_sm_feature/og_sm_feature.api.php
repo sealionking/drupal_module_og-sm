@@ -26,6 +26,9 @@
  *     belong to the feature. The content types will be hidden and access to
  *     create them will be declined if it belongs to a feature and tat feature
  *     is not enabled.
+ *   - vocabularies : An optional array of vocabularies (machine names) that
+ *     belong to the feature. The vocabulary will be hidden from the Site
+ *     taxonomy administration pages and access to them will be declined.
  */
 function hook_og_sm_feature_info() {
   $items = array();
@@ -36,6 +39,7 @@ function hook_og_sm_feature_info() {
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
     'content types' => array('idea'),
+    'vocabularies' => array('tags', 'categories'),
   );
 
   $items['articles'] = array(

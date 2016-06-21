@@ -161,6 +161,35 @@ function og_sm_feature_access_admin_content_type($site, array $features, $accoun
   }
 
   foreach ($features as $feature) {
+
+/**
+ * Access callback to check access to one taxonomy administration vocabulary.
+ *
+ * @param object $site
+ *   The Site to validate the access for.
+ * @param object $vocabulary
+ *   The vocabulary to check the access for.
+ * @param object $account
+ *   The account to validate the access for.
+ *
+ * @return bool
+ *   Access TRUE/FALSE.
+ */
+function og_sm_feature_access_taxonomy_admin($site, $vocabulary, $account = NULL) {
+  if (!og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account)) {
+    return FALSE;
+  }
+
+  // Check if the vocabulary belongs to a feature.
+  $vocab_name = $vocabulary->machine_name;
+  $vocabularies = og_sm_feature_info_vocabularies();
+  if (empty($vocabularies[$vocab_name])) {
+    return TRUE;
+  }
+
+  // Check if one of the vocabulary features is enabled.
+  $feature_names = array_keys($vocabularies[$vocab_name]);
+  foreach ($feature_names as $feature) {
     if (og_sm_feature_site_is_enabled($site, $feature)) {
       return TRUE;
     }
@@ -227,6 +256,7 @@ function og_sm_feature_info() {
         'content types' => array(),
         'global configuration' => NULL,
         'site configuration' => NULL,
+        'vocabularies' => array(),
       );
     }
 
@@ -266,6 +296,16 @@ function og_sm_feature_info_content_types() {
   return _og_sm_feature_info_by_key('content types');
 }
 
+/**
+ * Get all the taxonomy vocabulary machine names that belong to features.
+ *
+ * @return array
+ *   Array keyed by the vocabulary machine name a,d having an array of features
+ *   it belongs to.
+ */
+function og_sm_feature_info_vocabularies() {
+  return _og_sm_feature_info_by_key('vocabularies');
+}
 
 /**
  * Helper to get info grouped by feature info array key.

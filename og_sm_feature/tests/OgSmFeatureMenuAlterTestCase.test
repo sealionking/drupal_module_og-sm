@@ -16,25 +16,11 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
   private $siteNode;
 
   /**
-   * Admin user to test with.
+   * Vocabulary "categories" to run tests with.
    *
    * @var object
    */
-  private $userAdministrator;
-
-  /**
-   * Global user to test the global configuration.
-   *
-   * @var object
-   */
-  private $userWithGlobalPermission;
-
-  /**
-   * Site member.
-   *
-   * @var object
-   */
-  private $siteMember;
+  private $vocabCategories;
 
   /**
    * Site administrator.
@@ -82,8 +68,10 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
       $site_admin_role->rid,
       array(
         OG_SM_FEATURE_OG_PERM_ADMINISTER_FEATURES,
-        OG_SM_PERMISSION_SITE_ADMIN,
-        'create news content'
+        OG_SM_CONTENT_OG_PERM_ADMINISTER_CONTENT_TYPES,
+        //OG_SM_PERMISSION_SITE_ADMIN,
+        OG_SM_TAXONOMY_OG_PERM_ALL,
+        'create news content',
       )
     );
     og_role_grant('node', $this->siteNode->nid, $this->siteAdministrator->uid, $site_admin_role->rid);
@@ -133,6 +121,38 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
     );
     $this->drupalGet($url_news_type);
     $this->assertResponse(200, 'Access to edit news content type when feature(s) are not enabled.');
+  }
+
+  /**
+   * Test access callback and menu alter to manage Site vocabularies.
+   */
+  public function testTaxonomyAccessCallbackAndMenuAlter() {
+    $account = $this->siteAdministrator;
+    $site = $this->siteNode;
+    $this->drupalLogin($account);
+    $url_edit = 'group/node/' . $site->nid . '/admin/taxonomy/categories';
+    $url_add = 'group/node/' . $site->nid . '/admin/taxonomy/categories/add';
+
+    // No feature having the tags vocabulary enabled.
+    $this->assertFalse(
+      og_sm_feature_access_taxonomy_admin($site, $this->vocabCategories, $account),
+      'No access to manage vocabulary if feature is not enabled.'
+    );
+    $this->drupalGet($url_edit);
+    $this->assertResponse(403, 'No access to the vocabulary overview if feature is not enabled.');
+    $this->drupalGet($url_add);
+    $this->assertResponse(403, 'No access to the add new vocabulary term if feature is not enabled.');
+
+    // Feature is enabled.
+    og_sm_feature_site_enable($site, 'articles');
+    $this->assertTrue(
+      og_sm_feature_access_taxonomy_admin($site, $this->vocabCategories, $account),
+      'Use has access to manage vocabulary if feature is enabled.'
+    );
+    $this->drupalGet($url_edit);
+    $this->assertResponse(200, 'Access to the vocabulary overview if feature is enabled.');
+    $this->drupalGet($url_add);
+    $this->assertResponse(200, 'Access to the add new vocabulary term if feature is enabled.');
   }
 
 }
