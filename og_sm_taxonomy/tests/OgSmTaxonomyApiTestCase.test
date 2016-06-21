@@ -7,7 +7,7 @@
 /**
  * Tests about the Site Taxonomy API.
  */
-class OgSmTaxonomyApiTestCase extends OgSmTaxonomyWebTestCase {
+class OgSmTaxonomyApiTestCase extends OgSmWebTestCase {
   /**
    * Site Nodes to run the tests with.
    *
@@ -77,8 +77,8 @@ class OgSmTaxonomyApiTestCase extends OgSmTaxonomyWebTestCase {
     $this->siteNode2 = $this->ogSmCreateGroup($type);
 
     // Create vocabularies.
-    $this->vocabCategories = $this->ogSmCreateSiteVocabulary('test_categories');
-    $this->vocabTags = $this->ogSmCreateSiteVocabulary('test_tags');
+    $this->vocabCategories = $this->ogSmCreateGroupVocabulary('test_categories');
+    $this->vocabTags = $this->ogSmCreateGroupVocabulary('test_tags');
 
     // Create terms.
     $this->termCategoryWithoutSite = $this->ogSmCreateTerm(

@@ -12,4 +12,3 @@ files[] = tests/OgSmTaxonomyApiTestCase.test
 files[] = tests/OgSmTaxonomyContextTestCase.test
 files[] = tests/OgSmTaxonomyTermTestCase.test
 files[] = tests/OgSmTaxonomyTokensTestCase.test
-files[] = tests/OgSmTaxonomyWebTestCase.test

@@ -7,7 +7,7 @@
 /**
  * Tests about the Site Path tokens.
  */
-class OgSmTaxonomyTokensTestCase extends OgSmTaxonomyWebTestCase {
+class OgSmTaxonomyTokensTestCase extends OgSmWebTestCase {
   /**
    * The Site node to test with.
    *
@@ -56,7 +56,7 @@ class OgSmTaxonomyTokensTestCase extends OgSmTaxonomyWebTestCase {
     og_sm_path_set($this->nodeSite, $this->nodePath, FALSE);
 
     // Create vocabulary.
-    $this->vocabCategories = $this->ogSmCreateSiteVocabulary('test_categories');
+    $this->vocabCategories = $this->ogSmCreateGroupVocabulary('test_categories');
   }
 
   /**
