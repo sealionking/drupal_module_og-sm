@@ -42,6 +42,22 @@ function hook_og_sm_site_type_remove($type) {
 }
 
 /**
+ * Act when the og_sm_site_cache_clear() function is called.
+ *
+ * That function does not clear the cache itself, it calls all the implemented
+ * hook_og_sm_site_cache_clear_all() hooks so modules can clear their specific
+ * cached Site parts.
+ *
+ * @param object $site
+ *   The Site node to clear the cache for.
+ *
+ * @see og_sm_site_cache_clear_all()
+ */
+function hook_og_sm_site_cache_clear_all($site) {
+
+}
+
+/**
  * Act on a Site node being viewed.
  *
  * Will only be triggered when the node_view hook is triggered for a node type

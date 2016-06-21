@@ -25,6 +25,7 @@ function og_sm_hook_info() {
     'og_sm_site_insert' => $group,
     'og_sm_site_update' => $group,
     'og_sm_site_delete' => $group,
+    'og_sm_site_cache_clear_all' => $group,
   );
 
   return $hooks;
@@ -133,6 +134,20 @@ function og_sm_site_load($site_nid) {
   }
 
   return $site;
+}
+
+/**
+ * Clear all cache for one site.
+ *
+ * This function does not clear the cache itself, it calls all the implemented
+ * hook_og_sm_site_cache_clear_all() hooks so modules can clear their specific
+ * cached Site parts.
+ *
+ * @param object $site
+ *   The Site to clear the cache for.
+ */
+function og_sm_site_cache_clear_all($site) {
+  og_sm_hook_site('cache_clear_all', $site);
 }
 
 /**
