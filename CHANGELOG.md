@@ -4,9 +4,14 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 ## [Unreleased]
+### Added
+- DMOGSM-62 : Added support to include a node type in multiple features and to
+  add vocabularies to features.
+
 ### Fixed
 - DMOGSM-63 : Too strict node access check on group content types.
 - DMOGSM-64 : Added callback and hook to clear all cache for a specific Site.
+
 
 
 

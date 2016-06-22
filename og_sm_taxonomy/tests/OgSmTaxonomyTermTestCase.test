@@ -7,7 +7,7 @@
 /**
  * Tests about the Site Taxonomy Term.
  */
-class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
+class OgSmTaxonomyTermTestCase extends OgSmWebTestCase {
   /**
    * Site Nodes to run the tests with.
    *
@@ -90,7 +90,7 @@ class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
     og_role_grant_permissions($role_manager->rid, array(OG_SM_ACCESS_PERMISSION_SITE));
 
     // Create vocabularies.
-    $this->vocabCategories = $this->ogSmCreateSiteVocabulary('test_categories');
+    $this->vocabCategories = $this->ogSmCreateGroupVocabulary('test_categories');
 
     // Create global users.
     $this->userDefault = $this->drupalCreateUser(array('access content'));
@@ -221,7 +221,7 @@ class OgSmTaxonomyTermTestCase extends OgSmTaxonomyWebTestCase {
 
     // Vocabularies.
     $categories = $this->vocabCategories;
-    $tags = $this->ogSmCreateSiteVocabulary('test-tags');
+    $tags = $this->ogSmCreateGroupVocabulary('test-tags');
 
     // Global terms.
     $global_category = $this->ogSmCreateTerm($categories, 'global-category');

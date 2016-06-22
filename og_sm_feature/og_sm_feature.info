@@ -12,3 +12,4 @@ files[] = includes/views/OgSmFeatureViewsAccess.inc
 ; Tests.
 files[] = tests/OgSmFeatureApiTestCase.test
 files[] = tests/OgSmFeatureAdminTestCase.test
+files[] = tests/OgSmFeatureMenuAlterTestCase.test

@@ -19,6 +19,12 @@ function og_sm_feature_test_og_sm_feature_info() {
   );
   $items['articles'] = array(
     'name' => t('Articles'),
+    'vocabularies' => array('categories', 'tags'),
+  );
+  $items['news and blogs'] = array(
+    'name' => t('News and Blogs'),
+    'content types' => array('news', 'blog_post'),
+    'vocabularies' => array('tags'),
   );
 
   return $items;
