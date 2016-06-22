@@ -59,6 +59,7 @@ This module and its submodules adds functionality to support:
 
 ### Included in og_sm_theme module
 * Set the theme per Site.
+* Configure the breadcrumb for a theme within a Site.
 
 ### Included in og_sm_user module
 * Site feature that creates site specific user profiles.
