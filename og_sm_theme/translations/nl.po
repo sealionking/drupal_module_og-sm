@@ -145,7 +145,7 @@ msgstr "Selecteer de thema's die beschikbaar dienen te zijn voor Sites."
 
 #: og_sm_theme.admin.inc:211
 msgid "Default theme"
-msgstr "Satndaardthema"
+msgstr "Standaardthema"
 
 #: og_sm_theme.admin.inc:212
 msgid "Choose the default Site theme to use when no theme has been selected."
