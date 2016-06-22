@@ -273,7 +273,7 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
   $form_state['site'] = $site;
   $form_state['theme_key'] = $theme_key;
 
-  $settings = og_sm_theme_get_settings($site, $theme_key);
+  $settings = og_sm_theme_get_theme_settings($site, $theme_key);
 
   // Toggle settings.
   $toggles = array(
@@ -313,7 +313,7 @@ function og_sm_theme_site_settings_form_submit(array $form, array $form_state) {
   $site = $form_state['site'];
   $theme_key = $form_state['theme_key'];
 
-  $settings = og_sm_theme_get_settings($site, $theme_key);
+  $settings = og_sm_theme_get_theme_settings($site, $theme_key);
 
   form_state_values_clean($form_state);
   $values = $form_state['values'];

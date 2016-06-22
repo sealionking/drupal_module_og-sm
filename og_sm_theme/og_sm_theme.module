@@ -298,7 +298,7 @@ function og_sm_theme_custom_theme() {
  * @return array
  *   The settings array.
  */
-function og_sm_theme_get_settings($site = NULL, $theme_key = NULL) {
+function og_sm_theme_get_theme_settings($site = NULL, $theme_key = NULL) {
   if (!$site) {
     $site = og_sm_current_site();
   }
@@ -374,7 +374,7 @@ function og_sm_theme_preprocess_breadcrumb(&$variables) {
   $theme_key = $GLOBALS['theme_key'];
 
   // See if the breadcrumb component is enabled.
-  $settings = og_sm_theme_get_settings($site, $theme_key);
+  $settings = og_sm_theme_get_theme_settings($site, $theme_key);
   if ($settings['toggle_breadcrumb']) {
 
     $breadcrumb_settings = og_sm_theme_get_breadcrumb_settings($site, $theme_key);
