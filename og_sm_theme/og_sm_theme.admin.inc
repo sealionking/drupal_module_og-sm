@@ -551,7 +551,7 @@ function og_sm_theme_component_breadcrumb_delete_item($form, &$form_state) {
 }
 
 /**
- * AJAX callback that return the component.
+ * AJAX callback that returns the updated component.
  *
  * @param array $form
  *   The form.
