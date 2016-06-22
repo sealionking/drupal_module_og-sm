@@ -349,7 +349,7 @@ function og_sm_theme_get_breadcrumb_settings($site = NULL, $theme_key = NULL) {
   $variable_name = 'theme_' . $theme_key . '_breadcrumb_settings';
   $defaults = array(
     'append_title' => 1,
-    'override_root' => 1,
+    'override_root' => 0,
     'root_parts' => array(),
     'variable_name' => $variable_name,
   );
