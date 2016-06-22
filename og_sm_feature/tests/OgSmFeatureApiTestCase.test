@@ -49,8 +49,6 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     global $language;
     $cid = 'og_sm_feature_info:' . $language->language;
 
-    $this->verbose(var_export(cache_get($cid), TRUE));
-
     // Not called yet => not cached.
     $this->assertFalse(
       cache_get($cid),
@@ -236,7 +234,6 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
       ),
     );
     $info = og_sm_feature_info_vocabularies();
-    $this->verbose(var_export($info, TRUE));
     $this->assertEqual($expected, $info, 'Collected content types info from the implemented hooks.');
 
     // Info should be cached.
