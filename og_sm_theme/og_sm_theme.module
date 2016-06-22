@@ -316,12 +316,11 @@ function og_sm_theme_get_theme_settings($site = NULL, $theme_key = NULL) {
       // The defaults for toggleable components. Currently only breadcrumbs
       // are toggleable from within the Site Theme settings.
       'toggle_breadcrumb' => 1,
-      /*'toggle_main_menu' => 1,*/
-      // Return the variable name, we might want this later on to set new
-      // values.
-      'variable_name' => $variable_name,
     );
-    $data[$site->nid][$theme_key] = array_merge($defaults, og_sm_variable_get($site->nid, $variable_name, array()));
+    $data[$site->nid][$theme_key] = array_merge(
+      $defaults,
+      og_sm_variable_get($site->nid, $variable_name, array())
+    );
   }
 
   return $data[$site->nid][$theme_key];
@@ -375,7 +374,6 @@ function og_sm_theme_get_breadcrumb_settings($site = NULL, $theme_key = NULL) {
     'append_title' => 1,
     'override_root' => 0,
     'root_parts' => array(),
-    'variable_name' => $variable_name,
   );
   $settings = og_sm_variable_get($site->nid, $variable_name, array());
   return array_merge($defaults, $settings);

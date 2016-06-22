@@ -175,7 +175,6 @@ function og_sm_theme_set_default($site) {
  *   The form
  */
 function og_sm_theme_global_settings_form() {
-
   $form['available_themes'] = array(
     '#type' => 'fieldset',
     '#title' => t('Allowed themes'),
@@ -268,7 +267,7 @@ function og_sm_theme_global_settings_form_submit($form, $form_state) {
  * @see system_theme_settings()
  */
 function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, $theme_key) {
-  // Save them for later.
+  // Save these in form_state for later.
   $form_state['site'] = $site;
   $form_state['theme_key'] = $theme_key;
 
@@ -277,7 +276,6 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
   // Toggle settings.
   $toggles = array(
     'breadcrumb' => t('breadcrumb'),
-    /* 'main_menu' => t('Main menu'), */
   );
 
   $form['theme_settings'] = array(
@@ -309,11 +307,10 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
  *   The form state.
  */
 function og_sm_theme_site_settings_form_submit(array $form, array $form_state) {
-  $site = $form_state['site'];
-  $theme_key = $form_state['theme_key'];
-
   form_state_values_clean($form_state);
-  $values = $form_state['values'];
+  $values     = $form_state['values'];
+  $site       = $form_state['site'];
+  $theme_key  = $form_state['theme_key'];
 
   og_sm_theme_set_theme_settings($values, $site, $theme_key);
   og_sm_site_cache_clear_all($site);
@@ -337,10 +334,9 @@ function og_sm_theme_site_settings_form_submit(array $form, array $form_state) {
  *   The form structure.
  */
 function og_sm_theme_component_breadcrumb_form(array $form, array &$form_state, $site, $theme_key) {
-  // Save them for later.
+  // Save these in form_state for later.
   $form_state['site'] = $site;
   $form_state['theme_key'] = $theme_key;
-
   $settings = og_sm_theme_get_breadcrumb_settings($site, $theme_key);
 
   $form['append_title'] = array(
@@ -486,9 +482,11 @@ function og_sm_theme_component_breadcrumb_form_validate($form, &$form_state) {
  */
 function og_sm_theme_component_breadcrumb_form_submit($form, &$form_state) {
   form_state_values_clean($form_state);
-  $values = $form_state['values'];
-  unset($values['actions']);
+  $values     = $form_state['values'];
+  $site       = $form_state['site'];
+  $theme_key  = $form_state['theme_key'];
 
+  $settings = array();
   $settings['append_title'] = (int) $values['append_title'];
   $settings['override_root'] = (int) $values['override_root'];
 
@@ -504,8 +502,6 @@ function og_sm_theme_component_breadcrumb_form_submit($form, &$form_state) {
     $settings['root_parts'] = array();
   }
 
-  $site = $form_state['site'];
-  $theme_key = $form_state['theme_key'];
   og_sm_theme_set_breadcrumb_settings($settings, $site, $theme_key);
   og_sm_site_cache_clear_all($site);
 
