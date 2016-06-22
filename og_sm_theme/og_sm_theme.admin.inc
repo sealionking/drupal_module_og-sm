@@ -318,7 +318,7 @@ function og_sm_theme_site_settings_form_submit(array $form, array $form_state) {
   form_state_values_clean($form_state);
   $values = $form_state['values'];
 
-  og_sm_variable_set($site->nid, $settings['variable_name'], $values);
+  og_sm_theme_set_theme_settings($values, $site, $theme_key);
 
   og_sm_site_cache_clear_all($site);
   drupal_set_message(t('The theme settings have been saved.'));
@@ -495,8 +495,6 @@ function og_sm_theme_component_breadcrumb_form_submit($form, &$form_state) {
   $site = $form_state['site'];
   $theme_key = $form_state['theme_key'];
 
-  $settings = og_sm_theme_get_breadcrumb_settings($site, $theme_key);
-
   $settings['append_title'] = (int) $values['append_title'];
   $settings['override_root'] = (int) $values['override_root'];
 
@@ -512,7 +510,7 @@ function og_sm_theme_component_breadcrumb_form_submit($form, &$form_state) {
     $settings['root_parts'] = array();
   }
 
-  og_sm_variable_set($site->nid, $settings['variable_name'], $settings);
+  og_sm_theme_set_breadcrumb_settings($settings, $site, $theme_key);
   og_sm_site_cache_clear_all($site);
 
   drupal_set_message(t('The breadcrumb settings have been saved.'));

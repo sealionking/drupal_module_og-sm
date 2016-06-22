@@ -328,6 +328,30 @@ function og_sm_theme_get_theme_settings($site = NULL, $theme_key = NULL) {
 }
 
 /**
+ * Set the theme settings for a specific theme in a Site.
+ *
+ * @param array $settings
+ *   The settings to set.
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ */
+function og_sm_theme_set_theme_settings($settings, $site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $variable_name = 'theme_' . $theme_key . '_settings';
+  og_sm_variable_set($site->nid, $variable_name, $settings);
+
+  drupal_static_reset('og_sm_theme_get_theme_settings');
+}
+
+/**
  * Get the breadcrumb settings for a specific theme in a Site.
  *
  * @param object $site
@@ -355,6 +379,28 @@ function og_sm_theme_get_breadcrumb_settings($site = NULL, $theme_key = NULL) {
   );
   $settings = og_sm_variable_get($site->nid, $variable_name, array());
   return array_merge($defaults, $settings);
+}
+
+/**
+ * Set the breadcrumb settings for a specific theme in a Site.
+ *
+ * @param array $settings
+ *   The settings to set.
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ */
+function og_sm_theme_set_breadcrumb_settings($settings, $site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $variable_name = 'theme_' . $theme_key . '_breadcrumb_settings';
+  og_sm_variable_set($site->nid, $variable_name, $settings);
 }
 
 /**
