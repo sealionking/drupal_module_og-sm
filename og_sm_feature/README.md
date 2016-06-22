@@ -143,7 +143,7 @@ The info array contains following information:
   `group/node/NID/` path prefix as it will be appended automatically.
 * **content types** : An optional array of content types (machine names) that
   belong to the feature. The content types will be hidden and access to create
-  them will be declined if it belongs to a feature and tat feature is not
+  them will be declined if it belongs to a feature and that feature is not
   enabled.
 * **vocabularies** : An optional array of vocabularies (machine names) that
   belong to the feature. The vocabulary will be hidden from the Site taxonomy
