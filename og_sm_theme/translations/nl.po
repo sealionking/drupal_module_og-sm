@@ -182,7 +182,7 @@ msgstr "De thema instellingen werden bewaard."
 
 #: og_sm_theme.admin.inc:351
 msgid "Append the page title to the breadcrumb trail"
-msgstr "Plaats de title van de huidige pagina achteraan het kruimelpad"
+msgstr "Plaats de titel van de huidige pagina achteraan het kruimelpad"
 
 #: og_sm_theme.admin.inc:352
 msgid "The page title will be appended to the breadcrumb trail."
