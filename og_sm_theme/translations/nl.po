@@ -223,12 +223,12 @@ msgstr "Onderdeel toevoegen"
 #: og_sm_theme.admin.inc:463 og_sm_theme.admin.inc:469
 #, php-format
 msgid "The field %field is required."
-msgstr ""
+msgstr "Het veld %field is verplicht."
 
 #: og_sm_theme.admin.inc:474
 #, php-format
 msgid "The value provided for %field is not a valid URL."
-msgstr ""
+msgstr "De opgegeven waarde voor %field is geen geldige URL."
 
 #: og_sm_theme.admin.inc:518
 msgid "The breadcrumb settings have been saved."
