@@ -376,9 +376,13 @@ function og_sm_theme_component_breadcrumb_form(array $form, array &$form_state, 
   );
 
   for ($i = 0; $i < $form_state['row_count']; $i++) {
+    // Set the default weight to the number of parts. Since the delta of the
+    // draggable table is 100, already ordered parts will start at -100. New
+    // parts will always be placed at the end of the weights stack,
+    // e.g. 2,3,4, ...
     $default_values = isset($form_state['input']['root_parts'][$i])
       ? $form_state['input']['root_parts'][$i]
-      : array('text' => '', 'path' => '', 'weight' => 0);
+      : array('text' => '', 'path' => '', 'weight' => $form_state['row_count']);
 
     $parts_table[$i]['text'] = array(
       '#type' => 'textfield',
@@ -451,6 +455,10 @@ function og_sm_theme_component_breadcrumb_form(array $form, array &$form_state, 
 function og_sm_theme_component_breadcrumb_form_validate($form, &$form_state) {
   $values = $form_state['values'];
   if ($values['override_root']) {
+    if (empty($values['root_parts']['parts'])) {
+      form_set_error('root_parts][parts]]', t('Add at least one breadcrumb part.'));
+      return;
+    }
     foreach ($values['root_parts']['parts'] as $i => $part) {
       if (empty($part['text'])) {
         form_set_error('root_parts][parts][' . $i . '][text', t('The field %field is required.', array(
@@ -492,7 +500,7 @@ function og_sm_theme_component_breadcrumb_form_submit($form, &$form_state) {
 
   if ($settings['override_root']) {
     $parts = $values['root_parts']['parts'];
-    foreach ($parts as &$part) {
+    foreach ($parts as $i => &$part) {
       unset($part['operation']);
     }
     usort($parts, 'drupal_sort_weight');
@@ -530,13 +538,15 @@ function og_sm_theme_component_breadcrumb_add_item($form, &$form_state) {
  *   The form state.
  */
 function og_sm_theme_component_breadcrumb_delete_item($form, &$form_state) {
-  if (preg_match('#^delete_breadcrumb_part_(\d+)$#', $form_state['triggering_element']['#name'], $matches)) {
-    if (isset($form_state['input']['root_parts']['parts'][$matches[1]])) {
-      unset($form_state['input']['root_parts']['parts'][$matches[1]]);
-      $form_state['input']['root_parts']['parts'] = array_values($form_state['input']['root_parts']['parts']);
-      $form_state['row_count']--;
-    }
+  if (!preg_match('#^delete_breadcrumb_part_(\d+)$#', $form_state['triggering_element']['#name'], $matches)) {
+    return;
   }
+  if (isset($form_state['input']['root_parts']['parts'][$matches[1]])) {
+    unset($form_state['input']['root_parts']['parts'][$matches[1]]);
+    $form_state['input']['root_parts']['parts'] = array_values($form_state['input']['root_parts']['parts']);
+    $form_state['row_count']--;
+  }
+
   $form_state['rebuild'] = TRUE;
 }
 

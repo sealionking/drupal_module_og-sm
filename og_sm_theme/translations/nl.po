@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2016-06-22 14:11+0200\n"
-"PO-Revision-Date: 2016-06-22 14:11+0200\n"
+"POT-Creation-Date: 2016-06-23 09:46+0200\n"
+"PO-Revision-Date: 2016-06-23 10:19+0200\n"
 "Last-Translator: Floris Walraet <floris.walraet@digipolis.gent>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -135,102 +135,102 @@ msgstr "%theme is ingesteld als standaardthema."
 msgid "The %theme theme was not found."
 msgstr "Het thema %theme werd niet gevonden."
 
-#: og_sm_theme.admin.inc:181
+#: og_sm_theme.admin.inc:180
 msgid "Allowed themes"
 msgstr "Toegelaten thema's"
 
-#: og_sm_theme.admin.inc:182
+#: og_sm_theme.admin.inc:181
 msgid "Select which themes should be available for Sites."
 msgstr "Selecteer de thema's die beschikbaar dienen te zijn voor Sites."
 
-#: og_sm_theme.admin.inc:211
+#: og_sm_theme.admin.inc:210
 msgid "Default theme"
 msgstr "Standaardthema"
 
-#: og_sm_theme.admin.inc:212
+#: og_sm_theme.admin.inc:211
 msgid "Choose the default Site theme to use when no theme has been selected."
 msgstr ""
 "Kies het standaardthema voor Sites wanneer deze geen thema hebben gekozen."
 
-#: og_sm_theme.admin.inc:219 og_sm_theme.admin.inc:444
+#: og_sm_theme.admin.inc:218 og_sm_theme.admin.inc:441
 msgid "Save configuration"
 msgstr ""
 
-#: og_sm_theme.admin.inc:251
+#: og_sm_theme.admin.inc:249
 msgid "The configuration options have been saved."
 msgstr ""
 
-#: og_sm_theme.admin.inc:280
+#: og_sm_theme.admin.inc:278
 msgid "breadcrumb"
 msgstr "kruimelpad"
 
-#: og_sm_theme.admin.inc:281
-msgid "Main menu"
-msgstr ""
-
-#: og_sm_theme.admin.inc:286
+#: og_sm_theme.admin.inc:283
 msgid "Toggle display"
 msgstr "Weergave aan-en uitzetten"
 
-#: og_sm_theme.admin.inc:287
+#: og_sm_theme.admin.inc:284
 msgid "Enable or disable the display of certain page elements."
 msgstr "Toon of verberg bepaalde pagina-elementen."
 
-#: og_sm_theme.admin.inc:324
+#: og_sm_theme.admin.inc:318
 msgid "The theme settings have been saved."
 msgstr "De thema instellingen werden bewaard."
 
-#: og_sm_theme.admin.inc:351
+#: og_sm_theme.admin.inc:344
 msgid "Append the page title to the breadcrumb trail"
 msgstr "Plaats de titel van de huidige pagina achteraan het kruimelpad"
 
-#: og_sm_theme.admin.inc:352
+#: og_sm_theme.admin.inc:345
 msgid "The page title will be appended to the breadcrumb trail."
 msgstr "De titel van de pagina zal achteraan het kruimelpad worden toegevoegd."
 
-#: og_sm_theme.admin.inc:358
+#: og_sm_theme.admin.inc:351
 msgid "Manually set the breadcrumb root"
 msgstr "Start van het kruimelpad zelf instellen"
 
-#: og_sm_theme.admin.inc:359
+#: og_sm_theme.admin.inc:352
 msgid "If checked, you can specify the root of the breadcrumb for this theme."
 msgstr ""
 "Indien aangevinkt, kan het startpunt van het kruimelpad manueel worden "
 "ingesteld."
 
-#: og_sm_theme.admin.inc:392 og_sm_theme.admin.inc:464
+#: og_sm_theme.admin.inc:389 og_sm_theme.admin.inc:465
 #: og_sm_theme.admin.inc:583
 msgid "Text"
 msgstr "Tekst"
 
-#: og_sm_theme.admin.inc:399 og_sm_theme.admin.inc:470
-#: og_sm_theme.admin.inc:475 og_sm_theme.admin.inc:584
+#: og_sm_theme.admin.inc:396 og_sm_theme.admin.inc:471
+#: og_sm_theme.admin.inc:476 og_sm_theme.admin.inc:584
 msgid "Path"
 msgstr "Pad"
 
-#: og_sm_theme.admin.inc:406
+#: og_sm_theme.admin.inc:403
 msgid "Delete"
 msgstr "Verwijder"
 
-#: og_sm_theme.admin.inc:419 og_sm_theme.admin.inc:586
+#: og_sm_theme.admin.inc:416 og_sm_theme.admin.inc:586
 msgid "Weight"
 msgstr "Gewicht"
 
-#: og_sm_theme.admin.inc:431
+#: og_sm_theme.admin.inc:428
 msgid "Add part"
 msgstr "Onderdeel toevoegen"
 
-#: og_sm_theme.admin.inc:463 og_sm_theme.admin.inc:469
+#: og_sm_theme.admin.inc:459
+msgid "Add at least one breadcrumb part."
+msgstr "Voeg ten minste één kruimel toe."
+
+#: og_sm_theme.admin.inc:464 og_sm_theme.admin.inc:470
 #, php-format
 msgid "The field %field is required."
 msgstr "Het veld %field is verplicht."
 
-#: og_sm_theme.admin.inc:474
+#: og_sm_theme.admin.inc:475
 #, php-format
 msgid "The value provided for %field is not a valid URL."
 msgstr "De opgegeven waarde voor %field is geen geldige URL."
 
-#: og_sm_theme.admin.inc:518
+#: og_sm_theme.admin.inc:516
 msgid "The breadcrumb settings have been saved."
 msgstr "De instellingen van het kruimelpad werden bewaard."
 
