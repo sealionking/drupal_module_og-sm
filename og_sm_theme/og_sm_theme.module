@@ -297,6 +297,10 @@ function og_sm_theme_custom_theme() {
  *
  * @return array
  *   The settings array.
+ *
+ * @see theme_get_setting()
+ *   The idea is the same as core's, but we store the settings for a theme
+ *   in a Site context.
  */
 function og_sm_theme_get_theme_settings($site = NULL, $theme_key = NULL) {
   if (!$site) {
@@ -452,6 +456,11 @@ function og_sm_theme_preprocess_breadcrumb(&$variables) {
     // preprocessing chain to call drupal_get_breadcrumb() as well.
     $variables['breadcrumb'] = $breadcrumb;
     drupal_set_breadcrumb($breadcrumb);
+  }
+  else {
+    // The breadcrumb was already added in hook_preprocess_page(). We need to
+    // unset it.
+    $variables['breadcrumb'] = NULL;
   }
 }
 
