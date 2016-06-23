@@ -12,6 +12,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-63 : Too strict node access check on group content types.
 - DMOGSM-64 : Added callback and hook to clear all cache for a specific Site.
 
+### Security
+- DMOGSM-67 : If the non-member role (OG role) is granted the permission to
+  create certain content types, then the anonymous user also gets access to
+  create that content within a Site context.
+  Fix added to the og_sm_content_get_types_by_site() function. That function is
+  used to check access to the content/add pages within a Site.
+
 
 
 

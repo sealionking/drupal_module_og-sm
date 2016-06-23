@@ -163,6 +163,72 @@ class OgSmContentTestCase extends OgSmWebTestCase {
   }
 
   /**
+   * Test og_sm_content_get_types_by_site() function for anonymous users.
+   *
+   * If the non-site-member role is granted to create content, the anonymous
+   * user also gets access to create that content within a Site context.
+   * This is not the exptected behaviour. This test checks the fix for this
+   * issue.
+   *
+   * See DMOGSM-67.
+   */
+  public function testGetTypesBySiteWhenNonMembersAreAllowedToCreateContent() {
+    // Setup test data.
+    $this->setUpContent();
+    $this->setUpUsers();
+
+    // Grant non-members permissions to create new content.
+    og_role_grant_permissions(
+      1,
+      array($this->permissionCreatePage, $this->permissionCreateArticle)
+    );
+
+    // Test function as anonymous user.
+    $anonymous = drupal_anonymous_user();
+    $this->assertEqual(
+      array(),
+      og_sm_content_get_types_by_site($this->site, $anonymous),
+      'Anonymous users do not have access to create Site content.'
+    );
+
+    // Test with non-site-member.
+    $this->siteContentTypeArticle = og_sm_content_get_type_info_by_site($this->site, $this->siteContentTypeArticle);
+    $this->siteContentTypePage = og_sm_content_get_type_info_by_site($this->site, $this->siteContentTypePage);
+    $expected = array(
+      $this->siteContentTypeNameArticle => $this->siteContentTypeArticle,
+      $this->siteContentTypeNamePage => $this->siteContentTypePage,
+    );
+    $this->assertEqual(
+      $expected,
+      og_sm_content_get_types_by_site($this->site, $this->userDefault),
+      'Non Site members can create Site content.'
+    );
+
+    // Check interface access.
+    $path_add_overview = 'group/node/' . $this->site->nid . '/content/add';
+    $path_add_page = $path_add_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNamePage);
+    $path_add_article = $path_add_overview . '/' . preg_replace('/_/', '-', $this->siteContentTypeNameArticle);
+
+    // As anonymous user.
+    $this->drupalLogout();
+    $this->drupalGet($path_add_overview);
+    $this->assertResponse(403, 'Anonymous user can not access add overview page within Site.');
+    $this->drupalGet($path_add_page);
+    $this->assertResponse(403, 'Anonymous user can not create pages within Site.');
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(403, 'Anonymous user can not create articles within Site.');
+
+    // As authenticated but non-site-member user.
+    $this->drupalLogin($this->userDefault);
+    $this->drupalGet($path_add_overview);
+    $this->assertResponse(200, 'Authenticated, non member user can access add overview page within Site.');
+    $this->drupalGet($path_add_page);
+    $this->assertResponse(200, 'Authenticated, non member can create pages within Site.');
+    $this->drupalGet($path_add_article);
+    $this->assertResponse(200, 'Authenticated, non member can create articles within Site.');
+  }
+
+  /**
    * Test the access callbacks.
    */
   public function testAccessCallbacks() {
