@@ -237,15 +237,18 @@ class OgSmUserTestCase extends OgSmWebTestCase {
   public function testProfilePath() {
     module_enable(array('og_sm_feature'));
 
+    $default_path = 'user/' . $this->siteUser1->uid;
+    $site_path = 'group/node/' . $this->site->nid . '/profile';
+
     $this->assertEqual(
-      'users/' . $this->siteUser1->name,
+      $default_path,
       og_sm_user_profile_path($this->siteUser1),
       'Path outside Sites links to the drupal account page.'
     );
 
     $this->ogSmSetOgContextToGroup($this->site, $this->siteUser1);
     $this->assertEqual(
-      'users/' . $this->siteUser1->name,
+      $default_path,
       og_sm_user_profile_path($this->siteUser1),
       'Path within Sites without enabled User profile feature links to the drupal account page.'
     );
@@ -254,14 +257,14 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     og_sm_feature_site_enable($this->site, OG_SM_USER_FEATURE_PROFILE);
     $this->ogSmResetOgContext();
     $this->assertEqual(
-      'users/' . $this->siteUser1->name,
+      $default_path,
       og_sm_user_profile_path($this->siteUser1),
       'Path outside Sites links to the drupal account page.'
     );
 
     $this->ogSmSetOgContextToGroup($this->site);
     $this->assertEqual(
-      'group/node/' . $this->site->nid . '/profile',
+      $site_path,
       og_sm_user_profile_path($this->siteUser1),
       'Path within Sites with enabled User profile feature links to the Site account page.'
     );
