@@ -22,7 +22,7 @@ class OgSmUserTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site User Profile'),
+      'name' => t('Site User : Profile'),
       'description' => t('Tests the Site User Profile functionality.'),
       'group' => t('Organic Groups Site Manager'),
     );
@@ -229,6 +229,42 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     $this->assertTrue($access, 'Admin user is allowed to view the profile of another user.');
     $access = og_sm_user_page_access('edit', $this->site, $this->siteUser2);
     $this->assertTrue($access, 'Admin user is allowed to edit the profile of another user.');
+  }
+
+  /**
+   * Test the helper to get the user profile path.
+   */
+  public function testProfilePath() {
+    module_enable(array('og_sm_feature'));
+
+    $this->assertEqual(
+      'users/' . $this->siteUser1->name,
+      og_sm_user_profile_path($this->siteUser1),
+      'Path outside Sites links to the drupal account page.'
+    );
+
+    $this->ogSmSetOgContextToGroup($this->site, $this->siteUser1);
+    $this->assertEqual(
+      'users/' . $this->siteUser1->name,
+      og_sm_user_profile_path($this->siteUser1),
+      'Path within Sites without enabled User profile feature links to the drupal account page.'
+    );
+
+    // Enable the user profile for the site.
+    og_sm_feature_site_enable($this->site, OG_SM_USER_FEATURE_PROFILE);
+    $this->ogSmResetOgContext();
+    $this->assertEqual(
+      'users/' . $this->siteUser1->name,
+      og_sm_user_profile_path($this->siteUser1),
+      'Path outside Sites links to the drupal account page.'
+    );
+
+    $this->ogSmSetOgContextToGroup($this->site);
+    $this->assertEqual(
+      'group/node/' . $this->site->nid . '/profile',
+      og_sm_user_profile_path($this->siteUser1),
+      'Path within Sites with enabled User profile feature links to the Site account page.'
+    );
   }
 
 }
