@@ -220,6 +220,14 @@ class OgSmWebTestCase extends DrupalWebTestCase {
   }
 
   /**
+   * Reset the Og Context.
+   */
+  public function ogSmResetOgContext() {
+    $context = &drupal_static('og_context');
+    $context = array();
+  }
+
+  /**
    * Helper to create a taxonomy with OG field.
    *
    * @param string $name

@@ -126,6 +126,39 @@ function og_sm_user_page_access($op, $site, $account = NULL) {
 }
 
 /**
+ * Get the path to the user profile page.
+ *
+ * If within Site context with the User Profile enabled > Site User profile.
+ * Else the default Account page.
+ *
+ * @param object $account
+ *   The user to get the path for.
+ *
+ * @return string
+ *   The path to the profile page.
+ */
+function og_sm_user_profile_path($account) {
+  $default = 'user/' . $account->uid;
+
+  $site = og_sm_current_site();
+  if (!$site) {
+    return $default;
+  }
+
+  // Alter the link of the account item if the user Feature is active for the
+  // current Site.
+  if (!module_exists('og_sm_feature')) {
+    return $default;
+  }
+  if (!og_sm_feature_site_is_enabled($site, OG_SM_USER_FEATURE_PROFILE)) {
+    return $default;
+  }
+
+  // Point link to Site user profile.
+  return 'group/node/' . $site->nid . '/profile';
+}
+
+/**
  * Implements hook_theme().
  */
 function og_sm_user_theme() {
@@ -202,4 +235,12 @@ function og_sm_user_url_inbound_alter(&$path, $original_path, $path_language) {
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
     }
   }
+}
+
+/**
+ * Implements hook_admin_menu_output_alter().
+ */
+function og_sm_user_admin_menu_output_alter(&$content) {
+  global $user;
+  $content['account']['account']['#href'] = og_sm_user_profile_path($user);
 }
