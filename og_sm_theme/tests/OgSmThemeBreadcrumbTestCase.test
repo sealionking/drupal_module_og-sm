@@ -1,0 +1,144 @@
+<?php
+/**
+ * @file
+ * Tests for OG SM Theme Breadcrumb settings.
+ */
+
+/**
+ * Test class for the breadcrumb settings.
+ */
+class OgSmThemeBreadcrumbTestCase extends OgSmWebTestCase {
+  /**
+   * Test data.
+   */
+  protected $site;
+  protected $siteType;
+  protected $themeKey;
+  protected $sitePath;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Theme : breadcrumb'),
+      'description' => t('Tests the theme breadcrumb settings.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_theme', 'og_sm_context');
+    parent::setUp($modules);
+
+    // Create a Site.
+    $this->siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($this->siteType);
+    $this->site = $this->ogSmCreateGroup($this->siteType);
+    $this->sitePath = 'node/' . $this->site->nid;
+
+    // We need an enabled Site theme to run tests. Use Bartik.
+    $theme = 'bartik';
+    variable_set('theme_default', $theme);
+    theme_enable(array($theme));
+    variable_set('og_sm_theme_site_themes', array($theme));
+    og_sm_variable_set($this->site->nid, 'theme', $theme);
+    menu_rebuild();
+
+    $this->themeKey = $theme;
+  }
+
+  /**
+   * Test toggling of the breadcrumb..
+   */
+  public function testBreadcrumbToggle() {
+    $this->ogSmSetOgContextToGroup($this->site);
+
+    // Since we're intervening in hook_preprocess_breadcrumb, we can only
+    // test rendered output, not by calling drupal_get_breadcrumb directly.
+    og_sm_theme_set_theme_settings(
+      array('toggle_breadcrumb' => 0), $this->site, $this->themeKey
+    );
+    $this->drupalGet($this->sitePath);
+    $items = $this->xpath('//div[@class=:class]', array(':class' => 'breadcrumb'));
+    $this->assertTrue(empty($items), 'The breadcrumb is not visible');
+
+    og_sm_theme_set_theme_settings(
+      array('toggle_breadcrumb' => 1), $this->site, $this->themeKey
+    );
+    $this->drupalGet($this->sitePath);
+    $items = $this->xpath('//div[@class=:class]', array(':class' => 'breadcrumb'));
+    $this->assertTrue(!empty($items), 'The breadcrumb is visible');
+  }
+
+  /**
+   * Test appending title to the breadcrumb.
+   */
+  public function testBreadcrumbAppendTitle() {
+    $this->ogSmSetOgContextToGroup($this->site);
+
+    // Set title display off.
+    og_sm_theme_set_breadcrumb_settings(
+      array('append_title' => 0), $this->site, $this->themeKey
+    );
+    $items = $this->xpath("//div[@class=:class and contains(text(), ':title')]", array(
+      ':class' => 'breadcrumb',
+      ':title' => $this->site->title,
+    ));
+    $this->assertTrue(empty($items), 'The breadcrumb title is not visible');
+
+    // Change the title setting.
+    og_sm_theme_set_breadcrumb_settings(
+      array('append_title' => 1), $this->site, $this->themeKey
+    );
+    $this->drupalGet($this->sitePath);
+    $items = $this->xpath("//div[@class=:class and contains(text(), :title)]", array(
+      ':class' => 'breadcrumb',
+      ':title' => $this->site->title,
+    ));
+    $this->assertTrue(!empty($items), 'The breadcrumb title is visible');
+  }
+
+  /**
+   * Test overriding the root parts.
+   */
+  public function testBreadcrumbRootPartsOverride() {
+    $this->ogSmSetOgContextToGroup($this->site);
+
+    // Set up the root parts.
+    $root_parts = array(
+      array('text' => $this->randomName(), 'path' => 'foo-path'),
+      array('text' => $this->randomName(), 'path' => 'bar-path'),
+    );
+    og_sm_theme_set_breadcrumb_settings(
+      array(
+        'override_root' => 1,
+        'root_parts' => $root_parts,
+      ),
+      $this->site,
+      $this->themeKey
+    );
+
+    // Fetch links in the current breadcrumb.
+    $this->drupalGet($this->sitePath);
+    $links = $this->xpath('//div[@class=:class]/a', array(':class' => 'breadcrumb'));
+    $got_breadcrumb = array();
+    foreach ($links as $i => $link) {
+      $got_breadcrumb[] = array(
+        'text' => (string) $link,
+        'path' => (string) ltrim($link['href'], base_path()),
+      );
+      if ($i >= count($root_parts)) {
+        break;
+      }
+    }
+
+    // Compare expected and got breadcrumbs.
+    $this->assertIdentical($root_parts, $got_breadcrumb, 'The breadcrumb is correctly displaying the root parts.');
+  }
+
+}

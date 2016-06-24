@@ -59,6 +59,38 @@ function og_sm_theme_menu() {
     'file' => 'og_sm_theme.admin.inc',
   );
 
+  $items['group/%/%og_sm_site/admin/theme/settings/%'] = array(
+    'title' => 'General settings',
+    'description' => 'Configure default and theme specific settings within a Site.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_theme_site_settings_form', 2, 6),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'og_sm_theme.admin.inc',
+  );
+
+  $items['group/%/%og_sm_site/admin/theme/settings/%/configure'] = array(
+    'title' => 'General settings',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -1,
+  );
+
+  $items['group/%/%og_sm_site/admin/theme/settings/%/breadcrumb'] = array(
+    'title' => 'Breadcrumb',
+    'description' => 'Configure the breadcrumb settings for this theme.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array(
+      'og_sm_theme_component_breadcrumb_form', 2, 6,
+    ),
+    'access callback' => 'og_sm_theme_component_configure_access',
+    'access arguments' => array(
+      2, 6, OG_SM_PERMISSION_SITE_ADMIN, 'breadcrumb',
+    ),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'og_sm_theme.admin.inc',
+  );
+
   $items['admin/config/group/theme']  = array(
     'title' => 'OG Theme settings',
     'description' => 'Configure the global Site theme settings',
@@ -70,6 +102,49 @@ function og_sm_theme_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function og_sm_theme_theme() {
+  return array(
+    'og_sm_theme_component_breadcrumb_parts' => array(
+      'file' => 'og_sm_theme.admin.inc',
+      'render element' => 'element',
+    ),
+  );
+}
+
+/**
+ * Access callback for a theme component form.
+ *
+ * @param object $site
+ *   The Site.
+ * @param string $theme_name
+ *   The theme name.
+ * @param string $permission
+ *   The additional access permission to check.
+ * @param string $component
+ *   The key of the component, as used in the global settings form.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_theme_component_configure_access($site, $theme_name, $permission, $component) {
+  if (!og_sm_site_permission_access($site, $permission)) {
+    return FALSE;
+  }
+
+  $variable_name = 'theme_' . $theme_name . '_settings';
+  $settings = og_sm_variable_get($site->nid, $variable_name, array());
+  if (!isset($settings['toggle_' . $component])) {
+    // Default toggle setting is to use breadcrumb, so allow access to the
+    // tab by default.
+    return TRUE;
+  }
+
+  return ($settings['toggle_' . $component]);
 }
 
 /**
@@ -210,4 +285,200 @@ function og_sm_theme_custom_theme() {
 
   // Fallback to the default Site theme.
   return $default_site_theme;
+}
+
+/**
+ * Get the theme settings for a specific theme in a Site.
+ *
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ *
+ * @return array
+ *   The settings array.
+ *
+ * @see theme_get_setting()
+ *   The idea is the same as core's, but we store the settings for a theme
+ *   in a Site context.
+ */
+function og_sm_theme_get_theme_settings($site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $data = &drupal_static(__FUNCTION__);
+  if (!$data || !isset($data[$site->nid])) {
+    $data[$site->nid] = array();
+  }
+  if (!isset($data[$site->nid][$theme_key])) {
+    $variable_name = 'theme_' . $theme_key . '_settings';
+    $defaults = array(
+      // The defaults for toggleable components. Currently only breadcrumbs
+      // are toggleable from within the Site Theme settings.
+      'toggle_breadcrumb' => 1,
+    );
+    $data[$site->nid][$theme_key] = array_merge(
+      $defaults,
+      og_sm_variable_get($site->nid, $variable_name, array())
+    );
+  }
+
+  return $data[$site->nid][$theme_key];
+}
+
+/**
+ * Set the theme settings for a specific theme in a Site.
+ *
+ * @param array $settings
+ *   The settings to set.
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ */
+function og_sm_theme_set_theme_settings($settings, $site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $variable_name = 'theme_' . $theme_key . '_settings';
+  og_sm_variable_set($site->nid, $variable_name, $settings);
+
+  drupal_static_reset('og_sm_theme_get_theme_settings');
+}
+
+/**
+ * Get the breadcrumb settings for a specific theme in a Site.
+ *
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ *
+ * @return array
+ *   The settings array.
+ */
+function og_sm_theme_get_breadcrumb_settings($site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $variable_name = 'theme_' . $theme_key . '_breadcrumb_settings';
+  $defaults = array(
+    'append_title' => 1,
+    'override_root' => 0,
+    'root_parts' => array(),
+  );
+  $settings = og_sm_variable_get($site->nid, $variable_name, array());
+  return array_merge($defaults, $settings);
+}
+
+/**
+ * Set the breadcrumb settings for a specific theme in a Site.
+ *
+ * @param array $settings
+ *   The settings to set.
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ */
+function og_sm_theme_set_breadcrumb_settings($settings, $site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $variable_name = 'theme_' . $theme_key . '_breadcrumb_settings';
+  og_sm_variable_set($site->nid, $variable_name, $settings);
+}
+
+/**
+ * Implements hook_preprocess_breadcrumb().
+ *
+ * Normally we'd use hook_menu_breadcrumb_alter() to alter the breadcrumb trail.
+ * If any module calls drupal_set_breadcrumb during page load, that hook is
+ * never called (f.e. og_sm_set_breadcrumb, ...). Therefore we use
+ * module_preprocess_breadcrumb() to make sure we're called before the
+ * theme_preprocess_breadcrumb() functions in our themes get called.
+ */
+function og_sm_theme_preprocess_breadcrumb(&$variables) {
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+  $theme_key = $GLOBALS['theme_key'];
+
+  // See if the breadcrumb component is enabled.
+  $settings = og_sm_theme_get_theme_settings($site, $theme_key);
+  if ($settings['toggle_breadcrumb']) {
+
+    $breadcrumb_settings = og_sm_theme_get_breadcrumb_settings($site, $theme_key);
+    $override_root = $breadcrumb_settings['override_root'];
+    $append_title = $breadcrumb_settings['append_title'];
+    if (!$override_root && !$append_title) {
+      return;
+    }
+
+    // Get the current breadcrumb trail. Note, core always expects them to start
+    // with the "Home" link. We should remove the first item before we prepend
+    // our new items.
+    $breadcrumb = drupal_get_breadcrumb();
+
+    if ($override_root) {
+      array_shift($breadcrumb);
+
+      // Get all parts and prepend to the existing breadcrumb.
+      $parts = $breadcrumb_settings['root_parts'];
+      foreach (array_reverse($parts) as $part) {
+        array_unshift($breadcrumb, l($part['text'], $part['path']));
+      }
+    }
+
+    // Append the page title as last part before saving.
+    if ($append_title) {
+      $breadcrumb[] = drupal_get_title();
+    }
+
+    // Update the variable and set the new breadcrumb to allow the rest of the
+    // preprocessing chain to call drupal_get_breadcrumb() as well.
+    $variables['breadcrumb'] = $breadcrumb;
+    drupal_set_breadcrumb($breadcrumb);
+  }
+  else {
+    // The breadcrumb was already added in hook_preprocess_page(). We need to
+    // unset it.
+    $variables['breadcrumb'] = NULL;
+  }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function og_sm_theme_theme_registry_alter(&$theme_registry) {
+  // If only one module preprocesses breadcrumb, bail.
+  if (count($theme_registry['breadcrumb']['preprocess functions']) <= 1) {
+    return;
+  }
+  // Make sure our module's preprocess function for breadcrumb is always first.
+  foreach ($theme_registry['breadcrumb']['preprocess functions'] as $key => $value) {
+    if ($value == 'og_sm_theme_preprocess_breadcrumb') {
+      $item = $theme_registry['breadcrumb']['preprocess functions'][$key];
+      unset($theme_registry['breadcrumb']['preprocess functions'][$key]);
+      array_unshift($theme_registry['breadcrumb']['preprocess functions'], $item);
+      break;
+    }
+  }
 }
