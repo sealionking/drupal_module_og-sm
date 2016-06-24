@@ -8,7 +8,6 @@
  * Test class for the breadcrumb settings.
  */
 class OgSmThemeBreadcrumbTestCase extends OgSmWebTestCase {
-
   /**
    * Test data.
    */
