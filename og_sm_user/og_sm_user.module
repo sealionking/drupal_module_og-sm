@@ -138,7 +138,7 @@ function og_sm_user_page_access($op, $site, $account = NULL) {
  *   The path to the profile page.
  */
 function og_sm_user_profile_path($account) {
-  $default = 'users/' . $account->name;
+  $default = 'user/' . $account->uid;
 
   $site = og_sm_current_site();
   if (!$site) {
