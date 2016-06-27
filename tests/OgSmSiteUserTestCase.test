@@ -14,7 +14,7 @@ class OgSmSiteUserTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site User'),
+      'name' => t('Site : User'),
       'description' => t('Tests Site User and helpers.'),
       'group' => t('Organic Groups Site Manager'),
     );

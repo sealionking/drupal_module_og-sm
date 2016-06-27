@@ -157,6 +157,21 @@ This is a wrapper around the og_set_breadcrumb.
 og_sm_set_breadcrumb($site, 'path/to/set/the/breadcrumb');
 ```
 
+### Get the path to the Site homepage
+Get the path to the homepage of a Site. This will return by default the path to
+the detail page of the Site. Modules can implement
+hook_og_dm_site_homepage_alter() to alter the path.
+
+The function will return the path based on the given Site or, if no Site is
+provided, the current Site (from OG context) will be used.
+
+```php
+$homepage_path = og_sm_site_homepage($site);
+if ($homepage_path) {
+  $homepage_url = url($homepage_path);
+}
+```
+
 ### Site content types
 Helper function to get a list of site type objects that can be used to create
 content within a site.
@@ -269,10 +284,30 @@ when an action happens:
 * `hook_og_sm_site_update($site)` : Site node being updated.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
-> The hooks can be put in the `yourmodule.module` OR in the
-> `yourmodule.og_sm.inc` file.
-> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
-> .module file cleaner and makes the platform load less code by default.
+
+### Alter the Site homepage path.
+The og_sm_site_homepage() function creates and returns the path (as string) to
+the frontpage (homepage) of a Site. That homepage is by default the Site node
+detail page (node/[site-nid]).
+
+Implementations can require that the homepage links to a different page (eg.
+group/node/NID/dashboard).
+
+This alter function allows modules to alter that path.
+
+```php
+/**
+ * Implements hook_og_sm_site_homepage_alter().
+ *
+ * @param string $path
+ *   The current path to the Site homepage.
+ * @param object $site
+ *    The Site object to alter the homepage path for.
+ */
+function mymodule_og_sm_site_homepage_alter(&$path, $site) {
+  $path = 'group/node/' . $site->nid . '/dashboard';
+}
+```
 
 
 
