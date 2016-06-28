@@ -176,5 +176,26 @@ function hook_og_sm_site_delete($site) {
 }
 
 /**
+ * Alter the Site homepage path.
+ *
+ * The og_sm_site_homepage() function creates and returns the path (as string)
+ * to the frontpage (homepage) of a Site. That homepage is by default the Site
+ * node detail page (node/[site-nid]).
+ *
+ * Implementations can require that the homepage links to a different page (eg.
+ * group/node/NID/dashboard).
+ *
+ * This alter function allows modules to alter that path.
+ *
+ * @param string $path
+ *   The current path to the Site homepage.
+ * @param object $site
+ *   The Site object to alter the homepage path for.
+ */
+function hook_og_sm_site_homepage_alter(&$path, $site) {
+  $path = 'group/node/' . $site->nid . '/dashboard';
+}
+
+/**
  * @} End of "addtogroup hooks".
  */

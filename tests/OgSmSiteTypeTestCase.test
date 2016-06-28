@@ -14,7 +14,7 @@ class OgSmNodeTypeConfigTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site type.'),
+      'name' => t('Site : Type'),
       'description' => t('Tests about configuring Site types and Site type helpers.'),
       'group' => t('Organic Groups Site Manager'),
     );

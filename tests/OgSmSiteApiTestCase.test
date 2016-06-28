@@ -7,14 +7,14 @@
 /**
  * Tests about the node type settings.
  */
-class OgSmSiteTestCase extends OgSmWebTestCase {
+class OgSmSiteApiTestCase extends OgSmWebTestCase {
 
   /**
    * {@inheritdoc}
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site node'),
+      'name' => t('Site : API'),
       'description' => t('Tests Site nodes and helpers.'),
       'group' => t('Organic Groups Site Manager'),
     );
@@ -120,6 +120,46 @@ class OgSmSiteTestCase extends OgSmWebTestCase {
     // Access for site members with the proper role(s).
     $this->assertTrue(og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $site_manager));
     $this->assertTrue(og_sm_site_nid_permission_access($site->nid, OG_SM_PERMISSION_SITE_ADMIN, $site_manager));
+  }
+
+  /**
+   * Test Site homepage path.
+   */
+  public function testGetHomepagePath() {
+    $site_type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($site_type);
+    $site = $this->ogSmCreateGroup($site_type);
+
+    // Default when no context is active.
+    $this->assertFalse(
+      og_sm_site_homepage(),
+      'No path if no Site in current OG context.'
+    );
+
+    // Path based on the given Site.
+    $expected = 'node/' . $site->nid;
+    $this->assertEqual(
+      $expected,
+      og_sm_site_homepage($site),
+      'Site homepage is the Site node.'
+    );
+
+    // Path from current OG context.
+    $this->ogSmSetOgContextToGroup($site);
+    $this->assertEqual(
+      $expected,
+      og_sm_site_homepage(),
+      'Fallback to Site homepage of the active OG context.'
+    );
+
+    // Enable module that alters the path.
+    module_enable(array('og_sm_test'));
+    drupal_static_reset('og_sm_site_homepage');
+    $this->assertEqual(
+      'group/node/' . $site->nid . '/dashboard',
+      og_sm_site_homepage($site),
+      'Modules can alter the Site path.'
+    );
   }
 
 }

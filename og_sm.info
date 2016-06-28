@@ -7,8 +7,8 @@ dependencies[] = og
 dependencies[] = og_context
 
 ; Tests.
+files[] = tests/OgSmSiteApiTestCase.test
 files[] = tests/OgSmSiteContentTestCase.test
-files[] = tests/OgSmSiteTestCase.test
 files[] = tests/OgSmSiteTypeTestCase.test
 files[] = tests/OgSmSiteUserTestCase.test
 files[] = tests/OgSmWebTestCase.test
