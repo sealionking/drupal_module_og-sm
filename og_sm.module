@@ -336,11 +336,40 @@ function og_sm_set_breadcrumb($site, $path = array()) {
   $uri = entity_uri('node', $site);
   drupal_set_breadcrumb(
     array_merge(
-      array(l(t('Home'), '<front>')),
+      array(l(t('Home'), og_sm_site_homepage($site))),
       array(l($label, $uri['path'])),
       $path
     )
   );
+}
+
+/**
+ * Implements hook_preprocess_breadcrumb().
+ *
+ * Replace the breadcrumb part that link to the platform homepage (/) to the
+ * frontpage of the Site (/site-node-path).
+ */
+function og_sm_preprocess_breadcrumb(&$variables) {
+  $site_home = og_sm_site_homepage();
+  if (!$site_home) {
+    return;
+  }
+
+  // Replace the front link (/) by the Site homepage path.
+  $pattern = '#href="(/)"#';
+  foreach ($variables['breadcrumb'] as $key => $value) {
+    if (!preg_match($pattern, $value)) {
+      continue;
+    }
+
+    $value = preg_replace($pattern, 'href="' . url($site_home) . '"', $value);
+    $variables['breadcrumb'][$key] = preg_replace(
+      '#href="(/)"#',
+      'href="' . url($site_home) . '"',
+      $value
+    );
+    break;
+  }
 }
 
 /**
