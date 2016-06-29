@@ -427,6 +427,51 @@ function og_sm_taxonomy_get_vocabulary_terms_by_site($vocabulary, $site) {
 }
 
 /**
+ * Fetches an array vocabularies referenced in an array query conditions.
+ *
+ * This helper function will loop recursively through the conditions and return
+ * an array of referenced vocabularies.
+ *
+ * @param string $table_alias
+ *   The vocabulary table alias.
+ * @param array $conditions
+ *   An array of query conditions.
+ * @param array $vocabularies
+ *   (optional) An array of vocabulary objects.
+ *
+ * @return array
+ *   An array of vocabulary objects.
+ */
+function og_sm_taxonomy_get_vocabularies_from_conditions($table_alias, $conditions, $vocabularies = array()) {
+  foreach ($conditions as $condition) {
+    if (empty($condition['field'])) {
+      continue;
+    }
+
+    // If the condition field implements the QueryConditionInterface it means
+    // this condition contains several child conditions. In that case we need
+    // loop through those to find the referenced vocabularies.
+    if ($condition['field'] instanceof QueryConditionInterface) {
+      $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_alias, $condition['field']->conditions(), $vocabularies);
+      continue;
+    }
+
+    // Check if the condition field is either a vid or a machine name. If so
+    // load the vocabularies and add them to the vocabularies array.
+    if ($condition['field'] == "$table_alias.vid") {
+      $vids = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
+      $vocabularies += taxonomy_vocabulary_load_multiple($vids);
+    }
+    elseif ($condition['field'] == "$table_alias.machine_name") {
+      $machine_names = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
+      $vocabularies += taxonomy_vocabulary_load_multiple(NULL, array('machine_name' => $machine_names));
+    }
+  }
+
+  return $vocabularies;
+}
+
+/**
  * Implements hook_query_TAG_alter().
  *
  * Filters the term query by the current Site (if any).
@@ -438,52 +483,41 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
     return;
   }
 
-  // Get the vocabulary from the query.
-  $vocabulary = FALSE;
-  $conditions = $query->conditions();
-  foreach ($conditions as $condition) {
-    if (empty($condition['field'])) {
-      continue;
-    }
-    if ($condition['field'] == 't.vid') {
-      $vocabulary = taxonomy_vocabulary_load($condition['value']);
-    }
-    elseif ($condition['field'] == 'tv.machine_name') {
-      // Views stores the vocabulary condition as machine name.
-      $vocabulary = taxonomy_vocabulary_machine_name_load($condition['value']);
-    }
-  }
-  if (!$vocabulary) {
-    return;
-  }
-
-  // Only when the vocabulary is a Site vocabulary.
-  if (!og_sm_taxonomy_is_vocabulary($vocabulary->machine_name)) {
-    return;
-  }
-
-  // Get the taxonomy_term_data alias.
-  $table_alias = NULL;
+  // Get the taxonomy_term_data and taxonomy_vocabulary alias.
+  $table_aliases = array();
   $tables = $query->getTables();
+  $original_tables = array('taxonomy_term_data', 'taxonomy_vocabulary');
   foreach ($tables as $info) {
-    if ($info['table'] !== 'taxonomy_term_data') {
+    if (!in_array($info['table'], $original_tables)) {
       continue;
     }
-
-    $table_alias = $info['alias'];
+    $table_aliases[$info['table']] = $info['alias'];
   }
 
-  // Only if the taxonomy_term_data table is in the query.
-  if (!$table_alias) {
+  // Make sure we have all the needed table aliases.
+  if (count($original_tables) !== count($table_aliases)) {
     return;
   }
 
-  // Filter by the Site membership.
-  $query->join('og_membership', 'ogm', 'ogm.etid = ' . $table_alias . '.tid');
-  $query->condition('ogm.entity_type', 'taxonomy_term');
-  $query->condition('ogm.group_type', 'node');
-  $query->condition('ogm.gid', $site->nid);
-  $query->condition('ogm.state', 1);
+  // Get the vocabularies from the query conditions.
+  $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases['taxonomy_vocabulary'], $query->conditions());
+  foreach ($vocabularies as $vocabulary) {
+    // Only when the vocabulary is a Site vocabulary.
+    if (!og_sm_taxonomy_is_vocabulary($vocabulary->machine_name)) {
+      continue;
+    }
+
+    // Filter by the Site membership.
+    // @todo: This join should include a vid or vocabulary machine name
+    // condition since a condition can have both non-site vocabularies and
+    // site vocabularies.
+    $query->join('og_membership', 'ogm', 'ogm.etid = ' . $table_aliases['taxonomy_term_data'] . '.tid');
+    $query->condition('ogm.entity_type', 'taxonomy_term');
+    $query->condition('ogm.group_type', 'node');
+    $query->condition('ogm.gid', $site->nid);
+    $query->condition('ogm.state', 1);
+    return;
+  }
 }
 
 /**
