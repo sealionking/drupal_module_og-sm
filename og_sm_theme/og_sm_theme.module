@@ -93,7 +93,7 @@ function og_sm_theme_menu() {
 
   $items['admin/config/group/theme']  = array(
     'title' => 'OG Theme settings',
-    'description' => 'Configure the global Site theme settings',
+    'description' => 'Configure the global Site theme settings.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('og_sm_theme_global_settings_form'),
     'access arguments' => array('administer group'),
