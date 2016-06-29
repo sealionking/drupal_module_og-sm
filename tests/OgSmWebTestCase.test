@@ -205,14 +205,14 @@ class OgSmWebTestCase extends DrupalWebTestCase {
   public function ogSmSetOgContextToGroup($group, $account = NULL) {
     $context = &drupal_static('og_context');
     $context = array(
-      'node::' . $group->nid . ':1' => array(
+      'node:::1' => array(
         'group_type' => 'node',
         'gid' => $group->nid,
       ),
     );
 
     if ($account) {
-      $context['node:' . $account->uid . ':' . $group->nid . ':1'] = array(
+      $context['node::' . $account->uid . ':1'] = array(
         'group_type' => 'node',
         'gid' => $group->nid,
       );
