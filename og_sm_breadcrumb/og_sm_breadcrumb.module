@@ -1,0 +1,42 @@
+<?php
+/**
+ * @file
+ * OG SM Breadcrumbs module.
+ */
+
+/**
+ * Feature namespace.
+ */
+define('OG_SM_BREADCUMB_FEATURE', 'breadcrumb');
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_breadcrumb_menu() {
+  $items = array();
+
+  // Global & OG Administration forms.
+  $file_admin = 'og_sm_breadcrumb.admin.inc';
+
+  $items['admin/config/group/features/breadcrumb'] = array(
+    'title' => 'Breadcrumb',
+    'description' => 'Default Breadcrumb configuration.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_breadcrumb_admin'),
+    'access arguments' => array('administer site features'),
+    'file' => $file_admin,
+    'type' => MENU_CALLBACK,
+  );
+  $items['group/node/%og_sm_site/admin/features/breadcrumb'] = array(
+    'title' => 'Breadcrumb',
+    'description' => 'Breadcrumb configuration.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_breadcrumb_og_admin', 2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, 'administer features'),
+    'file' => $file_admin,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}

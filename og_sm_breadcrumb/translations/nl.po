@@ -1,0 +1,77 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-06-29 15:19+0200\n"
+"PO-Revision-Date: 2016-06-29 15:19+0200\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.6\n"
+
+#: og_sm_breadcrumb.admin.inc:20
+msgid "Default settings for the Breadcrumb feature."
+msgstr "Standaard instellingen voor de Kruimelpad feature."
+
+#: og_sm_breadcrumb.admin.inc:51
+msgid "Site settings for the Breadcrumb feature."
+msgstr "Site instellingen voor de Kruimelpad feature."
+
+#: og_sm_breadcrumb.admin.inc:89
+msgid "Options"
+msgstr "Opties"
+
+#: og_sm_breadcrumb.admin.inc:93
+msgid "Show on Site frontpage"
+msgstr "Toon op Site voorpagina"
+
+#: og_sm_breadcrumb.admin.inc:94
+msgid "Show breadcrumb on the Site homepage."
+msgstr "Toon kruimelpad op de Site voorpagina."
+
+#: og_sm_breadcrumb.admin.inc:99
+msgid "Home link to Site frontpage"
+msgstr "Home link naar Site voorpagina"
+
+#: og_sm_breadcrumb.admin.inc:100
+msgid "Force the home part of the breadcrumb to link to the Site frontpage."
+msgstr "Forceer de home link van het kruimelpad naar de Site voorpagina."
+
+#: og_sm_breadcrumb.admin.inc:105
+msgid "Append the page title to the breadcrumb trail"
+msgstr "Plaats de titel van de huidige pagina achteraan het kruimelpad"
+
+#: og_sm_breadcrumb.admin.inc:106
+msgid "The page title will be appended to the breadcrumb trail."
+msgstr "De titel van de pagina zal achteraan het kruimelpad worden toegevoegd."
+
+#: og_sm_breadcrumb.og_sm.inc:14 og_sm_breadcrumb.module:22;31
+msgid "Breadcrumb"
+msgstr "Kruimelpad"
+
+#: og_sm_breadcrumb.og_sm.inc:15
+msgid "Show customizable breadcrumb."
+msgstr "Toon aanpasbaar kruimelpad."
+
+#: og_sm_breadcrumb.module:23
+msgid "Default Breadcrumb configuration."
+msgstr "Standaard Kruimelpad configuratie."
+
+#: og_sm_breadcrumb.module:32
+msgid "Breadcrumb configuration."
+msgstr "Kruimelpad configuratie"
+
+#: og_sm_breadcrumb.info:0
+msgid "Site Breadcrumb"
+msgstr "Site Kruimelpad"
+
+#: og_sm_breadcrumb.info:0
+msgid "Site Breadcrumb feature that allows to override the behaviour and starting point(s) of the Site breadcrumb."
+msgstr "Site Kruimelpad feature die toelaat om het gedrag en startpunt(en) van het kruimelpad aan te passen."
+
+#: og_sm_breadcrumb.info:0
+msgid "Organic Groups Site Manager"
+msgstr "Organic Groups Site Beheerder"
+
