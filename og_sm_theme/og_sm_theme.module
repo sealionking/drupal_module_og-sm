@@ -320,6 +320,9 @@ function og_sm_theme_get_theme_settings($site = NULL, $theme_key = NULL) {
       // The defaults for toggleable components. Currently only breadcrumbs
       // are toggleable from within the Site Theme settings.
       'toggle_breadcrumb' => 1,
+      'toggle_logo_link' => 0,
+      'logo_link_url' => NULL,
+      'logo_link_target' => '_self',
     );
     $data[$site->nid][$theme_key] = array_merge(
       $defaults,
@@ -480,5 +483,32 @@ function og_sm_theme_theme_registry_alter(&$theme_registry) {
       array_unshift($theme_registry['breadcrumb']['preprocess functions'], $item);
       break;
     }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Adds the custom logo link settings to the page template variables.
+ */
+function og_sm_theme_preprocess_page(&$variables) {
+  // Default logo settings when not in Site context.
+  $variables['logo_link_url'] = $variables['front_page'];
+  $variables['logo_link_target'] = '_self';
+
+  // Only override when Site context is available.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Default link to the Site homepage.
+  $variables['logo_link_url'] = url(og_sm_site_homepage());
+
+  // Set the overridden link (if any).
+  $settings = og_sm_theme_get_theme_settings($site);
+  if ($settings['toggle_logo_link']) {
+    $variables['logo_link_url'] = $settings['logo_link_url'];
+    $variables['logo_link_target'] = $settings['logo_link_target'];
   }
 }

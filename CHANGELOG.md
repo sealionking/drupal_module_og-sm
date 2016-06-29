@@ -9,6 +9,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   add vocabularies to features.
 - DMOGSM-53 : Configurable breadcrumb per Site.
 - PPL-493 : Added function and hook to get the path to the Site homepage.
+- PPL-493 : Added configuration and to set a custom link on the theme logo.
 
 
 ### Fixed
