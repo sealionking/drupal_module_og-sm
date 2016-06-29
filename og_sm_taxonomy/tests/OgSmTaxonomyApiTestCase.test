@@ -236,10 +236,9 @@ class OgSmTaxonomyApiTestCase extends OgSmWebTestCase {
    *   TRUE if the assertion succeeded, FALSE otherwise.
    */
   public function assertSelectQueryResultCount($site, SelectQuery $query, $expected_count) {
-    global $user;
     $query = clone $query;
 
-    $this->ogSmSetOgContextToGroup($site, $user);
+    $this->ogSmSetOgContextToGroup($site);
     return $this->assertEqual($query->execute()->rowCount(), $expected_count);
   }
 

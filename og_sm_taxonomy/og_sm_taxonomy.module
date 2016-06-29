@@ -432,8 +432,8 @@ function og_sm_taxonomy_get_vocabulary_terms_by_site($vocabulary, $site) {
  * This helper function will loop recursively through the conditions and return
  * an array of referenced vocabularies.
  *
- * @param string $table_alias
- *   The vocabulary table alias.
+ * @param array $table_aliases
+ *   An array of taxonomy table aliases.
  * @param array $conditions
  *   An array of query conditions.
  * @param array $vocabularies
@@ -442,7 +442,7 @@ function og_sm_taxonomy_get_vocabulary_terms_by_site($vocabulary, $site) {
  * @return array
  *   An array of vocabulary objects.
  */
-function og_sm_taxonomy_get_vocabularies_from_conditions($table_alias, $conditions, $vocabularies = array()) {
+function og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases, $conditions, $vocabularies = array()) {
   foreach ($conditions as $condition) {
     if (empty($condition['field'])) {
       continue;
@@ -452,19 +452,34 @@ function og_sm_taxonomy_get_vocabularies_from_conditions($table_alias, $conditio
     // this condition contains several child conditions. In that case we need
     // loop through those to find the referenced vocabularies.
     if ($condition['field'] instanceof QueryConditionInterface) {
-      $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_alias, $condition['field']->conditions(), $vocabularies);
+      $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases, $condition['field']->conditions(), $vocabularies);
       continue;
     }
 
+    if (!is_string($condition['field']) || empty($condition['value'])) {
+      continue;
+    }
     // Check if the condition field is either a vid or a machine name. If so
     // load the vocabularies and add them to the vocabularies array.
-    if ($condition['field'] == "$table_alias.vid") {
-      $vids = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
-      $vocabularies += taxonomy_vocabulary_load_multiple($vids);
+    $field_parts = explode('.', $condition['field']);
+    if (!count($field_parts) === 2) {
+      continue;
     }
-    elseif ($condition['field'] == "$table_alias.machine_name") {
-      $machine_names = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
-      $vocabularies += taxonomy_vocabulary_load_multiple(NULL, array('machine_name' => $machine_names));
+
+    if (!in_array($field_parts[0], $table_aliases)) {
+      continue;
+    }
+
+    switch ($field_parts[1]) {
+      case 'vid':
+        $vids = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
+        $vocabularies += taxonomy_vocabulary_load_multiple($vids);
+        break;
+
+      case 'machine_name':
+        $machine_names = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
+        $vocabularies += taxonomy_vocabulary_load_multiple(NULL, array('machine_name' => $machine_names));
+        break;
     }
   }
 
@@ -494,13 +509,13 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
     $table_aliases[$info['table']] = $info['alias'];
   }
 
-  // Make sure we have all the needed table aliases.
-  if (count($original_tables) !== count($table_aliases)) {
+  // Make sure the taxonomy_term_data table is in the query.
+  if (!isset($table_aliases['taxonomy_term_data'])) {
     return;
   }
 
   // Get the vocabularies from the query conditions.
-  $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases['taxonomy_vocabulary'], $query->conditions());
+  $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases, $query->conditions());
   foreach ($vocabularies as $vocabulary) {
     // Only when the vocabulary is a Site vocabulary.
     if (!og_sm_taxonomy_is_vocabulary($vocabulary->machine_name)) {
