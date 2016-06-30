@@ -7,4 +7,4 @@ dependencies[] = og
 dependencies[] = og_variables
 
 ; Tests.
-;files[] = tests/OgSmBreadcrumbApiTestCase.test
+files[] = tests/OgSmBreadcrumbTestCase.test

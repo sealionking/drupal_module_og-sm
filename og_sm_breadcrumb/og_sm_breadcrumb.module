@@ -174,7 +174,7 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
   $og_sm_feature_exists = module_exists('og_sm_feature');
 
   // Hide breadcrumb if og_sm_feature and the global option is not enabled.
-  if (!$path_is_admin && !$og_sm_feature_exists && variable_get('og_sm_breadcrumb_enable', 0)) {
+  if (!$path_is_admin && !$og_sm_feature_exists && !variable_get('og_sm_breadcrumb_enable', 0)) {
     $variables['breadcrumb'] = array();
     return;
   }
