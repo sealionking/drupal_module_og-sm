@@ -11,6 +11,11 @@
  *   The form structure.
  */
 function _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names(array &$form) {
+  // Only when not within a Site context.
+  if (og_sm_current_site()) {
+    return;
+  }
+
   foreach (element_children($form) as $key) {
     if (!preg_match('/^tid\:[0-9]+/', $key)) {
       continue;
@@ -29,6 +34,33 @@ function _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names(array &$f
 }
 
 /**
+ * Alters the empty text link to add the first Site term for the vocabulary.
+ *
+ * @param array $form
+ *   The form structure.
+ */
+function _og_sm_taxonomy_form_taxonomy_overview_terms_alter_empty_text(array &$form) {
+  // Only when there is an empty text element.
+  if (empty($form['#empty_text'])) {
+    return;
+  }
+
+  // Only within a Site context.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  $vocabulary = $form['#vocabulary'];
+  $form['#empty_text'] = t(
+    'No terms available. <a href="@link">Add term</a>.',
+    array(
+      '@link' => url('group/node/' . $site->nid . '/admin/taxonomy/' . $vocabulary->machine_name . '/add'),
+    )
+  );
+}
+
+/**
  * Alters the confirmation form to order the terms alphabetically.
  *
  * @param array $form
@@ -37,6 +69,11 @@ function _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names(array &$f
  * @see og_sm_taxonomy_form_taxonomy_overview_terms_alter()
  */
 function _og_sm_taxonomy_form_taxonomy_overview_terms_alter_order(&$form) {
+  // Only for the confirmation form.
+  if (!isset($form['reset_alphabetical'])) {
+    return;
+  }
+
   // Update the cancel link target.
   $form['actions']['cancel']['#href'] = current_path();
 

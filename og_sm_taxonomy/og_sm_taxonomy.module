@@ -543,18 +543,18 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
  * @see taxonomy_overview_terms()
  */
 function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state, $form_id) {
+  form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
+
   // If alphabetically term order confirmation form is shown: make sure that the
   // links point to the proper location (e.g. when used in Site context).
-  if (isset($form['reset_alphabetical'])) {
-    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
-    _og_sm_taxonomy_form_taxonomy_overview_terms_alter_order($form);
-  }
+  _og_sm_taxonomy_form_taxonomy_overview_terms_alter_order($form);
 
   // When not in a site context, add the site names to the terms.
-  if (!og_sm_current_site()) {
-    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
-    _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names($form);
-  }
+  _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names($form);
+
+  // When no items make sure that the inline-create category link points to the
+  // proper URL (when site context is enabled.
+  _og_sm_taxonomy_form_taxonomy_overview_terms_alter_empty_text($form);
 }
 
 /**
