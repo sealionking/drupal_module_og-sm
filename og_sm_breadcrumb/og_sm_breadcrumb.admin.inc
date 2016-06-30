@@ -62,13 +62,24 @@ function og_sm_breadcrumb_og_admin(array $form, array &$form_state, $site) {
   $form = _og_sm_breadcrumb_admin_form($form, $defaults);
 
   // Append the breadcrumb settings part.
-  $form['#submit'][] = 'og_sm_breadcrumb_og_admin_submit';
+  _og_sm_breadcrumb_og_admin_form_custom_breadcrumb($form, $form_state, $site);
 
-  return og_sm_variable_settings_form(
+  // Create the variable settings form.
+  $form = og_sm_variable_settings_form(
     $form,
     $form_state,
     $site
   );
+
+  // Prepend & append submit functions to cleanup the values and clear the Site
+  // cache.
+  $form['#submit'] = array_merge(
+    array('og_sm_breadcrumb_og_admin_submit_before'),
+    $form['#submit'],
+    array('og_sm_breadcrumb_og_admin_submit_after')
+  );
+
+  return $form;
 }
 
 /**
@@ -111,16 +122,287 @@ function _og_sm_breadcrumb_admin_form(array $form, array $defaults) {
 }
 
 /**
- * Extra submit handler for og_sm_breadcrumb_og_admin() form.
+ * Add the extra form parts to add custom breadcrumb starting point(s).
  *
  * @param array $form
- *   The form structure.
+ *   The form.
  * @param array $form_state
- *   The current form state.
- *
- * @see og_sm_breadcrumb_og_admin()
+ *   The form state.
+ * @param object $site
+ *   The Site object.
  */
-function og_sm_breadcrumb_og_admin_submit(array $form, array &$form_state) {
-  // Make sure that the Site cache is cleared when the feature settings changes.
+function _og_sm_breadcrumb_og_admin_form_custom_breadcrumb(array &$form, array &$form_state, $site) {
+  // Save these in form_state for later.
+  $form_state['site'] = $site;
+
+  $override_root = og_sm_variable_get($site->nid, 'og_sm_breadcrumb_override_root', 0);
+  $override_parts = og_sm_variable_get($site->nid, 'og_sm_breadcrumb_override_root_parts', array());
+
+  // Initialize our form state.
+  if (!isset($form_state['input']['og_sm_breadcrumb_override_root_parts'])) {
+    $form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'] = $override_parts;
+    $form_state['row_count'] = count($override_parts);
+
+    if ($form_state['row_count'] == 0) {
+      ++$form_state['row_count'];
+    }
+  }
+
+  $form['root'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Custom breadcrumb'),
+  );
+  $form['root']['og_sm_breadcrumb_override_root'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Manually set the breadcrumb root'),
+    '#description' => t('If checked, you can specify the root of the breadcrumb for this theme.'),
+    '#default_value' => $override_root,
+  );
+
+  $wrapper_id = 'breadcrumb-parts-wrapper';
+  $form['root']['og_sm_breadcrumb_override_root_parts'] = array(
+    '#type' => 'container',
+    // Hide the settings when the override root checkbox is disabled.
+    '#states' => array(
+      'invisible' => array(
+        ':input[name="og_sm_breadcrumb_override_root"]' => array('checked' => FALSE),
+      ),
+    ),
+    '#tree' => TRUE,
+  );
+
+  $parts_table = array(
+    '#theme' => 'og_sm_breadcrumb_og_admin_root_parts',
+    '#prefix' => '<div id="' . $wrapper_id . '">',
+    '#suffix' => '</div>',
+  );
+
+  // Sort the parts first, this to keep sorting during ajax callbacks.
+  usort($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'], 'drupal_sort_weight');
+
+  // Add the root parts.
+  for ($i = 0; $i < $form_state['row_count']; $i++) {
+    // Set the default weight to the number of parts. Since the delta of the
+    // draggable table is 100, already ordered parts will start at -100. New
+    // parts will always be placed at the end of the weights stack,
+    // e.g. 2,3,4, ...
+    $default_values = isset($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'][$i])
+      ? $form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'][$i]
+      : array('text' => '', 'path' => '', 'weight' => $form_state['row_count']);
+
+    $parts_table[$i]['text'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Text'),
+      '#title_display' => 'invisible',
+      '#default_value' => $default_values['text'],
+    );
+    $parts_table[$i]['path'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Path'),
+      '#title_display' => 'invisible',
+      '#default_value' => $default_values['path'],
+    );
+    $parts_table[$i]['operations'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete'),
+      '#name' => 'delete_breadcrumb_part_' . $i,
+      '#validate' => array(),
+      '#limit_validation_errors' => array(),
+      '#submit' => array('og_sm_breadcrumb_og_admin_delete_item'),
+      '#ajax' => array(
+        'callback' => 'og_sm_breadcrumb_og_admin_js_callback',
+        'wrapper' => $wrapper_id,
+      ),
+    );
+    $parts_table[$i]['weight'] = array(
+      '#type' => 'weight',
+      '#title' => t('Weight'),
+      '#title_display' => 'invisible',
+      '#default_value' => $default_values['weight'],
+      '#delta' => 100,
+      '#attributes' => array('class' => array('item-weight')),
+    );
+  }
+
+  // Add the parts to the form.
+  $form['root']['og_sm_breadcrumb_override_root_parts']['parts'] = $parts_table;
+
+  // Add an Add new item button to the form.
+  $form['root']['og_sm_breadcrumb_override_root_parts']['add'] = array(
+    '#type' => 'submit',
+    '#value' => t('Add part'),
+    '#validate' => array(),
+    '#limit_validation_errors' => array(),
+    '#submit' => array('og_sm_breadcrumb_og_admin_add_item'),
+    '#ajax' => array(
+      'callback' => 'og_sm_breadcrumb_og_admin_js_callback',
+      'wrapper' => $wrapper_id,
+    ),
+  );
+
+  $form['#validate'][] = 'og_sm_breadcrumb_og_admin_form_validate';
+}
+
+/**
+ * Validate handler for the breadcrumb form.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_breadcrumb_og_admin_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+
+  if ($values['og_sm_breadcrumb_override_root']) {
+    if (empty($values['og_sm_breadcrumb_override_root_parts']['parts'])) {
+      form_set_error('og_sm_breadcrumb_override_root_parts][parts]]', t('Add at least one breadcrumb part.'));
+      return;
+    }
+    foreach ($values['og_sm_breadcrumb_override_root_parts']['parts'] as $i => $part) {
+      if (empty($part['text'])) {
+        form_set_error('og_sm_breadcrumb_override_root_parts][parts][' . $i . '][text', t('The field %field is required.', array(
+          '%field' => t('Text'),
+        )));
+      }
+
+      if (empty($part['path'])) {
+        form_set_error('og_sm_breadcrumb_override_root_parts][parts][' . $i . '][path', t('The field %field is required.', array(
+          '%field' => t('Path'),
+        )));
+      }
+      elseif (!drupal_valid_path($part['path'])) {
+        form_set_error('og_sm_breadcrumb_override_root_parts][parts][' . $i . '][path', t('The value provided for %field is not a valid URL.', array(
+          '%field' => t('Path'),
+        )));
+      }
+    }
+  }
+}
+
+/**
+ * Submit handler to clean up the values.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_breadcrumb_og_admin_submit_before($form, &$form_state) {
+  form_state_values_clean($form_state);
+
+  // Remove non value elements of the root_parts.
+  $parts = $form_state['values']['og_sm_breadcrumb_override_root_parts']['parts'];
+  foreach ($parts as $key => $part) {
+    unset($part['operation']);
+  }
+
+  // Sort the items.
+  usort($parts, 'drupal_sort_weight');
+
+  // Update the values in the form_state.
+  $form_state['values']['og_sm_breadcrumb_override_root_parts'] = $parts;
+}
+
+/**
+ * Submit handler to clear the Site cache after the values are saved.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_breadcrumb_og_admin_submit_after($form, &$form_state) {
   og_sm_site_cache_clear_all($form_state['site']);
+}
+
+/**
+ * Submit function for the add item button.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_breadcrumb_og_admin_add_item($form, &$form_state) {
+  $form_state['row_count']++;
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Submit function for the delete item button.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_breadcrumb_og_admin_delete_item($form, &$form_state) {
+  if (!preg_match('#^delete_breadcrumb_part_(\d+)$#', $form_state['triggering_element']['#name'], $matches)) {
+    return;
+  }
+  if (isset($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'][$matches[1]])) {
+    unset($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'][$matches[1]]);
+    $form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'] = array_values(
+      $form_state['input']['og_sm_breadcrumb_override_root_parts']['parts']
+    );
+    $form_state['row_count']--;
+  }
+
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * AJAX callback that returns the updated component.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ *
+ * @return array
+ *   The element to update.
+ */
+function og_sm_breadcrumb_og_admin_js_callback($form, $form_state) {
+  return $form['root']['og_sm_breadcrumb_override_root_parts']['parts'];
+}
+
+/**
+ * Theme function for the breadcrumb parts table.
+ *
+ * @param array $variables
+ *   The variables array.
+ *
+ * @return string
+ *   The rendered content.
+ */
+function theme_og_sm_breadcrumb_og_admin_root_parts($variables) {
+  $element = $variables['element'];
+  drupal_add_tabledrag('breadcrumb-parts-table', 'order', 'sibling', 'item-weight');
+  drupal_add_js(drupal_get_path('module', 'og_sm_theme') . '/js/breadcrumb_parts.js');
+
+  $header = array(
+    'text' => t('Text'),
+    'path' => t('Path'),
+    'operations' => t('Operations'),
+    'weight' => t('Weight'),
+  );
+
+  $rows = array();
+  foreach (element_children($element) as $key) {
+    $row = array();
+    $row['data'] = array();
+    foreach ($header as $field_name => $title) {
+      $row['data'][] = drupal_render($element[$key][$field_name]);
+      $row['class'] = array('draggable');
+    }
+    $rows[] = $row;
+  }
+
+  return theme('table', array(
+    'header' => $header,
+    'rows' => $rows,
+    'attributes' => array('id' => 'breadcrumb-parts-table'),
+    'empty' => t('There are no parts added yet.'),
+  ));
 }

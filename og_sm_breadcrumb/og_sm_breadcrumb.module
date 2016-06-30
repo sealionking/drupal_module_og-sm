@@ -40,3 +40,15 @@ function og_sm_breadcrumb_menu() {
 
   return $items;
 }
+
+/**
+ * Implements hook_theme().
+ */
+function og_sm_breadcrumb_theme() {
+  return array(
+    'og_sm_breadcrumb_og_admin_root_parts' => array(
+      'file' => 'og_sm_breadcrumb.admin.inc',
+      'render element' => 'element',
+    ),
+  );
+}
