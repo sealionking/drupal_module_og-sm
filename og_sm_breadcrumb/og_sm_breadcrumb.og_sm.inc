@@ -27,9 +27,9 @@ function og_sm_breadcrumb_og_sm_variable_defaults($site) {
   $items = array();
 
   // Enabled Site breadcrumb trail.
-  $items['og_sm_breadcrumb_enabled'] = variable_get('og_sm_breadcrumb_enabled', 0);
-  $items['og_sm_breadcrumb_show_on_site_frontpage'] = variable_get('og_sm_breadcrumb_show_on_site_frontpage', 0);
-  $items['og_sm_breadcrumb_append_current'] = variable_get('og_sm_breadcrumb_append_current', 0);
+  $items['og_sm_breadcrumb_hide_on_frontpage'] = variable_get('og_sm_breadcrumb_hide_on_frontpage', 1);
+  $items['og_sm_breadcrumb_force_home'] = variable_get('og_sm_breadcrumb_force_home', 1);
+  $items['og_sm_breadcrumb_append_title'] = variable_get('og_sm_breadcrumb_append_title', 1);
 
   return $items;
 }

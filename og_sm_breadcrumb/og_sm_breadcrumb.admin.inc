@@ -23,7 +23,7 @@ function og_sm_breadcrumb_admin(array $form, array &$form_state) {
   );
 
   $defaults = array(
-    'show_on_frontpage' => variable_get('og_sm_breadcrumb_show_on_frontpage', 0),
+    'hide_on_frontpage' => variable_get('og_sm_breadcrumb_hide_on_frontpage', 1),
     'force_home' => variable_get('og_sm_breadcrumb_force_home', 1),
     'append_title' => variable_get('og_sm_breadcrumb_append_title', 1),
   );
@@ -54,7 +54,7 @@ function og_sm_breadcrumb_og_admin(array $form, array &$form_state, $site) {
   );
 
   $defaults = array(
-    'show_on_frontpage' => og_sm_variable_get($sid, 'og_sm_breadcrumb_show_on_frontpage', 0),
+    'hide_on_frontpage' => og_sm_variable_get($sid, 'og_sm_breadcrumb_hide_on_frontpage', 0),
     'force_home' => og_sm_variable_get($sid, 'og_sm_breadcrumb_force_home', 1),
     'append_title' => og_sm_variable_get($sid, 'og_sm_breadcrumb_append_title', 1),
   );
@@ -71,8 +71,9 @@ function og_sm_breadcrumb_og_admin(array $form, array &$form_state, $site) {
     $site
   );
 
-  // Prepend & append submit functions to cleanup the values and clear the Site
-  // cache.
+  // Prepend & append submit functions to:
+  // - Cleanup the values.
+  // - Clear the Site cache.
   $form['#submit'] = array_merge(
     array('og_sm_breadcrumb_og_admin_submit_before'),
     $form['#submit'],
@@ -99,11 +100,11 @@ function _og_sm_breadcrumb_admin_form(array $form, array $defaults) {
     '#type' => 'fieldset',
     '#title' => t('Options'),
   );
-  $form['options']['og_sm_breadcrumb_show_on_frontpage'] = array(
+  $form['options']['og_sm_breadcrumb_hide_on_frontpage'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Show on Site frontpage'),
-    '#description' => t('Show breadcrumb on the Site homepage.'),
-    '#default_value' => $defaults['show_on_frontpage'],
+    '#title' => t('Hide on Site frontpage'),
+    '#description' => t('Do not show the breadcrumb on the Site homepage.'),
+    '#default_value' => $defaults['hide_on_frontpage'],
   );
   $form['options']['og_sm_breadcrumb_force_home'] = array(
     '#type' => 'checkbox',
@@ -177,7 +178,7 @@ function _og_sm_breadcrumb_og_admin_form_custom_breadcrumb(array &$form, array &
     '#suffix' => '</div>',
   );
 
-  // Sort the parts first, this to keep sorting during ajax callbacks.
+  // Sort the parts first, this to keep sorting in ajax callbacks (add/delete).
   usort($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'], 'drupal_sort_weight');
 
   // Add the root parts.
