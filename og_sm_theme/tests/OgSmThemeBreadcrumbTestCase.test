@@ -21,7 +21,7 @@ class OgSmThemeBreadcrumbTestCase extends OgSmWebTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => t('Site Theme : breadcrumb'),
+      'name' => t('Site Theme : Breadcrumb'),
       'description' => t('Tests the theme breadcrumb settings.'),
       'group' => t('Organic Groups Site Manager'),
     );

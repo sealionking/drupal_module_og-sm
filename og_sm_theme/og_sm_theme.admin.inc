@@ -273,11 +273,50 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
 
   $settings = og_sm_theme_get_theme_settings($site, $theme_key);
 
+  // Custom logo link.
+  $form['logo'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Logo link'),
+    '#description' => t('The link behind the logo will point by default to the Site front page. You can override that location to an (external) URL.'),
+  );
+  $form['logo']['toggle_logo_link'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Use a custom logo link.',
+    '#default_value' => $settings['toggle_logo_link'],
+  );
+  $form['logo']['link'] = array(
+    '#type' => 'container',
+    '#states' => array(
+      'visible' => array(
+        'input[name="toggle_logo_link"]' => array('checked' => TRUE),
+      ),
+    ),
+    '#attributes' => array(
+      'style' => 'display: none;',
+    ),
+  );
+  $form['logo']['link']['logo_link_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('URL'),
+    '#default_value' => $settings['logo_link_url'],
+    '#element_validate' => array('og_sm_theme_site_settings_form_validate_custom_logo_link_url'),
+
+  );
+  $form['logo']['link']['logo_link_target'] = array(
+    '#type' => 'select',
+    '#title' => t('Link target'),
+    '#description' => t('Select how the link should open in the browser.'),
+    '#options' => array(
+      '_self' => t('Current window/tab'),
+      '_blank' => t('New window/tab'),
+    ),
+    '#default_value' => $settings['logo_link_target'],
+  );
+
   // Toggle settings.
   $toggles = array(
     'breadcrumb' => t('breadcrumb'),
   );
-
   $form['theme_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Toggle display'),
@@ -603,4 +642,50 @@ function theme_og_sm_theme_component_breadcrumb_parts($variables) {
     'attributes' => array('id' => 'breadcrumb-parts-table'),
     'empty' => t('There are no parts added yet.'),
   ));
+}
+
+/**
+ * Form element validator for the custom_home_url field.
+ *
+ * @param array $element
+ *   The element to validate.
+ * @param array $form_state
+ *   The form state.
+ * @param array $form
+ *   The form structure.
+ */
+function og_sm_theme_site_settings_form_validate_custom_logo_link_url(array $element, array &$form_state, array $form) {
+  $is_custom = !empty($form_state['values']['toggle_custom_logo_link']);
+  $value = trim($element['#value']);
+
+  // Don't care if nothing is set.
+  if (!$is_custom && empty($value)) {
+    return;
+  }
+
+  // If we got here, a custom URL is required.
+  if (empty($value)) {
+    form_error(
+      $element,
+      t('The custom logo URL is missing.')
+    );
+    return;
+  }
+
+  // Is external URL?
+  if (url_is_external($value)) {
+    return;
+  }
+
+  // Is valid Drupal path?
+  $path_source = drupal_get_normal_path($value);
+  if ($path_source && drupal_valid_path($path_source, FALSE)) {
+    return;
+  }
+
+  // The provided URL is not valid.
+  form_error(
+    $element,
+    t('The URL should be either a valid external URL or an existing internal path.')
+  );
 }
