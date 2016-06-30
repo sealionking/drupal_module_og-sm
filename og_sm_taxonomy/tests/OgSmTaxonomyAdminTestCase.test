@@ -418,6 +418,17 @@ class OgSmTaxonomyAdminTestCase extends OgSmWebTestCase {
     $this->drupalGet($path_categories);
     $this->assertResponse(200, 'Site Taxonomy administration overview : Administrator has access to all vocabularies.');
 
+    // Check if the inline add link is pointing to the proper path.
+    $expected = sprintf(
+      'No terms available. <a href="/group/node/%d/admin/taxonomy/%s/add">Add term</a>.',
+      $this->siteNode->nid,
+      $this->vocabCategories->machine_name
+    );
+    $this->assertRaw(
+      $expected,
+      'Inline link to add a new term points to the path within the Site.'
+    );
+
     // Add some category terms.
     $sites = array($this->siteNode);
     $this->ogSmCreateTerm($this->vocabCategories, 'term_outside');

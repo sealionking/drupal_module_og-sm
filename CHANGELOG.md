@@ -15,6 +15,9 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ### Fixed
 - DMOGSM-63 : Too strict node access check on group content types.
 - DMOGSM-64 : Added callback and hook to clear all cache for a specific Site.
+- DMOGSM-76 : Rewrite term_access query tag alter to loop recursively to find
+  vocabularies
+- DMOGSM-58 : Fixed link to add the first Site vocabulary term.
 
 
 ### Security
