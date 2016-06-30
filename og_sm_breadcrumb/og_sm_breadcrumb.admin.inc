@@ -5,7 +5,7 @@
  */
 
 /**
- * Global settings form.
+ * Default administration form when the og_sm_feature module is not enabled.
  *
  * @param array $form
  *   The form structure.
@@ -16,6 +16,46 @@
  *   The form structure.
  */
 function og_sm_breadcrumb_admin(array $form, array &$form_state) {
+  $form['info'] = array(
+    '#markup' => t('Global settings for Site breadcrumbs.'),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+  $form['og_sm_breadcrumb_enable'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable breadcrumbs for Sites'),
+    '#description' => t('Enabeling this feature will add breadcumbs to the Site pages.'),
+    '#default_value' => variable_get('og_sm_breadcrumb_enable'),
+  );
+
+  $defaults = array(
+    'hide_on_frontpage' => variable_get('og_sm_breadcrumb_hide_on_frontpage', 1),
+    'force_home' => variable_get('og_sm_breadcrumb_force_home', 1),
+    'append_title' => variable_get('og_sm_breadcrumb_append_title', 1),
+  );
+
+  $form = _og_sm_breadcrumb_admin_form($form, $defaults);
+  $form['options']['#states'] = array(
+    'invisible' => array(
+      ':input[name="og_sm_breadcrumb_enable"]' => array('checked' => FALSE),
+    ),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Global feature settings form.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ *
+ * @return array
+ *   The form structure.
+ */
+function og_sm_breadcrumb_admin_feature(array $form, array &$form_state) {
   $form['info'] = array(
     '#markup' => t('Default settings for the Breadcrumb feature.'),
     '#prefix' => '<p>',
@@ -44,7 +84,7 @@ function og_sm_breadcrumb_admin(array $form, array &$form_state) {
  * @return array
  *   The form structure.
  */
-function og_sm_breadcrumb_og_admin(array $form, array &$form_state, $site) {
+function og_sm_breadcrumb_og_admin_feature(array $form, array &$form_state, $site) {
   $sid = $site->nid;
 
   $form['info'] = array(

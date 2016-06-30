@@ -4,6 +4,7 @@ package = "Organic Groups Site Manager"
 core = 7.x
 
 dependencies[] = og
+dependencies[] = og_variables
 
 ; Tests.
 ;files[] = tests/OgSmBreadcrumbApiTestCase.test
