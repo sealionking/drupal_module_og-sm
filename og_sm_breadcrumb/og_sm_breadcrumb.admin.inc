@@ -179,7 +179,9 @@ function _og_sm_breadcrumb_og_admin_form_custom_breadcrumb(array &$form, array &
   );
 
   // Sort the parts first, this to keep sorting in ajax callbacks (add/delete).
-  usort($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'], 'drupal_sort_weight');
+  if (is_array($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'])) {
+    usort($form_state['input']['og_sm_breadcrumb_override_root_parts']['parts'], 'drupal_sort_weight');
+  }
 
   // Add the root parts.
   for ($i = 0; $i < $form_state['row_count']; $i++) {
@@ -196,12 +198,14 @@ function _og_sm_breadcrumb_og_admin_form_custom_breadcrumb(array &$form, array &
       '#title' => t('Text'),
       '#title_display' => 'invisible',
       '#default_value' => $default_values['text'],
+      '#element_validate' => array('og_sm_breadcrumb_og_admin_form_validate_root_parts_text'),
     );
     $parts_table[$i]['path'] = array(
       '#type' => 'textfield',
       '#title' => t('Path'),
       '#title_display' => 'invisible',
       '#default_value' => $default_values['path'],
+      '#element_validate' => array('og_sm_breadcrumb_og_admin_form_validate_root_parts_path'),
     );
     $parts_table[$i]['operations'] = array(
       '#type' => 'submit',
@@ -255,30 +259,70 @@ function _og_sm_breadcrumb_og_admin_form_custom_breadcrumb(array &$form, array &
 function og_sm_breadcrumb_og_admin_form_validate($form, &$form_state) {
   $values = $form_state['values'];
 
-  if ($values['og_sm_breadcrumb_override_root']) {
-    if (empty($values['og_sm_breadcrumb_override_root_parts']['parts'])) {
-      form_set_error('og_sm_breadcrumb_override_root_parts][parts]]', t('Add at least one breadcrumb part.'));
-      return;
-    }
-    foreach ($values['og_sm_breadcrumb_override_root_parts']['parts'] as $i => $part) {
-      if (empty($part['text'])) {
-        form_set_error('og_sm_breadcrumb_override_root_parts][parts][' . $i . '][text', t('The field %field is required.', array(
-          '%field' => t('Text'),
-        )));
-      }
-
-      if (empty($part['path'])) {
-        form_set_error('og_sm_breadcrumb_override_root_parts][parts][' . $i . '][path', t('The field %field is required.', array(
-          '%field' => t('Path'),
-        )));
-      }
-      elseif (!drupal_valid_path($part['path'])) {
-        form_set_error('og_sm_breadcrumb_override_root_parts][parts][' . $i . '][path', t('The value provided for %field is not a valid URL.', array(
-          '%field' => t('Path'),
-        )));
-      }
-    }
+  // If root override is selected, there should be at least 1 parts.
+  if ($values['og_sm_breadcrumb_override_root']
+    && empty($values['og_sm_breadcrumb_override_root_parts']['parts'])
+  ) {
+    form_set_error('root', t('Add at least one breadcrumb part.'));
+    return;
   }
+}
+
+/**
+ * Validator for the breadcrumb text field.
+ *
+ * @param array $element
+ *   The element to validate.
+ * @param array $form_state
+ *   The form state.
+ * @param array $form
+ *   The form structure.
+ */
+function og_sm_breadcrumb_og_admin_form_validate_root_parts_text(array $element, array &$form_state, array $form) {
+  $value = trim($element['#value']);
+  if (empty($value)) {
+    form_error(
+      $element,
+      t('The field %field is required.', array('%field' => t('Text')))
+    );
+  }
+}
+
+/**
+ * Form element validator for the custom_home_url field.
+ *
+ * @param array $element
+ *   The element to validate.
+ * @param array $form_state
+ *   The form state.
+ * @param array $form
+ *   The form structure.
+ */
+function og_sm_breadcrumb_og_admin_form_validate_root_parts_path(array $element, array &$form_state, array $form) {
+  $value = trim($element['#value']);
+
+  // Path is required.
+  if (!$value) {
+    t('The field %field is required.', array('%field' => t('Path')));
+    return;
+  }
+
+  // Is external URL?
+  if (url_is_external($value)) {
+    return;
+  }
+
+  // Is valid Drupal path?
+  $path_source = drupal_get_normal_path($value);
+  if ($path_source && drupal_valid_path($path_source, FALSE)) {
+    return;
+  }
+
+  // The provided URL is not valid.
+  form_error(
+    $element,
+    t('The URL should be either a valid external URL or an existing internal path.')
+  );
 }
 
 /**
@@ -380,7 +424,6 @@ function og_sm_breadcrumb_og_admin_js_callback($form, $form_state) {
 function theme_og_sm_breadcrumb_og_admin_root_parts($variables) {
   $element = $variables['element'];
   drupal_add_tabledrag('breadcrumb-parts-table', 'order', 'sibling', 'item-weight');
-  drupal_add_js(drupal_get_path('module', 'og_sm_theme') . '/js/breadcrumb_parts.js');
 
   $header = array(
     'text' => t('Text'),
