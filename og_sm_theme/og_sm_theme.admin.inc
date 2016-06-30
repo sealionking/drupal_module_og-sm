@@ -307,7 +307,7 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
     '#title' => t('Link target'),
     '#description' => t('Select how the link should open in the browser.'),
     '#options' => array(
-      '_self' => ('Current window/tab'),
+      '_self' => t('Current window/tab'),
       '_blank' => t('New window/tab'),
     ),
     '#default_value' => $settings['logo_link_target'],
