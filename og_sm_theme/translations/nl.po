@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-06-23 09:46+0200\n"
-"PO-Revision-Date: 2016-06-29 13:57+0200\n"
+"PO-Revision-Date: 2016-06-30 14:11+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -19,11 +19,11 @@ msgstr ""
 
 #: og_sm_theme.admin.inc:26 og_sm_theme.module:29
 msgid "Administer theme"
-msgstr "Beheer thema instellingen"
+msgstr "Beheer thema"
 
 #: og_sm_theme.admin.inc:63;64
 msgid "Screenshot for !theme theme"
-msgstr "Screenshot voor het thema !theme"
+msgstr "Afbeelding voor thema !theme"
 
 #: og_sm_theme.admin.inc:77
 msgid "Settings"
@@ -31,7 +31,7 @@ msgstr "Instellingen"
 
 #: og_sm_theme.admin.inc:79
 msgid "Settings for !theme theme"
-msgstr "Instellingen voor het thema !theme"
+msgstr "Instellingen voor thema !theme"
 
 #: og_sm_theme.admin.inc:85
 msgid "Set as site theme"
@@ -47,11 +47,11 @@ msgstr "standaardthema"
 
 #: og_sm_theme.admin.inc:158
 msgid "%theme is now the default theme."
-msgstr "%theme is nu het standaardthema."
+msgstr "%theme is ingesteld als standaardthema."
 
 #: og_sm_theme.admin.inc:164
 msgid "The %theme theme was not found."
-msgstr "Het thema %theme is niet gevonden."
+msgstr "Het thema %theme werd niet gevonden."
 
 #: og_sm_theme.admin.inc:180
 msgid "Allowed themes"
@@ -71,7 +71,7 @@ msgstr ""
 "Kies het standaardthema voor Sites wanneer deze geen thema hebben "
 "gekozen."
 
-#: og_sm_theme.admin.inc:218;480
+#: og_sm_theme.admin.inc:218
 msgid "Save configuration"
 msgstr "Instellingen opslaan"
 
@@ -85,7 +85,9 @@ msgstr "Logo link"
 
 #: og_sm_theme.admin.inc:280
 msgid "The link behind the logo will point by default to the Site front page. You can override that location to an (external) URL."
-msgstr "De link, die op het logo zit, verwijst standaard naar de Site home pagina. U kan deze overschirjven met een (externe) URL."
+msgstr ""
+"De link, die op het logo zit, verwijst standaard naar de Site home "
+"pagina. U kan deze overschirjven met een (externe) URL."
 
 #: og_sm_theme.admin.inc:300
 msgid "URL"
@@ -99,93 +101,31 @@ msgstr "Doel van de link"
 msgid "Select how the link should open in the browser."
 msgstr "Selecteer hoe de browser de link moet openen."
 
+#: og_sm_theme.admin.inc:310
+msgid "Current window/tab"
+msgstr ""
+
 #: og_sm_theme.admin.inc:311
 msgid "New window/tab"
 msgstr "Nieuw venster/tab"
 
-#: og_sm_theme.admin.inc:318
-msgid "breadcrumb"
-msgstr "kruimelpad"
+#: og_sm_theme.admin.inc:321
+msgid "Toggle display"
+msgstr "Weergave aan-en uitzetten"
 
 #: og_sm_theme.admin.inc:322
-msgid "Toggle display"
-msgstr "Weergave wisselen"
-
-#: og_sm_theme.admin.inc:323
 msgid "Enable or disable the display of certain page elements."
-msgstr "Weergave van bepaalde pagina-elementen in- of uitschakelen."
+msgstr "Toon of verberg bepaalde pagina-elementen."
 
 #: og_sm_theme.admin.inc:357
 msgid "The theme settings have been saved."
 msgstr "De thema instellingen werden bewaard."
 
 #: og_sm_theme.admin.inc:383
-msgid "Append the page title to the breadcrumb trail"
-msgstr "Plaats de titel van de huidige pagina achteraan het kruimelpad"
-
-#: og_sm_theme.admin.inc:384
-msgid "The page title will be appended to the breadcrumb trail."
-msgstr "De titel van de pagina zal achteraan het kruimelpad worden toegevoegd."
-
-#: og_sm_theme.admin.inc:390
-msgid "Manually set the breadcrumb root"
-msgstr "Start van het kruimelpad zelf instellen"
-
-#: og_sm_theme.admin.inc:391
-msgid "If checked, you can specify the root of the breadcrumb for this theme."
-msgstr ""
-"Indien aangevinkt, kan het startpunt van het kruimelpad manueel worden "
-"ingesteld."
-
-#: og_sm_theme.admin.inc:428;504;622
-msgid "Text"
-msgstr "Tekst"
-
-#: og_sm_theme.admin.inc:435;510;515;623
-msgid "Path"
-msgstr "Pad"
-
-#: og_sm_theme.admin.inc:442
-msgid "Delete"
-msgstr "Verwijderen"
-
-#: og_sm_theme.admin.inc:455;625
-msgid "Weight"
-msgstr "Gewicht"
-
-#: og_sm_theme.admin.inc:467
-msgid "Add part"
-msgstr "Onderdeel toevoegen"
-
-#: og_sm_theme.admin.inc:498
-msgid "Add at least one breadcrumb part."
-msgstr "Voeg ten minste één kruimel toe."
-
-#: og_sm_theme.admin.inc:503;509
-msgid "The field %field is required."
-msgstr "Het veld %field is verplicht."
-
-#: og_sm_theme.admin.inc:514
-msgid "The value provided for %field is not a valid URL."
-msgstr "De opgegeven waarde voor %field is geen geldige URL."
-
-#: og_sm_theme.admin.inc:555
-msgid "The breadcrumb settings have been saved."
-msgstr "De instellingen van het kruimelpad werden bewaard."
-
-#: og_sm_theme.admin.inc:624
-msgid "Operations"
-msgstr "Handelingen"
-
-#: og_sm_theme.admin.inc:643
-msgid "There are no parts added yet."
-msgstr "Er werden nog geen onderdelen toegevoegd."
-
-#: og_sm_theme.admin.inc:670
 msgid "The custom logo URL is missing."
 msgstr "De link URL ontbreekt."
 
-#: og_sm_theme.admin.inc:689
+#: og_sm_theme.admin.inc:402
 msgid "The URL should be either a valid external URL or an existing internal path."
 msgstr "De URL moet een geldige externe URL of een bestaande intern pad zijn."
 
@@ -199,7 +139,7 @@ msgstr[1] "Site thema's"
 msgid "Allows the user to administer the Site theme."
 msgstr "Laat de gebruiker toe om het Site thema te beheren."
 
-#: og_sm_theme.module:161
+#: og_sm_theme.module:103
 msgid "A theme was disabled when it was set as the Site default theme. The default Site theme has been reset to the default theme (@default). To change this, go to <a href=\"@url\">OG Theme settings</a>."
 msgstr ""
 "Er werd een thema uitgeschakeld dat was ingesteld als standaard thema "
@@ -207,20 +147,20 @@ msgstr ""
 "globale standaardthema (@default). Om dit aan te passen, ga naar <a "
 "href=\"@url\">OG Thema instellingen</a>."
 
-#: og_sm_theme.module:176
+#: og_sm_theme.module:118
 msgid "A theme was disabled when it was set as an allowed Site theme. It has been removed from the allowed Site themes."
 msgstr ""
 "Er werd een thema uitgeschakeld dat was ingesteld als toegelaten thema "
 "binnen een Site. Dit thema werd uit de lijst van toegelaten Site "
 "thema's verwijderd."
 
-#: og_sm_theme.module:182
+#: og_sm_theme.module:124
 msgid "A theme was disabled. The Site theme of @sites has been reset to the default Site theme (@default)."
 msgstr ""
 "Er werd een thema uitgeschakeld. Het Site thema van @sites werd "
 "hersteld naar het standaardthema voor Sites (@default)."
 
-#: og_sm_theme.module:193
+#: og_sm_theme.module:135
 msgid "A theme was enabled. To make it available to Sites, go to <a href=\"@url\">OG Theme settings</a> and enable it."
 msgstr ""
 "Er werd een thema ingeschakeld. Om dit thema beschikbaar te maken voor "
@@ -228,7 +168,7 @@ msgstr ""
 
 #: og_sm_theme.module:43
 msgid "Theme settings"
-msgstr "Thema instellingen"
+msgstr "Beheer thema instellingen"
 
 #: og_sm_theme.module:44
 msgid "Configure the theme for a Site."
@@ -236,7 +176,7 @@ msgstr "Beheer de Thema instellingen van een Site."
 
 #: og_sm_theme.module:53
 msgid "Set default theme"
-msgstr "Stel standaardthema in"
+msgstr "Instellen als standaardthema"
 
 #: og_sm_theme.module:63;74
 msgid "General settings"
@@ -247,18 +187,10 @@ msgid "Configure default and theme specific settings within a Site."
 msgstr "Beheer de standaard- en thema instellingen van een Site. "
 
 #: og_sm_theme.module:80
-msgid "Breadcrumb"
-msgstr "Kruimelpad"
-
-#: og_sm_theme.module:81
-msgid "Configure the breadcrumb settings for this theme."
-msgstr "Beheer de instellingen van het kruimelpad van dit thema."
-
-#: og_sm_theme.module:95
 msgid "OG Theme settings"
 msgstr "OG Thema instellingen"
 
-#: og_sm_theme.module:96
+#: og_sm_theme.module:81
 msgid "Configure the global Site theme settings."
 msgstr "Beheer de globale Site thema instellingen."
 

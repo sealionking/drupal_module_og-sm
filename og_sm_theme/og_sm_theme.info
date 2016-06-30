@@ -7,5 +7,4 @@ dependencies[] = og_sm
 dependencies[] = og_sm_variable
 
 ; Tests.
-files[] = tests/OgSmThemeBreadcrumbTestCase.test
 files[] = tests/OgSmThemeLogoTestCase.test

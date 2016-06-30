@@ -7,11 +7,7 @@ This module allows to choose a theme per Site.
 * Define the default theme (fallback).
 * Set a theme per Site.
 * Change the link behind the Site logo (intern or extern).
-* Set visibility of theme components, currently only breadcrumb
-  supported
-* Breadcrumb configuration per theme within a Site.
-    * Append the page title to the breadcrumb trail
-    * Override the root of the breadcrumb trail
+* Set visibility of theme components.
 
 
 
