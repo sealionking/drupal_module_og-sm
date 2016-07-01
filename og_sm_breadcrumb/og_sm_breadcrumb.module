@@ -7,7 +7,7 @@
 /**
  * Feature namespace.
  */
-define('OG_SM_BREADCUMB_FEATURE', 'breadcrumb');
+define('OG_SM_BREADCRUMB_FEATURE', 'breadcrumb');
 
 /**
  * Global permission to manage the global breadcrumb settings.
@@ -47,7 +47,7 @@ function og_sm_breadcrumb_menu() {
       'title' => 'OG Breadcrumb',
       'description' => 'Configuration of the OG breadcrumb.',
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('og_sm_breadcrumb_global_admin'),
+      'page arguments' => array('og_sm_breadcrumb_admin'),
       'access arguments' => array(OG_SM_BREADCRUMB_PERM_ADMINISTER),
       'file' => $file_admin,
       'type' => MENU_NORMAL_ITEM,
@@ -122,7 +122,7 @@ function og_sm_breadcrumb_theme_registry_alter(&$theme_registry) {
  *
  * @return array
  *   The Site settings:
- *   - hide_on_frontpage : Should the breadcrumb be hidden when on Site homepage.
+ *   - hide_on_frontpage : Should the breadcrumb be hidden on Site frontpage.
  *   - force_home : Should the "home" link be replaced by the Site homepage.
  *   - append_title : Should the title of the current item be added to the
  *     breadcrumb.
@@ -180,7 +180,7 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
   }
 
   // Hide breadcrumbs if feature is not enabled (only when not on admin pages).
-  if (!$path_is_admin && $og_sm_feature_exists && !og_sm_feature_site_is_enabled($site, OG_SM_BREADCUMB_FEATURE)) {
+  if (!$path_is_admin && $og_sm_feature_exists && !og_sm_feature_site_is_enabled($site, OG_SM_BREADCRUMB_FEATURE)) {
     $variables['breadcrumb'] = array();
     return;
   }

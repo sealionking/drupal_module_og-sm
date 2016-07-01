@@ -10,7 +10,7 @@
 function og_sm_breadcrumb_og_sm_feature_info() {
   $items = array();
 
-  $items[OG_SM_BREADCUMB_FEATURE] = array(
+  $items[OG_SM_BREADCRUMB_FEATURE] = array(
     'name' => t('Breadcrumb'),
     'description' => t('Show customizable breadcrumb.'),
     'global configuration' => 'admin/config/group/features/breadcrumb',
