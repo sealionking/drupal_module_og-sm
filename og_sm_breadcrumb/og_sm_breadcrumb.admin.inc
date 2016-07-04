@@ -24,7 +24,7 @@ function og_sm_breadcrumb_admin(array $form, array &$form_state) {
   $form['og_sm_breadcrumb_enable'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable breadcrumbs for Sites'),
-    '#description' => t('Enabeling this feature will add breadcumbs to the Site pages.'),
+    '#description' => t('Enabling this feature will add the breadcumb to the Site pages.'),
     '#default_value' => variable_get('og_sm_breadcrumb_enable'),
   );
 
@@ -149,7 +149,7 @@ function _og_sm_breadcrumb_admin_form(array $form, array $defaults) {
   $form['options']['og_sm_breadcrumb_force_home'] = array(
     '#type' => 'checkbox',
     '#title' => t('Home link to Site frontpage'),
-    '#description' => t('Force the home part of the breadcrumb to link to the Site frontpage.'),
+    '#description' => t('Force the root part of the breadcrumb to link to the Site frontpage.'),
     '#default_value' => $defaults['force_home'],
   );
   $form['options']['og_sm_breadcrumb_append_title'] = array(
