@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-06-23 09:46+0200\n"
-"PO-Revision-Date: 2016-06-29 13:57+0200\n"
+"PO-Revision-Date: 2016-07-04 10:42+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -19,11 +19,11 @@ msgstr ""
 
 #: og_sm_theme.admin.inc:26 og_sm_theme.module:29
 msgid "Administer theme"
-msgstr "Beheer thema instellingen"
+msgstr "Beheer thema"
 
 #: og_sm_theme.admin.inc:63;64
 msgid "Screenshot for !theme theme"
-msgstr "Screenshot voor het thema !theme"
+msgstr "Afbeelding voor thema !theme"
 
 #: og_sm_theme.admin.inc:77
 msgid "Settings"
@@ -31,7 +31,7 @@ msgstr "Instellingen"
 
 #: og_sm_theme.admin.inc:79
 msgid "Settings for !theme theme"
-msgstr "Instellingen voor het thema !theme"
+msgstr "Instellingen voor thema !theme"
 
 #: og_sm_theme.admin.inc:85
 msgid "Set as site theme"
@@ -47,11 +47,11 @@ msgstr "standaardthema"
 
 #: og_sm_theme.admin.inc:158
 msgid "%theme is now the default theme."
-msgstr "%theme is nu het standaardthema."
+msgstr "%theme is ingesteld als standaardthema."
 
 #: og_sm_theme.admin.inc:164
 msgid "The %theme theme was not found."
-msgstr "Het thema %theme is niet gevonden."
+msgstr "Het thema %theme werd niet gevonden."
 
 #: og_sm_theme.admin.inc:180
 msgid "Allowed themes"
@@ -85,7 +85,13 @@ msgstr "Logo link"
 
 #: og_sm_theme.admin.inc:280
 msgid "The link behind the logo will point by default to the Site front page. You can override that location to an (external) URL."
-msgstr "De link, die op het logo zit, verwijst standaard naar de Site home pagina. U kan deze overschirjven met een (externe) URL."
+msgstr ""
+"De link, die op het logo zit, verwijst standaard naar de Site home "
+"pagina. U kan deze overschirjven met een (externe) URL."
+
+#: og_sm_theme.admin.inc:284
+msgid "Use a custom logo link"
+msgstr "Gebruik een aangepaste logo link"
 
 #: og_sm_theme.admin.inc:300
 msgid "URL"
@@ -99,6 +105,10 @@ msgstr "Doel van de link"
 msgid "Select how the link should open in the browser."
 msgstr "Selecteer hoe de browser de link moet openen."
 
+#: og_sm_theme.admin.inc:310
+msgid "Current window/tab"
+msgstr "Huidig venster/tab"
+
 #: og_sm_theme.admin.inc:311
 msgid "New window/tab"
 msgstr "Nieuw venster/tab"
@@ -109,11 +119,11 @@ msgstr "kruimelpad"
 
 #: og_sm_theme.admin.inc:322
 msgid "Toggle display"
-msgstr "Weergave wisselen"
+msgstr "Weergave aan-en uitzetten"
 
 #: og_sm_theme.admin.inc:323
 msgid "Enable or disable the display of certain page elements."
-msgstr "Weergave van bepaalde pagina-elementen in- of uitschakelen."
+msgstr "Toon of verberg bepaalde pagina-elementen."
 
 #: og_sm_theme.admin.inc:357
 msgid "The theme settings have been saved."
@@ -175,7 +185,7 @@ msgstr "De instellingen van het kruimelpad werden bewaard."
 
 #: og_sm_theme.admin.inc:624
 msgid "Operations"
-msgstr "Handelingen"
+msgstr "Bewerkingen"
 
 #: og_sm_theme.admin.inc:643
 msgid "There are no parts added yet."
@@ -228,7 +238,7 @@ msgstr ""
 
 #: og_sm_theme.module:43
 msgid "Theme settings"
-msgstr "Thema instellingen"
+msgstr "Beheer thema instellingen"
 
 #: og_sm_theme.module:44
 msgid "Configure the theme for a Site."
@@ -236,7 +246,7 @@ msgstr "Beheer de Thema instellingen van een Site."
 
 #: og_sm_theme.module:53
 msgid "Set default theme"
-msgstr "Stel standaardthema in"
+msgstr "Instellen als standaardthema"
 
 #: og_sm_theme.module:63;74
 msgid "General settings"
