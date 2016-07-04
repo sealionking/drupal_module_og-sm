@@ -325,7 +325,7 @@ function og_sm_breadcrumb_og_admin_form_validate_root_parts_text(array $element,
   }
 
   $value = trim($element['#value']);
-  if (empty($value)) {
+  if ($value === '') {
     form_error(
       $element,
       t('The field %field is required.', array('%field' => t('Text')))
@@ -352,8 +352,11 @@ function og_sm_breadcrumb_og_admin_form_validate_root_parts_path(array $element,
   $value = trim($element['#value']);
 
   // Path is required.
-  if (!$value) {
-    t('The field %field is required.', array('%field' => t('Path')));
+  if ($value === '') {
+    form_error(
+      $element,
+      t('The field %field is required.', array('%field' => t('Path')))
+    );
     return;
   }
 
