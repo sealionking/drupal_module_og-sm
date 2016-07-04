@@ -1,5 +1,5 @@
 # Organic Groups : Breadcrumb
-Support breadcrumbs who are Site aware and allows overriding the root of the
+Support breadcrumbs that are Site aware and allows overriding the root of the
 breadcrumb.
 
 
@@ -18,8 +18,8 @@ This module makes breadcrumbs Site aware (when a Site context is active):
 This module provides also a Site feature. When the Site Feature (og_sm_feature)
 module is enabled, breadcrumb settings can be configured per Site.
 
-This allows also to override the root of the breadcrumb by one or more
-(external) links.
+It also allows to override the root of the breadcrumb by one or more (external)
+links.
 
 
 
@@ -44,7 +44,7 @@ When the feature module is enabled:
 
 ## API
 ### Setting the global breadcrumb configuration programmatically
-The breadcumb settings are stored in variables.
+The breadcrumb settings are stored in variables.
 
 Global settings:
 * **og_sm_breadcrumb_enable** : Enable breadcrumb for Sites (0/1).

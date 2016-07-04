@@ -24,7 +24,7 @@ function og_sm_breadcrumb_admin(array $form, array &$form_state) {
   $form['og_sm_breadcrumb_enable'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable breadcrumbs for Sites'),
-    '#description' => t('Enabling this feature will add the breadcumb to the Site pages.'),
+    '#description' => t('Enabling this feature will add the breadcrumb to the Site pages.'),
     '#default_value' => variable_get('og_sm_breadcrumb_enable'),
   );
 

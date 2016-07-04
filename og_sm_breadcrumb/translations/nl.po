@@ -20,7 +20,7 @@ msgid "Enable breadcrumbs for Sites"
 msgstr "Activeer kruimelpad voor Sites"
 
 #: og_sm_breadcrumb.admin.inc:27
-msgid "Enabling this feature will add the breadcumb to the Site pages."
+msgid "Enabling this feature will add the breadcrumb to the Site pages."
 msgstr "Activeren van deze feature zorgt ervoor dat het kruimelpad wordt weergegeven op Site pagina's."
 
 #: og_sm_breadcrumb.admin.inc:60
