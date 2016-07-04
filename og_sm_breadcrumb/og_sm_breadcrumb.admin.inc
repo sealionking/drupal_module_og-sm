@@ -319,6 +319,11 @@ function og_sm_breadcrumb_og_admin_form_validate($form, &$form_state) {
  *   The form structure.
  */
 function og_sm_breadcrumb_og_admin_form_validate_root_parts_text(array $element, array &$form_state, array $form) {
+  // Validate only if the root is overridden.
+  if (empty($form_state['values']['og_sm_breadcrumb_override_root'])) {
+    return;
+  }
+
   $value = trim($element['#value']);
   if (empty($value)) {
     form_error(
@@ -339,6 +344,11 @@ function og_sm_breadcrumb_og_admin_form_validate_root_parts_text(array $element,
  *   The form structure.
  */
 function og_sm_breadcrumb_og_admin_form_validate_root_parts_path(array $element, array &$form_state, array $form) {
+  // Validate only if the root is overridden.
+  if (empty($form_state['values']['og_sm_breadcrumb_override_root'])) {
+    return;
+  }
+
   $value = trim($element['#value']);
 
   // Path is required.
