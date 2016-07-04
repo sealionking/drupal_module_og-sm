@@ -87,7 +87,7 @@ msgstr "Logo link"
 msgid "The link behind the logo will point by default to the Site front page. You can override that location to an (external) URL."
 msgstr ""
 "De link, die op het logo zit, verwijst standaard naar de Site home "
-"pagina. U kan deze overschirjven met een (externe) URL."
+"pagina. U kan deze overschrijven met een (externe) URL."
 
 #: og_sm_theme.admin.inc:284
 msgid "Use a custom logo link"
