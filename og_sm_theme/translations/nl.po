@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-06-23 09:46+0200\n"
-"PO-Revision-Date: 2016-07-05 08:06+0200\n"
+"PO-Revision-Date: 2016-07-05 08:46+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -97,39 +97,43 @@ msgstr "Gebruik een aangepaste logo link"
 msgid "URL"
 msgstr "URL"
 
-#: og_sm_theme.admin.inc:307
+#: og_sm_theme.admin.inc:301
+msgid "Internal path (eg. site-path/idea) or external URL (eg. http://google.com/123)."
+msgstr "Intern pad (vb. site-pad/idee) of een externe URL (vb. http://google.com/123)."
+
+#: og_sm_theme.admin.inc:308
 msgid "Link target"
 msgstr "Doel van de link"
 
-#: og_sm_theme.admin.inc:308
+#: og_sm_theme.admin.inc:309
 msgid "Select how the link should open in the browser."
 msgstr "Selecteer hoe de browser de link moet openen."
 
-#: og_sm_theme.admin.inc:310
+#: og_sm_theme.admin.inc:311
 msgid "Current window/tab"
 msgstr "Huidig venster/tab"
 
-#: og_sm_theme.admin.inc:311
+#: og_sm_theme.admin.inc:312
 msgid "New window/tab"
 msgstr "Nieuw venster/tab"
 
-#: og_sm_theme.admin.inc:321
+#: og_sm_theme.admin.inc:322
 msgid "Toggle display"
 msgstr "Weergave aan-en uitzetten"
 
-#: og_sm_theme.admin.inc:322
+#: og_sm_theme.admin.inc:323
 msgid "Enable or disable the display of certain page elements."
 msgstr "Toon of verberg bepaalde pagina-elementen."
 
-#: og_sm_theme.admin.inc:357
+#: og_sm_theme.admin.inc:358
 msgid "The theme settings have been saved."
 msgstr "De thema instellingen werden bewaard."
 
-#: og_sm_theme.admin.inc:383
+#: og_sm_theme.admin.inc:384
 msgid "The custom logo URL is missing."
 msgstr "De link URL ontbreekt."
 
-#: og_sm_theme.admin.inc:402
+#: og_sm_theme.admin.inc:403
 msgid "The URL should be either a valid external URL or an existing internal path."
 msgstr "De URL moet een geldige externe URL of een bestaande intern pad zijn."
 
