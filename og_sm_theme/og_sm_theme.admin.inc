@@ -312,6 +312,7 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
       '_blank' => t('New window/tab'),
     ),
     '#default_value' => $settings['logo_link_target'],
+    '#chosen' => FALSE,
   );
 
   // Toggle settings, was used for breadcrumbs, leave empty for now.
