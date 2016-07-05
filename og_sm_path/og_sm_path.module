@@ -155,7 +155,7 @@ function og_sm_path_url_outbound_alter(&$path, &$options, $original_path) {
 
   // Only check specific paths in a Site context.
   elseif ($site = og_sm_current_site()) {
-    if (preg_match('#^(system/ajax|views/ajax)$#', $path, $parts)) {
+    if (preg_match('#^(system/ajax|views/ajax|user/autocomplete|user/autocomplete/.*)$#', $path, $parts)) {
       $path = og_sm_path($site) . '/' . $parts[1];
     }
   }
@@ -186,7 +186,7 @@ function og_sm_path_url_inbound_alter(&$path, $original_path, $path_language) {
   }
 
   // Translate a system path back to normal path.
-  elseif (preg_match('#^([\w/_-]+)/(system/ajax|views/ajax)$#', $path, $parts)) {
+  elseif (preg_match('#^([\w/_-]+)/(system/ajax|views/ajax|user/autocomplete|user/autocomplete/.*)$#', $path, $parts)) {
     $site = og_sm_path_load_site($parts[1]);
     if ($site) {
       $path = $parts[2];
