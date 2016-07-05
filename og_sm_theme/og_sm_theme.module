@@ -59,9 +59,26 @@ function og_sm_theme_menu() {
     'file' => 'og_sm_theme.admin.inc',
   );
 
+  $items['group/%/%og_sm_site/admin/theme/settings/%'] = array(
+    'title' => 'General settings',
+    'description' => 'Configure default and theme specific settings within a Site.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_theme_site_settings_form', 2, 6),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'og_sm_theme.admin.inc',
+  );
+
+  $items['group/%/%og_sm_site/admin/theme/settings/%/configure'] = array(
+    'title' => 'General settings',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -1,
+  );
+
   $items['admin/config/group/theme']  = array(
     'title' => 'OG Theme settings',
-    'description' => 'Configure the global Site theme settings',
+    'description' => 'Configure the global Site theme settings.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('og_sm_theme_global_settings_form'),
     'access arguments' => array('administer group'),
@@ -210,4 +227,99 @@ function og_sm_theme_custom_theme() {
 
   // Fallback to the default Site theme.
   return $default_site_theme;
+}
+
+/**
+ * Get the theme settings for a specific theme in a Site.
+ *
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ *
+ * @return array
+ *   The settings array.
+ *
+ * @see theme_get_setting()
+ *   The idea is the same as core's, but we store the settings for a theme
+ *   in a Site context.
+ */
+function og_sm_theme_get_theme_settings($site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $data = &drupal_static(__FUNCTION__);
+  if (!$data || !isset($data[$site->nid])) {
+    $data[$site->nid] = array();
+  }
+  if (!isset($data[$site->nid][$theme_key])) {
+    $variable_name = 'theme_' . $theme_key . '_settings';
+    $defaults = array(
+      // The defaults for toggleable components.
+      'toggle_logo_link' => 0,
+      'logo_link_url' => NULL,
+      'logo_link_target' => '_self',
+    );
+    $data[$site->nid][$theme_key] = array_merge(
+      $defaults,
+      og_sm_variable_get($site->nid, $variable_name, array())
+    );
+  }
+
+  return $data[$site->nid][$theme_key];
+}
+
+/**
+ * Set the theme settings for a specific theme in a Site.
+ *
+ * @param array $settings
+ *   The settings to set.
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ */
+function og_sm_theme_set_theme_settings($settings, $site = NULL, $theme_key = NULL) {
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+  if (!$theme_key) {
+    $theme_key = $GLOBALS['theme_key'];
+  }
+
+  $variable_name = 'theme_' . $theme_key . '_settings';
+  og_sm_variable_set($site->nid, $variable_name, $settings);
+
+  drupal_static_reset('og_sm_theme_get_theme_settings');
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Adds the custom logo link settings to the page template variables.
+ */
+function og_sm_theme_preprocess_page(&$variables) {
+  // Default logo settings when not in Site context.
+  $variables['logo_link_url'] = $variables['front_page'];
+  $variables['logo_link_target'] = '_self';
+
+  // Only override when Site context is available.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Default link to the Site homepage.
+  $variables['logo_link_url'] = url(og_sm_site_homepage());
+
+  // Set the overridden link (if any).
+  $settings = og_sm_theme_get_theme_settings($site);
+  if ($settings['toggle_logo_link']) {
+    $variables['logo_link_url'] = $settings['logo_link_url'];
+    $variables['logo_link_target'] = $settings['logo_link_target'];
+  }
 }

@@ -79,6 +79,28 @@ $is_enabled = og_sm_feature_site_is_enabled($site, 'feature name');
 ```
 
 
+### Check if a content type is enabled
+Check if a content type is enabled within a Site. This is done by checking if
+one of the features the content type belongs to is enabled.
+
+Content types that don't belong to any feature will always be seen as enabled.
+
+```php
+$is_enabled = og_sm_feature_site_content_type_is_enabled($site, 'news');
+```
+
+
+### Check if a vocabulary is enabled
+Check if a vocabulary is enabled within a Site. This is done by checking if one
+of the features the vocabulary belongs to is enabled.
+
+Vocabularies that don't belong to any feature will always be seen as enabled.
+
+```php
+$is_enabled = og_sm_feature_site_vocabulary_is_enabled($site, 'tags');
+```
+
+
 ### Access callback based on feature status
 This module provides an access callback (use in menu callbacks) to grant access
 based on the fact that a feature is enabled.
@@ -114,13 +136,18 @@ hook can return multiple features).
 The info array contains following information:
 * **title** : The feature title.
 * **description** : The feature description.
-* **content type** : Array of content type machine names provided by the
-  feature.
 * **global configuration** : An optional path to the a configuration page to set the
   global defaults for a feature.
 * **site configuration** : An optional path to change the configuration of the
   feature specific for the Site. The path should be specified without the
   `group/node/NID/` path prefix as it will be appended automatically.
+* **content types** : An optional array of content types (machine names) that
+  belong to the feature. The content types will be hidden and access to create
+  them will be declined if it belongs to a feature and that feature is not
+  enabled.
+* **vocabularies** : An optional array of vocabularies (machine names) that
+  belong to the feature. The vocabulary will be hidden from the Site taxonomy
+  administration pages and access to them will be declined.
 
 ```php
 function hook_og_sm_feature_info() {
@@ -129,9 +156,10 @@ function hook_og_sm_feature_info() {
   $items['news'] = array(
     'name' => t('News'),
     'description' => t('News content and overviews.'),
-    'content types' => array('news'),
     'global configuration' => 'admin/config/group/features/news',
     'site configuration' => 'admin/features/news',
+    'content types' => array('news'),
+    'vocabularies' => array('tags', 'categories'),
   );
   $items['articles'] = array(
     'name' => 'Articles',

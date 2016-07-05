@@ -25,6 +25,10 @@ This module and its submodules adds functionality to support:
 * Site administration menu that replaces the default admin toolbar when the user
   is in a Site context.
 
+### Included in the og_sm_breadcrumb module
+* Global breadcrumb behaviour configuration:
+* When the og_sm_feature module is enabled: Configurable breadcrumb per Site.
+
 ### Included in og_sm_comment module
 * Site comment administration
 
@@ -59,6 +63,10 @@ This module and its submodules adds functionality to support:
 
 ### Included in og_sm_theme module
 * Set the theme per Site.
+* Configure the breadcrumb for a theme within a Site.
+
+### Included in og_sm_user module
+* Site feature that creates site specific user profiles.
 
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
@@ -114,6 +122,17 @@ Get the currently active Site node:
 $site = og_sm_current_site();
 ```
 
+### Clear all cache for Site
+Clear all cache for one site.
+
+This function does not clear the cache itself, it calls all the implemented
+hook_og_sm_site_cache_clear_all() hooks so modules can clear their specific
+cached Site parts.
+
+```php
+og_sm_site_cache_clear_all($site);
+```
+
 ### Site types
 Get a list of node types that are Site node types:
 ```php
@@ -140,6 +159,21 @@ This is a wrapper around the og_set_breadcrumb.
 
 ```php
 og_sm_set_breadcrumb($site, 'path/to/set/the/breadcrumb');
+```
+
+### Get the path to the Site homepage
+Get the path to the homepage of a Site. This will return by default the path to
+the detail page of the Site. Modules can implement
+hook_og_dm_site_homepage_alter() to alter the path.
+
+The function will return the path based on the given Site or, if no Site is
+provided, the current Site (from OG context) will be used.
+
+```php
+$homepage_path = og_sm_site_homepage($site);
+if ($homepage_path) {
+  $homepage_url = url($homepage_path);
+}
 ```
 
 ### Site content types
@@ -211,6 +245,25 @@ These functions can be used in Menu items ($account is optional):
   by Site node id and permission name.
 
 
+## Hooks
+The og_sm module provides multiple hooks to make it easier to alter
+functionality when a Site is involved.
+
+> The hooks can be put in the `yourmodule.module` OR in the
+> `yourmodule.og_sm.inc` file.
+> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
+> .module file cleaner and makes the platform load less code by default.
+
+
+### Clear all Site cache
+When `og_sm_site_cache_clear_all()` is called, it will not clear any cache
+itself. It will call all implemented `hook_og_sm_site_cache_clear_all()` hooks
+so modules can clear the Site parts they have cached.
+
+* `hook_og_sm_site_cache_clear_all($site)` : Cache clear call is called for the
+  given Site.
+
+
 ### Site node type action hooks
 The module triggers hooks when a node type is being added or removed as being a
 Site node type.
@@ -219,11 +272,6 @@ Site node type.
   type.
 * `hook_og_sm_site_type_remove($type)` : Site node type is no longer a Site
   type.
-
-> The hook can be put in the `yourmodule.module` OR in the
-> `yourmodule.og_sm.inc` file.
-> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
-> .module file cleaner and makes the platform load less code by default.
 
 
 ### Site action hooks
@@ -240,10 +288,30 @@ when an action happens:
 * `hook_og_sm_site_update($site)` : Site node being updated.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
-> The hooks can be put in the `yourmodule.module` OR in the
-> `yourmodule.og_sm.inc` file.
-> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
-> .module file cleaner and makes the platform load less code by default.
+
+### Alter the Site homepage path.
+The og_sm_site_homepage() function creates and returns the path (as string) to
+the frontpage (homepage) of a Site. That homepage is by default the Site node
+detail page (node/[site-nid]).
+
+Implementations can require that the homepage links to a different page (eg.
+group/node/NID/dashboard).
+
+This alter function allows modules to alter that path.
+
+```php
+/**
+ * Implements hook_og_sm_site_homepage_alter().
+ *
+ * @param string $path
+ *   The current path to the Site homepage.
+ * @param object $site
+ *    The Site object to alter the homepage path for.
+ */
+function mymodule_og_sm_site_homepage_alter(&$path, $site) {
+  $path = 'group/node/' . $site->nid . '/dashboard';
+}
+```
 
 
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-04 14:55+0100\n"
-"PO-Revision-Date: 2016-05-17 15:11+0100\n"
+"PO-Revision-Date: 2016-06-30 13:29+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,27 +17,33 @@ msgstr "Naam van woordenlijst"
 
 #: og_sm_taxonomy.admin.inc:22
 msgid "Operations"
-msgstr "Handelingen"
+msgstr "Bewerkingen"
 
-#: og_sm_taxonomy.admin.inc:39
+#: og_sm_taxonomy.admin.inc:41
 msgid "list terms"
 msgstr "termen weergeven"
 
-#: og_sm_taxonomy.admin.inc:40
+#: og_sm_taxonomy.admin.inc:42
 msgid "add terms"
 msgstr "termen toevoegen"
 
-#: og_sm_taxonomy.form_alter.inc:90
+#: og_sm_taxonomy.form_alter.inc:55
+msgid "No terms available. <a href=\"@link\">Add term</a>."
+msgstr "Geen term beschikbaar. <a href=\"@link\">Voeg een term toe</a>."
+
+#: og_sm_taxonomy.form_alter.inc:127
 msgid "Reset vocabulary %name to alphabetical order."
 msgstr "Zet woordenlijst %name terug naar alfabetische volgorde."
 
-#: og_sm_taxonomy.form_alter.inc:94
+#: og_sm_taxonomy.form_alter.inc:131
 msgid "taxonomy"
 msgstr "taxonomie"
 
-#: og_sm_taxonomy.form_alter.inc:94
+#: og_sm_taxonomy.form_alter.inc:131
 msgid "Reset vocabulary %name to alphabetical order for Site %site_name."
-msgstr "Herstel sorteren van de woordenlijst %name volgens alfabet voor Site %site_name."
+msgstr ""
+"Herstel sorteren van de woordenlijst %name volgens alfabet voor Site "
+"%site_name."
 
 #: og_sm_taxonomy.og_sm.inc:36
 msgid "Taxonomy"
@@ -55,39 +61,49 @@ msgstr "Site Pad"
 msgid "The path of the Site the term belongs to."
 msgstr "Het pad van de Site waar de term lid van is."
 
-#: og_sm_taxonomy.module:25
+#: og_sm_taxonomy.module:26
 msgid "Edit all taxonomy terms"
 msgstr "Beheer alle taxonomy termen"
 
-#: og_sm_taxonomy.module:26
+#: og_sm_taxonomy.module:27
 msgid "Edit the taxonomy terms of all Sites."
 msgstr "Beheer de taxonomy termen van alle Sites."
 
-#: og_sm_taxonomy.module:39;76
+#: og_sm_taxonomy.module:40;88
 msgid "Administer taxonomy"
 msgstr "Beheer taxonomy"
 
-#: og_sm_taxonomy.module:40
+#: og_sm_taxonomy.module:41
 msgid "Manage all taxonomy terms."
 msgstr "Beheer alle taxonomy termen."
 
-#: og_sm_taxonomy.module:48
+#: og_sm_taxonomy.module:50
 msgid "Edit terms in %name"
 msgstr "Termen in %name wijzigen"
 
-#: og_sm_taxonomy.module:52
+#: og_sm_taxonomy.module:54
 msgid "Edit all terms for the %name vocabulary."
 msgstr "Wijzig alle termen voor de %name woordenlijst."
 
-#: og_sm_taxonomy.module:463
+#: og_sm_taxonomy.module:60
+msgid "Delete terms in %name"
+msgstr "Verwijder termen in %name"
+
+#: og_sm_taxonomy.module:64
+msgid "Delete all terms for the %name vocabulary."
+msgstr "Verwijder alle termen voor de %name woordenlijst."
+
+#: og_sm_taxonomy.module:543
 msgid "Site Taxonomy Terms"
 msgstr "Site Woordenlijst Termen"
 
-#: og_sm_taxonomy.module:464
+#: og_sm_taxonomy.module:544
 msgid "Determine Site context based on the fact that a Term belongs to a Site."
-msgstr "Detecteer de Site context gebaseerd op het feit of een Term deel uitmaakt van een Site."
+msgstr ""
+"Detecteer de Site context gebaseerd op het feit of een Term deel "
+"uitmaakt van een Site."
 
-#: og_sm_taxonomy.module:95
+#: og_sm_taxonomy.module:107
 msgid "Add term"
 msgstr "Term toevoegen"
 

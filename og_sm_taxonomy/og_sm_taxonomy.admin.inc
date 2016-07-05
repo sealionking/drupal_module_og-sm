@@ -29,15 +29,17 @@ function og_sm_taxonomy_admin_overview($site) {
   foreach ($vocabularies as $vocabulary) {
     $label = check_plain($vocabulary->name);
     $name = $vocabulary->machine_name;
+    $path = $url . $name;
 
-    if (!og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary)) {
+    // Check access.
+    if (!drupal_valid_path($path)) {
       continue;
     }
 
     $rows[] = array(
       $label,
-      l(t('list terms'), $url . $name),
-      l(t('add terms'), $url . $name . '/add'),
+      l(t('list terms'), $path),
+      l(t('add terms'), $path . '/add'),
     );
   }
 

@@ -72,7 +72,13 @@ function og_sm_theme_themes_page($site) {
     if (!empty($theme->status)) {
       // Create the operations links.
       $query['theme'] = $theme->name;
-
+      if (drupal_theme_access($theme)) {
+        $theme->operations[] = array(
+          'title' => t('Settings'),
+          'href' => $parent . '/settings/' . $theme->name,
+          'attributes' => array('title' => t('Settings for !theme theme', array('!theme' => $theme->info['name']))),
+        );
+      }
       if (!empty($theme->status)) {
         if (!$theme->is_default) {
           $theme->operations[] = array(
@@ -169,7 +175,6 @@ function og_sm_theme_set_default($site) {
  *   The form
  */
 function og_sm_theme_global_settings_form() {
-
   $form['available_themes'] = array(
     '#type' => 'fieldset',
     '#title' => t('Allowed themes'),
@@ -225,7 +230,6 @@ function og_sm_theme_global_settings_form() {
  *   The form state.
  */
 function og_sm_theme_global_settings_form_submit($form, $form_state) {
-
   variable_set('og_sm_theme_default_theme', $form_state['values']['default_theme']);
 
   $current_themes = variable_get('og_sm_theme_site_themes', array());
@@ -243,4 +247,160 @@ function og_sm_theme_global_settings_form_submit($form, $form_state) {
   }
 
   drupal_set_message(t('The configuration options have been saved.'));
+}
+
+/**
+ * Form for configuring theme settings within a Site.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ * @param object $site
+ *   The Site object.
+ * @param string $theme_key
+ *   The theme key.
+ *
+ * @return array $form
+ *   The settings form.
+ *
+ * @see system_theme_settings()
+ */
+function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, $theme_key) {
+  // Save these in form_state for later.
+  $form_state['site'] = $site;
+  $form_state['theme_key'] = $theme_key;
+
+  $settings = og_sm_theme_get_theme_settings($site, $theme_key);
+
+  // Custom logo link.
+  $form['logo'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Logo link'),
+    '#description' => t('The link behind the logo will point by default to the Site front page. You can override that location to an (external) URL.'),
+  );
+  $form['logo']['toggle_logo_link'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use a custom logo link'),
+    '#default_value' => $settings['toggle_logo_link'],
+  );
+  $form['logo']['link'] = array(
+    '#type' => 'container',
+    '#states' => array(
+      'visible' => array(
+        'input[name="toggle_logo_link"]' => array('checked' => TRUE),
+      ),
+    ),
+    '#attributes' => array(
+      'style' => 'display: none;',
+    ),
+  );
+  $form['logo']['link']['logo_link_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('URL'),
+    '#description' => t('Internal path (eg. site-path/idea) or external URL (eg. http://google.com/123).'),
+    '#default_value' => $settings['logo_link_url'],
+    '#element_validate' => array('og_sm_theme_site_settings_form_validate_custom_logo_link_url'),
+
+  );
+  $form['logo']['link']['logo_link_target'] = array(
+    '#type' => 'select',
+    '#title' => t('Link target'),
+    '#description' => t('Select how the link should open in the browser.'),
+    '#options' => array(
+      '_self' => t('Current window/tab'),
+      '_blank' => t('New window/tab'),
+    ),
+    '#default_value' => $settings['logo_link_target'],
+    '#chosen' => FALSE,
+  );
+
+  // Toggle settings, was used for breadcrumbs, leave empty for now.
+  $toggles = array();
+  if (count($toggles)) {
+    $form['theme_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Toggle display'),
+      '#description' => t('Enable or disable the display of certain page elements.'),
+    );
+    foreach ($toggles as $name => $title) {
+      $form['theme_settings']['toggle_' . $name] = array(
+        '#type' => 'checkbox',
+        '#title' => $title,
+        '#default_value' => $settings['toggle_' . $name],
+      );
+    }
+  }
+
+  $form = system_settings_form($form);
+  // We don't want to call system_settings_form_submit(), so change #submit.
+  $form['#submit'] = array('og_sm_theme_site_settings_form_submit');
+
+  return $form;
+}
+
+/**
+ * Form submit handler for the Site theme settings form.
+ *
+ * @param array $form
+ *   The form.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_theme_site_settings_form_submit(array $form, array $form_state) {
+  form_state_values_clean($form_state);
+  $values     = $form_state['values'];
+  $site       = $form_state['site'];
+  $theme_key  = $form_state['theme_key'];
+
+  og_sm_theme_set_theme_settings($values, $site, $theme_key);
+  og_sm_site_cache_clear_all($site);
+
+  drupal_set_message(t('The theme settings have been saved.'));
+}
+
+/**
+ * Form element validator for the custom_home_url field.
+ *
+ * @param array $element
+ *   The element to validate.
+ * @param array $form_state
+ *   The form state.
+ * @param array $form
+ *   The form structure.
+ */
+function og_sm_theme_site_settings_form_validate_custom_logo_link_url(array $element, array &$form_state, array $form) {
+  $is_custom = !empty($form_state['values']['toggle_custom_logo_link']);
+  $value = trim($element['#value']);
+
+  // Don't care if nothing is set.
+  if (!$is_custom && empty($value)) {
+    return;
+  }
+
+  // If we got here, a custom URL is required.
+  if (empty($value)) {
+    form_error(
+      $element,
+      t('The custom logo URL is missing.')
+    );
+    return;
+  }
+
+  // Is external URL?
+  if (url_is_external($value)) {
+    return;
+  }
+
+  // Is valid Drupal path?
+  $path_source = drupal_get_normal_path($value);
+  if ($path_source && drupal_valid_path($path_source, FALSE)) {
+    return;
+  }
+
+  // The provided URL is not valid.
+  form_error(
+    $element,
+    t('The URL should be either a valid external URL or an existing internal path.')
+  );
 }

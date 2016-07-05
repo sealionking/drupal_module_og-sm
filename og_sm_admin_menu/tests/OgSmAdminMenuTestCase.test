@@ -106,6 +106,7 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
     $this->assertEqual($content, $content_test1);
 
     // Set the site context.
+    global $user;
     $this->ogSmSetOgContextToGroup($site);
 
     // Changed when in Site context.

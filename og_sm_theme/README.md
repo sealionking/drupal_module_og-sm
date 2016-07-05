@@ -6,6 +6,8 @@ This module allows to choose a theme per Site.
 * Define what themes a Site can choose from.
 * Define the default theme (fallback).
 * Set a theme per Site.
+* Change the link behind the Site logo (intern or extern).
+* Set visibility of theme components.
 
 
 
@@ -21,6 +23,22 @@ This module allows to choose a theme per Site.
    choose one of the enabled themes for your Site.
 3. Open the Site theme settings (`[site-path]/admin/theme`) and select the theme
    for the Site.
+
+
+
+## Theming
+### Custom link behind the Site logo
+This module allows to alter the link behind the logo in the themes. To support
+this in your theme the following variables need to be used in the page.tpl:
+
+* $site_logo_link_url : This contains the link to use as link in the logo.
+* $site_logo_link_target : Use this as the target attribute on the logo link.
+
+```php
+<a href="<?php print $logo_link_url; ?>" target="<?php print $logo_link_target; ?>">
+  <img src="<?php print $logo; ?>" />
+</a>
+```
 
 
 

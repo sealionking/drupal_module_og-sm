@@ -30,6 +30,19 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
   }
 
   /**
+   * Helper to create a Site.
+   *
+   * @return object
+   *   The Site node.
+   */
+  protected function createSite() {
+    // Create a Site.
+    $type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($type);
+    return $this->ogSmCreateGroup($type);
+  }
+
+  /**
    * Test collection of the info.
    */
   public function testFeatureInfo() {
@@ -39,13 +52,14 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     // Not called yet => not cached.
     $this->assertFalse(
       cache_get($cid),
-      'As long as the og_sm_info function is not called, no data in cache.'
+      'As long as the og_sm_feature_info function is not called, no data in cache.'
     );
 
     // Collect the info.
     $expected = array(
       'articles' => array(
         'name' => 'Articles',
+        'vocabularies' => array('categories', 'tags'),
         'description' => NULL,
         'content types' => array(),
         'global configuration' => NULL,
@@ -57,6 +71,15 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
         'content types' => array('news'),
         'global configuration' => 'admin/config/group/features/news-test',
         'site configuration' => 'admin/features/news-test',
+        'vocabularies' => array(),
+      ),
+      'news and blogs' => array(
+        'name' => 'News and Blogs',
+        'content types' => array('news', 'blog_post'),
+        'vocabularies' => array('tags'),
+        'description' => NULL,
+        'global configuration' => NULL,
+        'site configuration' => NULL,
       ),
     );
     $info = og_sm_feature_info();
@@ -81,13 +104,177 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
   }
 
   /**
+   * Test getting the information grouped by the content types.
+   */
+  public function testFeatureInfoContentTypes() {
+    $cid = '_og_sm_feature_info_by_key:content types';
+    $this->assertFalse(
+      drupal_static($cid, FALSE),
+      'As long as the og_sm_feature_info_content_types function is not called, no data in cache.'
+    );
+
+    // Collect the info.
+    $expected = array(
+      'news' => array(
+        'news' => array(
+          'name' => 'News',
+          'description' => 'News content and overviews.',
+          'content types' => array('news'),
+          'global configuration' => 'admin/config/group/features/news-test',
+          'site configuration' => 'admin/features/news-test',
+          'vocabularies' => array(),
+        ),
+        'news and blogs' => array(
+          'name' => 'News and Blogs',
+          'content types' => array('news', 'blog_post'),
+          'vocabularies' => array('tags'),
+          'description' => NULL,
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+      'blog_post' => array(
+        'news and blogs' => array(
+          'name' => 'News and Blogs',
+          'content types' => array('news', 'blog_post'),
+          'vocabularies' => array('tags'),
+          'description' => NULL,
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+    );
+    $info = og_sm_feature_info_content_types();
+    $this->assertEqual($expected, $info, 'Collected content types info from the implemented hooks.');
+
+    // Info should be cached.
+    $this->assertEqual(
+      $expected,
+      drupal_static($cid, FALSE),
+      'From the moment the og_sm_feature_info_content_types function is called, data is cached.'
+    );
+  }
+
+  /**
+   * Test function to check if a content type is enabled within a site.
+   */
+  public function testFeatureSiteContentTypeEnabled() {
+    $site = $this->createSite();
+
+    // Content type outside features.
+    $this->assertTrue(
+      og_sm_feature_site_content_type_is_enabled($site, 'type_without_feature'),
+      'Content types that do not belong to a feature are always enabled.'
+    );
+
+    // Feature not enabled.
+    $this->assertFalse(
+      og_sm_feature_site_content_type_is_enabled($site, 'news'),
+      'Content type belonging to not enabled feature is not enabled.'
+    );
+
+    // Feature enabled.
+    og_sm_feature_site_enable($site, 'news');
+    $this->assertTrue(
+      og_sm_feature_site_content_type_is_enabled($site, 'news'),
+      'Content type belonging to enabled feature is enabled.'
+    );
+  }
+
+  /**
+   * Test getting the information grouped by the vocabulary names.
+   */
+  public function testFeatureInfoVocabularyNames() {
+    $cid = '_og_sm_feature_info_by_key:vocabularies';
+    $this->assertFalse(
+      drupal_static($cid, FALSE),
+      'As long as the og_sm_feature_info_vocabularies function is not called, no data in cache.'
+    );
+
+    // Collect the info.
+    $expected = array(
+      'categories' => array(
+        'articles' => array(
+          'name' => 'Articles',
+          'vocabularies' => array(
+            0 => 'categories',
+            1 => 'tags',
+          ),
+          'description' => NULL,
+          'content types' => array(),
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+      'tags' => array(
+        'articles' => array(
+          'name' => 'Articles',
+          'vocabularies' => array(
+            0 => 'categories',
+            1 => 'tags',
+          ),
+          'description' => NULL,
+          'content types' => array(),
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+        'news and blogs' => array(
+          'name' => 'News and Blogs',
+          'content types' => array(
+            0 => 'news',
+            1 => 'blog_post',
+          ),
+          'vocabularies' => array(
+            0 => 'tags',
+          ),
+          'description' => NULL,
+          'global configuration' => NULL,
+          'site configuration' => NULL,
+        ),
+      ),
+    );
+    $info = og_sm_feature_info_vocabularies();
+    $this->assertEqual($expected, $info, 'Collected content types info from the implemented hooks.');
+
+    // Info should be cached.
+    $this->assertEqual(
+      $expected,
+      drupal_static($cid, FALSE),
+      'From the moment the og_sm_feature_info_vocabularies function is called, data is cached.'
+    );
+  }
+
+  /**
+   * Test function to check if a content type is enabled within a site.
+   */
+  public function testFeatureSiteVocabularyEnabled() {
+    $site = $this->createSite();
+
+    // Vocabulary outside features.
+    $this->assertTrue(
+      og_sm_feature_site_vocabulary_is_enabled($site, 'vocabulary_without_feature'),
+      'Vocabularies that do not belong to a feature are always enabled.'
+    );
+
+    // Feature not enabled.
+    $this->assertFalse(
+      og_sm_feature_site_vocabulary_is_enabled($site, 'categories'),
+      'Vocabularies belonging to not enabled feature are not enabled.'
+    );
+
+    // Feature enabled.
+    og_sm_feature_site_enable($site, 'articles');
+    $this->assertTrue(
+      og_sm_feature_site_vocabulary_is_enabled($site, 'categories'),
+      'Vocabularies belonging to enabled feature are enabled.'
+    );
+  }
+
+  /**
    * Test enable/disabling features.
    */
   public function testEnableDisable() {
-    // Create a Site.
-    $type = $this->ogSmCreateGroupNodeType();
-    og_sm_site_type_add($type);
-    $site = $this->ogSmCreateGroup($type);
+    $site = $this->createSite();
     $sid = $site->nid;
 
     // Test creating the feature variable key.
@@ -178,9 +365,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     variable_set(og_sm_feature_variable_key('articles'), 1);
 
     // Create a new Site.
-    $type = $this->ogSmCreateGroupNodeType();
-    og_sm_site_type_add($type);
-    $site = $this->ogSmCreateGroup($type);
+    $site = $this->createSite();
 
     // Check if the default features are enabled.
     $this->assertNull(

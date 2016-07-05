@@ -97,26 +97,24 @@ function og_sm_feature_menu() {
  */
 function og_sm_feature_menu_alter(&$items) {
   // Only required if the Content module is enabled.
-  if (!module_exists('og_sm_content')) {
-    return;
+  if (module_exists('og_sm_content')) {
+    $content_types = array_keys(og_sm_feature_info_content_types());
+    foreach ($content_types as $content_type) {
+      $path_add = 'group/%/%og_sm_site/content/add/' . $content_type;
+      $path_type = 'group/%/%og_sm_site/admin/structure/types/' . $content_type;
+      $items[$path_add]['access callback'] = 'og_sm_feature_access_content_add';
+      $items[$path_type]['access callback'] = 'og_sm_feature_access_admin_content_type';
+      $items[$path_type]['access arguments'] = array(2, 6);
+    }
   }
 
-  $features = og_sm_feature_info();
-  foreach ($features as $feature => $info) {
-    if (empty($info['content types'])) {
-      continue;
-    }
-
-    // Alter the access callbacks for content types.
-    foreach ($info['content types'] as $content_type) {
-      $path_add = 'group/%/%og_sm_site/content/add/' . $content_type;
-      $items[$path_add]['access callback'] = 'og_sm_feature_access_content_add';
-      $items[$path_add]['access arguments'] = array(2, $feature, 5);
-
-      $path_type = 'group/%/%og_sm_site/admin/structure/types/' . $content_type;
-      $items[$path_type]['access callback'] = 'og_sm_feature_access_admin_content_type';
-      $items[$path_type]['access arguments'] = array(2, $feature);
-    }
+  // Only required if the Taxonomy module is active.
+  if (module_exists('og_sm_taxonomy')) {
+    $access_callback = 'og_sm_feature_access_taxonomy_admin';
+    $path_vocab = 'group/%/%og_sm_site/admin/taxonomy/%taxonomy_vocabulary_machine_name';
+    $path_term_add = 'group/%/%og_sm_site/admin/taxonomy/%taxonomy_vocabulary_machine_name/add';
+    $items[$path_vocab]['access callback'] = $access_callback;
+    $items[$path_term_add]['access callback'] = $access_callback;
   }
 }
 
@@ -125,8 +123,6 @@ function og_sm_feature_menu_alter(&$items) {
  *
  * @param object $site
  *   The Site object.
- * @param string $feature
- *   The feature name.
  * @param string $node_type
  *   The Node type.
  * @param object $account
@@ -135,12 +131,12 @@ function og_sm_feature_menu_alter(&$items) {
  * @return bool
  *   Has access TRUE/FALSE.
  */
-function og_sm_feature_access_content_add($site, $feature, $node_type, $account = NULL) {
-  if (!og_sm_feature_site_is_enabled($site, $feature)) {
+function og_sm_feature_access_content_add($site, $node_type, $account = NULL) {
+  if (!og_sm_content_add_content_access($site, $node_type, $account)) {
     return FALSE;
   }
 
-  return og_sm_content_add_content_access($site, $node_type, $account);
+  return og_sm_feature_site_content_type_is_enabled($site, $node_type);
 }
 
 /**
@@ -148,20 +144,41 @@ function og_sm_feature_access_content_add($site, $feature, $node_type, $account 
  *
  * @param object $site
  *   The Site object.
- * @param string $feature
- *   The feature name.
+ * @param string $node_type
+ *   The Node type.
  * @param object $account
  *   The optional account to test the access for.
  *
  * @return bool
  *   Has access TRUE/FALSE.
  */
-function og_sm_feature_access_admin_content_type($site, $feature, $account = NULL) {
-  if (!og_sm_feature_site_is_enabled($site, $feature)) {
+function og_sm_feature_access_admin_content_type($site, $node_type, $account = NULL) {
+  if (!og_sm_site_permission_access($site, OG_SM_CONTENT_OG_PERM_ADMINISTER_CONTENT_TYPES, $account)) {
     return FALSE;
   }
 
-  return og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $account);
+  return og_sm_feature_site_content_type_is_enabled($site, $node_type);
+}
+
+/**
+ * Access callback to check access to one taxonomy administration vocabulary.
+ *
+ * @param object $site
+ *   The Site to validate the access for.
+ * @param object $vocabulary
+ *   The vocabulary to check the access for.
+ * @param object $account
+ *   The account to validate the access for.
+ *
+ * @return bool
+ *   Access TRUE/FALSE.
+ */
+function og_sm_feature_access_taxonomy_admin($site, $vocabulary, $account = NULL) {
+  if (!og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account)) {
+    return FALSE;
+  }
+
+  return og_sm_feature_site_vocabulary_is_enabled($site, $vocabulary->machine_name);
 }
 
 /**
@@ -222,6 +239,7 @@ function og_sm_feature_info() {
         'content types' => array(),
         'global configuration' => NULL,
         'site configuration' => NULL,
+        'vocabularies' => array(),
       );
     }
 
@@ -248,6 +266,68 @@ function og_sm_feature_info() {
  */
 function og_sm_feature_info_sort($a, $b) {
   return strcasecmp($a['name'], $b['name']);
+}
+
+/**
+ * Get all the content types that belong to features.
+ *
+ * @return array
+ *   This will return an array keyed by the content type machine name and having
+ *   an array of features it belongs to.
+ */
+function og_sm_feature_info_content_types() {
+  return _og_sm_feature_info_by_key('content types');
+}
+
+/**
+ * Get all the taxonomy vocabulary machine names that belong to features.
+ *
+ * @return array
+ *   Array keyed by the vocabulary machine name a,d having an array of features
+ *   it belongs to.
+ */
+function og_sm_feature_info_vocabularies() {
+  return _og_sm_feature_info_by_key('vocabularies');
+}
+
+/**
+ * Helper to get info grouped by feature info array key.
+ *
+ * @param string $key
+ *   The info key to group the info by.
+ *
+ * @return array
+ *   The information with the unique key values as array key and an array of
+ *   features that have that value as the array item values.
+ */
+function _og_sm_feature_info_by_key($key) {
+  $info = &drupal_static(__FUNCTION__ . ':' . $key, FALSE);
+  if (is_array($info)) {
+    return $info;
+  }
+
+  $info = array();
+  $features = og_sm_feature_info();
+  foreach ($features as $feature_name => $feature_info) {
+    if (empty($feature_info[$key])) {
+      continue;
+    }
+
+    $key_values = $feature_info[$key];
+    if (!is_array($key_values)) {
+      $key_values = array($key_values);
+    }
+
+    foreach ($key_values as $key_value) {
+      if (!isset($info[$key_value])) {
+        $info[$key_value] = array();
+      }
+
+      $info[$key_value][$feature_name] = $feature_info;
+    }
+  }
+
+  return $info;
 }
 
 /**
@@ -315,6 +395,70 @@ function og_sm_feature_site_disable($site, $feature_name) {
 function og_sm_feature_site_is_enabled($site, $feature_name) {
   $variable_key = og_sm_feature_variable_key($feature_name);
   return (bool) og_sm_variable_get($site->nid, $variable_key, FALSE);
+}
+
+/**
+ * Check if a content type is enabled within a Site.
+ *
+ * This will check if a content type belongs to a feature that is enabled.
+ * Content types that don't belong to a feature will always be seen as enabled.
+ *
+ * @param object $site
+ *   The site to check for.
+ * @param string $node_type
+ *   The node type to check.
+ *
+ * @return bool
+ *   Enabled.
+ */
+function og_sm_feature_site_content_type_is_enabled($site, $node_type) {
+  // Check if the content type belongs to a feature.
+  $node_types = og_sm_feature_info_content_types();
+  if (empty($node_types[$node_type])) {
+    return TRUE;
+  }
+
+  // Check if one of the content types features is enabled.
+  $feature_names = array_keys($node_types[$node_type]);
+  foreach ($feature_names as $feature) {
+    if (og_sm_feature_site_is_enabled($site, $feature)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Check if a vocabulary is active within a Site.
+ *
+ * This will check if a vocabulary belongs to a feature that is enabled.
+ * Vocabularies that don't belong to a feature will always be seen as enabled.
+ *
+ * @param object $site
+ *   The site to check for.
+ * @param string $vocabulary_name
+ *   Vocabulary machine name to check.
+ *
+ * @return bool
+ *   Is enabled.
+ */
+function og_sm_feature_site_vocabulary_is_enabled($site, $vocabulary_name) {
+  // Check if the vocabulary belongs to a feature.
+  $vocabularies = og_sm_feature_info_vocabularies();
+  if (empty($vocabularies[$vocabulary_name])) {
+    return TRUE;
+  }
+
+  // Check if one of the vocabulary features is enabled.
+  $feature_names = array_keys($vocabularies[$vocabulary_name]);
+  foreach ($feature_names as $feature) {
+    if (og_sm_feature_site_is_enabled($site, $feature)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
 }
 
 /**

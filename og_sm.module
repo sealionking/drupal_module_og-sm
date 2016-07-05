@@ -25,6 +25,8 @@ function og_sm_hook_info() {
     'og_sm_site_insert' => $group,
     'og_sm_site_update' => $group,
     'og_sm_site_delete' => $group,
+    'og_sm_site_cache_clear_all' => $group,
+    'og_sm_site_homepage_alter' => $group,
   );
 
   return $hooks;
@@ -133,6 +135,20 @@ function og_sm_site_load($site_nid) {
   }
 
   return $site;
+}
+
+/**
+ * Clear all cache for one site.
+ *
+ * This function does not clear the cache itself, it calls all the implemented
+ * hook_og_sm_site_cache_clear_all() hooks so modules can clear their specific
+ * cached Site parts.
+ *
+ * @param object $site
+ *   The Site to clear the cache for.
+ */
+function og_sm_site_cache_clear_all($site) {
+  og_sm_hook_site('cache_clear_all', $site);
 }
 
 /**
@@ -276,6 +292,38 @@ function og_sm_site_type_remove($type) {
 }
 
 /**
+ * Get the homepage path for a Site.
+ *
+ * @param object $site
+ *   The optional Site node. Will use the current Site from context if no Site
+ *   is provided.
+ *
+ * @return string|FALSE
+ *   The path (not URL) to the Site homepage.
+ */
+function og_sm_site_homepage($site = NULL) {
+  // Fallback to current Site.
+  if (!$site) {
+    $site = og_sm_current_site();
+  }
+
+  // Only if there is a Site.
+  if (!$site || !og_sm_is_site($site)) {
+    return FALSE;
+  }
+
+  // This can be called multiple times, lets add some static caching.
+  $paths = &drupal_static(__FUNCTION__, array());
+  if (!isset($paths[$site->nid])) {
+    $path = 'node/' . $site->nid;
+    drupal_alter('og_sm_site_homepage', $path, clone $site);
+    $paths[$site->nid] = $path;
+  }
+
+  return $paths[$site->nid];
+}
+
+/**
  * Set the breadcrumb for the given Site.
  *
  * @param object $site
@@ -288,7 +336,7 @@ function og_sm_set_breadcrumb($site, $path = array()) {
   $uri = entity_uri('node', $site);
   drupal_set_breadcrumb(
     array_merge(
-      array(l(t('Home'), '<front>')),
+      array(l(t('Home'), og_sm_site_homepage($site))),
       array(l($label, $uri['path'])),
       $path
     )

@@ -42,6 +42,22 @@ function hook_og_sm_site_type_remove($type) {
 }
 
 /**
+ * Act when the og_sm_site_cache_clear() function is called.
+ *
+ * That function does not clear the cache itself, it calls all the implemented
+ * hook_og_sm_site_cache_clear_all() hooks so modules can clear their specific
+ * cached Site parts.
+ *
+ * @param object $site
+ *   The Site node to clear the cache for.
+ *
+ * @see og_sm_site_cache_clear_all()
+ */
+function hook_og_sm_site_cache_clear_all($site) {
+
+}
+
+/**
  * Act on a Site node being viewed.
  *
  * Will only be triggered when the node_view hook is triggered for a node type
@@ -157,6 +173,27 @@ function hook_og_sm_site_update($site) {
  */
 function hook_og_sm_site_delete($site) {
 
+}
+
+/**
+ * Alter the Site homepage path.
+ *
+ * The og_sm_site_homepage() function creates and returns the path (as string)
+ * to the frontpage (homepage) of a Site. That homepage is by default the Site
+ * node detail page (node/[site-nid]).
+ *
+ * Implementations can require that the homepage links to a different page (eg.
+ * group/node/NID/dashboard).
+ *
+ * This alter function allows modules to alter that path.
+ *
+ * @param string $path
+ *   The current path to the Site homepage.
+ * @param object $site
+ *   The Site object to alter the homepage path for.
+ */
+function hook_og_sm_site_homepage_alter(&$path, $site) {
+  $path = 'group/node/' . $site->nid . '/dashboard';
 }
 
 /**

@@ -3,11 +3,39 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [7.x-1.4]
+### Added
+- DMOGSM-62 : Added support to include a node type in multiple features.
+- DMOGSM-62 : Add vocabularies to features.
+- DMOGSM-64 : Added callback and hook to clear all cache for a specific Site.
+- DMOGSM-74 : Added configurable breadcrumbs per Site.
+- PPL-493 : Added function and hook to get the path to the Site homepage.
+- PPL-493 : Added configuration and to set a custom link on the theme logo.
+
+
+### Fixed
+- DMOGSM-58 : Fixed link to add the first Site vocabulary term.
+- DMOGSM-63 : Too strict node access check on group content types.
+- DMOGSM-76 : Rewrite term_access query tag alter to loop recursively to find
+  vocabularies
+- PPL-602 : Fixed user/autocomplete ajax URL within Site context.
+
+
+### Security
+- DMOGSM-67 : If the non-member role (OG role) is granted the permission to
+  create certain content types, then the anonymous user also gets access to
+  create that content within a Site context.
+  Fix added to the og_sm_content_get_types_by_site() function. That function is
+  used to check access to the content/add pages within a Site.
+
+
+
 
 ## [7.x-1.3]
 ### Added
 - DMOGSM-57 : Added extra permissions so Site Users can get granted to delete
   Site terms.
+- DMOGSM-5: Added the og_sm_user module to have a user profile per site.
 
 
 ### Fixed
@@ -84,6 +112,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.4%0D7.x-1.3#diff
 [7.x-1.3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.3%0D7.x-1.2#diff
 [7.x-1.2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.2%0D7.x-1.1#diff
 [7.x-1.1]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.1%0D7.x-1.0#diff

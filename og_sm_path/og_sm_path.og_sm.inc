@@ -62,3 +62,14 @@ function og_sm_path_og_sm_site_delete($site) {
   // Delete all aliases for a site when it is deleted.
   og_sm_path_site_delete_aliases($site);
 }
+
+/**
+ * Implements hook_og_sm_site_cache_clear_all().
+ *
+ * Clears all page cache based on the Site prefix.
+ */
+function og_sm_path_og_sm_site_cache_clear_all($site) {
+  global $base_url;
+  $cid = $base_url . '/' . og_sm_path($site);
+  cache_clear_all($cid, 'cache_page', TRUE);
+}
