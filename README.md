@@ -25,6 +25,10 @@ This module and its submodules adds functionality to support:
 * Site administration menu that replaces the default admin toolbar when the user
   is in a Site context.
 
+### Included in the og_sm_breadcrumb module
+* Global breadcrumb behaviour configuration:
+* When the og_sm_feature module is enabled: Configurable breadcrumb per Site.
+
 ### Included in og_sm_comment module
 * Site comment administration
 

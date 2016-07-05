@@ -16,7 +16,7 @@ function og_sm_content_og_sm_admin_menu() {
     'description' => 'Administer the content types for this Site.',
     'href' => 'admin/structure/types',
     'column' => 'left',
-    'weight' => 10,
+    'weight' => 0,
   );
 
   // Administer content.

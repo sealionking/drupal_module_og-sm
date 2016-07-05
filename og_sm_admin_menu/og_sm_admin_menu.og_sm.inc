@@ -72,7 +72,7 @@ function og_sm_admin_menu_og_sm_admin_menu() {
       'title' => 'Variables',
       'description' => 'Override global variables with Site specific values.',
       'href' => 'admin/variables',
-      'weight' => 10,
+      'weight' => 0,
     );
   }
 
