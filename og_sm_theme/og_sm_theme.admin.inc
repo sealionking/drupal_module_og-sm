@@ -298,6 +298,7 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
   $form['logo']['link']['logo_link_url'] = array(
     '#type' => 'textfield',
     '#title' => t('URL'),
+    '#description' => t('Internal path (eg. site-path/idea) or external URL (eg. http://google.com/123).'),
     '#default_value' => $settings['logo_link_url'],
     '#element_validate' => array('og_sm_theme_site_settings_form_validate_custom_logo_link_url'),
 
