@@ -281,7 +281,7 @@ function og_sm_theme_site_settings_form(array $form, array &$form_state, $site, 
   );
   $form['logo']['toggle_logo_link'] = array(
     '#type' => 'checkbox',
-    '#title' => 'Use a custom logo link.',
+    '#title' => t('Use a custom logo link'),
     '#default_value' => $settings['toggle_logo_link'],
   );
   $form['logo']['link'] = array(
