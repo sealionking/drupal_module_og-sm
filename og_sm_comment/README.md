@@ -17,7 +17,7 @@ These permissions can be used on global level and site level.
 This module allows overriding comment behaviour per content type within a site
 context.
 Possible statuses are:
-* Open: Any future content of this type is open to new comments.
+* Open: Any content of this type is open to new comments.
 * Open for anonymous users: Allow anonymous users to comment on this content
   type. This only works when the anonymous role has the 'post comments'
   permission.
