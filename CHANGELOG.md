@@ -3,6 +3,10 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [Unreleased]
+- DMOGSM-75 : Added configuration to allow anonymous comments per content type.
+
+
 ## [7.x-1.4]
 ### Added
 - DMOGSM-62 : Added support to include a node type in multiple features.

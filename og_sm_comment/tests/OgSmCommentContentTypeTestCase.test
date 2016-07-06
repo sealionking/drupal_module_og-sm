@@ -78,7 +78,7 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Test getting the Site specific content type settings.
    */
-  public function atestGetTypeInfoBySite() {
+  public function testGetTypeInfoBySite() {
     // Content type outside Sites.
     $this->verbose('Global content type : Info retrieved from node_type.');
     drupal_static_reset('og_sm_content_get_type_info_by_site');
@@ -147,7 +147,7 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Test the content type settings form.
    */
-  public function atestContentTypeSettingsForm() {
+  public function testContentTypeSettingsForm() {
     $path = sprintf(
       'group/node/%d/admin/structure/types/%s',
       $this->siteNode->nid,
@@ -179,7 +179,7 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Test setting site specific info for a content type.
    */
-  public function atestSiteSpecificContentType() {
+  public function testSiteSpecificContentType() {
     $admin = $this->ogSmCreateAdminUser();
     $this->drupalLogin($admin);
 
