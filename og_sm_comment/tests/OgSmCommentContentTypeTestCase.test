@@ -66,12 +66,19 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
     // Disable all contexts to avoid notices.
     variable_set('og_context_negotiation_group_context', array());
     variable_set('og_context_providers_weight_group_context', array());
+
+    // Allow anonymous users to access and post comments.
+    user_role_change_permissions(DRUPAL_ANONYMOUS_RID, array(
+      'access comments' => TRUE,
+      'post comments' => TRUE,
+      'skip comment approval' => TRUE,
+    ));
   }
 
   /**
    * Test getting the Site specific content type settings.
    */
-  public function testGetTypeInfoBySite() {
+  public function atestGetTypeInfoBySite() {
     // Content type outside Sites.
     $this->verbose('Global content type : Info retrieved from node_type.');
     drupal_static_reset('og_sm_content_get_type_info_by_site');
@@ -140,7 +147,7 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Test the content type settings form.
    */
-  public function testContentTypeSettingsForm() {
+  public function atestContentTypeSettingsForm() {
     $path = sprintf(
       'group/node/%d/admin/structure/types/%s',
       $this->siteNode->nid,
@@ -172,7 +179,7 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Test setting site specific info for a content type.
    */
-  public function testSiteSpecificContentType() {
+  public function atestSiteSpecificContentType() {
     $admin = $this->ogSmCreateAdminUser();
     $this->drupalLogin($admin);
 
@@ -219,6 +226,69 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
     $this->assertNoText(t('Add new comment'), 'No comment section on the page.');
     $this->assertNoText(t('Add new comment'), 'No option to add new comments.');
     $this->assertNoText($comment_edit['subject'], 'No comments listed on the page.');
+
+    // Verify that we can't see the comment form when logged out if the site
+    // specific node comment setting is set to COMMENT_NODE_OPEN.
+    $this->drupalLogout();
+    variable_set($key_global, COMMENT_NODE_OPEN);
+    og_sm_variable_set($site_id, $key_site, COMMENT_NODE_OPEN);
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertNoText(t('Add new comment'), 'No comment section on the page.');
+    $this->assertNoText(t('Add new comment'), 'No option to add new comments.');
+
+    // Verify that changing the site specific node comment setting to
+    // OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS results in the comment form being
+    // rendered for that content type.
+    og_sm_variable_set($site_id, $key_site, OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS);
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertText(t('Add new comment'), 'Comment section is on the page');
+    $this->assertFieldById('edit-subject', '', 'Comment form is on the page.');
+
+    // Create comment.
+    $comment_edit = array(
+      'subject' => $this->randomName(),
+      'comment_body[und][0][value]' => $this->randomName(),
+    );
+    $this->drupalPost(NULL, $comment_edit, t('Save'));
+    $this->assertText($comment_edit['subject'], 'Comment is posted to node.');
+  }
+
+  /**
+   * Test the og_sm_comment_create_access() callback.
+   */
+  public function testCommentCreateAccessCallback() {
+    $node = $this->ogSmCreateGroupContent($this->nodeTypeSiteContent->type, array($this->siteNode));
+
+    $user1 = $this->ogSmCreateGroupUser(array(), array($this->siteNode));
+
+    // Verify that user 1 can view, delete and edit his own comment.
+    $access = og_sm_comment_create_access($node, $user1);
+    $this->assertTrue($access, 'User 1 can create a comment');
+
+    // Verify that an anonymous user can't create a comment when the global
+    // permission is turned off.
+    $access = og_sm_comment_create_access($node, drupal_anonymous_user());
+    $this->assertFalse($access, 'An anonymous user cannot create a comment');
+
+    // Allow anonymous users to post comments.
+    user_role_change_permissions(DRUPAL_ANONYMOUS_RID, array(
+      'post comments' => TRUE,
+    ));
+    drupal_static_reset('user_access');
+
+    // Verify that an anonymous user can't create a comment when the global
+    // permission is turned on, without the appropriate setting on content type
+    // level.
+    $access = og_sm_comment_create_access($node, drupal_anonymous_user());
+    $this->assertFalse($access, 'An anonymous user can create a comment');
+
+    $site_id = $this->siteNode->nid;
+    $key_site = 'og_sm_content_' . $this->nodeTypeSiteContent->type . '_comment';
+
+    og_sm_variable_set($site_id, $key_site, OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS);
+    drupal_static_reset('og_sm_content_get_type_info_by_site');
+    $access = og_sm_comment_create_access($node, drupal_anonymous_user());
+    $this->assertTrue($access, 'An anonymous user can create a comment');
   }
 
 }

@@ -237,8 +237,11 @@ function og_sm_comment_create_access($node, $account = NULL) {
   if ($node->comment < COMMENT_NODE_OPEN || $content_type->comment < COMMENT_NODE_OPEN) {
     return FALSE;
   }
-  global $user;
-  if ($user->uid === 0) {
+  if (!isset($account)) {
+    global $user;
+    $account = $user;
+  }
+  if ($account->uid === 0) {
     return (user_access('post comments', $account) && $content_type->comment === OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS);
   }
 
