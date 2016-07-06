@@ -415,7 +415,8 @@ function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(&$
   $help = array(
     t('Hidden: No comments are allowed, and past comments are hidden.'),
     t('Closed: No comments are allowed, but any past comments remain visible.'),
-    t('Open: Any future content of this type is open to new comments.'),
+    t('Open for anonymous users: Any content of this type is open to new anonymous comments.'),
+    t('Open: Any content of this type is open to new comments.'),
   );
   $description .= '<ul><li>' . implode('</li><li>', $help) . '</li></ul>';
 

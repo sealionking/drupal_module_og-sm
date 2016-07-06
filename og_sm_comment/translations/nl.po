@@ -236,8 +236,14 @@ msgstr ""
 "weergegeven."
 
 #: og_sm_comment.module:384
-msgid "Open: Any future content of this type is open to new comments."
-msgstr "Open: Commentaren op alle nieuwe inhoud van dit type is toegelaten."
+msgid "Open: Any content of this type is open to new comments."
+msgstr "Open: Commentaren op alle inhoud van dit type is toegelaten."
+
+#: og_sm_comment.module:384
+msgid ""
+"Open for anonymous users: Any content of this type is open to new anonymous "
+"comments."
+msgstr "Open: Anonieme commentaren op alle inhoud van dit type is toegelaten."
 
 #: og_sm_comment.module:394
 msgid "Open"

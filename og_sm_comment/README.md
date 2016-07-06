@@ -13,6 +13,16 @@ permissions are added :
 
 These permissions can be used on global level and site level.
 
+### Manage comment settings per site content type
+This module allows overriding comment behaviour per content type within a site
+context.
+Possible statuses are:
+* Open: Any future content of this type is open to new comments.
+* Open for anonymous users: Allow anonymous users to comment on this content
+  type. This only works when the anonymous role has the 'post comments'
+  permission.
+* Closed: No comments are allowed, but any past comments remain visible.
+* Hidden: No comments are allowed, and past comments are hidden.
 
 ### Context detection: Site Comment
 This module provides context detection for site comments.
