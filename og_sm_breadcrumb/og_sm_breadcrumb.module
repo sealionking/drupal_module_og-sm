@@ -169,7 +169,7 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
   }
 
   // Check path type.
-  $path_is_admin = path_is_admin(current_path());
+  $path_is_admin = (user_access('view the administration theme') && path_is_admin(current_path()));
   $path_is_site_frontpage = (current_path() === og_sm_site_homepage($site));
   $og_sm_feature_exists = module_exists('og_sm_feature');
 
