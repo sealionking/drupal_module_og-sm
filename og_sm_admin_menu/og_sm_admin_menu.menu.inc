@@ -284,6 +284,11 @@ function _og_sm_admin_menu_load_site_switcher() {
   $site = og_sm_current_site();
   $switch_sites = _og_sm_admin_menu_load_site_switcher_sites();
 
+  // No current Site and no Sites > no Switcher.
+  if (!$site && !$switch_sites) {
+    return array();
+  }
+
   // Menu item pointing to the Platform administration.
   $admin = FALSE;
   if (user_access('access administration pages')) {
@@ -294,10 +299,6 @@ function _og_sm_admin_menu_load_site_switcher() {
     );
   }
 
-  // No current Site and no Sites > no Switcher.
-  if (!$site && !$switch_sites) {
-    return array();
-  }
   // In Site context but no other Sites or access to Admin > no Switcher.
   if ($site && !$switch_sites && !$admin) {
     return array();
