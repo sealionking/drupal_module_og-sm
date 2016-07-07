@@ -9,6 +9,6 @@
 #admin-menu .dropdown li li.separated {
   border-top: 1px solid #444;
 }
-body.adminimal-menu #admin-menu-site-switcher li.admin-menu-toolbar-category > a {
+#admin-menu-site-switcher li.admin-menu-toolbar-category > a {
   font-weight: bold;
 }
