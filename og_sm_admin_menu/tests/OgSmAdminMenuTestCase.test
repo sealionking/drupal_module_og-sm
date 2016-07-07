@@ -179,7 +179,7 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
       '#wrapper_attributes' => array(
         'id' => 'admin-menu-site-switcher',
       ),
-      '#weight' => 50,
+      '#weight' => -50,
       'current' => array(
         '#title' => 'Platform',
         '#weight' => 1000,

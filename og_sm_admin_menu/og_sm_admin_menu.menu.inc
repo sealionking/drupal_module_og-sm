@@ -309,7 +309,7 @@ function _og_sm_admin_menu_load_site_switcher() {
     '#wrapper_attributes' => array(
       'id' => 'admin-menu-site-switcher',
     ),
-    '#weight' => 50,
+    '#weight' => -50,
   );
   $dropdown = array();
 
