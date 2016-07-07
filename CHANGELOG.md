@@ -3,8 +3,17 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+
 ## [Unreleased]
+### Added
 - DMOGSM-75 : Added configuration to allow anonymous comments per content type.
+
+
+### Fixed
+- DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths
+  when the user has no access to the admin theme.
+
+
 
 
 ## [7.x-1.4]
