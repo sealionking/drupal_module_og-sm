@@ -21,6 +21,9 @@ function _og_sm_admin_menu_rebuild() {
 
 /**
  * Create/Get the Administration menu records.
+ *
+ * @return array
+ *   The created menu item.
  */
 function _og_sm_admin_menu_build_menu() {
   $menu_name = OG_SM_ADMIN_MENU_NAME;
@@ -41,12 +44,12 @@ function _og_sm_admin_menu_build_menu() {
 /**
  * Create the menu items.
  *
- * @param object $menu
+ * @param array $menu
  *   The menus to create the item for.
  * @param array $items
  *   Array of menu items to create.
  */
-function _og_sm_admin_menu_build_items($menu, array $items) {
+function _og_sm_admin_menu_build_items(array $menu, array $items) {
   // Add the items.
   foreach ($items as $item) {
     _og_sm_admin_menu_build_item($menu, $item);
@@ -56,14 +59,14 @@ function _og_sm_admin_menu_build_items($menu, array $items) {
 /**
  * Create a menu item.
  *
- * @param object $menu
+ * @param array $menu
  *   The menu to create the item for.
  * @param array $item
  *   The menu item.
  * @param int $plid
  *   (optional) Parent menu link id.
  */
-function _og_sm_admin_menu_build_item($menu, array $item, $plid = NULL) {
+function _og_sm_admin_menu_build_item(array $menu, array $item, $plid = NULL) {
   // Exclude from menu?
   if (!empty($item['exclude_menu'])) {
     return;
