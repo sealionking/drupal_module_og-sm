@@ -243,7 +243,7 @@ msgstr "Open: Commentaren op alle inhoud van dit type is toegelaten."
 msgid ""
 "Open for anonymous users: Any content of this type is open to new anonymous "
 "comments."
-msgstr "Open: Anonieme commentaren op alle inhoud van dit type is toegelaten."
+msgstr "Open: Anonieme commentaren op alle inhoud van dit type zijn toegelaten."
 
 #: og_sm_comment.module:394
 msgid "Open"
