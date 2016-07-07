@@ -291,11 +291,11 @@ function _og_sm_admin_menu_load_site_switcher() {
     );
   }
 
-  // No current Site and no Sites => no Switcher.
+  // No current Site and no Sites > no Switcher.
   if (!$site && !$switch_sites) {
     return array();
   }
-  // In Site context but no other Sites or access to Admin => no Switcher.
+  // In Site context but no other Sites or access to Admin > no Switcher.
   if ($site && !$switch_sites && !$admin) {
     return array();
   }
@@ -374,7 +374,7 @@ function _og_sm_admin_menu_load_site_switcher_sites() {
   // has access to.
   $q = db_select('node', 'n');
   $q->addField('n', 'nid');
-  $q->condition('n.type', 'site');
+  $q->condition('n.type', og_sm_get_site_types());
   $q->addTag('node_access');
 
   // Exclude the current Site (if any).
@@ -384,9 +384,7 @@ function _og_sm_admin_menu_load_site_switcher_sites() {
   }
 
   // Limit to the Sites the user can manage.
-  if (!user_access('bypass node access')
-    && !user_access('administer nodes')
-  ) {
+  if (!user_access('administer nodes')) {
     $q->join('og_membership', 'ogm', 'n.nid = %alias.gid');
     $q->condition('ogm.entity_type', 'user')
       ->condition('ogm.group_type', 'node')
