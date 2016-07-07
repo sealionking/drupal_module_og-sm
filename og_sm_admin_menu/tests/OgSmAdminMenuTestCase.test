@@ -155,7 +155,7 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
     $site2 = $this->ogSmCreateGroup($siteType, array('title' => 'Site 2'));
 
     // Create Users.
-    $administrator = $this->ogSmCreateAdminUser('access administration pages');
+    $administrator = $this->ogSmCreateAdminUser();
     $userCanAdministerNodes = $this->drupalCreateUser(array('administer nodes'));
     $userDefault = $this->drupalCreateUser();
     $userSite1Admin = $this->ogSmCreateGroupUser(array(), array($site1));
