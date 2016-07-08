@@ -34,7 +34,7 @@ function og_sm_admin_menu_overview($site, $part = NULL) {
     return _og_sm_admin_menu_overview_sub($site, $items[$part]);
   }
 
-  drupal_not_found();
+  return MENU_NOT_FOUND;
 }
 
 /**

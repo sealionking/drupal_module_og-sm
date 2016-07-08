@@ -21,6 +21,9 @@ function _og_sm_admin_menu_rebuild() {
 
 /**
  * Create/Get the Administration menu records.
+ *
+ * @return array
+ *   The created menu item.
  */
 function _og_sm_admin_menu_build_menu() {
   $menu_name = OG_SM_ADMIN_MENU_NAME;
@@ -41,12 +44,12 @@ function _og_sm_admin_menu_build_menu() {
 /**
  * Create the menu items.
  *
- * @param object $menu
+ * @param array $menu
  *   The menus to create the item for.
  * @param array $items
  *   Array of menu items to create.
  */
-function _og_sm_admin_menu_build_items($menu, array $items) {
+function _og_sm_admin_menu_build_items(array $menu, array $items) {
   // Add the items.
   foreach ($items as $item) {
     _og_sm_admin_menu_build_item($menu, $item);
@@ -56,14 +59,14 @@ function _og_sm_admin_menu_build_items($menu, array $items) {
 /**
  * Create a menu item.
  *
- * @param object $menu
+ * @param array $menu
  *   The menu to create the item for.
  * @param array $item
  *   The menu item.
  * @param int $plid
  *   (optional) Parent menu link id.
  */
-function _og_sm_admin_menu_build_item($menu, array $item, $plid = NULL) {
+function _og_sm_admin_menu_build_item(array $menu, array $item, $plid = NULL) {
   // Exclude from menu?
   if (!empty($item['exclude_menu'])) {
     return;
@@ -269,4 +272,142 @@ function _og_sm_admin_menu_from_hooks() {
 
   drupal_alter('og_sm_admin_menu', $items);
   return $items;
+}
+
+/**
+ * Get the structure (if any) for the Site switcher in the admin menu.
+ *
+ * @return array
+ *   The menu structure for the Site switcher item.
+ */
+function _og_sm_admin_menu_load_site_switcher() {
+  $site = og_sm_current_site();
+  $switch_sites = _og_sm_admin_menu_load_site_switcher_sites();
+
+  // No current Site and no Sites > no Switcher.
+  if (!$site && !$switch_sites) {
+    return array();
+  }
+
+  // Menu item pointing to the Platform administration.
+  $admin = FALSE;
+  if (user_access('access administration pages')) {
+    $admin = array(
+      '#title' => t('Platform'),
+      '#weight' => 1000,
+      '#href' => 'admin',
+    );
+  }
+
+  // In Site context but no other Sites or access to Admin > no Switcher.
+  if ($site && !$switch_sites && !$admin) {
+    return array();
+  }
+
+  // Empty menu structure.
+  $menu = array(
+    '#theme' => 'admin_menu_links',
+    '#wrapper_attributes' => array(
+      'id' => 'admin-menu-site-switcher',
+    ),
+    '#weight' => -50,
+  );
+  $dropdown = array();
+
+  // Root item of the menu.
+  if (!$site && !$admin) {
+    $menu['current'] = array(
+      '#title' => t('Select Site'),
+      '#weight' => 0,
+    );
+  }
+  elseif (!$site && $admin) {
+    $menu['current'] = $admin;
+  }
+  else {
+    $menu['current'] = array(
+      '#title' => $site->title,
+      '#weight' => 0,
+      '#href' => og_sm_site_homepage($site),
+    );
+
+    // Add the platform admin link as last menu item.
+    if ($admin) {
+      $dropdown['admin'] = $admin;
+    }
+  }
+
+  // Add Sites user can switch to.
+  foreach ($switch_sites as $switch_site) {
+    $dropdown['site-' . $switch_site->nid] = array(
+      '#title' => $switch_site->title,
+      '#href' => og_sm_site_homepage($switch_site),
+    );
+  }
+
+  // Add separator line between Sites and Platform links.
+  if (!empty($dropdown['admin']) && !empty($switch_sites)) {
+    $dropdown['admin']['#attributes'] = array(
+      'class' => array('separated'),
+    );
+  }
+
+  // Add dropdown menu items (if any) to the current item.
+  if (!empty($dropdown)) {
+    $menu['current'] += $dropdown;
+  }
+
+  // Styling of the Site switcher current item.
+  $menu['current']['#attributes']['class'] = array(
+    'admin-menu-toolbar-category',
+  );
+
+  return $menu;
+}
+
+/**
+ * Load the Sites to show in the menu switcher.
+ *
+ * @return array
+ *   Array of Sites.
+ */
+function _og_sm_admin_menu_load_site_switcher_sites() {
+  global $user;
+
+  // We use a query here as this is the fastest way to get the Sites the user
+  // has access to.
+  $q = db_select('node', 'n');
+  $q->addField('n', 'nid');
+  $q->condition('n.type', og_sm_get_site_types());
+  $q->addTag('node_access');
+
+  // Exclude the current Site (if any).
+  $site = og_sm_current_site();
+  if ($site) {
+    $q->condition('n.nid', $site->nid, '<>');
+  }
+
+  // Limit to the Sites the user can manage.
+  if (!user_access('administer nodes')) {
+    $q->join('og_membership', 'ogm', 'n.nid = %alias.gid');
+    $q->condition('ogm.entity_type', 'user')
+      ->condition('ogm.group_type', 'node')
+      ->condition('ogm.etid', $user->uid);
+
+    $q->join('og_users_roles', 'ogur', 'ogm.etid = %alias.uid AND ogm.gid = %alias.gid');
+    $q->condition('ogur.group_type', 'node');
+
+    $q->join('og_role_permission', 'ogrp', 'ogur.rid = %alias.rid');
+    $q->condition('ogrp.permission', array('administer group', 'administer site'));
+  }
+
+  $q->orderBy('n.title', 'ASC');
+
+  // Check if we have results.
+  $nids = array_unique($q->execute()->fetchCol(0));
+  if (!$nids) {
+    return array();
+  }
+
+  return node_load_multiple($nids);
 }
