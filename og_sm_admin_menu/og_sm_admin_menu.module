@@ -285,10 +285,10 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
 
   // Alter the home link to the homepage of the current Site.
   if (!empty($content['icon'])) {
-    $content['icon']['icon']['#href'] = 'node/' . $site->nid;
+    $content['icon']['icon']['#href'] = og_sm_site_homepage($site);
   }
   if (!empty($content['responsive-menu']['icon'])) {
-    $content['responsive-menu']['icon']['#href'] = 'node/' . $site->nid;
+    $content['responsive-menu']['icon']['#href'] = og_sm_site_homepage($site);
   }
 
   // Alter the add content links.
