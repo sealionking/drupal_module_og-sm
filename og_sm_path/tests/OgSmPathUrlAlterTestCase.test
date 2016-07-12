@@ -98,6 +98,30 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
     $path_expected = $this->nodeSitePath . '/views/ajax';
     og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($path_expected, $path);
+
+    // Test rewriting for user/autocomplete.
+    $path = 'user/autocomplete';
+    $path_expected = $this->nodeSitePath . '/user/autocomplete';
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+
+    // Test rewriting for user/autocomplete/*.
+    $path = 'user/autocomplete/123';
+    $path_expected = $this->nodeSitePath . '/user/autocomplete/123';
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+
+    // Test rewriting for file/ajax.
+    $path = 'file/ajax';
+    $path_expected = $this->nodeSitePath . '/file/ajax';
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
+
+    // Test rewriting for file/ajax/*.
+    $path = 'file/ajax/678';
+    $path_expected = $this->nodeSitePath . '/file/ajax/678';
+    og_sm_path_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
   }
 
   /**
@@ -128,6 +152,26 @@ class OgSmPathUrlAlterTestCase extends OgSmWebTestCase {
     // Views AJAX path.
     $path = $this->nodeSitePath . '/views/ajax';
     $path_expected = 'views/ajax';
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
+
+    // User autocomplete AJAX path.
+    $path = $this->nodeSitePath . '/user/autocomplete';
+    $path_expected = 'user/autocomplete';
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
+    $path = $this->nodeSitePath . '/user/autocomplete/123';
+    $path_expected = 'user/autocomplete/123';
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
+
+    // File AJAX path.
+    $path = $this->nodeSitePath . '/file/ajax';
+    $path_expected = 'file/ajax';
+    og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
+    $path = $this->nodeSitePath . '/file/ajax/678';
+    $path_expected = 'file/ajax/678';
     og_sm_path_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
   }

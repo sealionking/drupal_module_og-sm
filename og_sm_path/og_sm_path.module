@@ -142,6 +142,26 @@ function og_sm_path_site_delete_aliases($site) {
 }
 
 /**
+ * Returns an array of ajax paths that should be rewritten to have site context.
+ *
+ * This helper function is used to create a regex pattern, therefor wildcard
+ * characters are represented as ".*".
+ *
+ * @return array
+ *   An array of ajax paths.
+ */
+function og_sm_path_ajax_paths() {
+  return array(
+    'system/ajax',
+    'views/ajax',
+    'user/autocomplete',
+    'user/autocomplete/.*',
+    'file/ajax',
+    'file/ajax/.*',
+  );
+}
+
+/**
  * Implements hook_url_outbound_alter().
  */
 function og_sm_path_url_outbound_alter(&$path, &$options, $original_path) {
@@ -155,7 +175,8 @@ function og_sm_path_url_outbound_alter(&$path, &$options, $original_path) {
 
   // Only check specific paths in a Site context.
   elseif ($site = og_sm_current_site()) {
-    if (preg_match('#^(system/ajax|views/ajax|user/autocomplete|user/autocomplete/.*)$#', $path, $parts)) {
+    $ajax_paths = og_sm_path_ajax_paths();
+    if (preg_match('#^(' . implode('|', $ajax_paths) . ')$#', $path, $parts)) {
       $path = og_sm_path($site) . '/' . $parts[1];
     }
   }
@@ -177,6 +198,7 @@ function og_sm_path_url_outbound_alter(&$path, &$options, $original_path) {
  * Implements hook_url_inbound_alter().
  */
 function og_sm_path_url_inbound_alter(&$path, $original_path, $path_language) {
+  $ajax_paths = og_sm_path_ajax_paths();
   // Translate an admin path without alias back to its original path.
   if (preg_match('#^([\w/_-]+)/(admin.*)#', $path, $parts)) {
     $site = og_sm_path_load_site($parts[1]);
@@ -184,9 +206,8 @@ function og_sm_path_url_inbound_alter(&$path, $original_path, $path_language) {
       $path = sprintf('group/node/%d/%s', $site->nid, $parts[2]);
     }
   }
-
   // Translate a system path back to normal path.
-  elseif (preg_match('#^([\w/_-]+)/(system/ajax|views/ajax|user/autocomplete|user/autocomplete/.*)$#', $path, $parts)) {
+  elseif (preg_match('#^([\w/_-]+)/(' . implode('|', $ajax_paths) . ')$#', $path, $parts)) {
     $site = og_sm_path_load_site($parts[1]);
     if ($site) {
       $path = $parts[2];
