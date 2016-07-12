@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2016-05-18 13:04+0100\n"
+"PO-Revision-Date: 2016-07-12 13:04+0100\n"
 "Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -166,6 +166,10 @@ msgstr "Titel inhoud bevat"
 #: og_sm_comment.views_default.inc:326
 msgid "Comment contains"
 msgstr "Commentaar bevat"
+
+#: og_sm_comment.views_default.inc:339
+msgid "anonymous"
+msgstr "anoniem"
 
 #: og_sm_comment.module:26
 msgid "Administer comments"
