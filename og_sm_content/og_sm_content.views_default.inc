@@ -231,6 +231,7 @@ function og_sm_content_views_default_views() {
   $handler->display->display_options['fields']['type']['table'] = 'node';
   $handler->display->display_options['fields']['type']['field'] = 'type';
   $handler->display->display_options['fields']['type']['ui_name'] = 'Type';
+  $handler->display->display_options['fields']['type']['display_site_node_type'] = TRUE;
   /* Field: Published */
   $handler->display->display_options['fields']['status']['id'] = 'status';
   $handler->display->display_options['fields']['status']['table'] = 'node';
