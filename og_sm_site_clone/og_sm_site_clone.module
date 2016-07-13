@@ -1,0 +1,102 @@
+<?php
+/**
+ * @file
+ * Organic Groups Site Clone functionality.
+ */
+
+/**
+ * Permission constants.
+ */
+define('OG_SM_SITE_CLONE_PERM_ALL', 'clone any site');
+define('OG_SM_SITE_CLONE_PERM_ADMIN', 'clone admin site');
+define('OG_SM_SITE_CLONE_PERM_OWN', 'clone own site');
+
+/**
+ * Implements hook_permission().
+ */
+function og_sm_site_clone_permission() {
+  return array(
+    OG_SM_SITE_CLONE_PERM_ALL => array(
+      'title' => t('Clone any site'),
+      'description' => t('Clone any site without further permission check.'),
+      'restrict access' => TRUE,
+      'warning' => t('Warning: give to trusted roles only as this allows to create a copy of any Site.'),
+    ),
+    OG_SM_SITE_CLONE_PERM_ADMIN => array(
+      'title' => t('Clone site the user administers'),
+      'description' => t('Allows a user to clone the Sites he can administer.'),
+    ),
+    OG_SM_SITE_CLONE_PERM_OWN => array(
+      'title' => t('Clone own site'),
+      'description' => t('Allows a user to clone only the Sites he is the owner (author) of.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_site_clone_menu() {
+  $items  = array();
+
+  $file_page = 'og_sm_site_clone.pages.inc';
+
+  $items['node/%og_sm_site/clone'] = array(
+    'title' => 'Clone',
+    'description' => 'Create a new Site based on another.',
+    'page callback' => 'og_sm_site_clone_node_form',
+    'page arguments' => array(1),
+    'access callback' => 'og_sm_site_clone_page_access',
+    'access arguments' => array(1),
+    'file' => $file_page,
+  );
+
+  return $items;
+}
+
+/**
+ * Site clone page access callback.
+ *
+ * @param object $site
+ *   The Site node that will be cloned.
+ * @param object $account
+ *   The account for who to check access.
+ *
+ * @return bool
+ *   Has access.
+ */
+function og_sm_site_clone_access_page($site, $account = NULL) {
+  if (!og_sm_is_site($site)) {
+    return FALSE;
+  }
+
+  // Fallback to current user.
+  if (!$account) {
+    global $user;
+    $account = $user;
+  }
+
+  // Only if user can create Site type content.
+  if (!node_access('create', $site->type, $account)) {
+    return FALSE;
+  }
+
+  if (user_access(OG_SM_SITE_CLONE_PERM_ALL, $account)) {
+    return TRUE;
+  }
+
+  // Site administer permission (OG).
+  if (user_access(OG_SM_SITE_CLONE_PERM_ADMIN, $account) && og_sm_site_permission_access($site, 'administer group', $account)) {
+    return TRUE;
+  }
+  // Site administer permission (OG_SM).
+  if (user_access(OG_SM_SITE_CLONE_PERM_ADMIN, $account) && og_sm_site_permission_access($site, OG_SM_PERMISSION_SITE_ADMIN, $account)) {
+    return TRUE;
+  }
+
+  if (user_access(OG_SM_SITE_CLONE_PERM_OWN, $account) && $site->uid === $account->uid) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
