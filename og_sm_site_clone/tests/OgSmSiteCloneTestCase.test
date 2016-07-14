@@ -249,4 +249,35 @@ class OgSmSiteCloneTestCase extends OgSmWebTestCase {
     );
   }
 
+  /**
+   * Test cloning UI.
+   */
+  public function testSiteCloneUi() {
+    $site_original = $this->site;
+    $this->drupalLogin($this->userWhoCanCloneAll);
+
+    // Check if the Clone tab is on the page.
+    $this->drupalGet('node/' . $site_original->nid);
+    $tabs = $this->xpath('//ul[@class=:class]/li', array(':class' => 'tabs primary'));
+    $tab = array_pop($tabs);
+    $tab_label = (string) $tab->a;
+    $tab_url = (string) $tab->a['href'][0];
+    $this->assertEqual(t('Clone'), $tab_label, 'Clone link is on the page.');
+    $this->assertEqual('/node/' . $site_original->nid . '/clone', $tab_url, 'Tab links to /node/NID/clone');
+
+    // Open the clone link, we should be redirected to the form on
+    // node/clone/NID.
+    $this->drupalGet('node/' . $site_original->nid . '/clone');
+    $url = parse_url($this->getUrl());
+    $this->assertEqual('/node/clone/' . $site_original->nid, $url['path'], 'User is redirected to /node/clone/NID');
+
+    // Create a new Site as clone of the existing.
+    $edit = array('title' => 'Test Site clone');
+    $this->drupalPost('/node/clone/' . $site_original->nid, $edit, t('Save'));
+    $this->assertText(
+      t('@type @title has been created.', array('@type' => $site_original->type, '@title' => $edit['title'])),
+      'Cloned Site is saved.'
+    );
+  }
+
 }
