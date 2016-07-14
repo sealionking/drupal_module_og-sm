@@ -6,6 +6,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [Unreleased]
 ### Added
+- DMOGSM-73 : Added module to support cloning existing Sites.
 - DMOGSM-75 : Added configuration to allow anonymous comments per content type.
 
 
