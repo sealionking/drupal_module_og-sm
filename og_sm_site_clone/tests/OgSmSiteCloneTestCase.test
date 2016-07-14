@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Tests about the Site Taxonomies.
@@ -43,21 +44,9 @@ class OgSmSiteCloneTestCase extends OgSmWebTestCase {
    * {@inheritdoc}
    */
   public function setUp() {
-    // Enable required modules (we need context to filter the terms!).
-    $modules = array('og_sm_site_clone', 'og_sm_context', 'og_sm_variable');
+    // Enable required modules.
+    $modules = array('og_sm_site_clone', 'og_sm_variable');
     parent::setUp($modules);
-
-    // Setup OG context?
-    $context_enabled = array(
-      'og_sm_context_node' => new stdClass(),
-      'og_sm_context_admin' => new stdClass(),
-    );
-    variable_set('og_context_negotiation_group_context', $context_enabled);
-    $context_order = array(
-      'og_sm_context_node' => -50,
-      'og_sm_context_admin' => -49,
-    );
-    variable_set('og_context_providers_weight_group_context', $context_order);
 
     // Create the Site type.
     $type = $this->ogSmCreateGroupNodeType();

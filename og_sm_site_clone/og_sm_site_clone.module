@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Organic Groups Site Clone functionality.
@@ -132,7 +133,6 @@ function og_sm_site_clone_access_page($site, $account = NULL) {
 
   return FALSE;
 }
-
 
 /**
  * Prepares a node to be cloned.
