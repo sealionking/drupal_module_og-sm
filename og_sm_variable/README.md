@@ -80,6 +80,44 @@ the Site node id.
 $values = og_sm_variable_get_all_sites($name);
 ```
 
+### Copy variables from one Site to another by their names
+Copy variables from one site to another by passing an array of variable names.
+
+```php
+og_sm_variable_copy_from_to_by_names(
+  $site_from_nid,
+  $site_to_nid,
+  array('variable_name_1', 'variable_name_2')
+);
+```
+
+### Copy variables from one Site to another by a name pattern
+Copy variables from one site to another when their names match a given regular
+expression pattern.
+
+```php
+og_sm_variable_copy_from_to_by_pattern(
+  $site_from_nid,
+  $site_to_nid,
+  '#_name_#');
+```
+
+### Copy variables from one Site to another by a name prefix
+Copy all variables from one Site to another if their names begin with the given
+prefix.
+
+```php
+og_sm_variable_copy_from_to_by_prefix(
+  $site_from_nid,
+  $site_to_nid,
+  'variable_'
+);
+```
+
+
+
+## Hooks
+
 ### Hooks to set the default variables for a new Site
 This module provides hooks to define the default variable values to set when a
 new Site is created.

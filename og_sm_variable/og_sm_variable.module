@@ -157,6 +157,68 @@ function og_sm_variable_delete_all($site_nid) {
 }
 
 /**
+ * Copy variables, listed by their name(s), from one Site to another.
+ *
+ * @param int $site_nid_from
+ *   The Site node id to copy from.
+ * @param int $site_nid_to
+ *   The Site node it to copy the variables to.
+ * @param array $names
+ *   The variable names to copy.
+ */
+function og_sm_variable_copy_from_to_by_names($site_nid_from, $site_nid_to, array $names) {
+  foreach ($names as $name) {
+    _og_sm_variable_save(
+      $site_nid_to,
+      $name,
+      og_sm_variable_get($site_nid_from, $name)
+    );
+  }
+
+  _og_sm_variable_cache_clear_site($site_nid_to);
+  _og_sm_variable_cache_clear_name_all();
+}
+
+/**
+ * Copy variables, where name matches the pattern, from one Site to another.
+ *
+ * @param int $site_nid_from
+ *   The Site node id to copy from.
+ * @param int $site_nid_to
+ *   The Site node it to copy the variables to.
+ * @param string $pattern
+ *   A regular expression pattern the names should match.
+ */
+function og_sm_variable_copy_from_to_by_pattern($site_nid_from, $site_nid_to, $pattern) {
+  $from_variables = og_sm_variable_get_all($site_nid_from);
+  foreach ($from_variables as $name => $value) {
+    if (!preg_match($pattern, $name)) {
+      continue;
+    }
+
+    _og_sm_variable_save($site_nid_to, $name, $value);
+  }
+
+  _og_sm_variable_cache_clear_site($site_nid_to);
+  _og_sm_variable_cache_clear_name_all();
+}
+
+/**
+ * Copy variables, where name starts with the prefix, from one Site to another.
+ *
+ * @param int $site_nid_from
+ *   The Site node id to copy from.
+ * @param int $site_nid_to
+ *   The Site node it to copy the variables to.
+ * @param string $prefix
+ *   A variable name prefix.
+ */
+function og_sm_variable_copy_from_to_by_prefix($site_nid_from, $site_nid_to, $prefix) {
+  $pattern = '#^' . $prefix . '#';
+  og_sm_variable_copy_from_to_by_pattern($site_nid_from, $site_nid_to, $pattern);
+}
+
+/**
  * Helper to load all variables from the DB.
  *
  * @param int $site_nid
@@ -253,7 +315,7 @@ function _og_sm_variable_delete($site_nid, $name) {
 }
 
 /**
- * Delete all variabled in the database for the given Site Node ID.
+ * Delete all variables in the database for the given Site Node ID.
  *
  * @param int $site_nid
  *   The Site Node ID to delete all the variables for.
