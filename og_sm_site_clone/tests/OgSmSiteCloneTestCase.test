@@ -44,7 +44,7 @@ class OgSmSiteCloneTestCase extends OgSmWebTestCase {
    */
   public function setUp() {
     // Enable required modules (we need context to filter the terms!).
-    $modules = array('og_sm_site_clone', 'og_sm_context');
+    $modules = array('og_sm_site_clone', 'og_sm_context', 'og_sm_variable');
     parent::setUp($modules);
 
     // Setup OG context?
@@ -163,9 +163,7 @@ class OgSmSiteCloneTestCase extends OgSmWebTestCase {
   /**
    * Test the function to clone a given Site.
    */
-  public function testSiteClonePrepare() {
-    module_load_include('inc', 'og_sm_site_clone', 'og_sm_site_clone.pages');
-
+  public function testSiteCloneObjectPrepare() {
     // Test without implemented hook.
     $original = (object) array(
       'nid' => 1234,
@@ -173,20 +171,36 @@ class OgSmSiteCloneTestCase extends OgSmWebTestCase {
       'title' => 'FooBar',
       'uid' => 666,
       'name' => 'Lucifer',
+      'type' => $this->site->type,
     );
     $expected = array(
       'nid' => NULL,
       'vid' => NULL,
       'title' => NULL,
       'uid' => (int) $this->userWhoCanCloneAll->uid,
-      'name' => (int) $this->userWhoCanCloneAll->name,
+      'name' => $this->userWhoCanCloneAll->name,
+      'type' => $this->site->type,
+      'is_new' => TRUE,
       'tnid' => NULL,
       'log' => NULL,
-      'created' => NULL,
+      'created' => REQUEST_TIME,
       'changed' => NULL,
       'path' => NULL,
       'files' => array(),
-      'menu' => NULL,
+      'menu' => array(
+        'link_title' => '',
+        'mlid' => 0,
+        'plid' => 0,
+        'menu_name' => 'main-menu',
+        'weight' => 0,
+        'options' => array(),
+        'module' => 'menu',
+        'expanded' => 0,
+        'hidden' => 0,
+        'has_children' => 0,
+        'customized' => 0,
+        'parent_depth_limit' => 8,
+      ),
       'status' => 0,
       'revision_timestamp' => NULL,
       'revision_uid' => (int) $this->userWhoCanCloneAll->uid,
@@ -197,17 +211,42 @@ class OgSmSiteCloneTestCase extends OgSmWebTestCase {
       'last_comment_uid' => NULL,
       'comment_count' => 0,
       'site_is_clone' => TRUE,
-      'site_is_clone_of_nid' => (int) $original->nid,
+      'site_is_clone_of_nid' => 1234,
+      'promote' => 1,
+      'sticky' => 0,
+      'revision' => FALSE,
+      'comment' => 2,
     );
-    $new = og_sm_site_clone_prepare($original, $this->userWhoCanCloneAll);
-    $this->assertEqual($expected, (array) $new, 'New Site node is clone of original.');
+    $new = og_sm_site_clone_object_prepare($original, $this->userWhoCanCloneAll);
+    $this->assertEqual($expected, (array) $new, 'New Site object is clone of original.');
 
     // Test with module that implements hook.
     module_enable(array('og_sm_site_clone_test'));
 
     $expected['extra_field_to_test'] = 'Test Hook 1234';
-    $new = og_sm_site_clone_prepare($original, $this->userWhoCanCloneAll);
+    $new = og_sm_site_clone_object_prepare($original, $this->userWhoCanCloneAll);
     $this->assertEqual($expected, (array) $new, 'Extra value added by hook implementation.');
+  }
+
+  /**
+   * Test cloning a site programmatically.
+   */
+  public function testSiteCloneProgrammatically() {
+    module_enable(array('og_sm_site_clone_test'));
+
+    // Clone the Site.
+    $site_original = $this->site;
+    $site_new_owner = $this->userWhoCanCloneAll;
+    $site_new = og_sm_site_clone_object_prepare($site_original, $site_new_owner);
+    $site_new->title = $this->randomString();
+    node_save($site_new);
+
+    // Check if the hook_og_sm_site_clone hook was triggered.
+    $this->assertEqual(
+      $site_original->nid,
+      og_sm_variable_get($site_new->nid, 'test_site_is_copy_of'),
+      'Cloning a Site triggers the "hook_og_sm_site_clone" hook.'
+    );
   }
 
 }
