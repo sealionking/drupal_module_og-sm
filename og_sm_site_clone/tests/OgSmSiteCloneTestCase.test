@@ -160,4 +160,54 @@ class OgSmSiteCloneTestCase extends OgSmWebTestCase {
     );
   }
 
+  /**
+   * Test the function to clone a given Site.
+   */
+  public function testSiteClonePrepare() {
+    module_load_include('inc', 'og_sm_site_clone', 'og_sm_site_clone.pages');
+
+    // Test without implemented hook.
+    $original = (object) array(
+      'nid' => 1234,
+      'vid' => 4321,
+      'title' => 'FooBar',
+      'uid' => 666,
+      'name' => 'Lucifer',
+    );
+    $expected = array(
+      'nid' => NULL,
+      'vid' => NULL,
+      'title' => NULL,
+      'uid' => (int) $this->userWhoCanCloneAll->uid,
+      'name' => (int) $this->userWhoCanCloneAll->name,
+      'tnid' => NULL,
+      'log' => NULL,
+      'created' => NULL,
+      'changed' => NULL,
+      'path' => NULL,
+      'files' => array(),
+      'menu' => NULL,
+      'status' => 0,
+      'revision_timestamp' => NULL,
+      'revision_uid' => (int) $this->userWhoCanCloneAll->uid,
+      'uuid' => NULL,
+      'vuuid' => NULL,
+      'last_comment_timestamp' => NULL,
+      'last_comment_name' => NULL,
+      'last_comment_uid' => NULL,
+      'comment_count' => 0,
+      'site_is_clone' => TRUE,
+      'site_is_clone_of_nid' => (int) $original->nid,
+    );
+    $new = og_sm_site_clone_prepare($original, $this->userWhoCanCloneAll);
+    $this->assertEqual($expected, (array) $new, 'New Site node is clone of original.');
+
+    // Test with module that implements hook.
+    module_enable(array('og_sm_site_clone_test'));
+
+    $expected['extra_field_to_test'] = 'Test Hook 1234';
+    $new = og_sm_site_clone_prepare($original, $this->userWhoCanCloneAll);
+    $this->assertEqual($expected, (array) $new, 'Extra value added by hook implementation.');
+  }
+
 }

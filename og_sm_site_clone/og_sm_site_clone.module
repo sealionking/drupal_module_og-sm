@@ -12,6 +12,28 @@ define('OG_SM_SITE_CLONE_PERM_ADMIN', 'clone admin site');
 define('OG_SM_SITE_CLONE_PERM_OWN', 'clone own site');
 
 /**
+ * Implements hook_admin_paths().
+ */
+function og_sm_site_clone_admin_paths() {
+  $paths = array(
+    'node/clone/*' => TRUE,
+  );
+  return $paths;
+}
+
+/**
+ * Implements hook_hook_info().
+ */
+function og_sm_site_clone_hook_info() {
+  $hooks = array(
+    'og_sm_site_clone_prepare_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+  return $hooks;
+}
+
+/**
  * Implements hook_permission().
  */
 function og_sm_site_clone_permission() {
@@ -44,10 +66,21 @@ function og_sm_site_clone_menu() {
   $items['node/%og_sm_site/clone'] = array(
     'title' => 'Clone',
     'description' => 'Create a new Site based on another.',
-    'page callback' => 'og_sm_site_clone_node_form',
+    'page callback' => 'og_sm_site_clone_node_redirect',
     'page arguments' => array(1),
-    'access callback' => 'og_sm_site_clone_page_access',
+    'access callback' => 'og_sm_site_clone_access_page',
     'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+    'file' => $file_page,
+  );
+  $items['node/clone/%og_sm_site'] = array(
+    'title' => 'Clone',
+    'description' => 'Create a new Site based on another.',
+    'page callback' => 'og_sm_site_clone_node_form',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_clone_access_page',
+    'access arguments' => array(2),
     'file' => $file_page,
   );
 
