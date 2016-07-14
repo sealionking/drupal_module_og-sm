@@ -12,6 +12,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ### Fixed
 - DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths
   when the user has no access to the admin theme.
+- PPL-434: Added the comment/reply/%node path to the comment context handler.
 - PPL-448: Trim comment in comments overview to 200 chars.
 
 
