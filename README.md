@@ -40,14 +40,14 @@ This module and its submodules adds functionality to support:
   - Path alias of the current page.
   - Paths starting with group/node/NID
 
-### Included in og_sm_global_roles module
-* Dynamically grant user global roles when they have specific Site roles.
-
 ### Included in og_sm_feature module
 * Enable/Disable & configure Site features.
   - Define globally default state & configuration.
   - Enable/Disable per Site.
   - Configuration per Site.
+
+### Included in og_sm_global_roles module
+* Dynamically grant user global roles when they have specific Site roles.
 
 ### Included in og_sm_path module
 * Define a Site path prefix per Site.
@@ -55,6 +55,12 @@ This module and its submodules adds functionality to support:
 * Auto update of Site content aliases and Site related page aliases when the
   Site path changes.
 * Altering the `group/node/nid/admin/...` paths to `[site-path]/admin/...`.
+
+### Included in og_sm_site_clone module
+* A "Clone" tab on Site node detail/edit pages.
+* A form to clone an existing Site (`node/clone/[existing-site-nid]`).
+* Hooks so modules can alter prepared cloned Site and perform actions after a 
+  cloned Site is saved.
 
 ### Included in og_sm_taxonomy module
 * Support global vocabularies with Site specific terms.
@@ -71,15 +77,6 @@ This module and its submodules adds functionality to support:
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
 * Get/Set/Delete Site specific variables.
-
-
-### Todo
-* Support for User profile & settings per Site (Site User).
-* Site features: enable functionality per site (eg. Site A has blogs, Site B
-  not).
-* Site Content settings per Site (eg. Site A enables commenting on Blog posts,
-  Site B not).
-* Rename Site Content types per site.
 
 
 
