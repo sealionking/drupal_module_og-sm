@@ -29,3 +29,16 @@ function og_sm_user_og_sm_feature_info() {
 
   return $items;
 }
+
+/**
+ * Implements hook_og_sm_site_clone().
+ */
+function og_sm_user_og_sm_site_clone($site_new, $site_original) {
+  // Enable the feature if original is enabled.
+  if (og_sm_feature_site_is_enabled($site_original, OG_SM_USER_FEATURE_PROFILE)) {
+    og_sm_feature_site_enable($site_new, OG_SM_USER_FEATURE_PROFILE);
+  }
+  else {
+    og_sm_feature_site_disable($site_new, OG_SM_USER_FEATURE_PROFILE);
+  }
+}
