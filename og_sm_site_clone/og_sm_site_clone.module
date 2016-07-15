@@ -34,6 +34,19 @@ function og_sm_site_clone_hook_info() {
 }
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function og_sm_site_clone_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'og_sm_site_insert') {
+    // We use this hook to trigger the clone hook. Force this as last so its is
+    // executed after all other site insert hooks.
+    $group = $implementations['og_sm_site_clone'];
+    unset($implementations['og_sm_site_clone']);
+    $implementations['og_sm_site_clone'] = $group;
+  }
+}
+
+/**
  * Implements hook_permission().
  */
 function og_sm_site_clone_permission() {
