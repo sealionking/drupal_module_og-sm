@@ -259,4 +259,55 @@ class OgSmVariableTestCase extends OgSmWebTestCase {
     $this->assertEqual(array(), og_sm_variable_get_all($site_nid));
   }
 
+  /**
+   * Test copying variables from one Site to another.
+   */
+  public function testVariableCopyFromTo() {
+    $site_1 = 666;
+    $site_2 = 777;
+
+    // Save some variables in "Site from".
+    _og_sm_variable_save($site_1, 'prefix_1_variable_1', 'value 1-1');
+    _og_sm_variable_save($site_1, 'prefix_2_variable_1', 'value 2-1');
+    _og_sm_variable_save($site_1, 'prefix_1_variable_2', 'value 1-2');
+    $expected = array(
+      'prefix_1_variable_1' => 'value 1-1',
+      'prefix_1_variable_2' => 'value 1-2',
+      'prefix_2_variable_1' => 'value 2-1',
+    );
+    $this->assertEqual($expected, og_sm_variable_get_all($site_1), 'Site 1 has 3 variables.');
+
+    // Site to has no variables yet.
+    $this->assertEqual(array(), og_sm_variable_get_all($site_2), 'Site 2 has no variables.');
+
+    // Copy Variables by their names.
+    og_sm_variable_copy_from_to_by_names(
+      $site_1,
+      $site_2,
+      array('prefix_1_variable_1', 'prefix_2_variable_1')
+    );
+    $expected = array(
+      'prefix_1_variable_1' => 'value 1-1',
+      'prefix_2_variable_1' => 'value 2-1',
+    );
+    $this->assertEqual($expected, og_sm_variable_get_all($site_2), 'Site 2 contains 2 copied variables by name.');
+
+    // Copy variables by a pattern.
+    og_sm_variable_delete_all($site_2);
+    $this->assertEqual(array(), og_sm_variable_get_all($site_2), 'Site 2 has no variables.');
+    og_sm_variable_copy_from_to_by_pattern($site_1, $site_2, '#_1_variable_#');
+    $expected = array(
+      'prefix_1_variable_1' => 'value 1-1',
+      'prefix_1_variable_2' => 'value 1-2',
+    );
+    $this->assertEqual($expected, og_sm_variable_get_all($site_2), 'Site 2 contains 2 copied variables by pattern.');
+
+    // Copy variables by a prefix.
+    og_sm_variable_delete_all($site_2);
+    $this->assertEqual(array(), og_sm_variable_get_all($site_2), 'Site 2 has no variables.');
+    og_sm_variable_copy_from_to_by_prefix($site_1, $site_2, 'prefix_2');
+    $expected = array('prefix_2_variable_1' => 'value 2-1');
+    $this->assertEqual($expected, og_sm_variable_get_all($site_2), 'Site 2 contains 1 copied variables by prefix.');
+  }
+
 }

@@ -70,3 +70,15 @@ function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
     og_sm_variable_get($site->nid, $key_base . 'name_plural', $type_info->name)
   );
 }
+
+/**
+ * Implements hook_og_sm_site_clone().
+ */
+function og_sm_content_og_sm_site_clone($site_new, $site_original) {
+  // Copy the feature variables.
+  og_sm_variable_copy_from_to_by_prefix(
+    $site_original->nid,
+    $site_new->nid,
+    'og_sm_content_'
+  );
+}
