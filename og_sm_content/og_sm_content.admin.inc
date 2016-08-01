@@ -25,8 +25,12 @@ function og_sm_content_admin_overview_types($site) {
       continue;
     }
 
+    $original_type = ' <em>'
+      . t('(original: @content_type)', array('@content_type' => $content_type->type))
+      . '</em>';
+
     $rows[] = array(
-      $content_type->site_type,
+      $content_type->site_type . $original_type,
       $content_type->name,
       $content_type->name_plural,
       l(t('Edit'), $path, array('query' => drupal_get_destination())),

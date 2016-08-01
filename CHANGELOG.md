@@ -6,6 +6,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [Unreleased]
 ### Added
+- DMOGSM-72 : Added site node type machine name to content type name in content 
+  overview.
 - DMOGSM-75 : Added configuration to allow anonymous comments per content type.
 
 
