@@ -262,6 +262,31 @@ function og_sm_feature_info() {
 }
 
 /**
+ * Get the information about all enabled features in current Site.
+ *
+ * @return array
+ *   The information array grouped per enabled feature.
+ */
+function og_sm_feature_enabled_info() {
+  $features = og_sm_feature_info();
+  $enabled_features = array();
+
+  $site = og_sm_current_site();
+  if (!$site) {
+    return $enabled_features;
+  }
+
+  foreach ($features as $feature_name => $feature) {
+    if (og_sm_feature_site_is_enabled($site, $feature_name)) {
+      $enabled_features[$feature_name] = $feature;
+    }
+  }
+
+  return $enabled_features;
+
+}
+
+/**
  * Array sorting callback; sorts info by their name.
  */
 function og_sm_feature_info_sort($a, $b) {
