@@ -23,7 +23,7 @@ function og_sm_user_admin_feature(array $form, array &$form_state) {
   );
 
   $defaults = array(
-    'og_sm_user_profile_editable' => variable_get('og_sm_user_profile_editable'),
+    'og_sm_user_profile_editable' => variable_get('og_sm_user_profile_editable', TRUE),
   );
 
   return system_settings_form(_og_sm_user_admin_form($form, $defaults));
@@ -42,7 +42,7 @@ function og_sm_user_admin_feature(array $form, array &$form_state) {
  * @return array
  *   The form structure.
  */
-function og_sm_breadcrumb_og_admin_feature(array $form, array &$form_state, $site) {
+function og_sm_user_og_admin_feature(array $form, array &$form_state, $site) {
   $sid = $site->nid;
 
   $form['info'] = array(
@@ -50,9 +50,11 @@ function og_sm_breadcrumb_og_admin_feature(array $form, array &$form_state, $sit
     '#prefix' => '<p>',
     '#suffix' => '</p>',
   );
-
+  $global_defaults = array(
+    'og_sm_user_profile_editable' => variable_get('og_sm_user_profile_editable', TRUE),
+  );
   $defaults = array(
-    'og_sm_user_profile_editable' => og_sm_variable_get($sid, 'og_sm_user_profile_editable', TRUE),
+    'og_sm_user_profile_editable' => og_sm_variable_get($sid, 'og_sm_user_profile_editable', $global_defaults['og_sm_user_profile_editable']),
   );
 
   $form = _og_sm_user_admin_form($form, $defaults);

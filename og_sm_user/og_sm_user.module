@@ -140,6 +140,9 @@ function og_sm_user_page_access($op, $site, $account = NULL) {
       return user_view_access($account);
 
     case 'edit':
+      if (!og_sm_variable_get($site->nid, 'og_sm_user_profile_editable')) {
+        return FALSE;
+      }
       return user_edit_access($account);
   }
 
