@@ -47,11 +47,11 @@ msgstr "Profiel"
 
 #: og_sm_user.admin.inc:20
 msgid "Default settings for the User feature."
-msgstr "Satrndaar"
+msgstr "Standaardwaarden voor de Gebruikersprofiel-feature."
 
 #: og_sm_user.admin.inc:49
 msgid "Site settings for the User feature."
-msgstr "Site instellingen voor de Gebruikersprofiel feature."
+msgstr "Site instellingen voor de Gebruikersprofiel-feature."
 
 #: og_sm_user.admin.inc:79
 msgid "Allow users to edit their profile"
