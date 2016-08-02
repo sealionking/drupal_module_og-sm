@@ -25,6 +25,8 @@ function og_sm_user_og_sm_feature_info() {
   $items[OG_SM_USER_FEATURE_PROFILE] = array(
     'name' => t('User profile'),
     'description' => t('User profile within a site.'),
+    'global configuration' => 'admin/config/group/features/user',
+    'site configuration' => 'admin/features/user',
   );
 
   return $items;
@@ -41,4 +43,15 @@ function og_sm_user_og_sm_site_clone($site_new, $site_original) {
   else {
     og_sm_feature_site_disable($site_new, OG_SM_USER_FEATURE_PROFILE);
   }
+}
+
+/**
+ * Implements hook_og_sm_variable_defaults().
+ */
+function og_sm_user_og_sm_variable_defaults($site) {
+  $items = array();
+
+  $items['og_sm_user_profile_editable'] = variable_get('og_sm_user_profile_editable', TRUE);
+
+  return $items;
 }
