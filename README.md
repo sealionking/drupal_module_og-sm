@@ -73,6 +73,8 @@ This module and its submodules adds functionality to support:
 
 ### Included in og_sm_user module
 * Site feature that creates site specific user profiles.
+* Allow Sites to disable the editing of profiles, eg. when no alterable
+  sections are available.
 
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.

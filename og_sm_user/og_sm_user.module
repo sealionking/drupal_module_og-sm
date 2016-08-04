@@ -79,6 +79,27 @@ function og_sm_user_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $items['group/node/%og_sm_site/admin/features/user'] = array(
+    'title' => 'User profile',
+    'description' => 'Configure the user settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_user_og_admin_feature', 2),
+    'access callback' => 'og_sm_site_permission_access',
+    'access arguments' => array(2, 'administer features'),
+    'file' => 'og_sm_user.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['admin/config/group/features/user'] = array(
+    'title' => 'User',
+    'description' => 'Default user configuration.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('og_sm_user_admin_feature'),
+    'access arguments' => array('administer site features'),
+    'file' => 'og_sm_user.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -119,6 +140,9 @@ function og_sm_user_page_access($op, $site, $account = NULL) {
       return user_view_access($account);
 
     case 'edit':
+      if (!og_sm_variable_get($site->nid, 'og_sm_user_profile_editable')) {
+        return FALSE;
+      }
       return user_edit_access($account);
   }
 
