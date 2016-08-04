@@ -31,7 +31,7 @@ msgstr "Gebruikersprofiel"
 
 #: og_sm_user.module:84
 msgid "Configure the user settings."
-msgstr "Beheer de instellingen van gebruikers"
+msgstr "Beheer de instellingen van gebruikers."
 
 #: og_sm_user.module:94
 msgid "User"
