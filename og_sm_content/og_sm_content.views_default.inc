@@ -33,6 +33,7 @@ function og_sm_content_views_default_views() {
   $handler->display->display_options['query']['options']['distinct'] = TRUE;
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['exposed_form']['options']['submit_button'] = 'Submit';
+  $handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Sort by';
   $handler->display->display_options['exposed_form']['options']['sort_asc_label'] = 'Ascending';
   $handler->display->display_options['exposed_form']['options']['sort_desc_label'] = 'Descending';
   $handler->display->display_options['pager']['type'] = 'full';
@@ -295,7 +296,6 @@ function og_sm_content_views_default_views() {
   $handler->display->display_options['arguments']['gid']['relationship'] = 'og_membership_rel';
   $handler->display->display_options['arguments']['gid']['ui_name'] = 'Site membership from node';
   $handler->display->display_options['arguments']['gid']['default_action'] = 'not found';
-  $handler->display->display_options['arguments']['gid']['exception']['title'] = 'All';
   $handler->display->display_options['arguments']['gid']['default_argument_type'] = 'fixed';
   $handler->display->display_options['arguments']['gid']['default_argument_skip_url'] = TRUE;
   $handler->display->display_options['arguments']['gid']['summary']['number_of_records'] = '0';
@@ -470,21 +470,6 @@ function og_sm_content_views_default_views() {
     4 => 0,
     6 => 0,
   );
-  $handler->display->display_options['filters']['type']['group'] = 1;
-  $handler->display->display_options['filters']['type']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['type']['expose']['operator_id'] = 'type_op';
-  $handler->display->display_options['filters']['type']['expose']['label'] = 'Type';
-  $handler->display->display_options['filters']['type']['expose']['operator'] = 'type_op';
-  $handler->display->display_options['filters']['type']['expose']['identifier'] = 'type';
-  $handler->display->display_options['filters']['type']['expose']['remember_roles'] = array(
-    2 => '2',
-    1 => 0,
-    3 => 0,
-    5 => 0,
-    4 => 0,
-    6 => 0,
-  );
-  $handler->display->display_options['filters']['type']['expose']['reduce'] = TRUE;
   /* Filter criterion: Author */
   $handler->display->display_options['filters']['uid_current']['id'] = 'uid_current';
   $handler->display->display_options['filters']['uid_current']['table'] = 'users';
