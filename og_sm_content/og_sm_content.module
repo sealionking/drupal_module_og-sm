@@ -606,3 +606,28 @@ function og_sm_content_form_node_form_alter(&$form, &$form_state, $form_id) {
     drupal_set_title(t('<em>Edit @type</em> @title', $args), PASS_THROUGH);
   }
 }
+
+/**
+ * Get content types from existing content in current group.
+ *
+ * @return array
+ *    The content type(s).
+ */
+function og_sm_content_get_types_from_content() {
+  $site = og_sm_current_site();
+  if (!$site) {
+    return array();
+  }
+
+  $query = db_select('node', 'n')
+    ->distinct()
+    ->fields('n', array('type'));
+
+  $query->join('og_membership', 'ogm', 'n.nid = ogm.etid');
+  $query->condition('ogm.gid', $site->nid);
+  $query->condition('ogm.entity_type', 'node');
+
+  $result = $query->execute()->fetchCol();
+
+  return $result;
+}
