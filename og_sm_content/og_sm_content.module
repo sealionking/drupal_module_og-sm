@@ -329,7 +329,7 @@ function og_sm_content_get_type_info_by_site($site, $content_type) {
     $content_type = node_type_load($content_type);
   }
   if (!$content_type) {
-    FALSE;
+    return FALSE;
   }
 
   $infos = &drupal_static(__FUNCTION__, array());
@@ -504,7 +504,7 @@ function og_sm_content_url_outbound_alter(&$path, &$options, $original_path) {
   $site = FALSE;
   // Rewrite all path which have the node type name in them, try to replace it
   // with the site specific content type name.
-  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]*)#', $path, $parts)) {
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]+)#', $path, $parts)) {
     if ($site = og_sm_site_load($parts[1])) {
       $content_type = og_sm_content_get_type_info_by_site($site, $parts[3]);
       $type_name = (!$content_type)
@@ -539,7 +539,7 @@ function og_sm_content_url_inbound_alter(&$path, $original_path, $path_language)
     }
   }
   // Translate site specific node type paths back to their original path.
-  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]*)#', $path, $parts)) {
+  if (preg_match('#^group/node/([0-9]+)(/content/add/|/admin/structure/types/)([a-z0-9_\-]+)#', $path, $parts)) {
     $site = $site ?: og_sm_site_load($parts[1]);
     if ($site) {
       $alias_type_name = str_replace('-', '_', $parts[3]);
