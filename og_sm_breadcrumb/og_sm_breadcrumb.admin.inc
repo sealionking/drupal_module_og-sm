@@ -149,7 +149,7 @@ function _og_sm_breadcrumb_admin_form(array $form, array $defaults) {
   $form['options']['og_sm_breadcrumb_force_home'] = array(
     '#type' => 'checkbox',
     '#title' => t('Home link to Site frontpage'),
-    '#description' => t('Force the root part of the breadcrumb to link to the Site frontpage.'),
+    '#description' => t('Force the root part of the breadcrumb to link to the Site frontpage, this option will be ignored when the breadcrumb root has been overridden.'),
     '#default_value' => $defaults['force_home'],
   );
   $form['options']['og_sm_breadcrumb_append_title'] = array(
