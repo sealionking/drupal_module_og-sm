@@ -53,18 +53,22 @@ function og_sm_variable_node_delete($node) {
  *   The arrays as retrieved from the DB.
  */
 function og_sm_variable_get_all($site_nid) {
-  $cid = OG_SM_VARIABLE_CID_SITE . $site_nid;
+  $data = &drupal_static(__FUNCTION__);
+  if (!isset($data[$site_nid])) {
+    $cid = OG_SM_VARIABLE_CID_SITE . $site_nid;
 
-  // Try to get from cache first.
-  $cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN);
-  if ($cache && !empty($cache->data)) {
-    return $cache->data;
+    // Try to get from cache first.
+    if ($cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN)) {
+      $data[$site_nid] = $cache->data;
+    }
+    // Get from DB and store in the cache.
+    else {
+      $variables = _og_sm_variable_load_all($site_nid);
+      $data[$site_nid] = $variables;
+      cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
+    }
   }
-
-  // Get from DB and store in the cache?
-  $variables = _og_sm_variable_load_all($site_nid);
-  cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
-  return $variables;
+  return $data[$site_nid];
 }
 
 /**
@@ -77,17 +81,21 @@ function og_sm_variable_get_all($site_nid) {
  *   Array of variables keyed by the Site Node ID.
  */
 function og_sm_variable_get_all_sites($name) {
-  $cid = OG_SM_VARIABLE_CID_NAME . $name;
+  $data = &drupal_static(__FUNCTION__);
+  if (!isset($data[$name])) {
+    $cid = OG_SM_VARIABLE_CID_NAME . $name;
 
-  // Try to get from cache first.
-  $cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN);
-  if ($cache && !empty($cache->data)) {
-    return $cache->data;
+    // Try to get from cache first.
+    if ($cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN)) {
+      $data[$name] = $cache->data;
+    }
+    else {
+      $variables = _og_sm_variable_load_all_sites($name);
+      $data[$name] = $variables;
+      cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
+    }
   }
-
-  $variables = _og_sm_variable_load_all_sites($name);
-  cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
-  return $variables;
+  return $data[$name];
 }
 
 /**
@@ -334,6 +342,7 @@ function _og_sm_variable_delete_all($site_nid) {
  */
 function _og_sm_variable_cache_clear_site($site_nid) {
   cache_clear_all(OG_SM_VARIABLE_CID_SITE . $site_nid, OG_SM_VARIABLE_CACHE_BIN);
+  drupal_static_reset('og_sm_variable_get_all');
 }
 
 /**
@@ -344,6 +353,7 @@ function _og_sm_variable_cache_clear_site($site_nid) {
  */
 function _og_sm_variable_cache_clear_name($name) {
   cache_clear_all(OG_SM_VARIABLE_CID_NAME . $name, OG_SM_VARIABLE_CACHE_BIN);
+  drupal_static_reset('og_sm_variable_get_all_sites');
 }
 
 /**
@@ -351,6 +361,7 @@ function _og_sm_variable_cache_clear_name($name) {
  */
 function _og_sm_variable_cache_clear_name_all() {
   cache_clear_all(OG_SM_VARIABLE_CID_NAME, OG_SM_VARIABLE_CACHE_BIN, TRUE);
+  drupal_static_reset('og_sm_variable_get_all_sites');
 }
 
 /**
