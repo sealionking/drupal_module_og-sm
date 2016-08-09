@@ -160,6 +160,12 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     $path_expected = $site_path . '/profile/' . $this->siteAdmin->uid . '/modify';
     og_sm_user_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($path_expected, $path);
+
+    // Test rewriting the logout page.
+    $path = 'group/node/' . $site_nid . '/logout';
+    $path_expected = $site_path . '/logout';
+    og_sm_user_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
   }
 
   /**
@@ -200,6 +206,12 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     // The profile edit page containing a user ID.
     $path = $site_path . '/profile/' . $this->siteAdmin->uid . '/modify';
     $path_expected = 'group/node/' . $site_nid . '/profile/' . $this->siteAdmin->uid . '/modify';
+    og_sm_user_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
+
+    // The user logout page.
+    $path = $site_path . '/logout';
+    $path_expected = 'group/node/' . $site_nid . '/logout';
     og_sm_user_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
   }

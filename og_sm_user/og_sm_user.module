@@ -90,6 +90,14 @@ function og_sm_user_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $items['group/node/%og_sm_site/logout'] = array(
+    'title' => 'Log out',
+    'access callback' => 'user_is_logged_in',
+    'page callback' => 'og_sm_user_logout_page',
+    'file' => 'og_sm_user.pages.inc',
+    'type' => MENU_CALLBACK,
+  );
+
   $items['admin/config/group/features/user'] = array(
     'title' => 'User',
     'description' => 'Default user configuration.',
@@ -237,8 +245,8 @@ function og_sm_user_url_outbound_alter(&$path, &$options, $original_path) {
   if (!module_exists('og_sm_path')) {
     return;
   }
-  // Rewrite all outgoing site admin paths for paths that do not have an alias.
-  if (preg_match('#^group/node/([0-9]+)(/profile.*)#', $path, $parts)) {
+  // Rewrite all outgoing unaliased profile paths and the logout path.
+  if (preg_match('#^group/node/([0-9]+)(/profile.*|/logout)#', $path, $parts)) {
     $site = og_sm_site_load($parts[1]);
     if ($site) {
       $path = og_sm_path($site) . $parts[2];
@@ -253,7 +261,7 @@ function og_sm_user_url_inbound_alter(&$path, $original_path, $path_language) {
   if (!module_exists('og_sm_path')) {
     return;
   }
-  if (preg_match('#^([\w/_-]+)(/profile.*)#', $path, $parts)) {
+  if (preg_match('#^([\w/_-]+)(/profile.*|/logout)#', $path, $parts)) {
     $site = og_sm_path_load_site($parts[1]);
     if ($site) {
       $path = sprintf('group/node/%d%s', $site->nid, $parts[2]);
