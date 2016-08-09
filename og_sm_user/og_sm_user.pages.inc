@@ -52,7 +52,7 @@ function og_sm_user_page($site, $account = NULL) {
   $path = array(
     l(format_username($account), 'group/node/' . $site->nid . '/profile/' . $account->uid),
   );
-  og_set_breadcrumb('node', $site->nid, $path);
+  og_sm_set_breadcrumb($site, $path);
 
   $sections_info = og_sm_user_get_sections_info();
 
@@ -96,7 +96,7 @@ function og_sm_user_edit_form($form, &$form_state, $site, $account = NULL) {
   }
 
   // Breadcrumbs.
-  og_set_breadcrumb('node', $site->nid, array(
+  og_sm_set_breadcrumb($site, array(
     l(format_username($account), 'group/node/' . $site->nid . '/profile/' . $account->uid),
     l(t('Edit'), 'group/node/' . $site->nid . '/profile/' . $account->uid . '/modify'),
   ));

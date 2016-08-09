@@ -332,15 +332,7 @@ function og_sm_site_homepage($site = NULL) {
  *   Array of links to append to the breadcumb.
  */
 function og_sm_set_breadcrumb($site, $path = array()) {
-  $label = entity_label('node', $site);
-  $uri = entity_uri('node', $site);
-  drupal_set_breadcrumb(
-    array_merge(
-      array(l(t('Home'), og_sm_site_homepage($site))),
-      array(l($label, $uri['path'])),
-      $path
-    )
-  );
+  og_set_breadcrumb('node', $site->nid, $path);
 }
 
 /**
