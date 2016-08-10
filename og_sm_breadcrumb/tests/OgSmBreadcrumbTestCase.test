@@ -71,6 +71,7 @@ class OgSmBreadcrumbTestCase extends OgSmWebTestCase {
     $original = array(
       'breadcrumb' => array(
         '<a href="0">Home</a>',
+        '<a href="/node/' . $this->site->nid . '">' . $this->site->title . '</a>',
         '<a href="1">1</a>',
         '<a href="2">2</a>',
       ),
@@ -194,6 +195,7 @@ class OgSmBreadcrumbTestCase extends OgSmWebTestCase {
     $original = array(
       'breadcrumb' => array(
         '<a href="0">Home</a>',
+        '<a href="/node/' . $this->site->nid . '">' . $this->site->title . '</a>',
         '<a href="1">1</a>',
         '<a href="2">2</a>',
       ),
@@ -298,6 +300,7 @@ class OgSmBreadcrumbTestCase extends OgSmWebTestCase {
       'breadcrumb' => array(
         '<a href="/path1">Custom 1</a>',
         '<a href="/path2">Custom 2</a>',
+        '<a href="/node/' . $this->site->nid . '">' . $this->site->title . '</a>',
         '<a href="1">1</a>',
         '<a href="2">2</a>',
         $page_title,
