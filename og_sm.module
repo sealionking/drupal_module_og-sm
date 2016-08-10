@@ -341,7 +341,7 @@ function og_sm_set_breadcrumb($site, $path = array()) {
   $homepage = og_sm_site_homepage($site);
   $homepage_link = l($label, $homepage);
   if (!in_array($homepage_link, $path) && current_path() !== $homepage) {
-    $breadcrumb[] = l($label, $homepage_link);
+    $breadcrumb[] = $homepage_link;
   }
   $breadcrumb = array_merge($breadcrumb, $path);
   drupal_set_breadcrumb($breadcrumb);
