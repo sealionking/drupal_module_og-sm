@@ -275,4 +275,11 @@ function og_sm_user_url_inbound_alter(&$path, $original_path, $path_language) {
 function og_sm_user_admin_menu_output_alter(&$content) {
   global $user;
   $content['account']['account']['#href'] = og_sm_user_profile_path($user);
+
+  $site = og_sm_current_site();
+  if ($site) {
+    if (isset($content['account']['logout'])) {
+      $content['account']['logout']['#href'] = 'group/node/' . $site->nid . '/logout';
+    }
+  }
 }
