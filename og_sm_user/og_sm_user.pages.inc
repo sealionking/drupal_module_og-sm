@@ -113,3 +113,14 @@ function og_sm_user_edit_form($form, &$form_state, $site, $account = NULL) {
   );
   return $form;
 }
+
+/**
+ * Page callback for the logout link.
+ *
+ * This is page callback for the Site-aware logout link. It does exactly the
+ * same as the normal user/logout path, but has a Site context active. It does
+ * not log a user out from a specific Site, but from all Sites at once.
+ */
+function og_sm_user_logout_page() {
+  menu_execute_active_handler('user/logout');
+}
