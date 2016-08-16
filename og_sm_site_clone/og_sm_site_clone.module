@@ -17,7 +17,7 @@ define('OG_SM_SITE_CLONE_PERM_OWN', 'clone own site');
  */
 function og_sm_site_clone_admin_paths() {
   $paths = array(
-    'node/clone/*' => TRUE,
+    'node/*/clone' => TRUE,
   );
   return $paths;
 }
@@ -79,21 +79,13 @@ function og_sm_site_clone_menu() {
   $items['node/%og_sm_site/clone'] = array(
     'title' => 'Clone',
     'description' => 'Create a new Site based on another.',
-    'page callback' => 'og_sm_site_clone_node_redirect',
+    'page callback' => 'og_sm_site_clone_node_form',
     'page arguments' => array(1),
     'access callback' => 'og_sm_site_clone_access_page',
     'access arguments' => array(1),
+    'file' => $file_page,
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
-    'file' => $file_page,
-  );
-  $items['node/clone/%og_sm_site'] = array(
-    'title' => 'Clone',
-    'description' => 'Create a new Site based on another.',
-    'page callback' => 'og_sm_site_clone_node_form',
-    'page arguments' => array(2),
-    'access callback' => 'og_sm_site_clone_access_page',
-    'access arguments' => array(2),
     'file' => $file_page,
   );
 

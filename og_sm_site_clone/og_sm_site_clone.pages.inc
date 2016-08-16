@@ -6,16 +6,6 @@
  */
 
 /**
- * Page callback to redirect the clone tab to the node/clone/* URL.
- *
- * @param object $site_original
- *   The node to clone.
- */
-function og_sm_site_clone_node_redirect($site_original) {
-  drupal_goto('node/clone/' . $site_original->nid);
-}
-
-/**
  * Page callback to render the clone form.
  *
  * @param object $site_original
