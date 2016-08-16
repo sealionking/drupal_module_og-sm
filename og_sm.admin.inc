@@ -6,7 +6,7 @@
  */
 
 /**
- * Page callback for group/node/%og_sm_site/admin/edit.
+ * Page callback for group/node/%og_sm_site/admin/site-edit.
  *
  * Redirects to the node/%nid/edit URL.
  *
