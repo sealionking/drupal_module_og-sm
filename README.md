@@ -58,7 +58,7 @@ This module and its submodules adds functionality to support:
 
 ### Included in og_sm_site_clone module
 * A "Clone" tab on Site node detail/edit pages.
-* A form to clone an existing Site (`node/clone/[existing-site-nid]`).
+* A form to clone an existing Site (`node/[existing-site-nid]/clone`).
 * Hooks so modules can alter prepared cloned Site and perform actions after a 
   cloned Site is saved.
 
