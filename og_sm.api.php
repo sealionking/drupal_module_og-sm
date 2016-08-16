@@ -157,6 +157,26 @@ function hook_og_sm_site_update($site) {
 }
 
 /**
+ * Act on a Site node being saved.
+ *
+ * Will be triggered after a node is inserted or updated. It will always be
+ * called after all the hook_site_insert/update hooks are processed.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $site
+ *   The Site node object.
+ *
+ * @see hook_node_insert()
+ * @see hook_node_update()
+ */
+function hook_og_sm_site_save($site) {
+
+}
+
+/**
  * Act on a Site node being deleted.
  *
  * Will only be triggered when the node_delete hook is triggered for a node type
@@ -172,6 +192,84 @@ function hook_og_sm_site_update($site) {
  * @see hook_node_delete()
  */
 function hook_og_sm_site_delete($site) {
+
+}
+
+/**
+ * Act on a Site node after it is being inserted in the database.
+ *
+ * This allows modules to interact with Sites after the insert queries are
+ * stored in the database (after database transaction commit).
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $site
+ *   The Site node object.
+ *
+ * @see hook_node_insert()
+ */
+function hook_og_sm_site_post_insert($site) {
+
+}
+
+/**
+ * Act on a Site node after it is being updated in the database.
+ *
+ * This allows modules to interact with Sites after the update queries are
+ * stored in the database (after database transaction commit).
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $site
+ *   The Site node object.
+ *
+ * @see hook_node_update()
+ */
+function hook_og_sm_site_post_update($site) {
+
+}
+
+/**
+ * Act on a Site node after it is being inserted of updated in the database.
+ *
+ * This allows modules to interact with Sites after the insert/update queries
+ * are stored in the database (after database transaction commit).
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $site
+ *   The Site node object.
+ *
+ * @see hook_node_post_insert()
+ * @see hook_node_post_update()
+ * @see hook_node_save()
+ */
+function hook_og_sm_site_post_save($site) {
+
+}
+
+/**
+ * Act on a Site node after it is being deleted from the database.
+ *
+ * This allows modules to interact with Sites after the delete queries are
+ * performend on the database (after database transaction commit).
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param object $site
+ *   The Site node object.
+ *
+ * @see hook_node_delete()
+ */
+function hook_og_sm_site_post_delete($site) {
 
 }
 

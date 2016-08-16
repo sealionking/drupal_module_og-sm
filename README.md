@@ -285,7 +285,28 @@ when an action happens:
   prepared to being shown on the screen.
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
+* `hook_og_sm_site_save($site)` : Act on a Site node being saved. Will be 
+  triggered after a node is inserted or updated. It will always be called after 
+  all the hook_site_insert/update hooks are processed.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
+
+There are also special pos-action hooks available: the default action hooks 
+(insert, update, save) are called during a DB transation. This means that it is
+not possible to perform actions based data in the database as all SQL operations
+are not committed yet.
+
+To allow modules to interact with a Site node actions after the Site node & all 
+queries by implemented hooks are stored in the database, following extra action 
+hooks are provided:
+ 
+* `hook_og_sm_site_post_insert($site)` : Site node is inserted in the DB and all 
+  *_insert hooks are processed.
+* `hook_og_sm_site_post_update($site)` : Site node is updated in the DB and all 
+  *_update hooks are processed.
+* `hook_og_sm_site_post_save($site)` : Site is inserted or updated in the DB and all 
+  *_insert, *_update, and *_save hooks are processed.
+* `hook_og_sm_site_delete($site)` : Site is deleted from Db and all *_delete 
+  hooks are processed.
 
 
 ### Alter the Site homepage path.

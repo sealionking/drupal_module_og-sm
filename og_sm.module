@@ -655,6 +655,22 @@ function og_sm_hook_site($action, $node) {
 
   $hook = 'og_sm_site_' . $action;
   module_invoke_all($hook, $node);
+
+  // Call the save hook for insert/update operations.
+  $actions = array('insert', 'update');
+  if (in_array($action, $actions)) {
+    og_sm_hook_site('save', $node);
+  }
+
+  // Register shutdown functions for post_op operations.
+  $post_actions = array('insert', 'update', 'save');
+  if (in_array($action, $post_actions)) {
+    drupal_register_shutdown_function(
+      'og_sm_hook_site',
+      'post_' . $action,
+      $node
+    );
+  }
 }
 
 /**
