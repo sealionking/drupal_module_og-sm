@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Base module for the Organic Groups Sites functionality.
@@ -44,6 +45,28 @@ function og_sm_og_permission() {
       'default role' => array(OG_ADMINISTRATOR_ROLE),
     ),
   );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_menu() {
+  $items = array();
+
+  $file = 'og_sm.admin.inc';
+
+  // Redirects to node/%nid/edit.
+  $items['group/%/%og_sm_site/admin/edit'] = array(
+    'title callback' => 'Edit Site',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'og_sm_admin_site_edit',
+    'page arguments' => array(2),
+    'access callback' => 'node_access',
+    'access arguments' => array('update', 1),
+    'file' => $file,
+  );
+
+  return $items;
 }
 
 /**
