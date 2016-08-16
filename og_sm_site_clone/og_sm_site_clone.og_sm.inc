@@ -11,10 +11,10 @@
 function og_sm_site_clone_og_sm_admin_menu() {
   $items = array();
 
-  $items['site/clone'] = array(
+  $items['structure/site-clone'] = array(
     'title' => 'Clone Site',
     'description' => 'Create a new Site based on this one.',
-    'href' => 'admin/clone',
+    'href' => 'admin/site-clone',
     'weight' => 0,
   );
 

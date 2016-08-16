@@ -89,6 +89,17 @@ function og_sm_site_clone_menu() {
     'file' => $file_page,
   );
 
+  // Redirect for the Site admin menu item.
+  $items['group/%/%og_sm_site/admin/site-clone'] = array(
+    'title callback' => 'Clone Site',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'og_sm_site_clone_redirect',
+    'page arguments' => array(2),
+    'access callback' => 'og_sm_site_clone_access_page',
+    'access arguments' => array(2),
+    'file' => $file_page,
+  );
+
   return $items;
 }
 

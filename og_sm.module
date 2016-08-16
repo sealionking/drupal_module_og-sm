@@ -56,7 +56,7 @@ function og_sm_menu() {
   $file = 'og_sm.admin.inc';
 
   // Redirects to node/%nid/edit.
-  $items['group/%/%og_sm_site/admin/edit'] = array(
+  $items['group/%/%og_sm_site/admin/site-edit'] = array(
     'title callback' => 'Edit Site',
     'type' => MENU_CALLBACK,
     'page callback' => 'og_sm_admin_site_edit',
