@@ -223,7 +223,7 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
   // Append current page title unless we are on the site's homepage, in that
   // case the site title should be added.
   if ($settings['append_title']) {
-    $breadcrumb[] = $path_is_site_frontpage ? $site->title : drupal_get_title();
+    $breadcrumb[] = drupal_get_title();
   }
 
   // Update the variable and set the new breadcrumb to allow the rest of the
