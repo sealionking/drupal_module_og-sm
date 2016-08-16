@@ -175,70 +175,90 @@ class OgSmVariableTestCase extends OgSmWebTestCase {
 
     $var31 = 'fizz-buzz';
     _og_sm_variable_save($site_nid3, 'var1', $var31);
-
-    // Check the empty cache first.
-    $this->assertFalse(cache_get($cid1, 'cache_og_sm_variable'));
-    $this->assertFalse(cache_get($cid2, 'cache_og_sm_variable'));
+    // Verify that saving a variable doesn't statically cache it yet.
+    $this->assertFalse(drupal_static('og_sm_variable_get_all'));
+    // Verify that it's also not cached in the persistent cache.
+    $this->assertFalse(cache_get($cid1, OG_SM_VARIABLE_CACHE_BIN));
+    $this->assertFalse(cache_get($cid2, OG_SM_VARIABLE_CACHE_BIN));
     $this->assertFalse(cache_get($cid_var2, OG_SM_VARIABLE_CACHE_BIN));
 
-    // Get all variables for site 1, this should store them in the cache.
+    // Get all variables for site 1, this should store them in both the static
+    // cache and persistent cache.
     og_sm_variable_get_all($site_nid1);
-    $cache1 = cache_get($cid1, 'cache_og_sm_variable');
+    $static_cache = drupal_static('og_sm_variable_get_all');
+    $this->assertEqual($vars1, $static_cache[$site_nid1]);
+    $cache1 = cache_get($cid1, OG_SM_VARIABLE_CACHE_BIN);
     $this->assertEqual($vars1, $cache1->data);
 
-    // Get a single variables for site 2, this should also load all in cache.
-    $this->assertFalse(cache_get($cid2));
+    // Get a single variables for site 2, this should also load all in both the
+    // static cache and persistent cache.
+    $this->assertFalse(cache_get($cid2, OG_SM_VARIABLE_CACHE_BIN));
     og_sm_variable_get($site_nid2, 'var2');
-    $cache2 = cache_get($cid2, 'cache_og_sm_variable');
+    $static_cache = drupal_static('og_sm_variable_get_all');
+    $this->assertEqual($vars2, $static_cache[$site_nid2]);
+    $cache2 = cache_get($cid2, OG_SM_VARIABLE_CACHE_BIN);
     $this->assertEqual($vars2, $cache2->data);
 
     // Get all variable values for all sites by the variable name, this should
-    // be stored in the cache.
+    // be stored both the static cache and persistent cache.
     og_sm_variable_get_all_sites('var2');
     $expected = array($site_nid1 => $var12, $site_nid2 => $var22);
+    $static_cache = drupal_static('og_sm_variable_get_all_sites');
+    $this->assertEqual($expected, $static_cache['var2']);
     $cache_var2 = cache_get($cid_var2, OG_SM_VARIABLE_CACHE_BIN);
     $this->assertEqual($expected, $cache_var2->data);
 
-    // Setting the variable for one site should clear the variable name cache.
+    // Setting the variable for one site should clear the persistent name cache
+    // for only that site, the static name cache should be cleared for all
+    // sites.
     $var22 = 'foo-bar';
     $vars2 = array('var1' => $var21, 'var2' => $var22);
     og_sm_variable_set($site_nid2, 'var2', $var22);
     $this->assertFalse(cache_get($cid_var2, OG_SM_VARIABLE_CACHE_BIN));
-
-    // Cache of first not altered.
-    $cache1 = cache_get($cid1, 'cache_og_sm_variable');
+    // Verify that the persistent cache of the first site is not altered.
+    $cache1 = cache_get($cid1, OG_SM_VARIABLE_CACHE_BIN);
     $this->assertEqual($vars1, $cache1->data);
+    // Verify that the static name cache is empty for all sites.
+    $this->assertFalse(drupal_static('og_sm_variable_get_all_sites'));
 
-    // Deleting a variable for a site should clear the variable name cache.
+    // Deleting a variable for a site should clear the persistent name cache for
+    // only that site, the static name cache should be cleared for all sites.
     og_sm_variable_get_all_sites('var2');
     $this->assertTrue((bool) cache_get($cid_var2, OG_SM_VARIABLE_CACHE_BIN));
     og_sm_variable_delete($site_nid1, 'var2');
     $this->assertFalse(cache_get($cid_var2, OG_SM_VARIABLE_CACHE_BIN));
+    // Verify that the static name cache is empty for all sites.
+    $this->assertFalse(drupal_static('og_sm_variable_get_all_sites'));
 
-    // Clearing the cache for 1 site should not affect other sites.
+    // Clearing the persistent cache for 1 site should not affect other sites.
     og_sm_variable_get_all($site_nid2);
     _og_sm_variable_cache_clear_site($site_nid1);
-    $this->assertFalse(cache_get($cid1, 'cache_og_sm_variable'));
-    $cache2 = cache_get($cid2, 'cache_og_sm_variable');
+    $this->assertFalse(cache_get($cid1, OG_SM_VARIABLE_CACHE_BIN));
+    $cache2 = cache_get($cid2, OG_SM_VARIABLE_CACHE_BIN);
     $this->assertEqual($vars2, $cache2->data);
+    // Verify that the static name cache is empty for all sites.
+    $this->assertFalse(drupal_static('og_sm_variable_get_all'));
 
     // Delete all variables for 1 Site, should:
-    // - Not affect the other site caches.
+    // - Not affect the other site persistent caches.
     // - Delete all variable name caches.
+    // - Delete all static caches (name and site).
     og_sm_variable_get_all($site_nid2);
     og_sm_variable_get_all_sites('var2');
     og_sm_variable_delete_all($site_nid3);
-    $cache2 = cache_get($cid2, 'cache_og_sm_variable');
+    $cache2 = cache_get($cid2, OG_SM_VARIABLE_CACHE_BIN);
     $this->assertEqual($vars2, $cache2->data);
     $this->assertFalse(cache_get($cid_var2, OG_SM_VARIABLE_CACHE_BIN));
+    $this->assertFalse(drupal_static('og_sm_variable_get_all'));
+    $this->assertFalse(drupal_static('og_sm_variable_get_all_sites'));
 
-    // Delete all caches, should also clear the variables cache.
+    // Delete all caches, should also clear the variables persistent cache.
     og_sm_variable_get_all($site_nid1);
     og_sm_variable_get_all($site_nid2);
 
     drupal_flush_all_caches();
-    $this->assertFalse(cache_get($cid1, 'cache_og_sm_variable'));
-    $this->assertFalse(cache_get($cid2, 'cache_og_sm_variable'));
+    $this->assertFalse(cache_get($cid1, OG_SM_VARIABLE_CACHE_BIN));
+    $this->assertFalse(cache_get($cid2, OG_SM_VARIABLE_CACHE_BIN));
   }
 
   /**
