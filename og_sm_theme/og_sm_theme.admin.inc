@@ -28,8 +28,7 @@ function og_sm_theme_themes_page($site) {
   // Get a list of available themes.
   $themes = og_sm_theme_site_themes($site);
 
-  $global_theme = variable_get('theme_default', 'bartik');
-  $theme_default = og_sm_variable_get($site->nid, 'theme', $global_theme);
+  $theme_site = og_sm_theme_get_site_theme($site);
   $theme_groups  = array();
 
   foreach ($themes as &$theme) {
@@ -37,7 +36,7 @@ function og_sm_theme_themes_page($site) {
       continue;
     }
 
-    $theme->is_default = ($theme->name == $theme_default);
+    $theme->is_default = ($theme->name == $theme_site);
 
     // Identify theme screenshot.
     $theme->screenshot = NULL;

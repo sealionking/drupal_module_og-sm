@@ -17,7 +17,7 @@ define('OG_SM_SITE_CLONE_PERM_OWN', 'clone own site');
  */
 function og_sm_site_clone_admin_paths() {
   $paths = array(
-    'node/clone/*' => TRUE,
+    'node/*/clone' => TRUE,
   );
   return $paths;
 }
@@ -52,17 +52,17 @@ function og_sm_site_clone_module_implements_alter(&$implementations, $hook) {
 function og_sm_site_clone_permission() {
   return array(
     OG_SM_SITE_CLONE_PERM_ALL => array(
-      'title' => t('Clone any site'),
+      'title' => t('Clone any Site'),
       'description' => t('Clone any site without further permission check.'),
       'restrict access' => TRUE,
       'warning' => t('Warning: give to trusted roles only as this allows to create a copy of any Site.'),
     ),
     OG_SM_SITE_CLONE_PERM_ADMIN => array(
-      'title' => t('Clone site the user administers'),
+      'title' => t('Clone Site the user administers'),
       'description' => t('Allows a user to clone the Sites he can administer.'),
     ),
     OG_SM_SITE_CLONE_PERM_OWN => array(
-      'title' => t('Clone own site'),
+      'title' => t('Clone own Site'),
       'description' => t('Allows a user to clone only the Sites he is the owner (author) of.'),
     ),
   );
@@ -78,19 +78,22 @@ function og_sm_site_clone_menu() {
 
   $items['node/%og_sm_site/clone'] = array(
     'title' => 'Clone',
-    'description' => 'Create a new Site based on another.',
-    'page callback' => 'og_sm_site_clone_node_redirect',
+    'description' => 'Create a new Site based on an existing one.',
+    'page callback' => 'og_sm_site_clone_node_form',
     'page arguments' => array(1),
     'access callback' => 'og_sm_site_clone_access_page',
     'access arguments' => array(1),
+    'file' => $file_page,
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
     'file' => $file_page,
   );
-  $items['node/clone/%og_sm_site'] = array(
-    'title' => 'Clone',
-    'description' => 'Create a new Site based on another.',
-    'page callback' => 'og_sm_site_clone_node_form',
+
+  // Redirect for the Site admin menu item.
+  $items['group/%/%og_sm_site/admin/site-clone'] = array(
+    'title callback' => 'Clone Site',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'og_sm_site_clone_redirect',
     'page arguments' => array(2),
     'access callback' => 'og_sm_site_clone_access_page',
     'access arguments' => array(2),

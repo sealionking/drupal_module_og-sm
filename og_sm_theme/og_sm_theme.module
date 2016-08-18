@@ -323,3 +323,24 @@ function og_sm_theme_preprocess_page(&$variables) {
     $variables['logo_link_target'] = $settings['logo_link_target'];
   }
 }
+
+/**
+ * Get the theme for the given Site.
+ *
+ * @param object $site
+ *   The Site to get the theme name for.
+ *
+ * @return string
+ *   The theme name for the Site.
+ */
+function og_sm_theme_get_site_theme($site) {
+  $theme = og_sm_variable_get($site->nid, 'theme');
+
+  // We need to check this manually as the theme variable can contain an empty
+  // value.
+  if (empty($theme)) {
+    $theme = variable_get('theme_default', 'bartik');
+  }
+
+  return $theme;
+}

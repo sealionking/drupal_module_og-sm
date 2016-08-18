@@ -6,6 +6,26 @@
  */
 
 /**
+ * Implements hook_og_sm_admin_menu().
+ */
+function og_sm_site_clone_og_sm_admin_menu() {
+  $items = array();
+
+  $items['structure/site-clone'] = array(
+    'title' => 'Clone Site',
+    'description' => 'Create a new Site based on this one.',
+    'href' => 'admin/site-clone',
+    'weight' => 0,
+  );
+
+  // Translate strings.
+  t('Clone Site');
+  t('Create a new Site based on this one.');
+
+  return $items;
+}
+
+/**
  * Implements hook_og_sm_site_insert().
  */
 function og_sm_site_clone_og_sm_site_insert($site) {

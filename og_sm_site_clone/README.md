@@ -6,7 +6,7 @@ This module adds functionality to create a new Site based on an existing one.
 ## Functionality
 This module provides:
 * A "Clone" tab on Site node detail/edit pages.
-* A form to clone an existing Site (`node/clone/[existing-site-nid]`).
+* A form to clone an existing Site (`node/[existing-site-nid]/clone`).
 * A hook to alter preparing a new Site node based on an existing one.
 * A hook so modules can perform extra operations once a cloned Site is saved.
 
