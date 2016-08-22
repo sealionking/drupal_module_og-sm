@@ -342,7 +342,10 @@ function _og_sm_variable_delete_all($site_nid) {
  */
 function _og_sm_variable_cache_clear_site($site_nid) {
   cache_clear_all(OG_SM_VARIABLE_CID_SITE . $site_nid, OG_SM_VARIABLE_CACHE_BIN);
-  drupal_static_reset('og_sm_variable_get_all');
+  $static = &drupal_static('og_sm_variable_get_all', array());
+  if (isset($static[$site_nid])) {
+    unset($static[$site_nid]);
+  }
 }
 
 /**
@@ -353,7 +356,10 @@ function _og_sm_variable_cache_clear_site($site_nid) {
  */
 function _og_sm_variable_cache_clear_name($name) {
   cache_clear_all(OG_SM_VARIABLE_CID_NAME . $name, OG_SM_VARIABLE_CACHE_BIN);
-  drupal_static_reset('og_sm_variable_get_all_sites');
+  $static = &drupal_static('og_sm_variable_get_all_sites', array());
+  if (isset($static[$name])) {
+    unset($static[$name]);
+  }
 }
 
 /**
