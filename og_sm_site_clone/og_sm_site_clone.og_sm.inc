@@ -37,5 +37,7 @@ function og_sm_site_clone_og_sm_site_insert($site) {
   $original_site = og_sm_site_load($site->site_is_clone_of_nid);
   module_invoke_all('og_sm_site_clone', $site, $original_site);
 
+  // Clear Site cache and schedule a menu rebuild.
   og_sm_site_cache_clear_all($site);
+  menu_rebuild();
 }
