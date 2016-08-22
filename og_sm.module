@@ -499,6 +499,53 @@ function og_sm_user_get_sites($account) {
 }
 
 /**
+ * Get all the sites a User can manage.
+ *
+ * @param object|NULL $account
+ *   (optional) The user object.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_user_get_manageable_sites($account = NULL) {
+  if (!isset($account)) {
+    global $user;
+    $account = $user;
+  }
+
+  // We use a query here as this is the fastest way to get the Sites the user
+  // has access to.
+  $q = db_select('node', 'n');
+  $q->addField('n', 'nid');
+  $q->condition('n.type', og_sm_get_site_types());
+  $q->addTag('node_access');
+
+  // Limit to the Sites the user can manage.
+  if (!user_access('administer nodes')) {
+    $q->join('og_membership', 'ogm', 'n.nid = %alias.gid');
+    $q->condition('ogm.entity_type', 'user')
+      ->condition('ogm.group_type', 'node')
+      ->condition('ogm.etid', $account->uid);
+
+    $q->join('og_users_roles', 'ogur', 'ogm.etid = %alias.uid AND ogm.gid = %alias.gid');
+    $q->condition('ogur.group_type', 'node');
+
+    $q->join('og_role_permission', 'ogrp', 'ogur.rid = %alias.rid');
+    $q->condition('ogrp.permission', array('administer group', 'administer site'));
+  }
+
+  $q->orderBy('n.title', 'ASC');
+
+  // Check if we have results.
+  $nids = array_unique($q->execute()->fetchCol(0));
+  if (!$nids) {
+    return array();
+  }
+
+  return node_load_multiple($nids);
+}
+
+/**
  * Check if a given account is member of the given Site.
  *
  * @param object $account

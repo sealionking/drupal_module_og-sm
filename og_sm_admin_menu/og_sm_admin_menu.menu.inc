@@ -291,11 +291,11 @@ function _og_sm_admin_menu_load_site_switcher() {
 
   // Menu item pointing to the Platform administration.
   $admin = FALSE;
-  if (user_access('access administration pages')) {
+  if (user_access('access administration pages') || user_access('access dashboard')) {
     $admin = array(
       '#title' => t('Platform'),
       '#weight' => 1000,
-      '#href' => 'admin',
+      '#href' => user_access('access dashboard') ? 'admin/dashboard' : 'admin',
     );
   }
 
@@ -372,42 +372,13 @@ function _og_sm_admin_menu_load_site_switcher() {
  *   Array of Sites.
  */
 function _og_sm_admin_menu_load_site_switcher_sites() {
-  global $user;
-
-  // We use a query here as this is the fastest way to get the Sites the user
-  // has access to.
-  $q = db_select('node', 'n');
-  $q->addField('n', 'nid');
-  $q->condition('n.type', og_sm_get_site_types());
-  $q->addTag('node_access');
+  $sites = og_sm_user_get_manageable_sites();
 
   // Exclude the current Site (if any).
   $site = og_sm_current_site();
   if ($site) {
-    $q->condition('n.nid', $site->nid, '<>');
+    unset($sites[$site->nid]);
   }
 
-  // Limit to the Sites the user can manage.
-  if (!user_access('administer nodes')) {
-    $q->join('og_membership', 'ogm', 'n.nid = %alias.gid');
-    $q->condition('ogm.entity_type', 'user')
-      ->condition('ogm.group_type', 'node')
-      ->condition('ogm.etid', $user->uid);
-
-    $q->join('og_users_roles', 'ogur', 'ogm.etid = %alias.uid AND ogm.gid = %alias.gid');
-    $q->condition('ogur.group_type', 'node');
-
-    $q->join('og_role_permission', 'ogrp', 'ogur.rid = %alias.rid');
-    $q->condition('ogrp.permission', array('administer group', 'administer site'));
-  }
-
-  $q->orderBy('n.title', 'ASC');
-
-  // Check if we have results.
-  $nids = array_unique($q->execute()->fetchCol(0));
-  if (!$nids) {
-    return array();
-  }
-
-  return node_load_multiple($nids);
+  return $sites;
 }

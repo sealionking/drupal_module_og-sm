@@ -86,7 +86,6 @@ function og_sm_site_clone_menu() {
     'file' => $file_page,
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
-    'file' => $file_page,
   );
 
   // Redirect for the Site admin menu item.

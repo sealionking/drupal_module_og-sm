@@ -1,0 +1,7 @@
+#block-og-sm-dashboard-site-overview .item-list {
+  float: right;
+}
+
+#block-og-sm-dashboard-site-overview .item-list ul li {
+  list-style-type: none;
+}

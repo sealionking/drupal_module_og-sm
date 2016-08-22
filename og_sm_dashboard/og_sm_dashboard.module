@@ -1,0 +1,34 @@
+<?php
+/**
+ * @file
+ * Site Platform Dashboard functionality.
+ */
+
+/**
+ * Implements hook_block_info().
+ */
+function og_sm_dashboard_block_info() {
+  $blocks = array();
+  $blocks['site_overview'] = array(
+    'info' => t('Dashboard: Site overview'),
+    'cache' => DRUPAL_CACHE_PER_USER,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function og_sm_dashboard_block_view($delta = '') {
+  module_load_include('inc', 'og_sm_dashboard', 'og_sm_dashboard.block');
+  $block = array();
+
+  switch ($delta) {
+    case 'site_overview':
+      $block['subject'] = t('Sites');
+      $block['content'] = og_sm_dashboard_site_overview_block();
+      break;
+  }
+
+  return $block;
+}

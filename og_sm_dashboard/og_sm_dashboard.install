@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file
+ * Install, Update & Uninstall hooks.
+ */
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function og_sm_dashboard_uninstall() {
+  // Remove blocks.
+  if (db_table_exists('block')) {
+    db_delete('block')->condition('module', 'og_sm_dashboard')->execute();
+  }
+}
