@@ -217,8 +217,10 @@ class OgSmVariableTestCase extends OgSmWebTestCase {
     // Verify that the persistent cache of the first site is not altered.
     $cache1 = cache_get($cid1, OG_SM_VARIABLE_CACHE_BIN);
     $this->assertEqual($vars1, $cache1->data);
-    // Verify that the static name cache is empty for all sites.
-    $this->assertFalse(drupal_static('og_sm_variable_get_all_sites'));
+    // Verify that the static name cache is only empty for site 2.
+    $static_cache = drupal_static('og_sm_variable_get_all_sites');
+    $this->assertFalse(isset($static_cache[$site_nid2]));
+    $this->assertEqual($static_cache[$site_nid1], $vars1);
 
     // Deleting a variable for a site should clear the persistent name cache and
     // static name cache for only that site.
