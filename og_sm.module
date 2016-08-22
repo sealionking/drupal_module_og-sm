@@ -148,7 +148,7 @@ function og_sm_node_type_form_field_submit($form, $form_state) {
  * @param int $site_nid
  *   The Site Node ID.
  *
- * @return object|FALSE
+ * @return object|false
  *   The Site Node (if any).
  */
 function og_sm_site_load($site_nid) {
@@ -233,7 +233,7 @@ function og_sm_site_nid_permission_access($site_nid, $permission, $account = NUL
 /**
  * Get the currently active Site.
  *
- * @return object|NULL
+ * @return object|null
  *   The active Site node (if any).
  */
 function og_sm_current_site() {
@@ -321,7 +321,7 @@ function og_sm_site_type_remove($type) {
  *   The optional Site node. Will use the current Site from context if no Site
  *   is provided.
  *
- * @return string|FALSE
+ * @return string|false
  *   The path (not URL) to the Site homepage.
  */
 function og_sm_site_homepage($site = NULL) {
@@ -443,7 +443,7 @@ function og_sm_content_get_sites($node) {
  * @param object $node
  *   The site content.
  *
- * @return object|FALSE
+ * @return object|false
  *   The site node (if any).
  */
 function og_sm_content_get_site($node) {
@@ -600,7 +600,7 @@ function og_sm_node_update($node) {
  * @param object $node
  *   The node being updated.
  *
- * @return TRUE
+ * @return bool
  *   The alias will be changed.
  */
 function _og_sm_node_update_alias_will_change($node) {
@@ -704,7 +704,7 @@ function _og_sm_site_alias_by_nid($site_nid, $language) {
  * @param string $language
  *   The language to search for.
  *
- * @return int|FALSE
+ * @return int|false
  *   The Site id.
  */
 function _og_sm_site_nid_by_alias($alias, $language) {
