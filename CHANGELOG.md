@@ -4,7 +4,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
-## [Unreleased]
+## [7.x-1.5]
 ### Added
 - DMOGSM-72 : Added site node type machine name to content type name in content
   overview.
@@ -136,6 +136,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.5%0D7.x-1.4#diff
 [7.x-1.4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.4%0D7.x-1.3#diff
 [7.x-1.3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.3%0D7.x-1.2#diff
 [7.x-1.2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.2%0D7.x-1.1#diff
