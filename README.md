@@ -291,9 +291,9 @@ when an action happens:
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
 There are also special post-action hooks available: the default action hooks 
-(insert, update, save) are called during a DB transation. This means that it is
-not possible to perform actions based data in the database as all SQL operations
-are not committed yet.
+(insert, update, save and delete) are called during a DB transation. This means 
+that it is not possible to perform actions based data in the database as all SQL
+operations are not committed yet.
 
 To allow modules to interact with a Site node actions after the Site node & all 
 queries by implemented hooks are stored in the database, following extra action 
