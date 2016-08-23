@@ -27,7 +27,7 @@ function og_sm_dashboard_site_overview_block() {
     $items[] = l(t('Add a new @site', array('@site' => $type->name)), 'node/add/' . $type_machine_name);
   }
   if ($items) {
-    $content['create_site_links'] = array(
+    $content['node_add'] = array(
       '#theme' => 'item_list',
       '#items' => $items,
     );
@@ -54,7 +54,6 @@ function og_sm_dashboard_site_overview_block() {
     '#theme' => 'table',
     '#rows' => $rows,
   );
-
   $content['#attached']['css'][] = drupal_get_path('module', 'og_sm_dashboard') . '/og_sm_dashboard.css';
 
   return $content;

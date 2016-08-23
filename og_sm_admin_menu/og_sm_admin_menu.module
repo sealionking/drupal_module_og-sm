@@ -248,6 +248,9 @@ function og_sm_admin_menu_admin_menu_output_build(&$content) {
   // Add the Site switcher menu to the administration menu.
   if (!empty($content['#components']['og_sm_admin_menu.site_switcher'])) {
     $content['site_switcher'] = og_sm_admin_menu_load_site_switcher();
+    // We don't want the dashboard link in the admin menu since it's already
+    // included in the site switcher.
+    unset($content['menu']['admin/dashboard']);
   }
 }
 
