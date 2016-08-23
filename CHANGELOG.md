@@ -14,6 +14,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-87 : Added extra site action hooks (_save, _post_insert, _post_update,
   _post_save, _post_delete).
 - DMOGSM-65 : Added static cache for variable calls.
+- PPL-679 : Added og_sm_dashboard module.
 
 ### Fixed
 - DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths
