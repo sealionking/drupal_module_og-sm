@@ -6,19 +6,23 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [Unreleased]
 ### Added
-- DMOGSM-72 : Added site node type machine name to content type name in content 
+- DMOGSM-72 : Added site node type machine name to content type name in content
   overview.
 - DMOGSM-73 : Added module to support cloning existing Sites.
 - DMOGSM-75 : Added configuration to allow anonymous comments per content type.
 - PPL-605 : Added option to disable editing of user profiles.
 - DMOGSM-87 : Added extra site action hooks (_save, _post_insert, _post_update,
   _post_save, _post_delete).
+- DMOGSM-65 : Added static cache for variable calls.
 
 ### Fixed
 - DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths
   when the user has no access to the admin theme.
 - PPL-434: Added the comment/reply/%node path to the comment context handler.
 - PPL-448: Trim comment in comments overview to 200 chars.
+- DMOGSM-84 : Adjust breadcrumb logic so the site homepage link is always
+  included in the breadcrumb.
+- DMOGSM-86 : Fixed broken tests introduced in DMOGSM-84.
 
 
 

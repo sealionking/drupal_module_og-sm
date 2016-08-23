@@ -259,6 +259,11 @@ class OgSmContentTypeTestCase extends OgSmWebTestCase {
     $this->assertResponse(200);
     $this->assertText(t('Create @name', array('@name' => $type_name)));
 
+    // Verify that when we try to save the form and it results in a validation
+    // messages being triggered, the content type name has still been replaced.
+    $this->drupalPost(NULL, array(), 'Save');
+    $this->assertText(t('Create @name', array('@name' => $type_name)));
+
     // Check if the content type name on the node edit page has been replaced.
     $node = $this->ogSmCreateGroupContent($type, array($this->nodeSite));
     $this->drupalGet('node/' . $node->nid . '/edit');

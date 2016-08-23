@@ -29,7 +29,7 @@ msgstr "Bekijk de Site beheer pagina's"
 
 #: og_sm.module:87
 msgid "Make this content type a Site type."
-msgstr "Maak van dit inhoud type een Site type."
+msgstr "Maak van dit inhoudstype een Site type."
 
 #: og_sm.module:88
 msgid "All nodes of this type will be recognized as being a Site."
@@ -37,7 +37,7 @@ msgstr "Alle nodes van dit type zullen herkend worden als zijnde een Site."
 
 #: og_sm.module:89
 msgid "WARNING: The content type needs also to be a Group type!"
-msgstr "WAARSCHUWING: Het inhoud type moet ook een Groep type zijn!"
+msgstr "WAARSCHUWING: Het inhoudstype moet ook een Groep type zijn!"
 
 #: og_sm.module:94 og_sm.info:0
 msgid "Site Manager"
@@ -49,7 +49,7 @@ msgstr "Site type"
 
 #: og_sm.module:120
 msgid "A content type can only be a Site if it also a Group type."
-msgstr "Een inhoud type kan enkel een Site zijn als het ook een Groep type is."
+msgstr "Een inhoudstype kan enkel een Site zijn als het ook een Groep type is."
 
 #: og_sm.module:359
 msgid "Home"

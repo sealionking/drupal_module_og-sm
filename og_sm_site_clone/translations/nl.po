@@ -29,15 +29,15 @@ msgstr "Dupliceer een Site"
 
 #: og_sm_site_clone.module:56
 msgid "Clone any site without further permission check."
-msgstr "Dupliceer een Site zonder controle van de toegangs rechten."
+msgstr "Dupliceer een Site zonder controle van de toegangsrechten."
 
 #: og_sm_site_clone.module:58
 msgid "Warning: give to trusted roles only as this allows to create a copy of any Site."
-msgstr "Waarschuwing: geef dit recht enkel aan vertrouwde rollen aangezien dit toelaat om een kopie te maken van all Sites."
+msgstr "Waarschuwing: geef dit recht enkel aan vertrouwde rollen aangezien dit toelaat om een kopie te maken van alle Sites."
 
 #: og_sm_site_clone.module:61
 msgid "Clone Site the user administers"
-msgstr "Dupliceer Site die gebruiker beheerd"
+msgstr "Dupliceer een Site die gebruiker beheerd"
 
 #: og_sm_site_clone.module:62
 msgid "Allows a user to clone the Sites he can administer."
