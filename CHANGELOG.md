@@ -11,6 +11,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-73 : Added module to support cloning existing Sites.
 - DMOGSM-75 : Added configuration to allow anonymous comments per content type.
 - PPL-605 : Added option to disable editing of user profiles.
+- DMOGSM-87 : Added extra site action hooks (_save, _post_insert, _post_update,
+  _post_save, _post_delete).
 - DMOGSM-65 : Added static cache for variable calls.
 
 ### Fixed
