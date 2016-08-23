@@ -1,0 +1,23 @@
+/**
+ * Custom styling for the Administration menu.
+ */
+
+body.adminimal-menu #admin-menu #admin-menu-wrapper .dropdown li li.separated {
+  background: #444;
+}
+#admin-menu-site-switcher li.admin-menu-toolbar-category {
+  background-color: #FF9933;
+}
+#admin-menu-site-switcher li.admin-menu-toolbar-category > a {
+  color: #000;
+}
+body.adminimal-menu #admin-menu #admin-menu-site-switcher.dropdown li:hover {
+  background: #FF9933 !important;
+}
+body.adminimal-menu div#admin-menu #admin-menu-site-switcher a:hover {
+  background: #FF9933;
+  color: #000;
+}
+body.adminimal-menu #admin-menu #admin-menu-site-switcher.dropdown li ul {
+  border-color: #FF9933;
+}

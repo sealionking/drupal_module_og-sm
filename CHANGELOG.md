@@ -3,6 +3,30 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+
+## [7.x-1.5]
+### Added
+- DMOGSM-72 : Added site node type machine name to content type name in content
+  overview.
+- DMOGSM-73 : Added module to support cloning existing Sites.
+- DMOGSM-75 : Added configuration to allow anonymous comments per content type.
+- PPL-605 : Added option to disable editing of user profiles.
+- DMOGSM-87 : Added extra site action hooks (_save, _post_insert, _post_update,
+  _post_save, _post_delete).
+- DMOGSM-65 : Added static cache for variable calls.
+
+### Fixed
+- DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths
+  when the user has no access to the admin theme.
+- PPL-434: Added the comment/reply/%node path to the comment context handler.
+- PPL-448: Trim comment in comments overview to 200 chars.
+- DMOGSM-84 : Adjust breadcrumb logic so the site homepage link is always
+  included in the breadcrumb.
+- DMOGSM-86 : Fixed broken tests introduced in DMOGSM-84.
+
+
+
+
 ## [7.x-1.4]
 ### Added
 - DMOGSM-62 : Added support to include a node type in multiple features.
@@ -112,6 +136,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.5%0D7.x-1.4#diff
 [7.x-1.4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.4%0D7.x-1.3#diff
 [7.x-1.3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.3%0D7.x-1.2#diff
 [7.x-1.2]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.2%0D7.x-1.1#diff

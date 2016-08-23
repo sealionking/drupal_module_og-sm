@@ -144,4 +144,162 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
     );
   }
 
+  /**
+   * Test the og_sm_admin_menu_load_site_switcher() function.
+   */
+  public function testLoadSiteSwitcher() {
+    // Create Sites.
+    $siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($siteType);
+    $site1 = $this->ogSmCreateGroup($siteType, array('title' => 'Site 1'));
+    $site2 = $this->ogSmCreateGroup($siteType, array('title' => 'Site 2'));
+
+    // Create Users.
+    $administrator = $this->ogSmCreateAdminUser();
+    $userCanAdministerNodes = $this->drupalCreateUser(array('administer nodes'));
+    $userDefault = $this->drupalCreateUser();
+    $userSite1Admin = $this->ogSmCreateGroupUser(array(), array($site1));
+    $userSite1And2Admin = $this->ogSmCreateGroupUser(array(), array($site1, $site2));
+    $roleAdministerGroup = og_role_create('admin_group', 'node', 0, $siteType);
+    $roleAdministerSite = og_role_create('admin_site', 'node', 0, $siteType);
+    og_role_save($roleAdministerGroup);
+    og_role_save($roleAdministerSite);
+    og_role_grant_permissions($roleAdministerGroup->rid, array('administer group'));
+    og_role_grant_permissions($roleAdministerSite->rid, array('administer site'));
+    og_role_grant('node', $site1->nid, $userSite1Admin->uid, $roleAdministerGroup->rid);
+    og_role_grant('node', $site1->nid, $userSite1And2Admin->uid, $roleAdministerSite->rid);
+    og_role_grant('node', $site2->nid, $userSite1And2Admin->uid, $roleAdministerSite->rid);
+
+    // As administrator outside Sites.
+    $GLOBALS['user'] = $administrator;
+    $this->ogSmResetOgContext();
+    $structure = og_sm_admin_menu_load_site_switcher();
+    $expected = array(
+      '#theme' => 'admin_menu_links',
+      '#wrapper_attributes' => array(
+        'id' => 'admin-menu-site-switcher',
+      ),
+      '#weight' => -50,
+      'current' => array(
+        '#title' => 'Platform',
+        '#weight' => 1000,
+        '#href' => 'admin',
+        'site-1' => array(
+          '#title' => 'Site 1',
+          '#href' => 'node/1',
+        ),
+        'site-2' => array(
+          '#title' => 'Site 2',
+          '#href' => 'node/2',
+        ),
+        '#attributes' => array(
+          'class' => array(
+            0 => 'admin-menu-toolbar-category',
+          ),
+        ),
+      ),
+    );
+    $this->assertEqual(
+      $expected,
+      $structure,
+      'Administrator gets menu with all Sites, plaform is current item.'
+    );
+
+    // As admin user outside Sites.
+    $GLOBALS['user'] = $userCanAdministerNodes;
+    $structure = og_sm_admin_menu_load_site_switcher();
+    $expected_current = array(
+      '#title' => 'Select Site',
+      '#weight' => 0,
+      'site-1' => array(
+        '#title' => 'Site 1',
+        '#href' => 'node/1',
+      ),
+      'site-2' => array(
+        '#title' => 'Site 2',
+        '#href' => 'node/2',
+      ),
+      '#attributes' => array(
+        'class' => array(
+          0 => 'admin-menu-toolbar-category',
+        ),
+      ),
+    );
+    $this->assertEqual(
+      $expected_current,
+      $structure['current'],
+      'User who can administer content gets menu with all Sites, the current item is the "Select Site" label.'
+    );
+
+    // Default user outside Sites.
+    $GLOBALS['user'] = $userDefault;
+    $structure = og_sm_admin_menu_load_site_switcher();
+    $this->assertEqual(array(), $structure, "Users who can't administer Sites don't have the menu item.");
+
+    // As admin inside a Site.
+    $GLOBALS['user'] = $administrator;
+    $this->ogSmSetOgContextToGroup($site1);
+    $structure = og_sm_admin_menu_load_site_switcher();
+    $expected_current = array(
+      '#title' => 'Site 1',
+      '#weight' => 0,
+      '#href' => 'node/1',
+      'admin' => array(
+        '#title' => 'Platform',
+        '#weight' => 1000,
+        '#href' => 'admin',
+        '#attributes' => array(
+          'class' => array(
+            0 => 'separated',
+          ),
+        ),
+      ),
+      'site-2' => array(
+        '#title' => 'Site 2',
+        '#href' => 'node/2',
+      ),
+      '#attributes' => array(
+        'class' =>
+          array(
+            0 => 'admin-menu-toolbar-category',
+          ),
+      ),
+    );
+    $this->assertEqual(
+      $expected_current,
+      $structure['current'],
+      'Administrator gets menu with all Sites, Site 1 is current item.'
+    );
+
+    // As user 1 within Site 1.
+    $GLOBALS['user'] = $userSite1Admin;
+    $this->ogSmSetOgContextToGroup($site1, $userSite1Admin);
+    $structure = og_sm_admin_menu_load_site_switcher();
+    $this->assertEqual(array(), $structure, 'User 1 has only 1 Site, no need for Site switcher.');
+
+    // As user 2 within Site 1.
+    $GLOBALS['user'] = $userSite1And2Admin;
+    $this->ogSmSetOgContextToGroup($site1, $userSite1And2Admin);
+    $structure = og_sm_admin_menu_load_site_switcher();
+    $expected_current = array(
+      '#title' => 'Site 1',
+      '#weight' => 0,
+      '#href' => 'node/1',
+      'site-2' => array(
+        '#title' => 'Site 2',
+        '#href' => 'node/2',
+      ),
+      '#attributes' => array(
+        'class' => array(
+          0 => 'admin-menu-toolbar-category',
+        ),
+      ),
+    );
+    $this->assertEqual(
+      $expected_current,
+      $structure['current'],
+      'User 2 gets menu with all the Sites he has access to, Site 1 is current item.'
+    );
+  }
+
 }

@@ -111,12 +111,12 @@ this function to get the information specific for the given Site.
 
 The information can be collected by passing the content type object.
 ```php
-$info = og_sm_content_get_type_info_by_site($ite, $content_type);
+$info = og_sm_content_get_type_info_by_site($site, $content_type);
 ```
 
 Or by the content type machine name (type).
 ```php
-$info = og_sm_content_get_type_info_by_site($ite, 'article');
+$info = og_sm_content_get_type_info_by_site($site, 'article');
 ```
 
 

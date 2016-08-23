@@ -24,7 +24,8 @@ Following modules are required to use the Sites functionality:
 ## Installation
 1. Enable the module.
 2. Open the admin_menu settings (admin/config/administration/admin_menu) and
-   check the "Site Administration menu" option.
+   check the "Site Administration menu" option and uncheck 
+   the "Cache menu in client-side browser" option in the Performance tab.
 
 > **TIP** : The user needs the global "access administration menu" permission.
 > This can only be assigned to global roles.

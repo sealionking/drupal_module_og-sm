@@ -40,14 +40,14 @@ This module and its submodules adds functionality to support:
   - Path alias of the current page.
   - Paths starting with group/node/NID
 
-### Included in og_sm_global_roles module
-* Dynamically grant user global roles when they have specific Site roles.
-
 ### Included in og_sm_feature module
 * Enable/Disable & configure Site features.
   - Define globally default state & configuration.
   - Enable/Disable per Site.
   - Configuration per Site.
+
+### Included in og_sm_global_roles module
+* Dynamically grant user global roles when they have specific Site roles.
 
 ### Included in og_sm_path module
 * Define a Site path prefix per Site.
@@ -55,6 +55,12 @@ This module and its submodules adds functionality to support:
 * Auto update of Site content aliases and Site related page aliases when the
   Site path changes.
 * Altering the `group/node/nid/admin/...` paths to `[site-path]/admin/...`.
+
+### Included in og_sm_site_clone module
+* A "Clone" tab on Site node detail/edit pages.
+* A form to clone an existing Site (`node/[existing-site-nid]/clone`).
+* Hooks so modules can alter prepared cloned Site and perform actions after a 
+  cloned Site is saved.
 
 ### Included in og_sm_taxonomy module
 * Support global vocabularies with Site specific terms.
@@ -67,19 +73,12 @@ This module and its submodules adds functionality to support:
 
 ### Included in og_sm_user module
 * Site feature that creates site specific user profiles.
+* Allow Sites to disable the editing of profiles, eg. when no alterable
+  sections are available.
 
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
 * Get/Set/Delete Site specific variables.
-
-
-### Todo
-* Support for User profile & settings per Site (Site User).
-* Site features: enable functionality per site (eg. Site A has blogs, Site B
-  not).
-* Site Content settings per Site (eg. Site A enables commenting on Blog posts,
-  Site B not).
-* Rename Site Content types per site.
 
 
 
@@ -286,7 +285,28 @@ when an action happens:
   prepared to being shown on the screen.
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
+* `hook_og_sm_site_save($site)` : Act on a Site node being saved. Will be 
+  triggered after a node is inserted or updated. It will always be called after 
+  all the hook_site_insert/update hooks are processed.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
+
+There are also special post-action hooks available: the default action hooks 
+(insert, update, save and delete) are called during a DB transation. This means 
+that it is not possible to perform actions based data in the database as all SQL
+operations are not committed yet.
+
+To allow modules to interact with a Site node actions after the Site node & all 
+queries by implemented hooks are stored in the database, following extra action 
+hooks are provided:
+ 
+* `hook_og_sm_site_post_insert($site)` : Site node is inserted in the DB and all 
+  *_insert hooks are processed.
+* `hook_og_sm_site_post_update($site)` : Site node is updated in the DB and all 
+  *_update hooks are processed.
+* `hook_og_sm_site_post_save($site)` : Site is inserted or updated in the DB and all 
+  *_insert, *_update, and *_save hooks are processed.
+* `hook_og_sm_site_post_delete($site)` : Site is deleted from DB and all 
+  *_delete hooks are processed.
 
 
 ### Alter the Site homepage path.

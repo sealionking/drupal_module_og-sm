@@ -51,6 +51,13 @@ Setting the theme can be done by changing the `theme` variable for a Site:
 og_sm_variable_set($site, 'theme', 'bartik');
 ```
 
+### Get the theme for a given Site
+Get the theme name for the given Site object.
+
+```php
+$theme = og_sm_theme_get_site_theme($site);
+```
+
 
 
 ## Hooks

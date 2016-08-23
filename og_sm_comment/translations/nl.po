@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2016-05-18 13:04+0100\n"
+"PO-Revision-Date: 2016-07-12 13:04+0100\n"
 "Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 msgid "Administer Site"
 msgstr "Beheer Site"
 
-#: og_sm_comment.og_sm.inc:21 og_sm_comment.module:20
+#: og_sm_comment.og_sm.inc:21 og_sm_comment.module:75;26
 msgid "Administer comments"
 msgstr "Commentaren beheren"
 
@@ -23,7 +23,7 @@ msgstr "Commentaren beheren"
 msgid "Manage the comments of this Site."
 msgstr "De reacties van deze Site beheren."
 
-#: og_sm_comment.pathauto.inc:13 og_sm_comment.module:312;329
+#: og_sm_comment.pathauto.inc:13 og_sm_comment.module:373;390
 msgid "Comments"
 msgstr "Reacties"
 
@@ -167,91 +167,109 @@ msgstr "Titel inhoud bevat"
 msgid "Comment contains"
 msgstr "Commentaar bevat"
 
-#: og_sm_comment.module:49;69
+#: og_sm_comment.views_default.inc:339
+msgid "anonymous"
+msgstr "anoniem"
+
+#: og_sm_comment.module:26
+msgid "Administer comments"
+msgstr "Beheer commentaren"
+
+#: og_sm_comment.module:55;79
 msgid "Delete own comments"
 msgstr "Eigen reacties verwijderen."
 
-#: og_sm_comment.module:50;70
+#: og_sm_comment.module:56;80
 msgid "Allows the user to delete his/her own comments."
 msgstr "Laat een gebruiker toe zijn/haar eigen reacties te verwijderen."
 
-#: og_sm_comment.module:53;73
+#: og_sm_comment.module:59;83
 msgid "Delete all comments"
 msgstr "Alle reacties verwijderen."
 
-#: og_sm_comment.module:54;74
+#: og_sm_comment.module:60;84
 msgid "Allows the user to delete all comments."
 msgstr "Laat een gebruiker toe alle reacties te verwijderen."
 
-#: og_sm_comment.module:57;77
+#: og_sm_comment.module:63;87
 msgid "Edit all comments"
 msgstr "Alle reacties bewerken"
 
-#: og_sm_comment.module:58;78
+#: og_sm_comment.module:64;88
 msgid "Allows the user to edit all comments."
 msgstr "Laat een gebruiker toe alle reacties te bewerken."
 
-#: og_sm_comment.module:81
+#: og_sm_comment.module:76
+msgid "Administer all comments within a Site."
+msgstr "Beheer alle reacties binnen een Site."
+
+#: og_sm_comment.module:91
 msgid "Edit own comments"
 msgstr "Eigen reacties bewerken"
 
-#: og_sm_comment.module:82
+#: og_sm_comment.module:92
 msgid "Allows the user to edit his/her own comments."
 msgstr "Laat een gebruiker toe zijn/haar eigen reacties te bewerken."
 
-#: og_sm_comment.module:180
+#: og_sm_comment.module:241
 msgid "Site Comment"
 msgstr "Site Reactie"
 
-#: og_sm_comment.module:181
+#: og_sm_comment.module:242
 msgid "Determine Site context based on the fact that we are on a comment made on Site page or a Site content page."
 msgstr ""
 "Bepaal de Site context als de huidige pagina een comment is gemaakt op "
 "Site pagina of een Site inhoud pagina is."
 
-#: og_sm_comment.module:316
+#: og_sm_comment.module:377
 msgid "Select whether the comment form can be shown for @content_type_plural."
 msgstr ""
 "Selecteer of het reactie formulier mag getoond worden voor "
 "@content_type_plural."
 
-#: og_sm_comment.module:321
+#: og_sm_comment.module:382
 msgid "Hidden: No comments are allowed, and past comments are hidden."
-msgstr "Verborgen: Geen commentaren toegelaten, bestaande commentaren zijn verborgen."
+msgstr ""
+"Verborgen: Geen commentaren toegelaten, bestaande commentaren zijn "
+"verborgen."
 
-#: og_sm_comment.module:322
+#: og_sm_comment.module:383
 msgid "Closed: No comments are allowed, but any past comments remain visible."
-msgstr "Gesloten: Geen commentaren toegelaten, bestaande commentaren worden weergegeven."
+msgstr ""
+"Gesloten: Geen commentaren toegelaten, bestaande commentaren worden "
+"weergegeven."
 
-#: og_sm_comment.module:323
-msgid "Open: Any future content of this type is open to new comments."
-msgstr "Open: Commentaren op alle nieuwe inhoud van dit type is toegelaten."
+#: og_sm_comment.module:384
+msgid "Open: Any content of this type is open to new comments."
+msgstr "Open: Commentaren op alle inhoud van dit type is toegelaten."
 
-#: og_sm_comment.module:333
+#: og_sm_comment.module:384
+msgid ""
+"Open for anonymous users: Any content of this type is open to new anonymous "
+"comments."
+msgstr "Open: Anonieme commentaren op alle inhoud van dit type zijn toegelaten."
+
+#: og_sm_comment.module:394
 msgid "Open"
 msgstr "Open"
 
-#: og_sm_comment.module:334
+#: og_sm_comment.module:395
+msgid "Open for anonymous users"
+msgstr "Open voor anonieme gebruikers"
+
+#: og_sm_comment.module:396
 msgid "Closed"
 msgstr "Gesloten"
 
-#: og_sm_comment.module:335
+#: og_sm_comment.module:397
 msgid "Hidden"
 msgstr "Verborgen"
 
-#: og_sm_comment.module:265
+#: og_sm_comment.module:326
 msgid "Updated URL alias for 1 comment."
 msgid_plural "Updated URL aliases for @count comments."
 msgstr[0] "URL-alias bijgewerkt voor 1 reactie."
 msgstr[1] "URL-aliassen bijgewerkt voor @count reacties."
-
-#: og_sm_comment.module:70
-msgid "Administer comments"
-msgstr "Beheer commentaren"
-
-#: og_sm_comment.module:71
-msgid "Administer all comments within a Site."
-msgstr "Beheer alle reacties binnen een Site."
 
 #: og_sm_comment.info:0
 msgid "Site Comments"

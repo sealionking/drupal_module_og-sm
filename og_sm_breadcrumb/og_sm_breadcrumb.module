@@ -169,8 +169,9 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
   }
 
   // Check path type.
-  $path_is_admin = path_is_admin(current_path());
-  $path_is_site_frontpage = (current_path() === og_sm_site_homepage($site));
+  $path_is_admin = (user_access('view the administration theme') && path_is_admin(current_path()));
+  $site_homepage = og_sm_site_homepage($site);
+  $path_is_site_frontpage = (current_path() === $site_homepage);
   $og_sm_feature_exists = module_exists('og_sm_feature');
 
   // Hide breadcrumb if og_sm_feature and the global option is not enabled.
@@ -197,14 +198,6 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
   // Get the breadcrumb.
   $breadcrumb = drupal_get_breadcrumb();
 
-  // Force the root part to the Site frontpage.
-  if ($settings['force_home']) {
-    // Remove the first item.
-    array_shift($breadcrumb);
-
-    // Replace by the Site home page.
-    array_unshift($breadcrumb, l(t('Home'), og_sm_site_homepage($site)));
-  }
 
   // Custom breadcrumb root (only when not on admin pages).
   if (!$path_is_admin && $settings['override_root']) {
@@ -216,8 +209,19 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
       array_unshift($breadcrumb, l($part['text'], $part['path']));
     }
   }
+  // Force the root part to the Site frontpage, this should be ignored when the
+  // breadcrumb's root parts are overridden.
+  elseif ($settings['force_home']) {
+    // Remove the first 2 items of the breadcrumb, since they contain both the
+    // PP homepage and the site homepage.
+    $breadcrumb = array_slice($breadcrumb, 2);
 
-  // Append current page title.
+    // Replace by the Site home page.
+    array_unshift($breadcrumb, l(t('Home'), $site_homepage));
+  }
+
+  // Append current page title unless we are on the site's homepage, in that
+  // case the site title should be added.
   if ($settings['append_title']) {
     $breadcrumb[] = drupal_get_title();
   }
@@ -226,4 +230,20 @@ function og_sm_breadcrumb_preprocess_breadcrumb(&$variables) {
   // preprocessing chain to call drupal_get_breadcrumb() as well.
   $variables['breadcrumb'] = $breadcrumb;
   drupal_set_breadcrumb($breadcrumb);
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function og_sm_breadcrumb_node_view($node, $view_mode, $langcode) {
+  if ($view_mode !== 'full') {
+    return;
+  }
+  if (!module_exists('og_sm_content')) {
+    return;
+  }
+  $site = og_sm_content_get_site($node);
+  if ($site) {
+    og_sm_set_breadcrumb($site);
+  }
 }

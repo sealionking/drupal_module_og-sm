@@ -231,6 +231,9 @@ function og_sm_admin_menu_router_path_from_admin_path($site, $admin_path) {
 function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_state, $form_id) {
   // Add the Site Administration menu as extra menu option.
   $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.site'] = t('Site Administration menu');
+
+  // Add the Site switcher as extra menu option.
+  $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.site_switcher'] = t('Site switcher');
 }
 
 /**
@@ -240,6 +243,11 @@ function og_sm_admin_menu_admin_menu_output_build(&$content) {
   // Replace the menu with the Site menu when in site context.
   if (og_sm_current_site() && !empty($content['#components']['og_sm_admin_menu.site'])) {
     $content['menu'] = og_sm_admin_menu_load_site();
+  }
+
+  // Add the Site switcher menu to the administration menu.
+  if (!empty($content['#components']['og_sm_admin_menu.site_switcher'])) {
+    $content['site_switcher'] = og_sm_admin_menu_load_site_switcher();
   }
 }
 
@@ -268,6 +276,17 @@ function og_sm_admin_menu_load_site() {
 }
 
 /**
+ * Load the Site Switcher to show in the Administration menu.
+ *
+ * @return array
+ *   The Site switcher menu item structure.
+ */
+function og_sm_admin_menu_load_site_switcher() {
+  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
+  return _og_sm_admin_menu_load_site_switcher();
+}
+
+/**
  * Implements hook_admin_menu_output_alter().
  */
 function og_sm_admin_menu_admin_menu_output_alter(&$content) {
@@ -285,10 +304,10 @@ function og_sm_admin_menu_admin_menu_output_alter(&$content) {
 
   // Alter the home link to the homepage of the current Site.
   if (!empty($content['icon'])) {
-    $content['icon']['icon']['#href'] = 'node/' . $site->nid;
+    $content['icon']['icon']['#href'] = og_sm_site_homepage($site);
   }
   if (!empty($content['responsive-menu']['icon'])) {
-    $content['responsive-menu']['icon']['#href'] = 'node/' . $site->nid;
+    $content['responsive-menu']['icon']['#href'] = og_sm_site_homepage($site);
   }
 
   // Alter the add content links.
@@ -364,4 +383,17 @@ function og_sm_admin_menu_og_role_revoke($entity_type, $gid, $uid, $rid) {
   // Make sure that the admin_menu cache for this user is flushed when his roles
   // change.
   admin_menu_flush_caches($uid);
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function og_sm_admin_menu_page_alter(&$page) {
+  // Add extra css IF admin menu is on the page.
+  if (empty($page['page_bottom']['admin_menu']['#attached']['css'])) {
+    return;
+  }
+
+  $file = drupal_get_path('module', 'og_sm_admin_menu') . '/css/og_sm_admin_menu.css';
+  $page['page_bottom']['admin_menu']['#attached']['css'][] = $file;
 }

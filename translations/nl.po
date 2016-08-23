@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-03-03 15:13+0100\n"
-"PO-Revision-Date: 2016-03-03 15:13+0100\n"
+"PO-Revision-Date: 2016-08-16 12:44+0100\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -11,42 +11,57 @@ msgstr ""
 "Language: nl\n"
 "X-Generator: Poedit 1.8.6\n"
 
-#: og_sm.tokens.inc:13
-msgid "Site Path"
-msgstr "Site pad"
+#: og_sm.og_sm.inc:21
+msgid "Edit Site"
+msgstr "Site aanpassen"
 
-#: og_sm.tokens.inc:14
-msgid "The path alias of the Site the node belongs to."
-msgstr "De pad alias van de Site waar de node deel van uitmaakt."
+#: og_sm.og_sm.inc:22
+msgid "Edit the Site node."
+msgstr "Pas de Site node aan."
 
-#: og_sm.module:26
+#: og_sm.module:42
+msgid "Administer Site"
+msgstr "Beheer Site"
+
+#: og_sm.module:43
+msgid "View the Site administration pages."
+msgstr "Bekijk de Site beheer pagina's"
+
+#: og_sm.module:87
 msgid "Make this content type a Site type."
-msgstr "Maak van dit inhoud type een Site type."
+msgstr "Maak van dit inhoudstype een Site type."
 
-#: og_sm.module:27
+#: og_sm.module:88
 msgid "All nodes of this type will be recognized as being a Site."
 msgstr "Alle nodes van dit type zullen herkend worden als zijnde een Site."
 
-#: og_sm.module:28
+#: og_sm.module:89
 msgid "WARNING: The content type needs also to be a Group type!"
-msgstr "WAARSCHUWING: Het inhoud type moet ook een Groep type zijn!"
+msgstr "WAARSCHUWING: Het inhoudstype moet ook een Groep type zijn!"
 
-#: og_sm.module:33 og_sm.info:0
+#: og_sm.module:94 og_sm.info:0
 msgid "Site Manager"
 msgstr "Site Beheerder"
 
-#: og_sm.module:38
+#: og_sm.module:99
 msgid "Site type"
 msgstr "Site type"
 
-#: og_sm.module:59
+#: og_sm.module:120
 msgid "A content type can only be a Site if it also a Group type."
-msgstr "Een inhoud type kan enkel een Site zijn als het ook een Groep type is."
+msgstr "Een inhoudstype kan enkel een Site zijn als het ook een Groep type is."
+
+#: og_sm.module:359
+msgid "Home"
+msgstr "Home"
 
 #: og_sm.info:0
 msgid "Support to setup a platform supporting multiple (sub)sites using Organic Groups."
-msgstr "Ondersteuning om op een platform meerdere (sub)sites te bouwen op basis van Organic Groups."
+msgstr ""
+"Ondersteuning om op een platform meerdere (sub)sites te bouwen op "
+"basis van Organic Groups."
 
 #: og_sm.info:0
 msgid "Organic Groups Site Manager"
 msgstr "Organic Groups Site Beheerder"
+

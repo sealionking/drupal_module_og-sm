@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-03-10 15:50+0100\n"
-"PO-Revision-Date: 2016-05-10 09:55+0100\n"
+"PO-Revision-Date: 2016-07-07 12:48+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -10,6 +10,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: nl\n"
 "X-Generator: Poedit 1.8.6\n"
+
+#: og_sm_admin_menu.menu.inc:288
+msgid "Platform"
+msgstr "Platform"
+
+#: og_sm_admin_menu.menu.inc:316
+msgid "Select Site"
+msgstr "Selecteer Site"
 
 #: og_sm_admin_menu.og_sm.inc:80
 msgid "People"
@@ -75,9 +83,13 @@ msgstr "U heeft geen beheeritems."
 msgid "Site Administration menu"
 msgstr "Site Beheer menu"
 
+#: og_sm_admin_menu.module:236
+msgid "Site switcher"
+msgstr "Site kiezer"
+
 #: og_sm_admin_menu.module:47
 msgid "OG Site Admin placeholder"
-msgstr ""
+msgstr "OG Site Beheer plaatshouder"
 
 #: og_sm_admin_menu.info:0
 msgid "Site Administration Menu"

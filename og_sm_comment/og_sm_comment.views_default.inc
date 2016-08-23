@@ -164,7 +164,6 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['fields']['path']['table'] = 'node';
   $handler->display->display_options['fields']['path']['field'] = 'path';
   $handler->display->display_options['fields']['path']['relationship'] = 'nid';
-  $handler->display->display_options['fields']['path']['label'] = 'Path';
   $handler->display->display_options['fields']['path']['exclude'] = TRUE;
   $handler->display->display_options['fields']['path']['absolute'] = TRUE;
   /* Field: Comment: ID */
@@ -178,7 +177,6 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['fields']['title']['table'] = 'node';
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['relationship'] = 'nid';
-  $handler->display->display_options['fields']['title']['label'] = 'Title';
   $handler->display->display_options['fields']['title']['alter']['make_link'] = TRUE;
   $handler->display->display_options['fields']['title']['alter']['path'] = '[path]#comment-[cid]';
   $handler->display->display_options['fields']['title']['link_to_node'] = FALSE;
@@ -186,12 +184,38 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['fields']['comment_body']['id'] = 'comment_body';
   $handler->display->display_options['fields']['comment_body']['table'] = 'field_data_comment_body';
   $handler->display->display_options['fields']['comment_body']['field'] = 'comment_body';
+  $handler->display->display_options['fields']['comment_body']['type'] = 'text_trimmed';
+  $handler->display->display_options['fields']['comment_body']['settings'] = array(
+    'trim_length' => '200',
+  );
+  /* Field: Comment: Author uid */
+  $handler->display->display_options['fields']['uid']['id'] = 'uid';
+  $handler->display->display_options['fields']['uid']['table'] = 'comment';
+  $handler->display->display_options['fields']['uid']['field'] = 'uid';
+  $handler->display->display_options['fields']['uid']['label'] = '';
+  $handler->display->display_options['fields']['uid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['uid']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['uid']['empty'] = 'anonymous';
+  $handler->display->display_options['fields']['uid']['empty_zero'] = TRUE;
+  $handler->display->display_options['fields']['uid']['link_to_user'] = FALSE;
+  /* Field: Comment: Author */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'comment';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['label'] = '';
+  $handler->display->display_options['fields']['name']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['name']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['name']['alter']['text'] = '[name] ([uid])';
+  $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
   /* Field: Realname: Real name */
   $handler->display->display_options['fields']['realname']['id'] = 'realname';
   $handler->display->display_options['fields']['realname']['table'] = 'realname';
   $handler->display->display_options['fields']['realname']['field'] = 'realname';
   $handler->display->display_options['fields']['realname']['relationship'] = 'uid';
   $handler->display->display_options['fields']['realname']['label'] = 'Author';
+  $handler->display->display_options['fields']['realname']['empty'] = '[name]';
   $handler->display->display_options['fields']['realname']['link_to_user'] = FALSE;
   /* Field: Comment: Post date */
   $handler->display->display_options['fields']['created']['id'] = 'created';
@@ -316,7 +340,10 @@ function og_sm_comment_views_default_views() {
     t('Path'),
     t('ID'),
     t('Title'),
+    t('anonymous'),
+    t('[name] ([uid])'),
     t('Author'),
+    t('[name]'),
     t('Created'),
     t('Actions'),
     t('edit'),

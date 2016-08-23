@@ -63,6 +63,8 @@ class OgSmUserTestCase extends OgSmWebTestCase {
 
     // Enable the user profile for this site.
     og_sm_feature_site_enable($this->site, OG_SM_USER_FEATURE_PROFILE);
+    // Set the default value for the feature.
+    og_sm_variable_set($this->site->nid, 'og_sm_user_profile_editable', TRUE);
 
     $this->drupalGet($site_path . '/profile');
     $this->assertResponse(403, 'An anonymous user cannot access his own profile page.');
@@ -80,6 +82,11 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     $this->drupalPost(NULL, $edit, t('Save'));
     $this->drupalGet($site_path . '/profile');
     $this->assertText('ElePHPant', 'An authenticated user can change his favorite animal');
+
+    og_sm_variable_set($this->site->nid, 'og_sm_user_profile_editable', FALSE);
+    $this->drupalGet($site_path . '/profile/modify');
+    $this->assertResponse(403, 'An authenticated user can not access his own profile edit form when editing is disabled.');
+    og_sm_variable_set($this->site->nid, 'og_sm_user_profile_editable', TRUE);
 
     og_sm_feature_site_disable($this->site, OG_SM_USER_FEATURE_PROFILE);
     $this->drupalGet($site_path . '/profile');
@@ -153,6 +160,12 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     $path_expected = $site_path . '/profile/' . $this->siteAdmin->uid . '/modify';
     og_sm_user_url_outbound_alter($path, $options, 'foo/bar');
     $this->assertEqual($path_expected, $path);
+
+    // Test rewriting the logout page.
+    $path = 'group/node/' . $site_nid . '/logout';
+    $path_expected = $site_path . '/logout';
+    og_sm_user_url_outbound_alter($path, $options, 'foo/bar');
+    $this->assertEqual($path_expected, $path);
   }
 
   /**
@@ -195,6 +208,12 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     $path_expected = 'group/node/' . $site_nid . '/profile/' . $this->siteAdmin->uid . '/modify';
     og_sm_user_url_inbound_alter($path, 'foo/bar', 'nl');
     $this->assertEqual($path_expected, $path);
+
+    // The user logout page.
+    $path = $site_path . '/logout';
+    $path_expected = 'group/node/' . $site_nid . '/logout';
+    og_sm_user_url_inbound_alter($path, 'foo/bar', 'nl');
+    $this->assertEqual($path_expected, $path);
   }
 
   /**
@@ -204,6 +223,7 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     module_enable(array('og_sm_feature'));
     // Enable the user profile for this site.
     og_sm_feature_site_enable($this->site, OG_SM_USER_FEATURE_PROFILE);
+    og_sm_variable_set($this->site->nid, 'og_sm_user_profile_editable', TRUE);
 
     $GLOBALS['user'] = $this->siteUser1;
     $access = og_sm_user_page_access('view', $this->site, $this->siteUser1);
@@ -229,6 +249,9 @@ class OgSmUserTestCase extends OgSmWebTestCase {
     $this->assertTrue($access, 'Admin user is allowed to view the profile of another user.');
     $access = og_sm_user_page_access('edit', $this->site, $this->siteUser2);
     $this->assertTrue($access, 'Admin user is allowed to edit the profile of another user.');
+    og_sm_variable_set($this->site->nid, 'og_sm_user_profile_editable', FALSE);
+    $access = og_sm_user_page_access('edit', $this->site, $this->siteUser2);
+    $this->assertFalse($access, 'Admin user is not allowed to edit the profile of another user when editing is disabled.');
   }
 
   /**

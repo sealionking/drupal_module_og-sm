@@ -53,18 +53,22 @@ function og_sm_variable_node_delete($node) {
  *   The arrays as retrieved from the DB.
  */
 function og_sm_variable_get_all($site_nid) {
-  $cid = OG_SM_VARIABLE_CID_SITE . $site_nid;
+  $data = &drupal_static(__FUNCTION__);
+  if (!isset($data[$site_nid])) {
+    $cid = OG_SM_VARIABLE_CID_SITE . $site_nid;
 
-  // Try to get from cache first.
-  $cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN);
-  if ($cache && !empty($cache->data)) {
-    return $cache->data;
+    // Try to get from cache first.
+    if ($cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN)) {
+      $data[$site_nid] = $cache->data;
+    }
+    // Get from DB and store in the cache.
+    else {
+      $variables = _og_sm_variable_load_all($site_nid);
+      $data[$site_nid] = $variables;
+      cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
+    }
   }
-
-  // Get from DB and store in the cache?
-  $variables = _og_sm_variable_load_all($site_nid);
-  cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
-  return $variables;
+  return $data[$site_nid];
 }
 
 /**
@@ -77,17 +81,21 @@ function og_sm_variable_get_all($site_nid) {
  *   Array of variables keyed by the Site Node ID.
  */
 function og_sm_variable_get_all_sites($name) {
-  $cid = OG_SM_VARIABLE_CID_NAME . $name;
+  $data = &drupal_static(__FUNCTION__);
+  if (!isset($data[$name])) {
+    $cid = OG_SM_VARIABLE_CID_NAME . $name;
 
-  // Try to get from cache first.
-  $cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN);
-  if ($cache && !empty($cache->data)) {
-    return $cache->data;
+    // Try to get from cache first.
+    if ($cache = cache_get($cid, OG_SM_VARIABLE_CACHE_BIN)) {
+      $data[$name] = $cache->data;
+    }
+    else {
+      $variables = _og_sm_variable_load_all_sites($name);
+      $data[$name] = $variables;
+      cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
+    }
   }
-
-  $variables = _og_sm_variable_load_all_sites($name);
-  cache_set($cid, $variables, OG_SM_VARIABLE_CACHE_BIN);
-  return $variables;
+  return $data[$name];
 }
 
 /**
@@ -154,6 +162,68 @@ function og_sm_variable_delete_all($site_nid) {
   _og_sm_variable_delete_all($site_nid);
   _og_sm_variable_cache_clear_site($site_nid);
   _og_sm_variable_cache_clear_name_all();
+}
+
+/**
+ * Copy variables, listed by their name(s), from one Site to another.
+ *
+ * @param int $site_nid_from
+ *   The Site node id to copy from.
+ * @param int $site_nid_to
+ *   The Site node it to copy the variables to.
+ * @param array $names
+ *   The variable names to copy.
+ */
+function og_sm_variable_copy_from_to_by_names($site_nid_from, $site_nid_to, array $names) {
+  foreach ($names as $name) {
+    _og_sm_variable_save(
+      $site_nid_to,
+      $name,
+      og_sm_variable_get($site_nid_from, $name)
+    );
+  }
+
+  _og_sm_variable_cache_clear_site($site_nid_to);
+  _og_sm_variable_cache_clear_name_all();
+}
+
+/**
+ * Copy variables, where name matches the pattern, from one Site to another.
+ *
+ * @param int $site_nid_from
+ *   The Site node id to copy from.
+ * @param int $site_nid_to
+ *   The Site node it to copy the variables to.
+ * @param string $pattern
+ *   A regular expression pattern the names should match.
+ */
+function og_sm_variable_copy_from_to_by_pattern($site_nid_from, $site_nid_to, $pattern) {
+  $from_variables = og_sm_variable_get_all($site_nid_from);
+  foreach ($from_variables as $name => $value) {
+    if (!preg_match($pattern, $name)) {
+      continue;
+    }
+
+    _og_sm_variable_save($site_nid_to, $name, $value);
+  }
+
+  _og_sm_variable_cache_clear_site($site_nid_to);
+  _og_sm_variable_cache_clear_name_all();
+}
+
+/**
+ * Copy variables, where name starts with the prefix, from one Site to another.
+ *
+ * @param int $site_nid_from
+ *   The Site node id to copy from.
+ * @param int $site_nid_to
+ *   The Site node it to copy the variables to.
+ * @param string $prefix
+ *   A variable name prefix.
+ */
+function og_sm_variable_copy_from_to_by_prefix($site_nid_from, $site_nid_to, $prefix) {
+  $pattern = '#^' . $prefix . '#';
+  og_sm_variable_copy_from_to_by_pattern($site_nid_from, $site_nid_to, $pattern);
 }
 
 /**
@@ -253,7 +323,7 @@ function _og_sm_variable_delete($site_nid, $name) {
 }
 
 /**
- * Delete all variabled in the database for the given Site Node ID.
+ * Delete all variables in the database for the given Site Node ID.
  *
  * @param int $site_nid
  *   The Site Node ID to delete all the variables for.
@@ -272,6 +342,10 @@ function _og_sm_variable_delete_all($site_nid) {
  */
 function _og_sm_variable_cache_clear_site($site_nid) {
   cache_clear_all(OG_SM_VARIABLE_CID_SITE . $site_nid, OG_SM_VARIABLE_CACHE_BIN);
+  $static = &drupal_static('og_sm_variable_get_all', array());
+  if (isset($static[$site_nid])) {
+    unset($static[$site_nid]);
+  }
 }
 
 /**
@@ -282,6 +356,10 @@ function _og_sm_variable_cache_clear_site($site_nid) {
  */
 function _og_sm_variable_cache_clear_name($name) {
   cache_clear_all(OG_SM_VARIABLE_CID_NAME . $name, OG_SM_VARIABLE_CACHE_BIN);
+  $static = &drupal_static('og_sm_variable_get_all_sites', array());
+  if (isset($static[$name])) {
+    unset($static[$name]);
+  }
 }
 
 /**
@@ -289,6 +367,7 @@ function _og_sm_variable_cache_clear_name($name) {
  */
 function _og_sm_variable_cache_clear_name_all() {
   cache_clear_all(OG_SM_VARIABLE_CID_NAME, OG_SM_VARIABLE_CACHE_BIN, TRUE);
+  drupal_static_reset('og_sm_variable_get_all_sites');
 }
 
 /**

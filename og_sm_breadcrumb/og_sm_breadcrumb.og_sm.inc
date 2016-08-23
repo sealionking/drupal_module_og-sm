@@ -33,3 +33,23 @@ function og_sm_breadcrumb_og_sm_variable_defaults($site) {
 
   return $items;
 }
+
+/**
+ * Implements hook_og_sm_site_clone().
+ */
+function og_sm_breadcrumb_og_sm_site_clone($site_new, $site_original) {
+  // Enable the feature if original is enabled.
+  if (og_sm_feature_site_is_enabled($site_original, OG_SM_BREADCRUMB_FEATURE)) {
+    og_sm_feature_site_enable($site_new, OG_SM_BREADCRUMB_FEATURE);
+  }
+  else {
+    og_sm_feature_site_disable($site_new, OG_SM_BREADCRUMB_FEATURE);
+  }
+
+  // Copy the feature variables.
+  og_sm_variable_copy_from_to_by_prefix(
+    $site_original->nid,
+    $site_new->nid,
+    'og_sm_breadcrumb_'
+  );
+}
