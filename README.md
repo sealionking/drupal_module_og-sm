@@ -290,7 +290,7 @@ when an action happens:
   all the hook_site_insert/update hooks are processed.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
-There are also special pos-action hooks available: the default action hooks 
+There are also special post-action hooks available: the default action hooks 
 (insert, update, save) are called during a DB transation. This means that it is
 not possible to perform actions based data in the database as all SQL operations
 are not committed yet.
@@ -305,8 +305,8 @@ hooks are provided:
   *_update hooks are processed.
 * `hook_og_sm_site_post_save($site)` : Site is inserted or updated in the DB and all 
   *_insert, *_update, and *_save hooks are processed.
-* `hook_og_sm_site_delete($site)` : Site is deleted from Db and all *_delete 
-  hooks are processed.
+* `hook_og_sm_site_post_delete($site)` : Site is deleted from DB and all 
+  *_delete hooks are processed.
 
 
 ### Alter the Site homepage path.

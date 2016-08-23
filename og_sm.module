@@ -663,7 +663,7 @@ function og_sm_hook_site($action, $node) {
   }
 
   // Register shutdown functions for post_op operations.
-  $post_actions = array('insert', 'update', 'save');
+  $post_actions = array('insert', 'update', 'save', 'delete');
   if (in_array($action, $post_actions)) {
     drupal_register_shutdown_function(
       'og_sm_hook_site',
