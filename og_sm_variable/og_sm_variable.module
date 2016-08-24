@@ -443,6 +443,7 @@ function og_sm_variable_settings_form_submit($form, &$form_state) {
     }
     _og_sm_variable_save($site->nid, $key, $value);
   }
+  og_sm_site_cache_clear_all($site);
 
   drupal_set_message(t('The configuration options have been saved.'));
 }
