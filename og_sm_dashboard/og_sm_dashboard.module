@@ -32,3 +32,16 @@ function og_sm_dashboard_block_view($delta = '') {
 
   return $block;
 }
+
+/**
+ * Implements hook_admin_menu_output_build().
+ */
+function og_sm_dashboard_admin_menu_output_build(&$content) {
+  if (!empty($content['#components']['og_sm_admin_menu.site_switcher'])) {
+    // We don't want the dashboard link in the admin menu if it's already
+    // included in the site switcher.
+    if (og_sm_platform_administration_page() === 'admin/dashboard') {
+      unset($content['menu']['admin/dashboard']);
+    }
+  }
+}

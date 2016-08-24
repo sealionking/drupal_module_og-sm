@@ -28,6 +28,7 @@ function og_sm_hook_info() {
     'og_sm_site_delete' => $group,
     'og_sm_site_cache_clear_all' => $group,
     'og_sm_site_homepage_alter' => $group,
+    'og_sm_platform_administration_page_alter' => $group,
   );
 
   return $hooks;
@@ -315,6 +316,23 @@ function og_sm_site_type_remove($type) {
 }
 
 /**
+ * Get the platform administration page.
+ *
+ * @return string|false
+ *   The path (not URL) to the Platform administration homepage.
+ */
+function og_sm_platform_administration_page() {
+  // This can be called multiple times, lets add some static caching.
+  $path = &drupal_static(__FUNCTION__, FALSE);
+  if (!$path) {
+    $path = 'admin';
+    drupal_alter('og_sm_platform_administration_page', $path);
+  }
+
+  return $path;
+}
+
+/**
  * Get the homepage path for a Site.
  *
  * @param object $site
@@ -525,6 +543,7 @@ function og_sm_user_get_manageable_sites($account = NULL) {
     $q->join('og_membership', 'ogm', 'n.nid = %alias.gid');
     $q->condition('ogm.entity_type', 'user')
       ->condition('ogm.group_type', 'node')
+      ->condition('ogm.state', 1)
       ->condition('ogm.etid', $account->uid);
 
     $q->join('og_users_roles', 'ogur', 'ogm.etid = %alias.uid AND ogm.gid = %alias.gid');

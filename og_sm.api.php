@@ -295,5 +295,23 @@ function hook_og_sm_site_homepage_alter(&$path, $site) {
 }
 
 /**
+ * Alter the platform administration page path.
+ *
+ * The og_sm_platform_administration_page() function creates and returns the
+ * path (as string) to the platform adminstration page.
+ *
+ * Implementations can require that the page links to a different page (eg.
+ * admin/dashboard).
+ *
+ * This alter function allows modules to alter that path.
+ *
+ * @param string $path
+ *   The current path to the Site homepage.
+ */
+function hook_og_sm_platform_administration_page_alter(&$path) {
+  $path = 'admin/dashboard';
+}
+
+/**
  * @} End of "addtogroup hooks".
  */

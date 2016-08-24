@@ -291,11 +291,11 @@ function _og_sm_admin_menu_load_site_switcher() {
 
   // Menu item pointing to the Platform administration.
   $admin = FALSE;
-  if (user_access('access administration pages') || user_access('access dashboard')) {
+  if (user_access('access administration pages')) {
     $admin = array(
       '#title' => t('Platform'),
       '#weight' => 1000,
-      '#href' => user_access('access dashboard') ? 'admin/dashboard' : 'admin',
+      '#href' => og_sm_platform_administration_page(),
     );
   }
 
