@@ -50,7 +50,10 @@ function og_sm_dashboard_site_overview_block() {
       'site_name' => l($site->title, 'node/' . $site->nid),
     );
     if ($og_sm_clone_exists && og_sm_site_clone_access_page($site, $user)) {
-      $row['clone'] = l(t('clone'), 'node/' . $site->nid . '/clone');
+      $row['clone'] = array(
+        'data' => l(t('clone'), 'node/' . $site->nid . '/clone'),
+        'class' => 'action action-clone',
+      );
     }
     $rows[$site->nid] = $row;
   }
