@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Implementation of the og_sm hooks.
