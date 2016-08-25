@@ -13,6 +13,8 @@
  */
 function og_sm_dashboard_site_overview_block() {
   global $user;
+
+  $content = array();
   $content['description']['#markup'] = t('All sites under your management.');
 
   $node_types = node_type_get_types();
@@ -52,6 +54,7 @@ function og_sm_dashboard_site_overview_block() {
     }
     $rows[$site->nid] = $row;
   }
+
   $content['sites'] = array(
     '#theme' => 'table',
     '#rows' => $rows,
