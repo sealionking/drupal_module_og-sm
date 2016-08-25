@@ -403,18 +403,6 @@ function og_sm_breadcrumb_og_admin_submit_before($form, &$form_state) {
 }
 
 /**
- * Submit handler to clear the Site cache after the values are saved.
- *
- * @param array $form
- *   The form.
- * @param array $form_state
- *   The form state.
- */
-function og_sm_breadcrumb_og_admin_submit_after($form, &$form_state) {
-  og_sm_site_cache_clear_all($form_state['site']);
-}
-
-/**
  * Submit function for the add item button.
  *
  * @param array $form

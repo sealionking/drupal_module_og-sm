@@ -44,3 +44,11 @@ function og_sm_variable_get_defaults($site) {
   drupal_alter('og_sm_variable_defaults', $items, $site);
   return $items;
 }
+
+/**
+ * Implements hook_og_sm_site_cache_clear_all().
+ */
+function og_sm_variable_og_sm_site_cache_clear_all($site) {
+  _og_sm_variable_cache_clear_site($site->nid);
+  _og_sm_variable_cache_clear_name_all();
+}
