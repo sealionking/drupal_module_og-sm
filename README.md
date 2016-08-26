@@ -40,6 +40,9 @@ This module and its submodules adds functionality to support:
   - Path alias of the current page.
   - Paths starting with group/node/NID
 
+### Included in og_sm_dashboard module
+* Provides blocks to be used with the dashboard module.
+
 ### Included in og_sm_feature module
 * Enable/Disable & configure Site features.
   - Define globally default state & configuration.
@@ -59,7 +62,7 @@ This module and its submodules adds functionality to support:
 ### Included in og_sm_site_clone module
 * A "Clone" tab on Site node detail/edit pages.
 * A form to clone an existing Site (`node/[existing-site-nid]/clone`).
-* Hooks so modules can alter prepared cloned Site and perform actions after a 
+* Hooks so modules can alter prepared cloned Site and perform actions after a
   cloned Site is saved.
 
 ### Included in og_sm_taxonomy module
@@ -285,27 +288,27 @@ when an action happens:
   prepared to being shown on the screen.
 * `hook_og_sm_site_insert($site)` : Site node being inserted.
 * `hook_og_sm_site_update($site)` : Site node being updated.
-* `hook_og_sm_site_save($site)` : Act on a Site node being saved. Will be 
-  triggered after a node is inserted or updated. It will always be called after 
+* `hook_og_sm_site_save($site)` : Act on a Site node being saved. Will be
+  triggered after a node is inserted or updated. It will always be called after
   all the hook_site_insert/update hooks are processed.
 * `hook_og_sm_site_delete($site)` : Site node being deleted.
 
-There are also special post-action hooks available: the default action hooks 
-(insert, update, save and delete) are called during a DB transation. This means 
+There are also special post-action hooks available: the default action hooks
+(insert, update, save and delete) are called during a DB transation. This means
 that it is not possible to perform actions based data in the database as all SQL
 operations are not committed yet.
 
-To allow modules to interact with a Site node actions after the Site node & all 
-queries by implemented hooks are stored in the database, following extra action 
+To allow modules to interact with a Site node actions after the Site node & all
+queries by implemented hooks are stored in the database, following extra action
 hooks are provided:
- 
-* `hook_og_sm_site_post_insert($site)` : Site node is inserted in the DB and all 
+
+* `hook_og_sm_site_post_insert($site)` : Site node is inserted in the DB and all
   *_insert hooks are processed.
-* `hook_og_sm_site_post_update($site)` : Site node is updated in the DB and all 
+* `hook_og_sm_site_post_update($site)` : Site node is updated in the DB and all
   *_update hooks are processed.
-* `hook_og_sm_site_post_save($site)` : Site is inserted or updated in the DB and all 
+* `hook_og_sm_site_post_save($site)` : Site is inserted or updated in the DB and all
   *_insert, *_update, and *_save hooks are processed.
-* `hook_og_sm_site_post_delete($site)` : Site is deleted from DB and all 
+* `hook_og_sm_site_post_delete($site)` : Site is deleted from DB and all
   *_delete hooks are processed.
 
 
@@ -333,6 +336,26 @@ function mymodule_og_sm_site_homepage_alter(&$path, $site) {
 }
 ```
 
+### Alter the platform administration page path.
+The og_sm_platform_administration_page() function creates and returns the path
+(as string) to the platform adminstration page.
+
+Implementations can require that the page links to a different page (eg.
+admin/dashboard).
+
+This alter function allows modules to alter that path.
+
+```php
+/**
+ * Implements hook_og_sm_platform_administration_page_alter().
+ *
+ * @param string $path
+ *   The current path to the Site homepage.
+ */
+function mymodule_og_sm_platform_administration_page_alter(&$path) {
+  $path = 'admin/dashboard';
+}
+```
 
 
 

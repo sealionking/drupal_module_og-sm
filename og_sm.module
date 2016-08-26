@@ -28,6 +28,7 @@ function og_sm_hook_info() {
     'og_sm_site_delete' => $group,
     'og_sm_site_cache_clear_all' => $group,
     'og_sm_site_homepage_alter' => $group,
+    'og_sm_platform_administration_page_alter' => $group,
   );
 
   return $hooks;
@@ -315,6 +316,23 @@ function og_sm_site_type_remove($type) {
 }
 
 /**
+ * Get the platform administration page.
+ *
+ * @return string|false
+ *   The path (not URL) to the Platform administration homepage.
+ */
+function og_sm_platform_administration_page() {
+  // This can be called multiple times, lets add some static caching.
+  $path = &drupal_static(__FUNCTION__, FALSE);
+  if (!$path) {
+    $path = 'admin';
+    drupal_alter('og_sm_platform_administration_page', $path);
+  }
+
+  return $path;
+}
+
+/**
  * Get the homepage path for a Site.
  *
  * @param object $site
@@ -496,6 +514,54 @@ function og_sm_content_is_site_member($node, $site) {
 function og_sm_user_get_sites($account) {
   $groups = og_get_entity_groups('user', $account);
   return _og_sm_filter_sites_from_groups($groups);
+}
+
+/**
+ * Get all the sites a User can manage.
+ *
+ * @param object|NULL $account
+ *   (optional) The user object.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_user_get_manageable_sites($account = NULL) {
+  if (!isset($account)) {
+    global $user;
+    $account = $user;
+  }
+
+  // We use a query here as this is the fastest way to get the Sites the user
+  // has access to.
+  $q = db_select('node', 'n');
+  $q->addField('n', 'nid');
+  $q->condition('n.type', og_sm_get_site_types());
+  $q->addTag('node_access');
+
+  // Limit to the Sites the user can manage.
+  if (!user_access('administer nodes')) {
+    $q->join('og_membership', 'ogm', 'n.nid = %alias.gid');
+    $q->condition('ogm.entity_type', 'user')
+      ->condition('ogm.group_type', 'node')
+      ->condition('ogm.state', 1)
+      ->condition('ogm.etid', $account->uid);
+
+    $q->join('og_users_roles', 'ogur', 'ogm.etid = %alias.uid AND ogm.gid = %alias.gid');
+    $q->condition('ogur.group_type', 'node');
+
+    $q->join('og_role_permission', 'ogrp', 'ogur.rid = %alias.rid');
+    $q->condition('ogrp.permission', array('administer group', 'administer site'));
+  }
+
+  $q->orderBy('n.title', 'ASC');
+
+  // Check if we have results.
+  $nids = array_unique($q->execute()->fetchCol(0));
+  if (!$nids) {
+    return array();
+  }
+
+  return node_load_multiple($nids);
 }
 
 /**
