@@ -27,6 +27,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [Unreleased]
+### Added
+- PPL-652 : Added hook_og_sm_ajax_paths_alter.
+
+
+
+
 ## [7.x-1.5]
 ### Added
 - DMOGSM-72 : Added site node type machine name to content type name in content

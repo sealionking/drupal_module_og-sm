@@ -12,6 +12,22 @@ define('OG_SM_PATH_PERM_CHANGE_PATH_OWN', 'change own site path');
 define('OG_SM_PATH_OG_PERM_CHANGE_PATH', 'change site path');
 
 /**
+ * Implements hook_hook_info().
+ */
+function og_sm_path_hook_info() {
+  $hooks = array(
+    'og_sm_site_path_change' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_ajax_paths_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
  * Implements hook_module_implements_alter().
  */
 function og_sm_path_module_implements_alter(&$implementations, $hook) {
@@ -151,14 +167,19 @@ function og_sm_path_site_delete_aliases($site) {
  *   An array of ajax paths.
  */
 function og_sm_path_ajax_paths() {
-  return array(
-    'system/ajax',
-    'views/ajax',
-    'user/autocomplete',
-    'user/autocomplete/.*',
-    'file/ajax',
-    'file/ajax/.*',
-  );
+  $paths = &drupal_static(__FUNCTION__);
+  if (!$paths) {
+    $paths = array(
+      'system/ajax',
+      'views/ajax',
+      'user/autocomplete',
+      'user/autocomplete/.*',
+      'file/ajax',
+      'file/ajax/.*',
+    );
+    drupal_alter('og_sm_ajax_paths', $paths);
+  }
+  return $paths;
 }
 
 /**

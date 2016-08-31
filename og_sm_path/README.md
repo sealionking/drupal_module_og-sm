@@ -142,5 +142,17 @@ when an action happens:
 > .module file cleaner and makes the platform load less code by default.
 
 
+### Alter a list of ajax paths.
+Hook to alter a list of ajax paths that will be rewritten to have site context.
+
+These paths will be used to create a regex pattern, therefor wildcard
+characters should be represented as ".*".
+
+```php
+function hook_og_sm_ajax_paths_alter(&$paths) {
+  $paths[] = 'media/browser';
+}
+```
+
 
 [link-path_alias_xt]: https://www.drupal.org/project/path_alias_xt
