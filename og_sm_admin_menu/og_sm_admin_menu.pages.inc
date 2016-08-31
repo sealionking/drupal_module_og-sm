@@ -113,7 +113,6 @@ function _og_sm_admin_menu_overview_group_items($site, $item) {
   if (empty($item['children'])) {
     return $group_items;
   }
-
   // Translate the items.
   foreach ($item['children'] as $child) {
     if (!empty($child['exclude_overview'])) {
@@ -129,20 +128,22 @@ function _og_sm_admin_menu_overview_group_items($site, $item) {
     }
 
     // Create the group item data.
-    $group_items[$child['path']] = theme(
-      'og_sm_admin_menu_overview_group_item',
-      array(
-        'url' => url($path_raw),
-        // @codingStandardsIgnoreStart
-        'title' => t($child['title']),
-        'description' => (!empty($child['description']))
-          ? t($child['description'])
-          : NULL,
-        // @codingStandardsIgnoreEnd
-        'class' => preg_replace('#/#', '-', $child['path']),
-      )
+    $group_items[$child['path']] = array(
+      '#theme' => 'og_sm_admin_menu_overview_group_item',
+      '#url' => url($path_raw),
+      // @codingStandardsIgnoreStart
+      '#title' => t($child['title']),
+      '#description' => (!empty($child['description']))
+        ? t($child['description'])
+        : NULL,
+      // @codingStandardsIgnoreEnd
+      '#class' => preg_replace('#/#', '-', $child['path']),
+      '#weight' => $child['weight'],
     );
   }
-
+  uasort($group_items, 'admin_menu_element_sort');
+  foreach ($group_items as $path => $group_item) {
+    $group_items[$path] = render($group_item);
+  }
   return $group_items;
 }
