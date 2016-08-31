@@ -3,6 +3,14 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [7.x-1.6]
+### Added
+- PPL-679: Added og_sm_dashboard module.
+- DMOGSM-66: Automatically clear Site variable cache when an
+  og_sm_variable_settings_form is submitted. 
+
+
+
 
 ## [7.x-1.5]
 ### Added
@@ -137,6 +145,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.6%0D7.x-1.5#diff
 [7.x-1.5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.5%0D7.x-1.4#diff
 [7.x-1.4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.4%0D7.x-1.3#diff
 [7.x-1.3]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.3%0D7.x-1.2#diff
