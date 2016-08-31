@@ -160,9 +160,6 @@ function og_sm_path_site_delete_aliases($site) {
 /**
  * Returns an array of ajax paths that should be rewritten to have site context.
  *
- * This helper function is used to create a regex pattern, therefor wildcard
- * characters are represented as ".*".
- *
  * @return array
  *   An array of ajax paths.
  */
@@ -173,11 +170,14 @@ function og_sm_path_ajax_paths() {
       'system/ajax',
       'views/ajax',
       'user/autocomplete',
-      'user/autocomplete/.*',
+      'user/autocomplete/*',
       'file/ajax',
-      'file/ajax/.*',
+      'file/ajax/*',
     );
     drupal_alter('og_sm_ajax_paths', $paths);
+    // This helper function is used to create a regex pattern, therefor wildcard
+    // characters should be represented as ".*".
+    $paths = str_replace('*', '.*', $paths);
   }
   return $paths;
 }
