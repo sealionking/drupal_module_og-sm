@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * Tests for the og_sm__menu module.
+ */
+
+/**
+ * Tests about the OG SM Administration Menu.
+ */
+class OgSmMenuTestCase extends OgSmWebTestCase {
+  /**
+   * Sites to test with.
+   */
+  private $site1;
+  private $site2;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Menu'),
+      'description' => t('Tests the Site Menu functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_menu_test');
+    parent::setUp($modules);
+
+    // Create 2 sites.
+    $site_type = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($site_type);
+    $this->site1 = $this->ogSmCreateGroup($site_type);
+    $this->site2 = $this->ogSmCreateGroup($site_type);
+  }
+
+  /**
+   * Test the hook_menu implementation.
+   */
+  public function testHookMenu() {
+    // Create the expected menu items array.
+    $expected = array(
+      'group/node/' . $this->site1->nid . '/article' => array(
+        'title' => 'Articles',
+        'page callback' => 'og_sm_menu_test_article_page_altered',
+        'access callback' => TRUE,
+      ),
+      'group/node/' . $this->site1->nid . '/news' => array(
+        'title' => 'News',
+        'page callback' => 'og_sm_menu_test_news_page',
+        'access callback' => TRUE,
+      ),
+      'group/node/' . $this->site2->nid . '/article' => array(
+        'title' => 'Articles',
+        'page callback' => 'og_sm_menu_test_article_page_altered',
+        'access callback' => TRUE,
+      ),
+      'group/node/' . $this->site2->nid . '/news' => array(
+        'title' => 'News',
+        'page callback' => 'og_sm_menu_test_news_page',
+        'access callback' => TRUE,
+      ),
+    );
+
+    $this->assertEqual(
+      $expected,
+      og_sm_menu_menu(),
+      'Menu items are collected and altered'
+    );
+  }
+
+}
