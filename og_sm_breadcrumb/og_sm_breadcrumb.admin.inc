@@ -116,8 +116,7 @@ function og_sm_breadcrumb_og_admin_feature(array $form, array &$form_state, $sit
   // - Clear the Site cache.
   $form['#submit'] = array_merge(
     array('og_sm_breadcrumb_og_admin_submit_before'),
-    $form['#submit'],
-    array('og_sm_breadcrumb_og_admin_submit_after')
+    $form['#submit']
   );
 
   return $form;
