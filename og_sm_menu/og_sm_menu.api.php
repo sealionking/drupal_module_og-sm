@@ -25,6 +25,8 @@
  * @return array|null
  *   Menu item arrays to add to the Drupal menu system.
  *   See https://api.drupal.org/api/drupal/modules%21system%21system.api.php/function/hook_menu/7.x
+ *
+ * @see hook_menu()
  */
 function hook_og_sm_menu($site) {
   return array(
@@ -44,10 +46,16 @@ function hook_og_sm_menu($site) {
 /**
  * Alter the menu items collected for a singe Site.
  *
+ * Once all menu items for a specific site are collected by calling the
+ * hook_og_sm_menu(), modules are given the opportunity to alter the
+ * collection of menu items for a single Site.
+ *
  * @param array $items
  *   The items as collected.
  * @param object $site
  *   The Site for who the menu items are collected.
+ *
+ * @see hook_og_sm_menu()
  */
 function hook_og_sm_menu_alter(array &$items, $site) {
   $items['group/node/' . $site->nid . '/article']['page callback'] = 'og_sm_menu_test_article_page_altered';
