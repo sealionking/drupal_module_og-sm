@@ -6,8 +6,12 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [Unreleased]
 ### Added
-- DMOGSM-90: Added centralised functionality to provide Site specific menu 
+- DMOGSM-90 : Added centralised functionality to provide Site specific menu 
   items.
+
+
+### Removed
+- DMOGSM-90 : Removed the obsolete pg_sm_pathauto module. 
 
 
 
@@ -32,6 +36,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   _post_save, _post_delete).
 - DMOGSM-65 : Added static cache for variable calls.
 - PPL-679 : Added og_sm_dashboard module.
+
 
 ### Fixed
 - DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths
