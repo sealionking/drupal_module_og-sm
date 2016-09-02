@@ -3,10 +3,19 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+
+## [Unreleased]
+### Added
+- DMOGSM-90: Added centralised functionality to provide Site specific menu 
+  items.
+
+
+
+
 ## [7.x-1.6]
 ### Added
-- PPL-679: Added og_sm_dashboard module.
-- DMOGSM-66: Automatically clear Site variable cache when an
+- PPL-679 : Added og_sm_dashboard module.
+- DMOGSM-66 : Automatically clear Site variable cache when an
   og_sm_variable_settings_form is submitted. 
 
 
