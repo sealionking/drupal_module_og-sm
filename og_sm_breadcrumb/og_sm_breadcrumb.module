@@ -65,7 +65,7 @@ function og_sm_breadcrumb_menu() {
       'file' => $file_admin,
       'type' => MENU_CALLBACK,
     );
-    $items['group/node/%og_sm_site/admin/features/breadcrumb'] = array(
+    $items['group/%/%og_sm_site/admin/features/breadcrumb'] = array(
       'title' => 'Breadcrumb',
       'description' => 'Breadcrumb configuration.',
       'page callback' => 'drupal_get_form',
