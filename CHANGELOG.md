@@ -10,8 +10,25 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   items.
 
 
-### Removed
-- DMOGSM-90 : Removed the obsolete pg_sm_pathauto module. 
+### Removed 
+- PPL-652 : Added hook_og_sm_ajax_paths_alter to allow modules to register 
+  ajax paths that needs to be auto-prefixed with the Site path to keep the 
+  current Site context.
+- DMOGSM-90 : Removed the obsolete pg_sm_pathauto module.
+- DMOGSM-93 : Added link to the Administration pages overview (fallback to 
+  Site node edit) on the platform dashboard.
+
+
+### Fixed
+- DMOGSM-92: Fixed order of items on site admin overview pages.
+
+
+
+
+## [7.x-1.7]
+### Fixed
+- DMOGSM-66 : Fixed orphan form submit handlers in feature settings form.
+>>>>>>> develop
 
 
 
@@ -21,6 +38,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - PPL-679 : Added og_sm_dashboard module.
 - DMOGSM-66 : Automatically clear Site variable cache when an
   og_sm_variable_settings_form is submitted. 
+
+
+
+
+## [Unreleased]
+### Added
+- PPL-652 : Added hook_og_sm_ajax_paths_alter.
 
 
 
@@ -159,6 +183,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.7%0D7.x-1.6#diff
 [7.x-1.6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.6%0D7.x-1.5#diff
 [7.x-1.5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.5%0D7.x-1.4#diff
 [7.x-1.4]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.4%0D7.x-1.3#diff
