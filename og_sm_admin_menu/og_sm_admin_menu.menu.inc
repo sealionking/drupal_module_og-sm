@@ -161,6 +161,11 @@ function _og_sm_admin_menu_items_add(array &$items, $path, array $item) {
   // Determine if we have a root or sub item.
   $path_parts = preg_split('#/#', $path, 2);
 
+  // Add a weight if none is provided.
+  if (!array_key_exists('weight', $item)) {
+    $item['weight'] = 0;
+  }
+
   // Root element.
   if (empty($path_parts[1])) {
     _og_sm_admin_menu_items_add_root($items, $path, $item);
