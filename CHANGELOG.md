@@ -9,6 +9,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - PPL-652 : Added hook_og_sm_ajax_paths_alter to allow modules to register 
   ajax paths that needs to be auto-prefixed with the Site path to keep the 
   current Site context.
+- DMOGSM-93 : Added link to the Administration pages overview (fallback to 
+  Site node edit) on the platform dashboard.
 
 ### Fixed
 - DMOGSM-92: Fixed order of items on site admin overview pages.

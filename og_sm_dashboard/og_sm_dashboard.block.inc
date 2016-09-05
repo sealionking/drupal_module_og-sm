@@ -44,14 +44,31 @@ function og_sm_dashboard_site_overview_block() {
   }
 
   $rows = array();
+  $og_sm_admin_exists = module_exists('og_sm_admin_menu');
   $og_sm_clone_exists = module_exists('og_sm_site_clone');
   foreach (og_sm_user_get_manageable_sites($user) as $site) {
     $row = array(
       'site_name' => l($site->title, 'node/' . $site->nid),
     );
+
+    // Administer Site link.
+    if ($og_sm_admin_exists && og_sm_site_permission_access($site, 'administer site')) {
+      $row['admister'] = array(
+        'data' => l(t('Administer'), 'group/node/' . $site->nid . '/admin'),
+        'class' => 'action action-admin',
+      );
+    }
+    elseif (node_access('update', $site, $user)) {
+      $row['edit'] = array(
+        'data' => l(t('Edit'), 'node/' . $site->nid . '/edit'),
+        'class' => 'action action-edit',
+      );
+    }
+
+    // Clone link.
     if ($og_sm_clone_exists && og_sm_site_clone_access_page($site, $user)) {
       $row['clone'] = array(
-        'data' => l(t('clone'), 'node/' . $site->nid . '/clone'),
+        'data' => l(t('Clone'), 'node/' . $site->nid . '/clone'),
         'class' => 'action action-clone',
       );
     }
