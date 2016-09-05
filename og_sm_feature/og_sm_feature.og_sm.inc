@@ -10,12 +10,38 @@
 function og_sm_feature_og_sm_admin_menu() {
   $items = array();
 
-  $items['structure/features'] = array(
+  $items['features'] = array(
     'title' => 'Features',
     'description' => 'Manage Site features.',
     'href' => 'admin/features',
+    'column' => 'right',
     'weight' => 0,
   );
+  $items['features/overview'] = array(
+    'title' => 'Manage features',
+    'description' => 'Manage Site features.',
+    'href' => 'admin/features',
+    'weight' => -1000,
+    'exclude_menu' => TRUE,
+  );
+
+  // Add features to the drop-down menu.
+  $features = og_sm_feature_info();
+  foreach ($features as $name => $feature) {
+    // We only add feature that have a settings page.
+    if (empty($feature['site configuration'])) {
+      continue;
+    }
+
+    $items['features/' . $name] = array(
+      'title' => $feature['name'],
+      'description' => $feature['description'],
+      'href' => $feature['site configuration'],
+      'options' => array(
+        'og_sm_feature' => $name,
+      ),
+    );
+  }
 
   // Make items translatable.
   if (FALSE) {

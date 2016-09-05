@@ -569,3 +569,23 @@ function og_sm_feature_context_page_reaction() {
     $plugin->execute($site);
   }
 }
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ *
+ * This will check for feature settings links, in the admin menu bar, if the
+ * feature is enabled for the Site.
+ */
+function og_sm_feature_translated_menu_link_alter(&$item, $map) {
+  // Is there a feature to check?
+  if (empty($item['options']['og_sm_feature'])) {
+    return;
+  }
+
+  // Access based on feature status.
+  $site = og_sm_current_site();
+  $item['access'] = og_sm_feature_site_is_enabled(
+    $site,
+    $item['options']['og_sm_feature']
+  );
+}
