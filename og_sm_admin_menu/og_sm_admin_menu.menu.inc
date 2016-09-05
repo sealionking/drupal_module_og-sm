@@ -101,6 +101,11 @@ function _og_sm_admin_menu_build_item(array $menu, array $item, $plid = NULL) {
     'expanded' => (int) !empty($item['children']),
   );
 
+  // Check if item has custom options.
+  if (!empty($item['options']) && is_array($item['options'])) {
+    $menu_item['options'] = array_merge($menu_item['options'], $item['options']);
+  }
+
   // Save item.
   $mlid = menu_link_save($menu_item);
 
