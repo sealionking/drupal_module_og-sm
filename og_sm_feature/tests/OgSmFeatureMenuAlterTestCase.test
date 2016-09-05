@@ -154,4 +154,45 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
     $this->assertResponse(200, 'Access to the add new vocabulary term if feature is enabled.');
   }
 
+  /**
+   * Test admin menu item alter hook.
+   */
+  public function testTranslatedMenuLinkAlter() {
+    module_enable(array('og_sm_feature_test'), TRUE);
+    $this->ogSmSetOgContextToGroup($this->siteNode);
+
+    // Feature is not enabled.
+    $item = array(
+      'options' => array(
+        'og_sm_feature' => 'news',
+      ),
+      'access' => TRUE,
+    );
+    $expected = array(
+      'options' => array(
+        'og_sm_feature' => 'news',
+      ),
+      'access' => FALSE,
+    );
+    og_sm_feature_translated_menu_link_alter($item, NULL);
+    $this->assertEqual($expected, $item);
+
+    // Feature is enabled.
+    og_sm_feature_site_enable($this->siteNode, 'news');
+    $item = array(
+      'options' => array(
+        'og_sm_feature' => 'news',
+      ),
+      'access' => TRUE,
+    );
+    $expected = array(
+      'options' => array(
+        'og_sm_feature' => 'news',
+      ),
+      'access' => TRUE,
+    );
+    og_sm_feature_translated_menu_link_alter($item, NULL);
+    $this->assertEqual($expected, $item);
+  }
+
 }
