@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2016-09-05 09:17+0100\n"
+"PO-Revision-Date: 2016-09-05 15:47+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -246,8 +246,7 @@ msgstr ""
 #: og_sm_comment.module:429
 msgid "Open for anonymous users: Any content of this type is open to new comments by anonymous and logged in users."
 msgstr ""
-"Open voor anonieme gebruikers: Anonieme commentaren op alle inhoud van "
-"dit type zijn toegelaten voor anonieme en ingelogde gebruikers."
+"Open voor anonieme gebruikers: Commentaren op alle inhoud van dit type zijn toegelaten voor anonieme en ingelogde gebruikers."
 
 #: og_sm_comment.module:430
 msgid "Open: Any content of this type is open to new comments by logged in users."
