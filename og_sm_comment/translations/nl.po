@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2016-07-12 13:04+0100\n"
-"Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
+"PO-Revision-Date: 2016-09-05 09:17+0100\n"
+"Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,13 +17,13 @@ msgstr "Beheer Site"
 
 #: og_sm_comment.og_sm.inc:21 og_sm_comment.module:75;26
 msgid "Administer comments"
-msgstr "Commentaren beheren"
+msgstr "Beheer commentaren"
 
 #: og_sm_comment.og_sm.inc:22
 msgid "Manage the comments of this Site."
 msgstr "De reacties van deze Site beheren."
 
-#: og_sm_comment.pathauto.inc:13 og_sm_comment.module:373;390
+#: og_sm_comment.pathauto.inc:13 og_sm_comment.module:418;436
 msgid "Comments"
 msgstr "Reacties"
 
@@ -39,141 +39,145 @@ msgstr "Standaard pad patroon"
 msgid "Updated alias for comment @comment_id."
 msgstr "De URL-alias voor reactie @comment_id is bijgewerkt."
 
-#: og_sm_comment.views_default.inc:295
+#: og_sm_comment.views_default.inc:319
 msgid "Master"
 msgstr "Hoofd"
 
-#: og_sm_comment.views_default.inc:296
+#: og_sm_comment.views_default.inc:320
 msgid "more"
 msgstr "meer"
 
-#: og_sm_comment.views_default.inc:297
+#: og_sm_comment.views_default.inc:321
 msgid "Submit"
-msgstr "Toepassen"
+msgstr "Indienen"
 
-#: og_sm_comment.views_default.inc:298
+#: og_sm_comment.views_default.inc:322
 msgid "Reset"
-msgstr "Resetten"
+msgstr "Reset"
 
-#: og_sm_comment.views_default.inc:299
+#: og_sm_comment.views_default.inc:323
 msgid "Sort by"
-msgstr "Sorteer op"
+msgstr "Sorteren op"
 
-#: og_sm_comment.views_default.inc:300
+#: og_sm_comment.views_default.inc:324
 msgid "Ascending"
 msgstr "Oplopend"
 
-#: og_sm_comment.views_default.inc:301
+#: og_sm_comment.views_default.inc:325
 msgid "Descending"
 msgstr "Aflopend"
 
-#: og_sm_comment.views_default.inc:302
+#: og_sm_comment.views_default.inc:326
 msgid "Items per page"
 msgstr "Items per pagina"
 
-#: og_sm_comment.views_default.inc:303
+#: og_sm_comment.views_default.inc:327
 msgid "- All -"
 msgstr "- Alle -"
 
-#: og_sm_comment.views_default.inc:304
+#: og_sm_comment.views_default.inc:328
 msgid "Start"
-msgstr "Start"
+msgstr "Begin"
 
-#: og_sm_comment.views_default.inc:305
+#: og_sm_comment.views_default.inc:329
 msgid "« first"
 msgstr "« eerste"
 
-#: og_sm_comment.views_default.inc:306
+#: og_sm_comment.views_default.inc:330
 msgid "‹ previous"
 msgstr "‹ vorige"
 
-#: og_sm_comment.views_default.inc:307
+#: og_sm_comment.views_default.inc:331
 msgid "next ›"
 msgstr "volgende ›"
 
-#: og_sm_comment.views_default.inc:308
+#: og_sm_comment.views_default.inc:332
 msgid "last »"
 msgstr "laatste »"
 
-#: og_sm_comment.views_default.inc:309
+#: og_sm_comment.views_default.inc:333
 msgid "Show @start - @end of @total"
 msgstr "Toon @start - @end van @total"
 
-#: og_sm_comment.views_default.inc:310
+#: og_sm_comment.views_default.inc:334
 msgid "There are no comments in this Site."
 msgstr "Er zijn geen reacties in deze Site."
 
-#: og_sm_comment.views_default.inc:311
+#: og_sm_comment.views_default.inc:335
 msgid "Content"
 msgstr "Inhoud"
 
-#: og_sm_comment.views_default.inc:312
+#: og_sm_comment.views_default.inc:336
 msgid "author"
 msgstr "auteur"
 
-#: og_sm_comment.views_default.inc:313
+#: og_sm_comment.views_default.inc:337
 msgid "OG membership from node"
 msgstr "OG lidmaatschap van node"
 
-#: og_sm_comment.views_default.inc:314
+#: og_sm_comment.views_default.inc:338
 msgid "Comment"
 msgstr "Reactie"
 
-#: og_sm_comment.views_default.inc:315
+#: og_sm_comment.views_default.inc:339
 msgid "- Choose an operation -"
-msgstr "- Kies een actie -"
+msgstr "- Kies een bewerking -"
 
-#: og_sm_comment.views_default.inc:316
+#: og_sm_comment.views_default.inc:340
 msgid "Path"
 msgstr "Pad"
 
-#: og_sm_comment.views_default.inc:317
+#: og_sm_comment.views_default.inc:341
 msgid "ID"
 msgstr "ID"
 
-#: og_sm_comment.views_default.inc:318
+#: og_sm_comment.views_default.inc:342
 msgid "Title"
 msgstr "Titel"
 
-#: og_sm_comment.views_default.inc:319
-msgid "Author"
-msgstr "Auteur"
-
-#: og_sm_comment.views_default.inc:320
-msgid "Created"
-msgstr "Gecreëerd"
-
-#: og_sm_comment.views_default.inc:321
-msgid "Actions"
-msgstr "Acties"
-
-#: og_sm_comment.views_default.inc:322 views/og_sm_comment_handler_field_comment_link_edit.inc:44
-msgid "edit"
-msgstr "bewerken"
-
-#: og_sm_comment.views_default.inc:323
-msgid "remove"
-msgstr "verwijderen"
-
-#: og_sm_comment.views_default.inc:324
-msgid "All"
-msgstr "Alle"
-
-#: og_sm_comment.views_default.inc:325
-msgid "Title content contains"
-msgstr "Titel inhoud bevat"
-
-#: og_sm_comment.views_default.inc:326
-msgid "Comment contains"
-msgstr "Commentaar bevat"
-
-#: og_sm_comment.views_default.inc:339
+#: og_sm_comment.views_default.inc:343
 msgid "anonymous"
 msgstr "anoniem"
 
-#: og_sm_comment.module:26
-msgid "Administer comments"
-msgstr "Beheer commentaren"
+#: og_sm_comment.views_default.inc:344
+msgid "[name] ([uid])"
+msgstr ""
+
+#: og_sm_comment.views_default.inc:345
+msgid "Author"
+msgstr "Auteur"
+
+#: og_sm_comment.views_default.inc:346
+msgid "[name]"
+msgstr ""
+
+#: og_sm_comment.views_default.inc:347
+msgid "Created"
+msgstr "Aangemaakt"
+
+#: og_sm_comment.views_default.inc:348
+msgid "Actions"
+msgstr "Acties"
+
+#: og_sm_comment.views_default.inc:349 views/og_sm_comment_handler_field_comment_link_edit.inc:44
+msgid "edit"
+msgstr "bewerken"
+
+#: og_sm_comment.views_default.inc:350
+msgid "remove"
+msgstr "verwijderen"
+
+#: og_sm_comment.views_default.inc:351
+msgid "All"
+msgstr "Alle"
+
+#: og_sm_comment.views_default.inc:352
+msgid "Title content contains"
+msgstr "Titel inhoud bevat"
+
+#: og_sm_comment.views_default.inc:353
+msgid "Comment contains"
+msgstr "Commentaar bevat"
 
 #: og_sm_comment.module:55;79
 msgid "Delete own comments"
@@ -211,61 +215,61 @@ msgstr "Eigen reacties bewerken"
 msgid "Allows the user to edit his/her own comments."
 msgstr "Laat een gebruiker toe zijn/haar eigen reacties te bewerken."
 
-#: og_sm_comment.module:241
+#: og_sm_comment.module:275
 msgid "Site Comment"
 msgstr "Site Reactie"
 
-#: og_sm_comment.module:242
+#: og_sm_comment.module:276
 msgid "Determine Site context based on the fact that we are on a comment made on Site page or a Site content page."
 msgstr ""
 "Bepaal de Site context als de huidige pagina een comment is gemaakt op "
 "Site pagina of een Site inhoud pagina is."
 
-#: og_sm_comment.module:377
+#: og_sm_comment.module:422
 msgid "Select whether the comment form can be shown for @content_type_plural."
 msgstr ""
 "Selecteer of het reactie formulier mag getoond worden voor "
 "@content_type_plural."
 
-#: og_sm_comment.module:382
+#: og_sm_comment.module:427
 msgid "Hidden: No comments are allowed, and past comments are hidden."
 msgstr ""
 "Verborgen: Geen commentaren toegelaten, bestaande commentaren zijn "
 "verborgen."
 
-#: og_sm_comment.module:383
+#: og_sm_comment.module:428
 msgid "Closed: No comments are allowed, but any past comments remain visible."
 msgstr ""
 "Gesloten: Geen commentaren toegelaten, bestaande commentaren worden "
 "weergegeven."
 
-#: og_sm_comment.module:384
-msgid "Open: Any content of this type is open to new comments."
-msgstr "Open: Commentaren op alle inhoud van dit type is toegelaten."
+#: og_sm_comment.module:429
+msgid "Open for anonymous users: Any content of this type is open to new comments by anonymous and logged in users."
+msgstr ""
+"Open voor anonieme gebruikers: Anonieme commentaren op alle inhoud van "
+"dit type zijn toegelaten voor anonieme en ingelogde gebruikers."
 
-#: og_sm_comment.module:384
-msgid ""
-"Open for anonymous users: Any content of this type is open to new anonymous "
-"comments."
-msgstr "Open: Anonieme commentaren op alle inhoud van dit type zijn toegelaten."
+#: og_sm_comment.module:430
+msgid "Open: Any content of this type is open to new comments by logged in users."
+msgstr "Open: Commentaren op alle inhoud van dit type zijn toegelaten voor ingelogde gebruikers."
 
-#: og_sm_comment.module:394
+#: og_sm_comment.module:440
 msgid "Open"
 msgstr "Open"
 
-#: og_sm_comment.module:395
+#: og_sm_comment.module:441
 msgid "Open for anonymous users"
 msgstr "Open voor anonieme gebruikers"
 
-#: og_sm_comment.module:396
+#: og_sm_comment.module:442
 msgid "Closed"
 msgstr "Gesloten"
 
-#: og_sm_comment.module:397
+#: og_sm_comment.module:443
 msgid "Hidden"
 msgstr "Verborgen"
 
-#: og_sm_comment.module:326
+#: og_sm_comment.module:371
 msgid "Updated URL alias for 1 comment."
 msgid_plural "Updated URL aliases for @count comments."
 msgstr[0] "URL-alias bijgewerkt voor 1 reactie."
@@ -282,3 +286,4 @@ msgstr "Site commentaren aanmaken en beheren."
 #: og_sm_comment.info:0
 msgid "Organic Groups Site Manager"
 msgstr "Organic Groups Site Beheerder"
+

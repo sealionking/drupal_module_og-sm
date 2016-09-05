@@ -10,6 +10,10 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   ajax paths that needs to be auto-prefixed with the Site path to keep the 
   current Site context.
 
+### Updated
+- DMOGSM-95: Improved the help text for the content type comments settings 
+  form. 
+
 ### Fixed
 - DMOGSM-92: Fixed order of items on site admin overview pages.
 
