@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Include file containing the functionality to create Site admin menu.

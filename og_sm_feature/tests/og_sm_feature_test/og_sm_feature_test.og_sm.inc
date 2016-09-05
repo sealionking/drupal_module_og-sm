@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Hooks implemented to test the Variable defaults functionality.
