@@ -47,6 +47,7 @@ function og_sm_feature_og_sm_admin_menu() {
   // Make items translatable.
   if (FALSE) {
     t('Features');
+    t('Manage features');
     t('Manage Site features.');
   }
 
