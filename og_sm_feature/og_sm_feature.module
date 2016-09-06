@@ -101,6 +101,7 @@ function og_sm_feature_menu_alter(&$items) {
   if (module_exists('og_sm_content')) {
     $content_types = array_keys(og_sm_feature_info_content_types());
     foreach ($content_types as $content_type) {
+      $content_type = str_replace('_', '-', $content_type);
       $path_add = 'group/%/%og_sm_site/content/add/' . $content_type;
       $path_type = 'group/%/%og_sm_site/admin/structure/types/' . $content_type;
       $items[$path_add]['access callback'] = 'og_sm_feature_access_content_add';
