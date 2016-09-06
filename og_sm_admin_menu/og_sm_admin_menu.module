@@ -192,14 +192,12 @@ function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
   $item['router_path'] = $url;
   $item['title'] = $item['link_title'];
   $item['title_callback'] = 't';
-
-  // @codingStandardsIgnoreStart
-  // Menu is always English, we need to translate the items here.
-  $item['title'] = t($item['title']);
   if (!empty($item['options']['attributes']['title'])) {
-    $item['description'] = t($item['options']['attributes']['title']);
+    $item['description'] = $item['options']['attributes']['title'];
   }
-  // @codingStandardsIgnoreEnd
+
+  // Localize link & description.
+  _menu_item_localize($item, $map);
 
   // Load menu item and check access.
   if ($menu_item = menu_get_item($url)) {
