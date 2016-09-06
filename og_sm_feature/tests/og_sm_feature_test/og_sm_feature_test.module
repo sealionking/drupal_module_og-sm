@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Dummy module to test the hook functionality.

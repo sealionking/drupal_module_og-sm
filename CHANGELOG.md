@@ -19,6 +19,11 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   Site node edit) on the platform dashboard.
 
 
+### Updated
+- DMOGSM-95: Improved the help text for the content type comments settings 
+  form. 
+
+
 ### Fixed
 - DMOGSM-92: Fixed order of items on site admin overview pages.
 

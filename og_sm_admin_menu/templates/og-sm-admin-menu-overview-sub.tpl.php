@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Template to render the Administrative overview page for a single group.

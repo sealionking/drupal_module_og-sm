@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Include file containing the functionality to create Site admin menu.
@@ -67,11 +68,6 @@ function _og_sm_admin_menu_build_items(array $menu, array $items) {
  *   (optional) Parent menu link id.
  */
 function _og_sm_admin_menu_build_item(array $menu, array $item, $plid = NULL) {
-  // Exclude from menu?
-  if (!empty($item['exclude_menu'])) {
-    return;
-  }
-
   $router = $item['router'];
 
   $router_path = ($router)
@@ -100,6 +96,16 @@ function _og_sm_admin_menu_build_item(array $menu, array $item, $plid = NULL) {
     'plid' => $plid,
     'expanded' => (int) !empty($item['children']),
   );
+
+  // Add the optional description.
+  if (!empty($item['description'])) {
+    $item['options']['attributes'] = array('title' => $item['description']);
+  }
+
+  // Check if item has custom options.
+  if (!empty($item['options']) && is_array($item['options'])) {
+    $menu_item['options'] = array_merge($menu_item['options'], $item['options']);
+  }
 
   // Save item.
   $mlid = menu_link_save($menu_item);
@@ -160,6 +166,11 @@ function _og_sm_admin_menu_items() {
 function _og_sm_admin_menu_items_add(array &$items, $path, array $item) {
   // Determine if we have a root or sub item.
   $path_parts = preg_split('#/#', $path, 2);
+
+  // Add a weight if none is provided.
+  if (!array_key_exists('weight', $item)) {
+    $item['weight'] = 0;
+  }
 
   // Root element.
   if (empty($path_parts[1])) {
@@ -279,6 +290,8 @@ function _og_sm_admin_menu_from_hooks() {
  *
  * @return array
  *   The menu structure for the Site switcher item.
+ *
+ * @see og_sm_admin_menu_load_site_switcher()
  */
 function _og_sm_admin_menu_load_site_switcher() {
   $site = og_sm_current_site();
@@ -381,4 +394,61 @@ function _og_sm_admin_menu_load_site_switcher_sites() {
   }
 
   return $sites;
+}
+
+/**
+ * Load the Site Administration menu to show in the admin_menu bar.
+ *
+ * @param string $context
+ *   The context to load the menu tree for.
+ *
+ * @return array
+ *   The menu tree structure.
+ *
+ * @see og_sm_admin_menu_load_site_menu()
+ */
+function _og_sm_admin_menu_load_site_menu($context) {
+  $menu_name = OG_SM_ADMIN_MENU_NAME;
+
+  // (Re)build the modules if the module does not exists yet.
+  if (!menu_load($menu_name)) {
+    og_sm_admin_menu_rebuild();
+  }
+
+  $menu_data = menu_tree_all_data($menu_name);
+  return _og_sm_admin_menu_filter_tree_by_context($context, $menu_data);
+}
+
+/**
+ * Filter the menu tree for the given context.
+ *
+ * @param string $context
+ *   The context to filter the menu items for.
+ *   Available contexts:
+ *   - menu : all items that have are not excluded from the menu.
+ *   - overview : all items that are not excluded from the overview.
+ * @param array $items
+ *   The menu tree items to filter.
+ *
+ * @return array
+ *   The menu tree filtered by the context.
+ */
+function _og_sm_admin_menu_filter_tree_by_context($context, $items) {
+  $filtered = array();
+
+  foreach ($items as $key => $item) {
+    if ($context === 'menu' && $item['link']['options']['og_sm_admin_menu_item_exclude_menu']) {
+      continue;
+    }
+    if ($context === 'overview' && $item['link']['options']['og_sm_admin_menu_item_exclude_overview']) {
+      continue;
+    }
+
+    $filtered[$key] = $item;
+    if (!empty($item['below'])) {
+      $filtered[$key]['below'] = _og_sm_admin_menu_filter_tree_by_context($context, $item['below']);
+    }
+  }
+
+  return $filtered;
 }
