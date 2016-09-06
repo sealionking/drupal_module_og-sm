@@ -6,15 +6,23 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [Unreleased]
 ### Added
+- DMOGSM-90 : Added centralised functionality to provide Site specific menu 
+  items.
+
+
+### Removed 
 - PPL-652 : Added hook_og_sm_ajax_paths_alter to allow modules to register 
   ajax paths that needs to be auto-prefixed with the Site path to keep the 
   current Site context.
+- DMOGSM-90 : Removed the obsolete pg_sm_pathauto module.
 - DMOGSM-93 : Added link to the Administration pages overview (fallback to 
   Site node edit) on the platform dashboard.
+
 
 ### Updated
 - DMOGSM-95: Improved the help text for the content type comments settings 
   form. 
+
 
 ### Fixed
 - DMOGSM-92: Fixed order of items on site admin overview pages.
@@ -31,8 +39,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [7.x-1.6]
 ### Added
-- PPL-679: Added og_sm_dashboard module.
-- DMOGSM-66: Automatically clear Site variable cache when an
+- PPL-679 : Added og_sm_dashboard module.
+- DMOGSM-66 : Automatically clear Site variable cache when an
   og_sm_variable_settings_form is submitted. 
 
 
@@ -56,6 +64,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   _post_save, _post_delete).
 - DMOGSM-65 : Added static cache for variable calls.
 - PPL-679 : Added og_sm_dashboard module.
+
 
 ### Fixed
 - DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths

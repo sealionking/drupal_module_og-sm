@@ -1,0 +1,7 @@
+name = Site Menu TEST
+description = "Module to support tests for the og_sm_menu module."
+package = "Testing"
+core = 7.x
+hidden = TRUE
+
+dependencies[] = og_sm_menu

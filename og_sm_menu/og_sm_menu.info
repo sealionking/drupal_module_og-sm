@@ -1,0 +1,9 @@
+name = Site Menu
+description = "Adds support to have a menu per Site."
+package = "Organic Groups Site Manager"
+core = 7.x
+
+dependencies[] = og_sm
+
+; Tests.
+files[] = tests/OgSmMenuTestCase.test
