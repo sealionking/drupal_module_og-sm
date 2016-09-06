@@ -156,7 +156,6 @@ function _og_sm_admin_menu_overview_group_item($site, $child) {
   if (empty($child['link']['localized_options'])) {
     return;
   }
-
   $options = $child['link']['localized_options'];
 
   if (empty($child['link']['access'])) {
@@ -169,7 +168,7 @@ function _og_sm_admin_menu_overview_group_item($site, $child) {
     '#url' => $child['link']['href'],
     '#title' => $child['link']['title'],
     '#description' => $child['link']['description'],
-    '#class' => preg_replace('#/#', '-', $options['og_sm_admin_menu_item_path']),
+    '#class' => drupal_html_class($options['og_sm_admin_menu_item_path']),
   );
 }
 
