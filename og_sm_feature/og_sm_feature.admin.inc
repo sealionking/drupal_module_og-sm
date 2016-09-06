@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Global Administrative pages for og_sm_feature.

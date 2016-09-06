@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Hooks provided by the og_sm_admin_menu module.

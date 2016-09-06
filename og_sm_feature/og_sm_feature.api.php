@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * API documentation about the og_sm_feature module.

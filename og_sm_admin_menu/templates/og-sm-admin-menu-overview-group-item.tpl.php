@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Template to render the Administrative overview group item.

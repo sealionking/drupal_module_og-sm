@@ -79,7 +79,7 @@ function og_sm_user_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['group/node/%og_sm_site/admin/features/user'] = array(
+  $items['group/%/%og_sm_site/admin/features/user'] = array(
     'title' => 'User profile',
     'description' => 'Configure the user settings.',
     'page callback' => 'drupal_get_form',
