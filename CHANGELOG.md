@@ -28,7 +28,6 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ## [7.x-1.7]
 ### Fixed
 - DMOGSM-66 : Fixed orphan form submit handlers in feature settings form.
->>>>>>> develop
 
 
 
