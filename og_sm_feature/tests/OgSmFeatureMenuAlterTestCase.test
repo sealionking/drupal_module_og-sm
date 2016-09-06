@@ -215,16 +215,12 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
     $this->ogSmSetOgContextToGroup($this->siteNode);
 
     // Feature is not enabled.
-    $item     = array(
-      'options' => array(
-        'og_sm_feature' => 'news',
-      ),
+    $item = array(
+      'options' => array('og_sm_feature' => 'news'),
       'access' => TRUE,
     );
     $expected = array(
-      'options' => array(
-        'og_sm_feature' => 'news',
-      ),
+      'options' => array('og_sm_feature' => 'news'),
       'access' => FALSE,
     );
     og_sm_feature_translated_menu_link_alter($item, NULL);
@@ -232,16 +228,12 @@ class OgSmFeatureMenuAlterTestCase extends OgSmWebTestCase {
 
     // Feature is enabled.
     og_sm_feature_site_enable($this->siteNode, 'news');
-    $item     = array(
-      'options' => array(
-        'og_sm_feature' => 'news',
-      ),
+    $item = array(
+      'options' => array('og_sm_feature' => 'news'),
       'access' => TRUE,
     );
     $expected = array(
-      'options' => array(
-        'og_sm_feature' => 'news',
-      ),
+      'options' => array('og_sm_feature' => 'news'),
       'access' => TRUE,
     );
     og_sm_feature_translated_menu_link_alter($item, NULL);
