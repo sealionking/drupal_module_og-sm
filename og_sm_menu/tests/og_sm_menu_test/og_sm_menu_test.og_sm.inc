@@ -23,7 +23,6 @@ function og_sm_menu_test_og_sm_menu($site) {
   );
 }
 
-
 /**
  * Implements hook_og_sm_menu_alter().
  */
