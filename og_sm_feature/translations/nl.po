@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-20 13:57+0100\n"
-"PO-Revision-Date: 2016-09-05 15:27+0100\n"
+"PO-Revision-Date: 2016-09-06 13:07+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -51,11 +51,11 @@ msgstr "Functionaliteiten opgeslagen."
 
 #: og_sm_feature.og_sm.inc:49 og_sm_feature.module:81
 msgid "Features"
-msgstr "Features"
+msgstr "Functionaliteiten"
 
 #: og_sm_feature.og_sm.inc:50
 msgid "Manage features"
-msgstr "Beheer features"
+msgstr "Beheer functionaliteiten"
 
 #: og_sm_feature.og_sm.inc:51
 msgid "Manage Site features."
