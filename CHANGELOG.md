@@ -21,7 +21,6 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   no items and og_sm_feature module is enabled.
 
 
-
 ### Updated
 - DMOGSM-95 : Improved the help text for the content type comments settings 
   form. 
@@ -29,6 +28,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ### Fixed
 - DMOGSM-92 : Fixed order of items on site admin overview pages.
+- DMOGSM-100 : Fixed access check to the platform administration page.
 - DMOGSM-101 : Fixed notice about passing non-variables by reference.
 - DMOGSM-102 : Fixed fallback "file path" to the info retrieved from 
   hook_og_sm_menu().
