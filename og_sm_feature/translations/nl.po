@@ -27,7 +27,7 @@ msgstr "Geen functionaliteiten beschikbaar."
 
 #: og_sm_feature.admin.inc:53 og_sm_feature.og_admin.inc:56
 msgid "Feature"
-msgstr "Feature"
+msgstr "Functionaliteit"
 
 #: og_sm_feature.admin.inc:64 og_sm_feature.og_admin.inc:67
 msgid "Save"
@@ -61,6 +61,14 @@ msgstr "Beheer functionaliteiten"
 msgid "Manage Site features."
 msgstr "Beheer Site functionaliteiten."
 
+#: og_sm_feature.pages.inc:34
+msgid "There are no features active providing content types."
+msgstr "Er zijn geen functionaliteiten actief die inhoudstypes voorzien."
+
+#: og_sm_feature.pages.inc:44 og_sm_feature.module:45;57
+msgid "Administer Features"
+msgstr "Beheer Functionaliteiten"
+
 #: og_sm_feature.views.inc:15
 msgid "OG SM Feature"
 msgstr "OG SM Feature"
@@ -68,10 +76,6 @@ msgstr "OG SM Feature"
 #: og_sm_feature.views.inc:16
 msgid "Checks access based on the status of a feature."
 msgstr "Controleert toegang op basis van functionaliteit."
-
-#: og_sm_feature.module:45;57
-msgid "Administer Features"
-msgstr "Beheer Functionaliteiten"
 
 #: og_sm_feature.module:46
 msgid "Manage the global Site features settings."
@@ -81,11 +85,11 @@ msgstr "Beheer de globale Site functionaliteit instellingen."
 msgid "Enable/disable Site features."
 msgstr "(Des)Activeren van Site functionaliteiten."
 
-#: og_sm_feature.module:551
+#: og_sm_feature.module:559
 msgid "OG SM Feature status"
 msgstr "OG SM Functionaliteit status"
 
-#: og_sm_feature.module:552
+#: og_sm_feature.module:560
 msgid "Set this context when a Site feature is enabled."
 msgstr "Activeer context als een Site functionaliteit actief is."
 
@@ -108,3 +112,4 @@ msgstr "Site functionaliteit(en)"
 #: og_sm_feature.info:0
 msgid "Organic Groups Site Manager"
 msgstr "Organic Groups Site Beheerder"
+

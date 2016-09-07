@@ -7,7 +7,6 @@
 // We need to include the node.pages.inc file to support ajax callbacks.
 module_load_include('inc', 'node', 'node.pages');
 
-
 /**
  * Add Site content overview menu callback.
  *
@@ -45,7 +44,10 @@ function og_sm_content_add_overview($site) {
     );
   }
 
-  return theme('node_add_list', array('content' => $options));
+  return array(
+    '#theme' => 'node_add_list',
+    '#content' => $options,
+  );
 }
 
 /**
