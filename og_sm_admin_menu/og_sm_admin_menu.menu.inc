@@ -304,11 +304,12 @@ function _og_sm_admin_menu_load_site_switcher() {
 
   // Menu item pointing to the Platform administration.
   $admin = FALSE;
-  if (user_access('access administration pages')) {
+  $admin_path = og_sm_platform_administration_page();
+  if (drupal_valid_path($admin_path)) {
     $admin = array(
       '#title' => t('Platform'),
       '#weight' => 1000,
-      '#href' => og_sm_platform_administration_page(),
+      '#href' => $admin_path,
     );
   }
 
