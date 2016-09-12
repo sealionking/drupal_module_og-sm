@@ -6,4 +6,4 @@
  */
 
 // This dummy module is only here to test the implementation of the
-// hook_og_sm_feature_info() hook.
+// hook_og_sm_menu() hooks.

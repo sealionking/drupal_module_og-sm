@@ -4,6 +4,38 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [7.x-1.8]
+### Added
+- DMOGSM-90 : Added centralised functionality to provide Site specific menu 
+  items.
+
+
+### Removed 
+- PPL-652 : Added hook_og_sm_ajax_paths_alter to allow modules to register 
+  ajax paths that needs to be auto-prefixed with the Site path to keep the 
+  current Site context.
+- DMOGSM-90 : Removed the obsolete pg_sm_pathauto module.
+- DMOGSM-93 : Added link to the Administration pages overview (fallback to 
+  Site node edit) on the platform dashboard.
+- DMOGSM-98 : Added fallback message when Group content add overview page has
+  no items and og_sm_feature module is enabled.
+
+
+### Updated
+- DMOGSM-95 : Improved the help text for the content type comments settings 
+  form. 
+
+
+### Fixed
+- DMOGSM-92 : Fixed order of items on site admin overview pages.
+- DMOGSM-100 : Fixed access check to the platform administration page.
+- DMOGSM-101 : Fixed notice about passing non-variables by reference.
+- DMOGSM-102 : Fixed fallback "file path" to the info retrieved from 
+  hook_og_sm_menu().
+
+
+
+
 ## [7.x-1.7]
 ### Fixed
 - DMOGSM-66 : Fixed orphan form submit handlers in feature settings form.
@@ -13,9 +45,16 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [7.x-1.6]
 ### Added
-- PPL-679: Added og_sm_dashboard module.
-- DMOGSM-66: Automatically clear Site variable cache when an
+- PPL-679 : Added og_sm_dashboard module.
+- DMOGSM-66 : Automatically clear Site variable cache when an
   og_sm_variable_settings_form is submitted. 
+
+
+
+
+## [Unreleased]
+### Added
+- PPL-652 : Added hook_og_sm_ajax_paths_alter.
 
 
 
@@ -31,6 +70,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   _post_save, _post_delete).
 - DMOGSM-65 : Added static cache for variable calls.
 - PPL-679 : Added og_sm_dashboard module.
+
 
 ### Fixed
 - DMOGSM-81 : Show/hide breadcrumbs, depending on the settings, on admin paths
@@ -153,6 +193,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.8%0D7.x-1.7#diff
 [7.x-1.7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.7%0D7.x-1.6#diff
 [7.x-1.6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.6%0D7.x-1.5#diff
 [7.x-1.5]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.5%0D7.x-1.4#diff

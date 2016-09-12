@@ -32,5 +32,19 @@ function hook_og_sm_site_path_change($site) {
 }
 
 /**
+ * Alter a list of ajax paths that will be rewritten to have site context.
+ *
+ * The hook can be put in the yourmodule.module OR in the yourmodule.og_sm.inc
+ * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
+ * your .module file cleaner and makes the platform load less code by default.
+ *
+ * @param array
+ *   An array of ajax paths.
+ */
+function hook_og_sm_ajax_paths_alter(&$paths) {
+  $paths[] = 'media/browser';
+}
+
+/**
  * @} End of "addtogroup hooks".
  */

@@ -357,7 +357,8 @@ function og_sm_site_homepage($site = NULL) {
   $paths = &drupal_static(__FUNCTION__, array());
   if (!isset($paths[$site->nid])) {
     $path = 'node/' . $site->nid;
-    drupal_alter('og_sm_site_homepage', $path, clone $site);
+    $context = clone $site;
+    drupal_alter('og_sm_site_homepage', $path, $context);
     $paths[$site->nid] = $path;
   }
 

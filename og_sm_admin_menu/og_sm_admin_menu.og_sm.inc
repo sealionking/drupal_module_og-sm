@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Implemented og_sm_admin hooks.
@@ -17,7 +18,7 @@ function og_sm_admin_menu_og_sm_admin_menu() {
     $items['people'] = array(
       'title' => 'People',
       'href' => 'admin/people',
-      'column' => 'right',
+      'column' => 'left',
       'weight' => 40,
     );
     $items['people/overview'] = array(
@@ -50,7 +51,7 @@ function og_sm_admin_menu_og_sm_admin_menu() {
   $structure = array(
     'title' => 'Structure',
     'href' => 'admin/structure',
-    'column' => 'left',
+    'column' => 'right',
     'weight' => 30,
   );
 

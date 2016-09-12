@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Views Access plugin based on the status of a feature within a Site.

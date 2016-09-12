@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Feature module file.
@@ -99,7 +100,15 @@ function og_sm_feature_menu_alter(&$items) {
   // Only required if the Content module is enabled.
   if (module_exists('og_sm_content')) {
     $content_types = array_keys(og_sm_feature_info_content_types());
+
+    // Global content add page.
+    $path_add_overview = 'group/%/%og_sm_site/content/add';
+    $items[$path_add_overview]['page callback'] = 'og_sm_feature_og_sm_content_add_overview';
+    $items[$path_add_overview]['file'] = 'og_sm_feature.pages.inc';
+    $items[$path_add_overview]['file path'] = drupal_get_path('module', 'og_sm_feature');
+
     foreach ($content_types as $content_type) {
+      $content_type = str_replace('_', '-', $content_type);
       $path_add = 'group/%/%og_sm_site/content/add/' . $content_type;
       $path_type = 'group/%/%og_sm_site/admin/structure/types/' . $content_type;
       $items[$path_add]['access callback'] = 'og_sm_feature_access_content_add';
@@ -568,4 +577,24 @@ function og_sm_feature_context_page_reaction() {
   if ($plugin) {
     $plugin->execute($site);
   }
+}
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ *
+ * This will check for feature settings links, in the admin menu bar, if the
+ * feature is enabled for the Site.
+ */
+function og_sm_feature_translated_menu_link_alter(&$item, $map) {
+  // Is there a feature to check?
+  if (empty($item['options']['og_sm_feature'])) {
+    return;
+  }
+
+  // Access based on feature status.
+  $site = og_sm_current_site();
+  $item['access'] = og_sm_feature_site_is_enabled(
+    $site,
+    $item['options']['og_sm_feature']
+  );
 }

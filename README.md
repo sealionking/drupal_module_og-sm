@@ -52,6 +52,9 @@ This module and its submodules adds functionality to support:
 ### Included in og_sm_global_roles module
 * Dynamically grant user global roles when they have specific Site roles.
 
+### Included in og_sm_menu module
+* Centralised functionality to provide Site specific menu items.
+
 ### Included in og_sm_path module
 * Define a Site path prefix per Site.
 * Automatic path aliasing with the Site path as staring point.

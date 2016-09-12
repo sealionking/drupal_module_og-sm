@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * Module functionality.
+ */
+
+/**
+ * Implements hook_hook_info().
+ */
+function og_sm_menu_hook_info() {
+  $hooks = array(
+    'og_sm_menu' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_menu_alter' => array(
+      'group' => 'og_sm',
+    ),
+  );
+
+  return $hooks;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_menu_menu() {
+  $items = array();
+
+  // Loop over the Sites.
+  $site_nids = og_sm_site_all_nids();
+  foreach ($site_nids as $site_nid) {
+    $site = og_sm_site_load($site_nid);
+    $site_items = og_sm_menu_menu_site($site);
+    $items = array_merge($items, $site_items);
+  }
+
+  return $items;
+}
+
+/**
+ * Collect the menu items for a single Site.
+ *
+ * @param object $site
+ *   The Site to collect the menu items for.
+ *
+ * @return array
+ *   The collected menu items.
+ */
+function og_sm_menu_menu_site($site) {
+  $items = array();
+
+  // Collect the items for each module implementing hook_og_sm_menu().
+  $modules = module_implements('og_sm_menu');
+  foreach ($modules as $module) {
+    $module_items = call_user_func($module . '_og_sm_menu', $site);
+    if (empty($module_items)) {
+      continue;
+    }
+
+    // Make sure that the file path is set to the path of the module who
+    // implements hook_og_sm_menu().
+    $module_path = drupal_get_path('module', $module);
+    foreach ($module_items as $key => $module_item) {
+      if (isset($module_item['file path'])) {
+        continue;
+      }
+
+      $module_items[$key]['file path'] = $module_path;
+    }
+
+    $items = array_merge($items, $module_items);
+  }
+
+  // Allow altering of the menu items for a single Site.
+  drupal_alter('og_sm_menu', $items, $site);
+
+  return $items;
+}
