@@ -58,6 +58,17 @@ function og_sm_menu_menu_site($site) {
       continue;
     }
 
+    // Make sure that the file path is set to the path of the module who
+    // implements hook_og_sm_menu().
+    $module_path = drupal_get_path('module', $module);
+    foreach ($module_items as $key => $module_item) {
+      if (isset($module_item['file path'])) {
+        continue;
+      }
+
+      $module_items[$key]['file path'] = $module_path;
+    }
+
     $items = array_merge($items, $module_items);
   }
 
