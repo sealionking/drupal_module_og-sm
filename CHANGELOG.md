@@ -17,18 +17,19 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-90 : Removed the obsolete pg_sm_pathauto module.
 - DMOGSM-93 : Added link to the Administration pages overview (fallback to 
   Site node edit) on the platform dashboard.
-- DMOGSM-98: Added fallback message when Group content add overview page has
+- DMOGSM-98 : Added fallback message when Group content add overview page has
   no items and og_sm_feature module is enabled.
 
 
 
 ### Updated
-- DMOGSM-95: Improved the help text for the content type comments settings 
+- DMOGSM-95 : Improved the help text for the content type comments settings 
   form. 
 
 
 ### Fixed
-- DMOGSM-92: Fixed order of items on site admin overview pages.
+- DMOGSM-92 : Fixed order of items on site admin overview pages.
+- DMOGSM-101 : Fixed notice about passing non-variables by reference.
 
 
 
