@@ -4,6 +4,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [Unreleased]
+### Fixed
+- DMOGSM-104 : Fixed notice when called outside Site context.
+
+
+
+
 ## [7.x-1.8]
 ### Added
 - DMOGSM-90 : Added centralised functionality to provide Site specific menu 
