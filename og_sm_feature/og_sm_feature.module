@@ -593,6 +593,10 @@ function og_sm_feature_translated_menu_link_alter(&$item, $map) {
 
   // Access based on feature status.
   $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
   $item['access'] = og_sm_feature_site_is_enabled(
     $site,
     $item['options']['og_sm_feature']
