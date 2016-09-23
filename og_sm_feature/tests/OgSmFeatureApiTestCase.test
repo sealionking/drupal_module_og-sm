@@ -406,7 +406,7 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     // Foo feature.
     $foo_feature = 'foo';
     $info = og_sm_feature_feature_info($foo_feature);
-    $this->assertNotEqual($expected, $info, 'Feature info (' . $foo_feature .') not found in the result of feature_info.');
+    $this->assertFalse($info, 'Feature info (' . $foo_feature .') not found in the result of feature_info.');
   }
 
 }
