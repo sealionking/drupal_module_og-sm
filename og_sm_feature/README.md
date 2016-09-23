@@ -47,6 +47,13 @@ $info = og_sm_feature_info();
 ```
 
 
+### Get information of a feature
+Get information about a feature.
+
+```php
+$info = og_sm_feature_feature_info('feature name');
+```
+
 ### Check if a feature exists
 Check if a feature exists by its name.
 
