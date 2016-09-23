@@ -383,4 +383,30 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     );
   }
 
+  /**
+   * Test collection of the info of a feature.
+   */
+  public function testFeatureFeatureInfo() {
+    // Existing feature to look for.
+    $existing_feature = 'articles';
+
+    // Article feature info.
+    $expected = array(
+      'name' => 'Articles',
+      'vocabularies' => array('categories', 'tags'),
+      'description' => NULL,
+      'content types' => array(),
+      'global configuration' => NULL,
+      'site configuration' => NULL,
+    );
+
+    $info = og_sm_feature_feature_info($existing_feature);
+    $this->assertEqual($expected, $info, 'Feature info (' . $existing_feature .') found in the result of feature_info.');
+
+    // Foo feature.
+    $foo_feature = 'foo';
+    $info = og_sm_feature_feature_info($foo_feature);
+    $this->assertFalse($info, 'Feature info (' . $foo_feature .') not found in the result of feature_info.');
+  }
+
 }
