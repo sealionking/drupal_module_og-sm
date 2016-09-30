@@ -34,6 +34,7 @@ function og_sm_dashboard_site_overview_block() {
     $content['node_add'] = array(
       '#theme' => 'item_list',
       '#items' => $items,
+      '#attributes' => array('class' => 'site-actions'),
     );
     $content['clearfix'] = array(
       '#type' => 'container',
@@ -55,13 +56,13 @@ function og_sm_dashboard_site_overview_block() {
     if ($og_sm_admin_exists && og_sm_site_permission_access($site, 'administer site')) {
       $row['admister'] = array(
         'data' => l(t('Administer'), 'group/node/' . $site->nid . '/admin'),
-        'class' => 'action action-admin',
+        'class' => 'site-action site-action-admin',
       );
     }
     elseif (node_access('update', $site, $user)) {
       $row['edit'] = array(
         'data' => l(t('Edit'), 'node/' . $site->nid . '/edit'),
-        'class' => 'action action-edit',
+        'class' => 'site-action site-action-edit',
       );
     }
 
@@ -69,7 +70,7 @@ function og_sm_dashboard_site_overview_block() {
     if ($og_sm_clone_exists && og_sm_site_clone_access_page($site, $user)) {
       $row['clone'] = array(
         'data' => l(t('Clone'), 'node/' . $site->nid . '/clone'),
-        'class' => 'action action-clone',
+        'class' => 'site-action site-action-clone',
       );
     }
     $rows[$site->nid] = $row;
