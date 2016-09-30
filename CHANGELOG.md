@@ -4,7 +4,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
-## [Unreleased]
+## [7.x-1.9]
 ### Added
 - PPL-745 : Added og_sm_feature_feature_info().
 
@@ -206,6 +206,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.9]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.9%0D7.x-1.8#diff
 [7.x-1.8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.8%0D7.x-1.7#diff
 [7.x-1.7]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.7%0D7.x-1.6#diff
 [7.x-1.6]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.6%0D7.x-1.5#diff
