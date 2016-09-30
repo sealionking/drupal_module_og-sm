@@ -271,6 +271,26 @@ function og_sm_feature_info() {
 }
 
 /**
+ * Get the information about a feature.
+ *
+ * This will check if the feature exists and return the feature information.
+ *
+ * @param string $feature_name
+ *   The feature name.
+ *
+ * @return array
+ *   The information array.
+ */
+function og_sm_feature_feature_info($feature_name) {
+  if (!og_sm_feature_exists($feature_name)) {
+    return FALSE;
+  }
+
+  $features = og_sm_feature_info();
+  return $features[$feature_name];
+}
+
+/**
  * Get the information about all enabled features in a Site.
  *
  * @param object $site
@@ -593,6 +613,10 @@ function og_sm_feature_translated_menu_link_alter(&$item, $map) {
 
   // Access based on feature status.
   $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
   $item['access'] = og_sm_feature_site_is_enabled(
     $site,
     $item['options']['og_sm_feature']
