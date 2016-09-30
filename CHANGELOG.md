@@ -11,6 +11,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ### Fixed
 - DMOGSM-104 : Fixed notice when called outside Site context.
+- PPL-805 : Fixed action link classes to avoid name clashing with other 
+  modules & themes.
 
 
 
