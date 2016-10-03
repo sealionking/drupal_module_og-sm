@@ -5,5 +5,8 @@ core = 7.x
 
 dependencies[] = og_sm
 
+; Views.
+files[] = views/og_sm_user_views_handler_user_name.inc
+
 ; Tests.
 files[] = tests/OgSmUserTestCase.test
