@@ -162,6 +162,26 @@ function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
 
 
 
+## Override content administration overview pages
+This module provides 2 content overview pages within a site:
+* All content (group/node/[site-nid]/admin/content) : Overview of all 
+  content within a Site.
+* My content (group/node/[site-nid]/admin/content/my) : Overview of all 
+  content within a Site created by the currently logged in user.
+  
+The view and display in use for these pages can be altered by setting the
+variable containing the setting. Each variable has the following value:
+`view_name:display_name`.
+
+The variable names are:
+
+* `og_sm_content_view_admin_overview` : The all Site content overview
+  (default `og_sm_content_admin_overview:embed_overview`).
+* `og_sm_content_view_admin_overview_my` : The my Site content overview
+  (default `og_sm_content_admin_overview:embed_overview_my`).
+
+
+
 ## Contributed module support
 This module alters contributed modules so they support the new node/add paths:
 
