@@ -290,5 +290,5 @@ function og_sm_user_admin_menu_output_alter(&$content) {
 function pp_group_profile_views_data_alter(&$data) {
   // Replace the username handler with our own version so we can link to the
   // Site profile page.
-  $data['users']['name']['field']['handler'] = 'og_sm_user_views_handler_user_name';
+  $data['users']['name']['field']['handler'] = 'og_sm_user_views_handler_field_user_name';
 }
