@@ -23,12 +23,14 @@ function og_sm_comment_views_default_views() {
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['use_more_text'] = 'more';
   $handler->display->display_options['access']['type'] = 'og_context';
   $handler->display->display_options['access']['perm'] = 'administer comments';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['exposed_form']['options']['submit_button'] = 'Submit';
+  $handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Sort by';
   $handler->display->display_options['exposed_form']['options']['sort_asc_label'] = 'Ascending';
   $handler->display->display_options['exposed_form']['options']['sort_desc_label'] = 'Descending';
   $handler->display->display_options['pager']['type'] = 'full';
@@ -36,7 +38,13 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Items per page';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = '- All -';
   $handler->display->display_options['pager']['options']['expose']['offset_label'] = 'Start';
+  $handler->display->display_options['pager']['options']['tags']['first'] = '« first';
+  $handler->display->display_options['pager']['options']['tags']['previous'] = '‹ previous';
+  $handler->display->display_options['pager']['options']['tags']['next'] = 'next ›';
+  $handler->display->display_options['pager']['options']['tags']['last'] = 'last »';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
     'views_bulk_operations' => 'views_bulk_operations',
@@ -82,7 +90,7 @@ function og_sm_comment_views_default_views() {
       'separator' => '',
       'empty_column' => 0,
     ),
-    'realname' => array(
+    'name' => array(
       'sortable' => 1,
       'default_sort_order' => 'asc',
       'align' => '',
@@ -108,40 +116,41 @@ function og_sm_comment_views_default_views() {
     ),
   );
   $handler->display->display_options['style_options']['sticky'] = TRUE;
-  /* Header: Global: Result summary */
+  /* Kop: Algemeen: Samenvatting van het resultaat */
   $handler->display->display_options['header']['result']['id'] = 'result';
   $handler->display->display_options['header']['result']['table'] = 'views';
   $handler->display->display_options['header']['result']['field'] = 'result';
   $handler->display->display_options['header']['result']['content'] = 'Show @start - @end of @total';
-  /* Footer: Global: Result summary */
+  /* Voet: Algemeen: Samenvatting van het resultaat */
   $handler->display->display_options['footer']['result']['id'] = 'result';
   $handler->display->display_options['footer']['result']['table'] = 'views';
   $handler->display->display_options['footer']['result']['field'] = 'result';
   $handler->display->display_options['footer']['result']['content'] = 'Show @start - @end of @total';
-  /* No results behavior: Global: Text area */
+  /* Gedrag bij ontbreken van resultaten: Algemeen: Tekstveld */
   $handler->display->display_options['empty']['area']['id'] = 'area';
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'There are no comments in this Site.';
   $handler->display->display_options['empty']['area']['format'] = 'plain_text';
-  /* Relationship: Comment: Content */
+  /* Relatie: Reaction: Content */
   $handler->display->display_options['relationships']['nid']['id'] = 'nid';
   $handler->display->display_options['relationships']['nid']['table'] = 'comment';
   $handler->display->display_options['relationships']['nid']['field'] = 'nid';
   $handler->display->display_options['relationships']['nid']['required'] = TRUE;
-  /* Relationship: Comment: Author */
+  /* Relatie: Reaction: Auteur */
   $handler->display->display_options['relationships']['uid']['id'] = 'uid';
   $handler->display->display_options['relationships']['uid']['table'] = 'comment';
   $handler->display->display_options['relationships']['uid']['field'] = 'uid';
   $handler->display->display_options['relationships']['uid']['required'] = TRUE;
-  /* Relationship: OG membership: OG membership from Node */
+  /* Relatie: OG membership: OG membership from Node */
   $handler->display->display_options['relationships']['og_membership_rel']['id'] = 'og_membership_rel';
   $handler->display->display_options['relationships']['og_membership_rel']['table'] = 'node';
   $handler->display->display_options['relationships']['og_membership_rel']['field'] = 'og_membership_rel';
   $handler->display->display_options['relationships']['og_membership_rel']['relationship'] = 'nid';
+  $handler->display->display_options['relationships']['og_membership_rel']['label'] = 'OG membership of node';
   $handler->display->display_options['relationships']['og_membership_rel']['required'] = TRUE;
-  /* Field: Bulk operations: Comment */
+  /* Veld: Bulkbewerkingen: Reaction */
   $handler->display->display_options['fields']['views_bulk_operations']['id'] = 'views_bulk_operations';
   $handler->display->display_options['fields']['views_bulk_operations']['table'] = 'comment';
   $handler->display->display_options['fields']['views_bulk_operations']['field'] = 'views_bulk_operations';
@@ -159,20 +168,20 @@ function og_sm_comment_views_default_views() {
       'label' => '',
     ),
   );
-  /* Field: Content: Path */
+  /* Veld: Content: Path */
   $handler->display->display_options['fields']['path']['id'] = 'path';
   $handler->display->display_options['fields']['path']['table'] = 'node';
   $handler->display->display_options['fields']['path']['field'] = 'path';
   $handler->display->display_options['fields']['path']['relationship'] = 'nid';
   $handler->display->display_options['fields']['path']['exclude'] = TRUE;
   $handler->display->display_options['fields']['path']['absolute'] = TRUE;
-  /* Field: Comment: ID */
+  /* Veld: Reaction: ID */
   $handler->display->display_options['fields']['cid']['id'] = 'cid';
   $handler->display->display_options['fields']['cid']['table'] = 'comment';
   $handler->display->display_options['fields']['cid']['field'] = 'cid';
   $handler->display->display_options['fields']['cid']['exclude'] = TRUE;
   $handler->display->display_options['fields']['cid']['link_to_comment'] = FALSE;
-  /* Field: Content: Title */
+  /* Veld: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
   $handler->display->display_options['fields']['title']['field'] = 'title';
@@ -180,75 +189,55 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['fields']['title']['alter']['make_link'] = TRUE;
   $handler->display->display_options['fields']['title']['alter']['path'] = '[path]#comment-[cid]';
   $handler->display->display_options['fields']['title']['link_to_node'] = FALSE;
-  /* Field: Comment: Comment */
+  /* Veld: Reaction: Comment */
   $handler->display->display_options['fields']['comment_body']['id'] = 'comment_body';
   $handler->display->display_options['fields']['comment_body']['table'] = 'field_data_comment_body';
   $handler->display->display_options['fields']['comment_body']['field'] = 'comment_body';
+  $handler->display->display_options['fields']['comment_body']['label'] = 'Reaction';
   $handler->display->display_options['fields']['comment_body']['type'] = 'text_trimmed';
   $handler->display->display_options['fields']['comment_body']['settings'] = array(
     'trim_length' => '200',
   );
-  /* Field: Comment: Author uid */
-  $handler->display->display_options['fields']['uid']['id'] = 'uid';
-  $handler->display->display_options['fields']['uid']['table'] = 'comment';
-  $handler->display->display_options['fields']['uid']['field'] = 'uid';
-  $handler->display->display_options['fields']['uid']['label'] = '';
-  $handler->display->display_options['fields']['uid']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['uid']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['uid']['empty'] = 'anonymous';
-  $handler->display->display_options['fields']['uid']['empty_zero'] = TRUE;
-  $handler->display->display_options['fields']['uid']['link_to_user'] = FALSE;
-  /* Field: Comment: Author */
+  /* Veld: Gebruiker: Naam */
   $handler->display->display_options['fields']['name']['id'] = 'name';
-  $handler->display->display_options['fields']['name']['table'] = 'comment';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['label'] = '';
-  $handler->display->display_options['fields']['name']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['name']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['name']['alter']['text'] = '[name] ([uid])';
+  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['name']['label'] = 'Author';
   $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
-  /* Field: Realname: Real name */
-  $handler->display->display_options['fields']['realname']['id'] = 'realname';
-  $handler->display->display_options['fields']['realname']['table'] = 'realname';
-  $handler->display->display_options['fields']['realname']['field'] = 'realname';
-  $handler->display->display_options['fields']['realname']['relationship'] = 'uid';
-  $handler->display->display_options['fields']['realname']['label'] = 'Author';
-  $handler->display->display_options['fields']['realname']['empty'] = '[name]';
-  $handler->display->display_options['fields']['realname']['link_to_user'] = FALSE;
-  /* Field: Comment: Post date */
+  /* Veld: Reaction: Datum van inzending */
   $handler->display->display_options['fields']['created']['id'] = 'created';
   $handler->display->display_options['fields']['created']['table'] = 'comment';
   $handler->display->display_options['fields']['created']['field'] = 'created';
   $handler->display->display_options['fields']['created']['label'] = 'Created';
   $handler->display->display_options['fields']['created']['date_format'] = 'short';
   $handler->display->display_options['fields']['created']['second_date_format'] = 'short';
-  /* Field: Comment: Edit link */
+  /* Veld: Reaction: Bewerkingslink */
   $handler->display->display_options['fields']['edit_comment']['id'] = 'edit_comment';
   $handler->display->display_options['fields']['edit_comment']['table'] = 'comment';
   $handler->display->display_options['fields']['edit_comment']['field'] = 'edit_comment';
   $handler->display->display_options['fields']['edit_comment']['label'] = 'Actions';
   $handler->display->display_options['fields']['edit_comment']['text'] = 'edit';
-  /* Field: Comment: Delete link */
+  /* Veld: Reaction: Verwijderlink */
   $handler->display->display_options['fields']['delete_comment']['id'] = 'delete_comment';
   $handler->display->display_options['fields']['delete_comment']['table'] = 'comment';
   $handler->display->display_options['fields']['delete_comment']['field'] = 'delete_comment';
   $handler->display->display_options['fields']['delete_comment']['label'] = '';
   $handler->display->display_options['fields']['delete_comment']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['delete_comment']['text'] = 'remove';
-  /* Sort criterion: Comment: Post date */
+  /* Sorteercriterium: Reaction: Datum van inzending */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'comment';
   $handler->display->display_options['sorts']['created']['field'] = 'created';
   $handler->display->display_options['sorts']['created']['order'] = 'DESC';
   $handler->display->display_options['sorts']['created']['expose']['label'] = 'Created';
-  /* Contextual filter: OG membership: Group ID */
+  /* Contextueel filter: OG membership: Groep-ID */
   $handler->display->display_options['arguments']['gid']['id'] = 'gid';
   $handler->display->display_options['arguments']['gid']['table'] = 'og_membership';
   $handler->display->display_options['arguments']['gid']['field'] = 'gid';
   $handler->display->display_options['arguments']['gid']['relationship'] = 'nid';
   $handler->display->display_options['arguments']['gid']['default_action'] = 'not found';
+  $handler->display->display_options['arguments']['gid']['exception']['title'] = 'Alle';
   $handler->display->display_options['arguments']['gid']['default_argument_type'] = 'fixed';
   $handler->display->display_options['arguments']['gid']['default_argument_skip_url'] = TRUE;
   $handler->display->display_options['arguments']['gid']['summary']['number_of_records'] = '0';
@@ -256,7 +245,7 @@ function og_sm_comment_views_default_views() {
   $handler->display->display_options['arguments']['gid']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['gid']['specify_validation'] = TRUE;
   $handler->display->display_options['arguments']['gid']['validate']['type'] = 'og';
-  /* Filter criterion: Content: Title */
+  /* Filtercriterium: Content: Title */
   $handler->display->display_options['filters']['title']['id'] = 'title';
   $handler->display->display_options['filters']['title']['table'] = 'node';
   $handler->display->display_options['filters']['title']['field'] = 'title';
@@ -276,7 +265,7 @@ function og_sm_comment_views_default_views() {
     4 => 0,
     6 => 0,
   );
-  /* Filter criterion: Comment: Comment (comment_body) */
+  /* Filtercriterium: Reaction: Comment (comment_body) */
   $handler->display->display_options['filters']['comment_body_value']['id'] = 'comment_body_value';
   $handler->display->display_options['filters']['comment_body_value']['table'] = 'field_data_comment_body';
   $handler->display->display_options['filters']['comment_body_value']['field'] = 'comment_body_value';
@@ -295,7 +284,7 @@ function og_sm_comment_views_default_views() {
     4 => 0,
     6 => 0,
   );
-  /* Filter criterion: User: Name */
+  /* Filtercriterium: Gebruiker: Naam */
   $handler->display->display_options['filters']['uid']['id'] = 'uid';
   $handler->display->display_options['filters']['uid']['table'] = 'users';
   $handler->display->display_options['filters']['uid']['field'] = 'uid';
@@ -334,16 +323,13 @@ function og_sm_comment_views_default_views() {
     t('There are no comments in this Site.'),
     t('Content'),
     t('author'),
-    t('OG membership from node'),
-    t('Comment'),
+    t('OG membership of node'),
+    t('Reaction'),
     t('- Choose an operation -'),
     t('Path'),
     t('ID'),
     t('Title'),
-    t('anonymous'),
-    t('[name] ([uid])'),
     t('Author'),
-    t('[name]'),
     t('Created'),
     t('Actions'),
     t('edit'),
@@ -352,6 +338,7 @@ function og_sm_comment_views_default_views() {
     t('Title content contains'),
     t('Comment contains'),
   );
+
   $views['og_sm_comment_admin_overview'] = $view;
 
   return $views;
