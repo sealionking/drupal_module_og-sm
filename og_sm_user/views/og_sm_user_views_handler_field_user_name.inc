@@ -8,8 +8,8 @@
 /**
  * Field handler to provide a themed user link.
  *
- * This will to link to the user profile page within a Site when a Site
- * context is active.
+ * This will link to the user profile page within a Site when a Site context
+ * is active.
  *
  * @ingroup views_field_handlers
  */
@@ -18,7 +18,7 @@ class og_sm_user_views_handler_field_user_name extends views_handler_field_user_
   /**
    * {@inheritdoc}
    */
-  function init(&$view, &$data) {
+  public function init(&$view, &$data) {
     // Add uid in the query so we can test for anonymous if needed.
     parent::init($view, $data);
     if (!empty($this->options['link_to_user'])) {
@@ -30,7 +30,7 @@ class og_sm_user_views_handler_field_user_name extends views_handler_field_user_
    * {@inheritdoc}
    */
   // @codingStandardsIgnoreStart
-  function render_link($data, $values) {
+  public function render_link($data, $values) {
   // @codingStandardsIgnoreEnd
     // Only alter if we need to show a link.
     if (empty($this->options['link_to_user'])) {
