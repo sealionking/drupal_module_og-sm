@@ -4,6 +4,16 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [Unreleased]
+### Added
+- PPL-772 : Added alter hook so we can link to the Site user profile when a
+  Site context is active.
+- PPL-772 : Added the possibility to override the views in use to show the
+  Site content admin overview pages.
+
+
+
+
 ## [7.x-1.9]
 ### Added
 - PPL-745 : Added og_sm_feature_feature_info().
