@@ -10,6 +10,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   Site context is active.
 - PPL-772 : Added the possibility to override the views in use to show the
   Site content admin overview pages.
+- PPL-772 : Added the possibility to override the view in use to show the
+  Site comments admin overview page.
 
 
 
