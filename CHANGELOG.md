@@ -12,6 +12,7 @@ All Notable changes to **Organic Groups Site Manager** module suite.
   Site content admin overview pages.
 - PPL-772 : Added the possibility to override the view in use to show the
   Site comments admin overview page.
+- PPL-831 : Added the possibility to override the title on node add forms.
 
 
 
