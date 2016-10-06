@@ -613,7 +613,7 @@ function og_sm_content_form_node_form_change_title($form, &$form_state) {
 
   // Make sure the content type name alias is used on the node add/edit form.
   if (empty($node->nid)) {
-    drupal_set_title(t('Create @name', array('@name' => $content_type_info->name)), PASS_THROUGH);
+    drupal_set_title($content_type_info->node_add_title);
   }
   else {
     $args = array(

@@ -97,6 +97,11 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
     '#title' => t('Name plural'),
     '#default_value' => $info->name_plural,
   );
+  $form['content_name'][$key_base . 'node_add_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title on the node add form'),
+    '#default_value' => $info->node_add_title,
+  );
 
   $form = og_sm_variable_settings_form($form, $form_state, $site);
 
