@@ -73,4 +73,23 @@ $has_access = og_sm_comment_get_site($comment);
 ```
 
 
+## Override comment administration overview page
+This module provides a comment overview pages within a site:
+
+* group/node/[site-nid]/admin/comments
+  
+The view and display in use for these pages can be altered by setting the
+variable containing the setting: The variable value has the following format:
+
+* `view_name:display_name`
+
+The variable is:
+
+* `og_sm_comment_view_admin_overview` : The all Site comment overview page
+  (default `og_sm_comment_admin_overview:default`).
+
+
+
+
+
 [link-path_alias_xt]: https://www.drupal.org/project/path_alias_xt
