@@ -97,6 +97,11 @@ function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site,
     '#title' => t('Name plural'),
     '#default_value' => $info->name_plural,
   );
+  $form['content_name'][$key_base . 'node_add_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title on the node add form'),
+    '#default_value' => $info->node_add_title,
+  );
 
   $form = og_sm_variable_settings_form($form, $form_state, $site);
 
@@ -160,8 +165,15 @@ function og_sm_content_admin_overview($site) {
   $parent = 'group/node/' . $site->nid . '/admin';
   og_sm_set_breadcrumb($site, array(l(t('Administer Site'), $parent)));
 
-  $view = views_get_view('og_sm_content_admin_overview');
-  $view->set_display('embed_overview');
+  list($view_name, $display) = explode(
+    ':',
+    variable_get(
+      'og_sm_content_view_admin_overview',
+      'og_sm_content_admin_overview:embed_overview')
+  );
+
+  $view = views_get_view($view_name);
+  $view->set_display($display);
   $view->set_arguments(array($site->nid));
   $view->override_path = 'group/node/' . $site->nid . '/admin/content';
 
@@ -181,8 +193,15 @@ function og_sm_content_admin_overview_my($site) {
   $parent = 'group/node/' . $site->nid . '/admin/my';
   og_sm_set_breadcrumb($site, array(l(t('Administer Site'), $parent)));
 
-  $view = views_get_view('og_sm_content_admin_overview');
-  $view->set_display('embed_overview_my');
+  list($view_name, $display) = explode(
+    ':',
+    variable_get(
+      'og_sm_content_view_admin_overview_my',
+      'og_sm_content_admin_overview:embed_overview_my')
+  );
+
+  $view = views_get_view($view_name);
+  $view->set_display($display);
   $view->set_arguments(array($site->nid));
   $view->override_path = 'group/node/' . $site->nid . '/admin/content/my';
 

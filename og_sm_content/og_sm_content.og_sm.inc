@@ -69,6 +69,9 @@ function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
   $type_info->name_plural = check_plain(
     og_sm_variable_get($site->nid, $key_base . 'name_plural', $type_info->name)
   );
+  $type_info->node_add_title = check_plain(
+    og_sm_variable_get($site->nid, $key_base . 'node_add_title', t('Create @name', array('@name' => $type_info->name)))
+  );
 }
 
 /**
