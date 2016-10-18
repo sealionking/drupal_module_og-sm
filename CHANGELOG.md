@@ -4,6 +4,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [Unreleased]
+### Fixed
+- PPL-909 : Fixed double encoded username in Views links.
+
+
+
+
 ## [7.x-1.10]
 ### Added
 - PPL-772 : Added alter hook so we can link to the Site user profile when a
