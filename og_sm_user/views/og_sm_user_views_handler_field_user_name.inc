@@ -61,6 +61,9 @@ class og_sm_user_views_handler_field_user_name extends views_handler_field_user_
         'group/node/%d/profile/%d',
         $site->nid,
         $this->get_value($values, 'uid')
+      ),
+      array(
+        'html' => TRUE,
       )
     );
   }

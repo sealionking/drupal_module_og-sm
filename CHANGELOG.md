@@ -4,6 +4,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [7.x-1.11]
+### Fixed
+- PPL-909 : Fixed double encoded username in Views links.
+
+
+
+
 ## [7.x-1.10]
 ### Added
 - PPL-772 : Added alter hook so we can link to the Site user profile when a
@@ -219,6 +226,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.11]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.11%0D7.x-1.10#diff
 [7.x-1.10]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.10%0D7.x-1.9#diff
 [7.x-1.9]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.9%0D7.x-1.8#diff
 [7.x-1.8]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.8%0D7.x-1.7#diff
