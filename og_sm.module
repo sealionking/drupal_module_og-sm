@@ -11,6 +11,9 @@ define('OG_SM_VARIABLE_GROUP_TYPES', 'og_sm_node_types');
 // Permission to get access to Site administration.
 define('OG_SM_PERMISSION_SITE_ADMIN', 'administer site');
 
+// Permission to get access platform overview pages.
+define('OG_SM_PERMISSION_ACCESS_PLATFORM_OVERVIEW_PAGES', 'access platform overview pages');
+
 /**
  * Implements hook_hook_info().
  */
@@ -35,6 +38,18 @@ function og_sm_hook_info() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function og_sm_permission() {
+  $items = array();
+  $items[OG_SM_PERMISSION_ACCESS_PLATFORM_OVERVIEW_PAGES] = array(
+    'title' => t('Access platform overview pages'),
+    'description' => t('Get overview pages such as platform content and platform comments.'),
+  );
+  return $items;
+}
+
+/**
  * Implements hook_og_permission().
  */
 function og_sm_og_permission() {
@@ -46,6 +61,13 @@ function og_sm_og_permission() {
       'default role' => array(OG_ADMINISTRATOR_ROLE),
     ),
   );
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function og_sm_views_api() {
+  return array('api' => 3);
 }
 
 /**
@@ -515,6 +537,27 @@ function og_sm_content_is_site_member($node, $site) {
 function og_sm_user_get_sites($account) {
   $groups = og_get_entity_groups('user', $account);
   return _og_sm_filter_sites_from_groups($groups);
+}
+
+/**
+ * Get all the sites nodes within the platform.
+ *
+ * @return array
+ *   All Site nodes keyed by their nid.
+ */
+function og_sm_get_sites() {
+  $query = new EntityFieldQuery();
+  $result = $query
+    ->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', og_sm_get_site_types())
+    ->execute();
+
+  if (!isset($result['node'])) {
+    return array();
+  }
+
+  $nids = array_keys($result['node']);
+  return node_load_multiple($nids);
 }
 
 /**

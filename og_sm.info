@@ -6,6 +6,10 @@ core = 7.x
 dependencies[] = og
 dependencies[] = og_context
 
+; Views.
+files[] = views/og_sm_views_handler_filter_manageable_sites_by_current_user.inc
+files[] = views/og_sm_views_handler_filter_sites.inc
+
 ; Tests.
 files[] = tests/OgSmSiteApiTestCase.test
 files[] = tests/OgSmSiteContentTestCase.test
