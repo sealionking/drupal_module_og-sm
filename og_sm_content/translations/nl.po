@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-03-18 09:32+0100\n"
-"PO-Revision-Date: 2016-10-06 09:02+0200\n"
+"PO-Revision-Date: 2016-10-31 09:02+0200\n"
 "Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -11,35 +11,35 @@ msgstr ""
 "Language: nl\n"
 "X-Generator: Poedit 1.8.4\n"
 
-#: og_sm_content.admin.inc:18;153;174
+#: og_sm_content.admin.inc:18;166;194
 msgid "Administer Site"
 msgstr "Beheer Site"
 
-#: og_sm_content.admin.inc:26
+#: og_sm_content.admin.inc:36
 msgid "Edit"
 msgstr "Bewerken"
 
-#: og_sm_content.admin.inc:36;76
+#: og_sm_content.admin.inc:44;84
 msgid "Machine name"
 msgstr "Systeemnaam"
 
-#: og_sm_content.admin.inc:37;84
+#: og_sm_content.admin.inc:45;92
 msgid "Name singular"
 msgstr "Enkelvoudige naam"
 
-#: og_sm_content.admin.inc:38;89
+#: og_sm_content.admin.inc:46;97
 msgid "Name plural"
 msgstr "Meervoudig naam"
 
-#: og_sm_content.admin.inc:39
+#: og_sm_content.admin.inc:47
 msgid "Operations"
-msgstr "Handelingen"
+msgstr "Bewerkingen"
 
-#: og_sm_content.admin.inc:69
+#: og_sm_content.admin.inc:77
 msgid "Name"
 msgstr "Naam"
 
-#: og_sm_content.admin.inc:69
+#: og_sm_content.admin.inc:102
 msgid "Title on the node add form"
 msgstr "Titel op het inhoud toevoegen formulier"
 
@@ -51,7 +51,7 @@ msgstr "Inhoudstypen"
 msgid "Administer the content types for this Site."
 msgstr "Beheer de inhoudstypen van de site."
 
-#: og_sm_content.og_sm.inc:48 og_sm_content.pages.inc:58 og_sm_content.module:378;77;97
+#: og_sm_content.og_sm.inc:48 og_sm_content.pages.inc:66 og_sm_content.module:466;112;132
 msgid "Add content"
 msgstr "Inhoud toevoegen"
 
@@ -67,6 +67,10 @@ msgstr "Inhoud beheren"
 msgid "Manage contents of this Site."
 msgstr "Beheer de inhoud van deze Site."
 
+#: og_sm_content.og_sm.inc:73
+msgid "Create @name"
+msgstr "@name aanmaken"
+
 #: og_sm_content.views.inc:12
 msgid "Site content types"
 msgstr "Site inhoud types"
@@ -75,167 +79,159 @@ msgstr "Site inhoud types"
 msgid "Content types that can be used to create content within a Site."
 msgstr "Inhoud types die binnen een Site kunnen gebruikt worden."
 
-#: og_sm_content.views_default.inc:498
+#: og_sm_content.views_default.inc:484;931
 msgid "Defaults"
-msgstr "Standaard"
+msgstr "Standaardinstellingen"
 
-#: og_sm_content.views_default.inc:499
+#: og_sm_content.views_default.inc:485
 msgid "Administer my content"
 msgstr "Beheer mijn inhoud"
 
-#: og_sm_content.views_default.inc:500
+#: og_sm_content.views_default.inc:486;934
 msgid "Submit"
-msgstr "Toepassen"
+msgstr "Indienen"
 
-#: og_sm_content.views_default.inc:501
+#: og_sm_content.views_default.inc:487;935
 msgid "Reset"
-msgstr "Resetten"
+msgstr "Reset"
 
-#: og_sm_content.views_default.inc:502
+#: og_sm_content.views_default.inc:488;936
 msgid "Sort by"
-msgstr "Sorteer op"
+msgstr "Sorteren op"
 
-#: og_sm_content.views_default.inc:503
+#: og_sm_content.views_default.inc:489;937
 msgid "Ascending"
 msgstr "Oplopend"
 
-#: og_sm_content.views_default.inc:504
+#: og_sm_content.views_default.inc:490;938
 msgid "Descending"
 msgstr "Aflopend"
 
-#: og_sm_content.views_default.inc:505
+#: og_sm_content.views_default.inc:491;939
 msgid "Items per page"
 msgstr "Items per pagina"
 
-#: og_sm_content.views_default.inc:506
+#: og_sm_content.views_default.inc:492;940
 msgid "- All -"
 msgstr "- Alle -"
 
-#: og_sm_content.views_default.inc:507
+#: og_sm_content.views_default.inc:493;941
 msgid "Start"
-msgstr "Start"
+msgstr "Begin"
 
-#: og_sm_content.views_default.inc:508
+#: og_sm_content.views_default.inc:494;942
 msgid "« first"
 msgstr "« eerste"
 
-#: og_sm_content.views_default.inc:509
+#: og_sm_content.views_default.inc:495;943
 msgid "‹ previous"
 msgstr "‹ vorige"
 
-#: og_sm_content.views_default.inc:510
+#: og_sm_content.views_default.inc:496;944
 msgid "next ›"
 msgstr "volgende ›"
 
-#: og_sm_content.views_default.inc:511
+#: og_sm_content.views_default.inc:497;945
 msgid "last »"
 msgstr "laatste »"
 
-#: og_sm_content.views_default.inc:512
+#: og_sm_content.views_default.inc:498;946
 msgid "Results"
 msgstr "Resultaten"
 
-#: og_sm_content.views_default.inc:513
+#: og_sm_content.views_default.inc:499;947
 msgid "Show @start - @end of @total"
 msgstr "Toon @start - @end van @total"
 
-#: og_sm_content.views_default.inc:514
+#: og_sm_content.views_default.inc:500
 msgid "There is no content in this Site."
 msgstr "Er is geen inhoud binnen deze Site."
 
-#: og_sm_content.views_default.inc:515
+#: og_sm_content.views_default.inc:501;949
 msgid "Site membership"
 msgstr "Site lidmaatschap"
 
-#: og_sm_content.views_default.inc:516
+#: og_sm_content.views_default.inc:502;950
 msgid "author"
 msgstr "auteur"
 
-#: og_sm_content.views_default.inc:517
+#: og_sm_content.views_default.inc:503;952
 msgid "Content"
 msgstr "Inhoud"
 
-#: og_sm_content.views_default.inc:518
+#: og_sm_content.views_default.inc:504;953
 msgid "- Choose an operation -"
-msgstr "- Kies een actie -"
+msgstr "- Kies een bewerking -"
 
-#: og_sm_content.views_default.inc:519
+#: og_sm_content.views_default.inc:505
 msgid "Image"
 msgstr "Afbeelding"
 
-#: og_sm_content.views_default.inc:520
+#: og_sm_content.views_default.inc:506;954
 msgid "Title"
 msgstr "Titel"
 
-#: og_sm_content.views_default.inc:521
+#: og_sm_content.views_default.inc:507;955
 msgid "Type"
 msgstr "Type"
 
-#: og_sm_content.views_default.inc:522
+#: og_sm_content.views_default.inc:508;957
 msgid "Published"
 msgstr "Gepubliceerd"
 
-#: og_sm_content.views_default.inc:523
+#: og_sm_content.views_default.inc:509;958
 msgid "Created"
-msgstr "Gecrëerd"
+msgstr "Aangemaakt"
 
-#: og_sm_content.views_default.inc:524
+#: og_sm_content.views_default.inc:510;963
 msgid "Updated"
-msgstr "Aangepast"
+msgstr "Bijgewerkt"
 
-#: og_sm_content.views_default.inc:525
+#: og_sm_content.views_default.inc:511;960
 msgid "Author"
 msgstr "Auteur"
 
-#: og_sm_content.views_default.inc:526
+#: og_sm_content.views_default.inc:512;961
 msgid "Actions"
 msgstr "Acties"
 
-#: og_sm_content.views_default.inc:527
+#: og_sm_content.views_default.inc:513;962
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: og_sm_content.views_default.inc:528
+#: og_sm_content.views_default.inc:514
 msgid "All"
 msgstr "Alle"
 
-#: og_sm_content.views_default.inc:529
+#: og_sm_content.views_default.inc:515;964
 msgid "Overview"
 msgstr "Overzicht"
 
-#: og_sm_content.views_default.inc:530
+#: og_sm_content.views_default.inc:516;933
 msgid "more"
 msgstr "meer"
 
-#: og_sm_content.views_default.inc:531
+#: og_sm_content.views_default.inc:517
 msgid "My"
 msgstr "Mijn"
 
-#: og_sm_content.module:507
-msgid "Create @name"
-msgstr "@name aanmaken"
-
-#: og_sm_content.module:514
-msgid "<em>Edit @type</em> @title"
-msgstr "<em>@type</em> @title <em>bewerken</em>"
-
-#: og_sm_content.module:50
+#: og_sm_content.views_default.inc:932 og_sm_content.module:85
 msgid "Administer content"
 msgstr "Beheer inhoud"
 
-#: og_sm_content.module:60
-msgid "All content"
-msgstr "Alle inhoud"
+#: og_sm_content.views_default.inc:948
+msgid "There is no content in any of your sites."
+msgstr "Er is geen inhoud binnen jouw sites."
 
-#: og_sm_content.module:66
-msgid "My content"
-msgstr "Mijn inhoud"
+#: og_sm_content.views_default.inc:956
+msgid "Site"
+msgstr "Site"
 
-#: og_sm_content.module:88
-msgid "Administer content types"
-msgstr "Inhoudstypes beheren"
+#: og_sm_content.views_default.inc:959
+msgid "Updated date"
+msgstr "Wijzigingsdatum"
 
-#: og_sm_content.module:56
+#: og_sm_content.module:56;123
 msgid "Administer content types"
 msgstr "Inhoudstypes beheren"
 
@@ -252,12 +248,26 @@ msgid "Get an overview of all Site content."
 msgstr "Verkrijg een overzicht van alle Site inhoud."
 
 #: og_sm_content.module:68
-msgid "Access my content overview"
+msgid "Access my content overview page"
 msgstr "Toegang tot mijn inhoudsoverzicht"
 
 #: og_sm_content.module:69
 msgid "Get an overview of all Site content created by the current user."
-msgstr "Verkrijg een overzicht van alle Site inhoud aangemaakt door de huidige gebruiker."
+msgstr ""
+"Verkrijg een overzicht van alle Site inhoud aangemaakt door de huidige "
+"gebruiker."
+
+#: og_sm_content.module:623
+msgid "<em>Edit @type</em> @title"
+msgstr "<em>@type</em> @title <em>bewerken</em>"
+
+#: og_sm_content.module:95
+msgid "All content"
+msgstr "Alle inhoud"
+
+#: og_sm_content.module:101
+msgid "My content"
+msgstr "Mijn inhoud"
 
 #: og_sm_content.info:0
 msgid "Site Content"
@@ -270,7 +280,3 @@ msgstr "Site inhoud aanmaken en beheren."
 #: og_sm_content.info:0
 msgid "Organic Groups Site Manager"
 msgstr "Organic Groups Site Beheerder"
-
-#: views/og_sm_views_content_handler_field_content_type.inc.inc:56
-msgid "(original: @content_type)"
-msgstr "(origineel: @content_type)"
