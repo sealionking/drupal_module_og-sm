@@ -12,13 +12,23 @@
 class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator {
   // @codingStandardsIgnoreEnd
 
+  /**
+   * {@inheritdoc}
+   */
+  // @codingStandardsIgnoreStart
   function option_definition() {
+    // @codingStandardsIgnoreEnd
     $options = parent::option_definition();
     $options['manageable_sites']['default'] = FALSE;
     return $options;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  // @codingStandardsIgnoreStart
   function options_form(&$form, &$form_state) {
+    // @codingStandardsIgnoreEnd
     parent::options_form($form, $form_state);
     $form['manageable_sites'] = array(
       '#type' => 'checkbox',
@@ -27,7 +37,12 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  // @codingStandardsIgnoreStart
   function get_value_options() {
+    // @codingStandardsIgnoreEnd
     if (isset($this->value_options)) {
       return;
     }
@@ -39,7 +54,6 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
       $sites = og_sm_get_sites();
     }
 
-
     $options = array();
     foreach ($sites as $site_nid => $site) {
       $options[$site_nid] = $site->title;
@@ -48,6 +62,9 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
     $this->value_options = $options;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function query() {
     $this->ensure_my_table();
     if (!empty($this->value)) {
@@ -55,4 +72,5 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
       $this->query->add_where(0, $field, $this->value);
     }
   }
+
 }

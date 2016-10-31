@@ -8,7 +8,9 @@
 /**
  * Filter entities based on the current user's manageable sites.
  */
+// @codingStandardsIgnoreStart
 class og_sm_views_handler_filter_manageable_sites_by_current_user extends views_handler_filter_boolean_operator {
+  // @codingStandardsIgnoreEnd
 
   /**
    * {@inheritdoc}
@@ -29,4 +31,5 @@ class og_sm_views_handler_filter_manageable_sites_by_current_user extends views_
       $this->query->add_where(0, $field, array_keys($sites), 'IN');
     }
   }
+
 }
