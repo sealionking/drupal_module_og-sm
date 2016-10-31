@@ -16,4 +16,11 @@ function og_sm_dashboard_views_default_views_alter(&$views) {
       t('Content'),
     );
   }
+  if (isset($views['og_sm_comment_platform_admin_overview'])) {
+    $views['og_sm_comment_platform_admin_overview']->display['overview']->display_options['path'] = 'admin/dashboard/comments';
+    $views['og_sm_comment_platform_admin_overview']->display['overview']->display_options['menu']['title'] = 'Comments';
+    $translatables['og_sm_comment_platform_admin_overview'] = array(
+      t('Comments'),
+    );
+  }
 }
