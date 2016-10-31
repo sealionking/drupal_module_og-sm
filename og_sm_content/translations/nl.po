@@ -221,7 +221,7 @@ msgstr "Beheer inhoud"
 
 #: og_sm_content.views_default.inc:948
 msgid "There is no content in any of your sites."
-msgstr "Er is geen inhoud binnen jouw sites."
+msgstr "Er is geen inhoud binnen uw sites."
 
 #: og_sm_content.views_default.inc:956
 msgid "Site"
