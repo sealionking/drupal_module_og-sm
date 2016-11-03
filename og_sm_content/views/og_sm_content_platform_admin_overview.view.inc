@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Default view for Site Content administration.
+ * Default view for Platform Content administration.
  */
 
 $view = new view();
