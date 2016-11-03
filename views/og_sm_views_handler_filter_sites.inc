@@ -16,7 +16,7 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
    * {@inheritdoc}
    */
   // @codingStandardsIgnoreStart
-  function option_definition() {
+  public function option_definition() {
     // @codingStandardsIgnoreEnd
     $options = parent::option_definition();
     $options['manageable_sites']['default'] = FALSE;
@@ -27,12 +27,12 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
    * {@inheritdoc}
    */
   // @codingStandardsIgnoreStart
-  function options_form(&$form, &$form_state) {
+  public function options_form(&$form, &$form_state) {
     // @codingStandardsIgnoreEnd
     parent::options_form($form, $form_state);
     $form['manageable_sites'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Limit options to the current user\'s manageable sites'),
+      '#title' => t("Limit options to the current user's manageable sites"),
       '#default_value' => $this->options['manageable_sites'],
     );
   }
@@ -41,7 +41,7 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
    * {@inheritdoc}
    */
   // @codingStandardsIgnoreStart
-  function get_value_options() {
+  public function get_value_options() {
     // @codingStandardsIgnoreEnd
     if (isset($this->value_options)) {
       return;
@@ -65,7 +65,7 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
   /**
    * {@inheritdoc}
    */
-  function query() {
+  public function query() {
     if (empty($this->value)) {
       return;
     }

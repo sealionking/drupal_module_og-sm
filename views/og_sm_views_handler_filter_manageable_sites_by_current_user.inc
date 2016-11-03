@@ -15,7 +15,7 @@ class og_sm_views_handler_filter_manageable_sites_by_current_user extends views_
   /**
    * {@inheritdoc}
    */
-  function construct() {
+  public function construct() {
     parent::construct();
     $this->value_value = t('Are the sites manageable by the current user');
   }
@@ -23,7 +23,7 @@ class og_sm_views_handler_filter_manageable_sites_by_current_user extends views_
   /**
    * {@inheritdoc}
    */
-  function query() {
+  public function query() {
     $this->ensure_my_table();
     $field = $this->table_alias . '.' . $this->real_field;
 
