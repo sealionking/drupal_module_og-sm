@@ -24,11 +24,16 @@ class og_sm_views_handler_filter_manageable_sites_by_current_user extends views_
    * {@inheritdoc}
    */
   function query() {
-    if (!empty($this->value)) {
-      $this->ensure_my_table();
-      $field = $this->table_alias . '.' . $this->real_field;
-      $sites = og_sm_user_get_manageable_sites();
-      $this->query->add_where(0, $field, array_keys($sites), 'IN');
+    $this->ensure_my_table();
+    $field = $this->table_alias . '.' . $this->real_field;
+
+    $sites = og_sm_user_get_manageable_sites();
+    $site_ids = array_keys($sites);
+    if (empty($this->value)) {
+      $this->query->add_where(0, $field, $site_ids, 'NOT IN');
+    }
+    else {
+      $this->query->add_where(0, $field, $site_ids, 'IN');
     }
   }
 

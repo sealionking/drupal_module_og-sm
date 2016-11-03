@@ -66,11 +66,12 @@ class og_sm_views_handler_filter_sites extends views_handler_filter_in_operator 
    * {@inheritdoc}
    */
   function query() {
-    $this->ensure_my_table();
-    if (!empty($this->value)) {
-      $field = $this->table_alias . '.' . $this->real_field;
-      $this->query->add_where(0, $field, $this->value);
+    if (empty($this->value)) {
+      return;
     }
+    $this->ensure_my_table();
+    $field = $this->table_alias . '.' . $this->real_field;
+    $this->query->add_where(0, $field, $this->value);
   }
 
 }
