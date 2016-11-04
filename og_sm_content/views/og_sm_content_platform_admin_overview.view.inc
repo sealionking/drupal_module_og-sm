@@ -26,7 +26,7 @@ $handler->display->display_options['cache']['type'] = 'none';
 $handler->display->display_options['query']['type'] = 'views_query';
 $handler->display->display_options['query']['options']['distinct'] = TRUE;
 $handler->display->display_options['exposed_form']['type'] = 'basic';
-$handler->display->display_options['exposed_form']['options']['submit_button'] = 'Submit';
+$handler->display->display_options['exposed_form']['options']['reset_button'] = TRUE;
 $handler->display->display_options['exposed_form']['options']['sort_asc_label'] = 'Ascending';
 $handler->display->display_options['exposed_form']['options']['sort_desc_label'] = 'Descending';
 $handler->display->display_options['pager']['type'] = 'full';
@@ -420,7 +420,7 @@ $translatables['og_sm_content_platform_admin_overview'] = array(
   t('Defaults'),
   t('Administer content'),
   t('more'),
-  t('Submit'),
+  t('Apply'),
   t('Reset'),
   t('Sort by'),
   t('Ascending'),
