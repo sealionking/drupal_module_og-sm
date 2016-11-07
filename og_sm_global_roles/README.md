@@ -25,3 +25,12 @@ only when they have a Site role that gives access to the Global one.
    context.
 
 
+
+## API
+
+### Check user permission within a site context.
+Check if the passed user has a global permission within a site context.
+This function is based of `user_access()`.
+```php
+$has_access = og_sm_global_roles_user_access($site, 'access content', $account);
+```
