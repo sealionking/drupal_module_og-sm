@@ -16,6 +16,56 @@ function og_sm_global_roles_module_implements_alter(&$implementations, $hook) {
 }
 
 /**
+ * Determine whether the user has a given privilege within a site context.
+ *
+ * This is based on user_access() but adds site context.
+ *
+ * @param object $site
+ *   The site node.
+ * @param string $perm
+ *   The permission, such as "administer nodes", being checked for.
+ * @param object $account
+ *   (optional) The account to check, if not given use currently logged in user.
+ *
+ * @return bool
+ *   Boolean TRUE if the user has the requested permission.
+ */
+function og_sm_global_roles_user_access($site, $perm, $account = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  // User #1 has all privileges:
+  if ($account->uid == 1) {
+    return TRUE;
+  }
+
+  // To reduce the number of SQL queries, we cache the user's permissions
+  // in a static variable.
+  // Use the advanced drupal_static() pattern, since this is called very often.
+  static $drupal_static_fast;
+  if (!isset($drupal_static_fast)) {
+    $drupal_static_fast['perm'] = &drupal_static(__FUNCTION__);
+  }
+  $perm = &$drupal_static_fast['perm'];
+  if (!isset($perm[$site->nid][$account->uid])) {
+    $temp_account = clone $account;
+    og_sm_global_roles_user_load_roles($site, $temp_account);
+    $role_permissions = user_role_permissions($temp_account->roles);
+
+    $perms = array();
+    foreach ($role_permissions as $one_role) {
+      $perms += $one_role;
+    }
+    $perm[$site->nid][$account->uid] = $perms;
+  }
+
+  return isset($perm[$site->nid][$account->uid][$perm]);
+}
+
+/**
  * Implements hook_custom_theme().
  *
  * This implementation does not change anything about the theme. We only use
