@@ -144,7 +144,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
 
 
     // Verify that this user does not have this permission from another site.
-    $nonAdminSite = $site = $this->ogSmCreateGroup($this->siteType);
+    $nonAdminSite = $this->ogSmCreateGroup($this->siteType);
     $this->assertFalse(og_sm_global_roles_user_access($nonAdminSite, 'administer nodes', $this->siteAdmin), 'Site admin does not have "administer nodes" permission within $nonAdminSite.');
   }
 
