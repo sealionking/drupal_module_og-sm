@@ -203,7 +203,7 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
     $this->assertEqual(
       $expected,
       $structure,
-      'Administrator gets menu with all Sites, plaform is current item.'
+      'Administrator gets menu with all Sites, platform is current item.'
     );
 
     // As admin user outside Sites.

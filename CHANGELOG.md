@@ -8,6 +8,12 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ### Added
 - PPL-957 : Added og_sm_global_roles_user_access function to check global
   permissions within a site context.
+  
+  
+  
+### Changed
+- PPL-970 : Changed width of the Site items in the admin menu and moved
+  the Platform item to the top.
 
 
 
