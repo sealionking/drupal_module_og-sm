@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Global roles administration pages.

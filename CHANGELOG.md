@@ -4,6 +4,14 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [Unreleased]
+### Added
+- PPL-957 : Added og_sm_global_roles_user_access function to check global
+  permissions within a site context.
+
+
+
+
 ## [7.x-1.11]
 ### Fixed
 - PPL-909 : Fixed double encoded username in Views links.
