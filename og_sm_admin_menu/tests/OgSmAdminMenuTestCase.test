@@ -183,7 +183,7 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
       '#weight' => -50,
       'current' => array(
         '#title' => 'Platform',
-        '#weight' => 1000,
+        '#weight' => -1000,
         '#href' => 'admin',
         'site-1' => array(
           '#title' => 'Site 1',
@@ -247,7 +247,7 @@ class OgSmAdminMenuTestCase extends OgSmWebTestCase {
       '#href' => 'node/1',
       'admin' => array(
         '#title' => 'Platform',
-        '#weight' => 1000,
+        '#weight' => -1000,
         '#href' => 'admin',
         '#attributes' => array(
           'class' => array(
