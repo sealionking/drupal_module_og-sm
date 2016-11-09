@@ -308,7 +308,7 @@ function _og_sm_admin_menu_load_site_switcher() {
   if (drupal_valid_path($admin_path)) {
     $admin = array(
       '#title' => t('Platform'),
-      '#weight' => 1000,
+      '#weight' => -1000,
       '#href' => $admin_path,
     );
   }
