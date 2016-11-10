@@ -11,6 +11,13 @@ body.adminimal-menu #admin-menu #admin-menu-wrapper .dropdown li li.separated {
 #admin-menu-site-switcher li.admin-menu-toolbar-category > a {
   color: #000;
 }
+#admin-menu-site-switcher li.admin-menu-toolbar-category > ul {
+  max-width: 450px;
+  width: 90%;
+}
+#admin-menu-site-switcher li.admin-menu-toolbar-category > ul > li {
+  width: 100%;
+}
 body.adminimal-menu #admin-menu #admin-menu-site-switcher.dropdown li:hover {
   background: #ff9933 !important;
 }

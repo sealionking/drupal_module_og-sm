@@ -15,6 +15,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
   protected $sitePath;
   protected $siteUser;
   protected $siteAdmin;
+  protected $siteType;
   protected $roleGlobal;
   protected $roleSite;
 
@@ -37,11 +38,11 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
     $modules = array('og_sm_global_roles', 'og_sm_context');
     parent::setUp($modules);
 
-    $site_type = $this->ogSmCreateGroupNodeType();
-    og_sm_site_type_add($site_type);
-    variable_set('pathauto_node_' . $site_type . '_pattern', '[node:title]');
+    $this->siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($this->siteType);
+    variable_set('pathauto_node_' . $this->siteType . '_pattern', '[node:title]');
 
-    $this->site = $site = $this->ogSmCreateGroup($site_type);
+    $this->site = $site = $this->ogSmCreateGroup($this->siteType);
     $this->sitePath = drupal_get_path_alias('node/' . $site->nid);
 
     $sites = array($site);
@@ -54,7 +55,7 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
     user_role_save($this->roleGlobal);
 
     // Create Site role.
-    $this->roleSite = og_role_create('role site', 'node', 0, $site_type);
+    $this->roleSite = og_role_create('role site', 'node', 0, $this->siteType);
     og_role_save($this->roleSite);
 
     // Combine both roles.
@@ -125,6 +126,26 @@ class OgSmGlobalRolesTestCase extends OgSmWebTestCase {
       array_keys($this->siteAdmin->roles),
       'Site admin has extra roles.'
     );
+  }
+
+  /**
+   * Tests the og_sm_global_roles_user_access() function.
+   */
+  public function testGlobalRolesUserAccess() {
+    // Add the "administer nodes" permission to the global role.
+    user_role_change_permissions($this->roleGlobal->rid, array('administer nodes' => TRUE));
+
+    // Verify that site admin takes over permissions from the global role.
+    $this->assertTrue(og_sm_global_roles_user_access($this->site, 'administer nodes', $this->siteAdmin), 'Site admin has "administer nodes" permission within $site.');
+
+    // Verify that site user does not take over permissions from the global
+    // role.
+    $this->assertFalse(og_sm_global_roles_user_access($this->site, 'administer nodes', $this->siteUser), 'Site user does not have "administer nodes" permission within $site.');
+
+
+    // Verify that this user does not have this permission from another site.
+    $nonAdminSite = $this->ogSmCreateGroup($this->siteType);
+    $this->assertFalse(og_sm_global_roles_user_access($nonAdminSite, 'administer nodes', $this->siteAdmin), 'Site admin does not have "administer nodes" permission within $nonAdminSite.');
   }
 
   /**

@@ -35,6 +35,13 @@ function og_sm_dashboard_block_view($delta = '') {
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function og_sm_dashboard_views_api() {
+  return array('api' => 3);
+}
+
+/**
  * Implements hook_admin_menu_output_build().
  */
 function og_sm_dashboard_admin_menu_output_build(&$content) {
@@ -45,4 +52,16 @@ function og_sm_dashboard_admin_menu_output_build(&$content) {
       unset($content['menu']['admin/dashboard']);
     }
   }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function og_sm_dashboard_menu() {
+  $items['admin/dashboard/view'] = array(
+    'title' => 'Dashboard',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  return $items;
 }
