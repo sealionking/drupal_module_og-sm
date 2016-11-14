@@ -13,6 +13,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ### Changed
 - DMOGSM-105 : Changed width of the Site items in the admin menu and moved
   the Platform item to the top.
+- DMOGSM-106 : Added the old & new path values to the 
+  hook_og_sm_site_path_change hook.
 
 
 

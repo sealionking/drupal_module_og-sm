@@ -24,8 +24,12 @@
  *
  * @param object $site
  *   The Site for who the Site path changed.
+ * @param string $path_old
+ *   The old path value.
+ * @param string $path_new
+ *   The new path value.
  */
-function hook_og_sm_site_path_change($site) {
+function hook_og_sm_site_path_change($site, $path_old, $path_new) {
   // Update all aliases for the Site when its alias changes.
   module_load_include('inc', 'og_sm_path', 'og_sm_path.batch');
   og_sm_path_site_alias_update_batch($site);
