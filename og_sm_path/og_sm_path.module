@@ -140,7 +140,7 @@ function og_sm_path_set($site, $path, $trigger_hook = TRUE) {
 
   // Trigger the path change hook.
   if ($trigger_hook) {
-    og_sm_hook_site('path_change', $site);
+    module_invoke_all('og_sm_site_path_change', $site, $existing, $path);
   }
 }
 

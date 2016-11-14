@@ -134,7 +134,8 @@ og_sm_path_set($site, 'my-site-path', FALSE);
 The module watches actions taken place on Site nodes and triggers its own hooks
 when an action happens:
 
-* `hook_og_sm_site_path_change($site)` : Site node path has changed.
+* `hook_og_sm_site_path_change($site, $path_old, $path_new)` : Site node path 
+  has changed.
 
 > The hooks can be put in the `yourmodule.module` OR in the
 > `yourmodule.og_sm.inc` file.
