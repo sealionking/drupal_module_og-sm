@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * All og_sm related hook implementations.
@@ -49,7 +50,7 @@ function og_sm_path_og_sm_site_update($site) {
 /**
  * Implements hook_og_sm_site_path_change().
  */
-function og_sm_path_og_sm_site_path_change($site) {
+function og_sm_path_og_sm_site_path_change($site, $path_old, $path_new) {
   // Update all aliases for the Site when its alias changes.
   module_load_include('inc', 'og_sm_path', 'og_sm_path.batch');
   og_sm_path_site_alias_update_batch($site);
