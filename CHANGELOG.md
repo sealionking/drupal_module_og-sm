@@ -4,6 +4,14 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
+## [7.x-1.13]
+### Changed
+- DMOGSM-106 : Added the old & new path values to the 
+  hook_og_sm_site_path_change hook.
+
+
+
+
 ## [7.x-1.12]
 ### Added
 - PPL-957 : Added og_sm_global_roles_user_access function to check global
@@ -13,8 +21,6 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 ### Changed
 - DMOGSM-105 : Changed width of the Site items in the admin menu and moved
   the Platform item to the top.
-- DMOGSM-106 : Added the old & new path values to the 
-  hook_og_sm_site_path_change hook.
 
 
 
@@ -241,6 +247,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.13]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.13%0D7.x-1.12#diff
 [7.x-1.12]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.12%0D7.x-1.11#diff
 [7.x-1.11]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.11%0D7.x-1.10#diff
 [7.x-1.10]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.10%0D7.x-1.9#diff
