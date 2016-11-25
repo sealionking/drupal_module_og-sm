@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Tests for the og_sm_user_create module.
+ */
+
+/**
+ * Tests about the OG SM User Create module.
+ */
+class OgSmUserCreateTestCase extends OgSmWebTestCase {
+
+  /**
+   * Test data.
+   */
+  protected $site;
+  protected $siteType;
+  protected $siteAdmin;
+  protected $siteManager;
+  protected $siteUser;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site User : Create users'),
+      'description' => t('Tests the Create users from within a site functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    // Enable required modules.
+    $modules = array('og_sm_user_create');
+    parent::setUp($modules);
+
+    // Create site.
+    $this->siteType = $this->ogSmCreateGroupNodeType();
+    og_sm_site_type_add($this->siteType);
+    $this->site = $site = $this->ogSmCreateGroup($this->siteType);
+    $sites = array($site);
+
+    $roles = array_flip(og_roles('node', $this->siteType));
+
+    // Create Site admin.
+    $this->siteAdmin = $this->ogSmCreateGroupUser(array('administer users'), $sites);
+    og_role_grant('node', $this->site->nid, $this->siteAdmin->uid, $roles[OG_ADMINISTRATOR_ROLE]);
+
+    // Create Site users.
+    $this->siteManager = $this->ogSmCreateGroupUser(array(), $sites);
+    $this->siteUser = $this->ogSmCreateGroupUser(array(), $sites);
+  }
+
+
+  /**
+   * Test the og_sm_user_create_access access callback.
+   */
+  public function testUserCreateAccess() {
+    $this->assertFalse(FALSE);
+    $this->assertTrue(og_sm_user_create_access($this->site, $this->siteAdmin), 'The global admin has access to the user create form within a site.');
+    $this->assertTrue(og_sm_user_create_access($this->site, $this->siteManager), 'The site manager has access to the user create form within a site.');
+    $this->assertFalse(og_sm_user_create_access($this->site, $this->siteUser), "A normal user doesn't have access to the user create form within a site.");
+  }
+
+}
