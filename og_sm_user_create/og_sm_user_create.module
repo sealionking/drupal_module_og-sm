@@ -36,7 +36,7 @@ function og_sm_user_create_menu() {
 /**
  * Implements hook_og_permission().
  */
-function og_sm_user_create_permission() {
+function og_sm_user_create_og_permission() {
   return array(
     OG_SM_USER_CREATE_OG_PERM_CREATE_ACCOUNT => array(
       'title' => t('Create a user within a site'),
