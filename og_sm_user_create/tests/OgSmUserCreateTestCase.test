@@ -39,7 +39,6 @@ class OgSmUserCreateTestCase extends OgSmWebTestCase {
     $modules = array('og_sm_user_create', 'og_sm_context');
     parent::setUp($modules);
 
-
     // Setup OG context.
     $context_enabled = array(
       'og_sm_context_node' => new stdClass(),
@@ -82,7 +81,7 @@ class OgSmUserCreateTestCase extends OgSmWebTestCase {
   }
 
   /**
-   * Tests the user create form with a site.
+   * Tests the user create form within a site.
    */
   public function testUserCreateForm() {
     $this->drupalLogin($this->siteManager);
