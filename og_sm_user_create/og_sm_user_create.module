@@ -40,8 +40,8 @@ function og_sm_user_create_menu() {
 function og_sm_user_create_og_permission() {
   return array(
     OG_SM_USER_CREATE_OG_PERM_CREATE_ACCOUNT => array(
-      'title' => t('Create a user within a site'),
-      'description' => t('Allows the user to create new users within a site context.'),
+      'title' => t('Create a user within a Site'),
+      'description' => t('Allows the user to create new users within a Site context.'),
     ),
   );
 }

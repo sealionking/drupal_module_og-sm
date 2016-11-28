@@ -1,5 +1,5 @@
 name = Site User Create
-description = "Allows creating drupal users from within a site context."
+description = "Allows creating drupal users from within a Site context."
 package = "Organic Groups Site Manager"
 core = 7.x
 
