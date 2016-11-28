@@ -24,7 +24,8 @@ function og_sm_user_create_menu() {
   $items['group/%/%og_sm_site/admin/people/add-user/create'] = array(
     'page callback' => 'drupal_get_form',
     'title' => 'Create account',
-    'page arguments' => array('user_register_form', 2),
+    'page arguments' => array('og_sm_user_create_register_form', 2),
+    'file' => 'og_sm_user_create.admin.inc',
     'type' => MENU_LOCAL_TASK,
     'access callback' => 'og_sm_user_create_access',
     'access arguments' => array(2),
@@ -71,12 +72,4 @@ function og_sm_user_create_access($site, $account = NULL) {
   }
 
   return FALSE;
-}
-
-/**
- * Implements hook_form_FORMID_alter().
- */
-function og_sm_user_create_form_user_register_form_alter(&$form, &$form_state) {
-  form_load_include($form_state, 'inc', 'og_sm_user_create', 'og_sm_user_create.form_alter');
-  _og_sm_user_create_form_user_register_form_alter($form, $form_state);
 }

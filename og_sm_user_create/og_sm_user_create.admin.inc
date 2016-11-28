@@ -6,23 +6,34 @@
  */
 
 /**
- * Adds og roles instead of global roles to the user register form.
+ * Form definition of the user create form.
  *
  * @param array $form
  *   The form structure.
  * @param array $form_state
  *   The form state.
+ * @param object $site
+ *   The site node.
  *
- * @see og_sm_user_create_form_user_register_form_alter()
+ * @return array
+ *   The form definition.
  */
-function _og_sm_user_create_form_user_register_form_alter(array &$form, array &$form_state) {
-  if (!isset($form_state['build_info']['args'][0])) {
-    return;
-  }
-  $site = $form_state['build_info']['args'][0];
-  if (!og_sm_is_site($site)) {
-    return;
-  }
+function og_sm_user_create_register_form($form, &$form_state, $site) {
+  global $user;
+
+  // Since user_register_form does several checks on the 'administer users'
+  // permission we are overriding the static user_access cache here and setting
+  // 'administer users' to TRUE, this allows users with elevated site roles but
+  // without elevated global roles to access the user_register_form properly.
+  $static = &drupal_static('user_access');
+  $static[$user->uid]['administer users'] = TRUE;
+
+  $form = user_register_form($form, $form_state);
+
+  $form['administer_users'] = array(
+    '#type' => 'value',
+    '#value' => TRUE,
+  );
 
   // Don't allow the global roles to be added from within a Site.
   $form['account']['roles']['#access'] = FALSE;
@@ -36,20 +47,20 @@ function _og_sm_user_create_form_user_register_form_alter(array &$form, array &$
     );
   }
 
-  $form['#submit'][] = 'og_sm_user_create_user_create_submit';
+  $form['#submit'][] = 'og_sm_user_create_user_add_membership';
+
+  return $form;
 }
 
 /**
  * Submit handler for the user create form within a site context.
- *
- * This submit handler runs after a user account has been created.
  *
  * @param array $form
  *   The form array.
  * @param array $form_state
  *   The current form state.
  */
-function og_sm_user_create_user_create_submit(array $form, array &$form_state) {
+function og_sm_user_create_user_add_membership(array $form, array &$form_state) {
   $account = $form_state['user'];
   $site = $form_state['build_info']['args'][0];
   $group_type = 'node';
