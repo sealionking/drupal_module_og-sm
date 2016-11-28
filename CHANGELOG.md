@@ -5,6 +5,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 ## [7.x-1.13]
+### Added
+- DMOGSM-78 : Added the og_sm_user_create module.
+
+
+
+
+## [7.x-1.13]
 ### Changed
 - DMOGSM-106 : Added the old & new path values to the 
   hook_og_sm_site_path_change hook.
