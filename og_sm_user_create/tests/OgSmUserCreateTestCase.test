@@ -36,8 +36,21 @@ class OgSmUserCreateTestCase extends OgSmWebTestCase {
    */
   public function setUp() {
     // Enable required modules.
-    $modules = array('og_sm_user_create');
+    $modules = array('og_sm_user_create', 'og_sm_context');
     parent::setUp($modules);
+
+
+    // Setup OG context.
+    $context_enabled = array(
+      'og_sm_context_node' => new stdClass(),
+      'og_sm_context_admin' => new stdClass(),
+    );
+    variable_set('og_context_negotiation_group_context', $context_enabled);
+    $context_order = array(
+      'og_sm_context_node' => -50,
+      'og_sm_context_admin' => -49,
+    );
+    variable_set('og_context_providers_weight_group_context', $context_order);
 
     // Create site.
     $this->siteType = $this->ogSmCreateGroupNodeType();
@@ -73,6 +86,7 @@ class OgSmUserCreateTestCase extends OgSmWebTestCase {
    */
   public function testUserCreateForm() {
     $this->drupalLogin($this->siteManager);
+
     $password = $this->randomName(10);
     $edit = array(
       'name' => 'test-user',
@@ -93,6 +107,9 @@ class OgSmUserCreateTestCase extends OgSmWebTestCase {
     $user = user_load_by_name($edit['name']);
     $this->assertTrue((bool) $user, 'The user was created');
     $this->assertTrue(og_is_member('node', $this->site->nid, 'user', $user), 'The newly created user is a member of the site.');
+
+    $user_site_roles = og_get_user_roles('node', $this->site->nid, $user->uid);
+    $this->assertEqual(isset($user_site_roles[$this->roleSiteManager->rid]), 'The newly created has the site manager role.');
   }
 
 }

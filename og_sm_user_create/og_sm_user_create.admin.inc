@@ -70,8 +70,8 @@ function og_sm_user_create_user_add_membership(array $form, array &$form_state) 
   $membership = og_membership_create($group_type, $sid, 'user', $account->uid, key($field_names));
   $membership->save();
 
-  if (!empty($form_state['values']['roles'])) {
-    foreach ($form_state['values']['roles'] as $rid) {
+  if (!empty($form_state['values']['og_roles'])) {
+    foreach ($form_state['values']['og_roles'] as $rid) {
       og_role_grant($group_type, $sid, $membership->etid, $rid);
     }
   }
