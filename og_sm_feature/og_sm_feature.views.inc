@@ -21,3 +21,12 @@ function og_sm_feature_views_plugins() {
   );
   return $plugins;
 }
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function og_sm_feature_views_data_alter(&$data) {
+  if (isset($data['node']['og_sm_content_type'])) {
+    $data['node']['og_sm_content_type']['filter']['handler'] = 'ogSmFeatureViewsHandlerFilterContentType';
+  }
+}

@@ -4,9 +4,14 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
-## [7.x-1.13]
+## [Unreleased]
 ### Added
 - DMOGSM-78 : Added the og_sm_user_create module.
+
+
+### Changed
+- DMOGSM-108 : Overwrite Site content types filter handler in og_sm_feature to
+  exclude types based on feature dependencies.
 
 
 
