@@ -8,7 +8,7 @@
  * Views handler to filter content by being a Site content type.
  */
 // @codingStandardsIgnoreStart
-class ogSmContentViewsHandlerFieldContentType extends views_handler_field_node_type {
+class OgSmContentViewsHandlerFieldContentType extends views_handler_field_node_type {
 // @codingStandardsIgnoreEnd
 
   /**
