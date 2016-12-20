@@ -19,6 +19,7 @@ function og_sm_user_create_menu() {
   $items['group/%/%/admin/people/add-user/add'] = array(
     'title' => 'Add members',
     'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 10,
   );
 
   $items['group/%/%og_sm_site/admin/people/add-user/create'] = array(
@@ -29,6 +30,7 @@ function og_sm_user_create_menu() {
     'type' => MENU_LOCAL_TASK,
     'access callback' => 'og_sm_user_create_access',
     'access arguments' => array(2),
+    'weight' => 0,
   );
 
   return $items;
