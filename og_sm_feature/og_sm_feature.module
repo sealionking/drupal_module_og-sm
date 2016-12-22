@@ -31,6 +31,12 @@ function og_sm_feature_hook_info() {
     'og_sm_feature_info_alter' => array(
       'group' => 'og_sm',
     ),
+    'og_sm_feature_form_defaults' => array(
+      'group' => 'og_sm',
+    ),
+    'og_sm_feature_site_form_defaults' => array(
+      'group' => 'og_sm',
+    ),
   );
 
   return $hooks;
@@ -621,4 +627,52 @@ function og_sm_feature_translated_menu_link_alter(&$item, $map) {
     $site,
     $item['options']['og_sm_feature']
   );
+}
+
+/**
+ * Returns a renderable form array for a given form ID and feature.
+ *
+ * @param string $form_id
+ *   The unique string identifying the desired form.
+ * @param string $feature
+ *   The feature name.
+ * @param object $site
+ *   (optional) The site node, if left empty the global default and form will be
+ *   loaded.
+ * @param ...
+ *   Any additional arguments are passed on to the functions called by
+ *   drupal_get_form().
+ *
+ * @return array
+ *   The form array.
+ */
+function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
+  $form_state = array(
+    'feature' => $feature,
+  );
+  $extra_arguments_offset = 2;
+  if ($site) {
+    $defaults = module_invoke_all('og_sm_feature_site_form_defaults', $site, $feature);
+    $form_state['site'] = $site;
+    $extra_arguments_offset = 3;
+  }
+  else {
+    $defaults = module_invoke_all('og_sm_feature_form_defaults', $feature);
+  }
+
+  $form_state['build_info']['args'] = array(
+    $defaults,
+  );
+  $args = func_get_args();
+  // Remove $form_id, $feature and $site from the arguments.
+  $args = array_slice($args, $extra_arguments_offset);
+  $form_state['build_info']['args'] = array_merge($form_state['build_info']['args'], $args);
+
+  $form = drupal_build_form($form_id, $form_state);
+
+  if ($site) {
+    return og_sm_variable_settings_form($form, $form_state, $site);
+  }
+
+  return system_settings_form($form);
 }

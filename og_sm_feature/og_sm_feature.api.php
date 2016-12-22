@@ -61,6 +61,14 @@ function hook_og_sm_feature_info_alter(&$info) {
   $info['news']['default status'] = FALSE;
 }
 
+function hook_og_sm_feature_form_defaults($feature) {
+
+}
+
+function hook_og_sm_feature_site_form_defaults($feature) {
+
+}
+
 /**
  * @} End of "addtogroup hooks".
  */
