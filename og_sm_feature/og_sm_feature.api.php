@@ -65,7 +65,15 @@ function hook_og_sm_feature_form_defaults($feature) {
 
 }
 
-function hook_og_sm_feature_site_form_defaults($feature) {
+function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature) {
+
+}
+
+function hook_og_sm_feature_site_form_defaults($site, $feature) {
+
+}
+
+function hook_og_sm_feature_site_form_defaults_alter(&$defaults, $site, $feature) {
 
 }
 
