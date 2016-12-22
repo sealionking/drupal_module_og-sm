@@ -37,12 +37,6 @@ function og_sm_feature_hook_info() {
     'og_sm_feature_form_defaults_alter' => array(
       'group' => 'og_sm',
     ),
-    'og_sm_feature_site_form_defaults' => array(
-      'group' => 'og_sm',
-    ),
-    'og_sm_feature_site_form_defaults_alter' => array(
-      'group' => 'og_sm',
-    ),
   );
 
   return $hooks;
@@ -657,15 +651,11 @@ function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
     'feature' => $feature,
   );
   $extra_arguments_offset = 2;
+  $defaults = module_invoke_all('og_sm_feature_form_defaults', $feature, $site);
+  drupal_alter('og_sm_feature_form_defaults', $defaults, $feature, $site);
   if ($site) {
-    $defaults = module_invoke_all('og_sm_feature_site_form_defaults', $site, $feature);
-    drupal_alter('og_sm_feature_site_form_defaults', $defaults, $site, $feature);
     $form_state['site'] = $site;
     $extra_arguments_offset = 3;
-  }
-  else {
-    $defaults = module_invoke_all('og_sm_feature_form_defaults', $feature);
-    drupal_alter('og_sm_feature_form_defaults', $defaults, $site, $feature);
   }
 
   $form_state['build_info']['args'] = array(
