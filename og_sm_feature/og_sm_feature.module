@@ -649,6 +649,9 @@ function og_sm_feature_translated_menu_link_alter(&$item, $map) {
 function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
   $form_state = array(
     'feature' => $feature,
+    'build_info' => array(
+      'form_callback' => 'og_sm_feature_get_form',
+    ),
   );
   $extra_arguments_offset = 2;
   $defaults = module_invoke_all('og_sm_feature_form_defaults', $feature, $site);
@@ -666,11 +669,22 @@ function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
   $args = array_slice($args, $extra_arguments_offset);
   $form_state['build_info']['args'] = array_merge($form_state['build_info']['args'], $args);
 
-  $form = drupal_build_form($form_id, $form_state);
+  return drupal_build_form($form_id, $form_state);
+}
 
-  if ($site) {
-    return og_sm_variable_settings_form($form, $form_state, $site);
+/**
+ * Implements hook_form_alter().
+ */
+function og_sm_feature_form_alter(&$form, &$form_state, $form_id) {
+  if (!isset($form_state['build_info']['form_callback'])) {
+    return;
+  }
+  if ($form_state['build_info']['form_callback'] !== 'og_sm_feature_get_form') {
+    return;
   }
 
-  return system_settings_form($form);
+  if (empty($form_state['site'])) {
+    $form = system_settings_form($form);
+  }
+  $form = og_sm_variable_settings_form($form, $form_state, $form_state['site']);
 }
