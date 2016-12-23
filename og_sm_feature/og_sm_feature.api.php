@@ -61,11 +61,34 @@ function hook_og_sm_feature_info_alter(&$info) {
   $info['news']['default status'] = FALSE;
 }
 
-function hook_og_sm_feature_form_defaults($feature) {
+/**
+ * Defines an array of default values for a feature settings form.
+ *
+ * @param string $feature
+ *   The feature name.
+ * @param object|null $site
+ *   The site node. Can be NULL, in this case the global defaults are being
+ *   fetched.
+ *
+ * @return array
+ *   An array of defaults.
+ */
+function hook_og_sm_feature_form_defaults($feature, $site) {
 
 }
 
-function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature) {
+/**
+ * Alters the default values collected by hook_og_sm_feature_form_defaults().
+ *
+ * @param array $defaults
+ *   The information collected by the hook_og_sm_feature_form_defaults() hook.
+ * @param string $feature
+ *   The feature name.
+ * @param object|null $site
+ *   The site node. Can be NULL, in this case the global defaults are being
+ *   fetched.
+ */
+function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site) {
 
 }
 
