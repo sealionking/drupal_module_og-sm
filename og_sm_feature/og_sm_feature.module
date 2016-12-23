@@ -649,9 +649,7 @@ function og_sm_feature_translated_menu_link_alter(&$item, $map) {
 function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
   $form_state = array(
     'feature' => $feature,
-    'build_info' => array(
-      'form_callback' => 'og_sm_feature_get_form',
-    ),
+    'wrapper_callback' => 'og_sm_feature_get_form_wrapper',
   );
   $extra_arguments_offset = 2;
   $defaults = module_invoke_all('og_sm_feature_form_defaults', $feature, $site);
@@ -675,16 +673,9 @@ function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
 /**
  * Implements hook_form_alter().
  */
-function og_sm_feature_form_alter(&$form, &$form_state, $form_id) {
-  if (!isset($form_state['build_info']['form_callback'])) {
-    return;
+function og_sm_feature_get_form_wrapper($form, &$form_state, $defaults) {
+  if (isset($form_state['site'])) {
+    return og_sm_variable_settings_form($form, $form_state, $form_state['site']);
   }
-  if ($form_state['build_info']['form_callback'] !== 'og_sm_feature_get_form') {
-    return;
-  }
-
-  if (empty($form_state['site'])) {
-    $form = system_settings_form($form);
-  }
-  $form = og_sm_variable_settings_form($form, $form_state, $form_state['site']);
+  return system_settings_form($form);
 }
