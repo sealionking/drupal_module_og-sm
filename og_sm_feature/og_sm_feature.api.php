@@ -74,7 +74,11 @@ function hook_og_sm_feature_info_alter(&$info) {
  *   An array of defaults.
  */
 function hook_og_sm_feature_form_defaults($feature, $site) {
-
+  return array(
+    'user' => array(
+      'title' => t('Users'),
+    ),
+  );
 }
 
 /**
@@ -89,7 +93,7 @@ function hook_og_sm_feature_form_defaults($feature, $site) {
  *   fetched.
  */
 function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site) {
-
+  $defaults['user']['title'] = t('Site users');
 }
 
 /**
