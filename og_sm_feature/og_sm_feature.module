@@ -672,8 +672,23 @@ function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
  * Implements hook_form_alter().
  */
 function og_sm_feature_get_form_wrapper($form, &$form_state, $defaults) {
+  $feature_info = og_sm_feature_feature_info($form_state['feature']);
+  $args = array(
+    '@feature' => $feature_info['name'],
+  );
+
   if (isset($form_state['site'])) {
+    $form['info'] = array(
+      '#markup' => t('Site settings for the @feature feature.', $args),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
     return og_sm_variable_settings_form($form, $form_state, $form_state['site']);
   }
+  $form['info'] = array(
+    '#markup' => t('Default settings for the @feature feature.', $args),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
   return system_settings_form($form);
 }
