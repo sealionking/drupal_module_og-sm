@@ -81,7 +81,6 @@ function og_sm_feature_menu() {
     'page arguments' => array('og_sm_feature_admin_overview'),
     'access arguments' => array(OG_SM_FEATURE_PERM_ADMINISTER_SITE_FEATURES),
     'file' => 'og_sm_feature.admin.inc',
-    'type' => MENU_NORMAL_ITEM,
   );
   $items['group/%/%og_sm_site/admin/features'] = array(
     'title' => 'Features',
@@ -91,7 +90,6 @@ function og_sm_feature_menu() {
     'access callback' => 'og_sm_site_permission_access',
     'access arguments' => array(2, OG_SM_FEATURE_OG_PERM_ADMINISTER_FEATURES),
     'file' => 'og_sm_feature.og_admin.inc',
-    'type' => MENU_CALLBACK,
   );
 
   return $items;
