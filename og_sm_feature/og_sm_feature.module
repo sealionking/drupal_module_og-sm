@@ -628,6 +628,23 @@ function og_sm_feature_translated_menu_link_alter(&$item, $map) {
 }
 
 /**
+ * Gets an array of default configuration.
+ *
+ * @param $feature
+ *   The feature name.
+ * @param object $site
+ *   (optional) The site node, if left empty the global defaults will be loaded.
+ *
+ * @return array
+ *   An array of defaults.
+ */
+function og_sm_feature_get_defaults($feature, $site = NULL) {
+  $defaults = module_invoke_all('og_sm_feature_form_defaults', $feature, $site);
+  drupal_alter('og_sm_feature_form_defaults', $defaults, $feature, $site);
+  return $defaults;
+}
+
+/**
  * Returns a renderable form array for a given form ID and feature.
  *
  * @param string $form_id
@@ -650,8 +667,7 @@ function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
     'wrapper_callback' => 'og_sm_feature_get_form_wrapper',
   );
   $extra_arguments_offset = 2;
-  $defaults = module_invoke_all('og_sm_feature_form_defaults', $feature, $site);
-  drupal_alter('og_sm_feature_form_defaults', $defaults, $feature, $site);
+  $defaults = og_sm_feature_get_defaults($feature, $site);
   if ($site) {
     $form_state['site'] = $site;
     $extra_arguments_offset = 3;
