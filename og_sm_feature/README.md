@@ -128,7 +128,7 @@ $has_access = og_sm_feature_access('feature name', $site);
 
 ### Returns a renderable form array for a given form ID and feature.
 Helper function to create a feature form callback, this callback can be used
-in a simular way as `drupal_get_form` in `hook_menu()`.
+in a similar way as `drupal_get_form` in `hook_menu()`.
 
 The following example would create a global version of the user feature form.
 ```php

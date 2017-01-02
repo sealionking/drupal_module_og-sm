@@ -9,6 +9,8 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 - DMOGSM-78 : Added the og_sm_user_create module.
 - DMOGSM-78 : Make sure the create account tab is the primary tab when 
   og_sm_user_create is enabled.
+- DMOGSM-111 : Added og_sm_feature_form_defaults and 
+  og_sm_feature_form_defaults_alter hooks.    
 
 
 ### Changed
