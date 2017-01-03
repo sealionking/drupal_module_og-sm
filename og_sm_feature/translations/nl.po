@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-20 13:57+0100\n"
-"PO-Revision-Date: 2016-10-14 13:07+0200\n"
+"PO-Revision-Date: 2017-01-03 13:07+0200\n"
 "Last-Translator: Geert van Dort <geert.vandort@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -49,7 +49,7 @@ msgstr "Selecteer de functionaliteiten voor de Site."
 msgid "Saved Feature statuses."
 msgstr "Functionaliteiten opgeslagen."
 
-#: og_sm_feature.og_sm.inc:49 og_sm_feature.module:81
+#: og_sm_feature.og_sm.inc:49 og_sm_feature.module:86
 msgid "Features"
 msgstr "Functionaliteiten"
 
@@ -65,7 +65,7 @@ msgstr "Beheer Site functionaliteiten."
 msgid "There are no features active providing content types."
 msgstr "Er zijn geen functionaliteiten actief die inhoudstypes voorzien."
 
-#: og_sm_feature.pages.inc:44 og_sm_feature.module:45;57
+#: og_sm_feature.pages.inc:44 og_sm_feature.module:51;63
 msgid "Administer Features"
 msgstr "Beheer Functionaliteiten"
 
@@ -77,31 +77,39 @@ msgstr "OG SM Feature"
 msgid "Checks access based on the status of a feature."
 msgstr "Controleert toegang op basis van functionaliteit."
 
-#: og_sm_feature.module:46
+#: og_sm_feature.module:52
 msgid "Manage the global Site features settings."
 msgstr "Beheer de globale Site functionaliteit instellingen."
 
-#: og_sm_feature.module:58 og_sm_feature.info:0
+#: og_sm_feature.module:64 og_sm_feature.info:0
 msgid "Enable/disable Site features."
 msgstr "(Des)Activeren van Site functionaliteiten."
 
-#: og_sm_feature.module:559
+#: og_sm_feature.module:583
 msgid "OG SM Feature status"
 msgstr "OG SM Functionaliteit status"
 
-#: og_sm_feature.module:560
+#: og_sm_feature.module:584
 msgid "Set this context when a Site feature is enabled."
 msgstr "Activeer context als een Site functionaliteit actief is."
 
-#: og_sm_feature.module:72
+#: og_sm_feature.module:698
+msgid "Site settings for the @feature feature."
+msgstr "Site-instellingen voor de @feature functionaliteit."
+
+#: og_sm_feature.module:705
+msgid "Default settings for the @feature feature."
+msgstr "Standaard instellingen voor de @feature functionaliteit."
+
+#: og_sm_feature.module:78
 msgid "OG Features"
 msgstr "OG Features"
 
-#: og_sm_feature.module:73
+#: og_sm_feature.module:79
 msgid "Configuration of the OG features."
 msgstr "Configuratie van de OG functionaliteiten."
 
-#: og_sm_feature.module:82
+#: og_sm_feature.module:87
 msgid "Enable/Disable features."
 msgstr "(Des)Activeren van functionaliteiten."
 
@@ -112,4 +120,3 @@ msgstr "Site functionaliteit(en)"
 #: og_sm_feature.info:0
 msgid "Organic Groups Site Manager"
 msgstr "Organic Groups Site Beheerder"
-
