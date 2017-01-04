@@ -87,7 +87,6 @@ function og_sm_user_menu() {
     'access callback' => 'og_sm_site_permission_access',
     'access arguments' => array(2, 'administer features'),
     'file' => 'og_sm_user.admin.inc',
-    'type' => MENU_CALLBACK,
   );
 
   $items['group/node/%og_sm_site/logout'] = array(
@@ -105,7 +104,6 @@ function og_sm_user_menu() {
     'page arguments' => array('og_sm_user_admin_feature'),
     'access arguments' => array('administer site features'),
     'file' => 'og_sm_user.admin.inc',
-    'type' => MENU_CALLBACK,
   );
 
   return $items;

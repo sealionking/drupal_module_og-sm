@@ -62,5 +62,38 @@ function hook_og_sm_feature_info_alter(&$info) {
 }
 
 /**
+ * Defines an array of default values for a feature settings form.
+ *
+ * @param string $feature
+ *   The feature name.
+ * @param object $site
+ *   (optional) The site node. If empty the global defaults are will be fetched.
+ *
+ * @return array
+ *   An array of defaults.
+ */
+function hook_og_sm_feature_form_defaults($feature, $site = NULL) {
+  return array(
+    'user' => array(
+      'title' => t('Users'),
+    ),
+  );
+}
+
+/**
+ * Alters the default values collected by hook_og_sm_feature_form_defaults().
+ *
+ * @param array $defaults
+ *   The information collected by the hook_og_sm_feature_form_defaults() hook.
+ * @param string $feature
+ *   The feature name.
+ * @param object $site
+ *   (optional) The site node. If empty the global defaults are will be fetched.
+ */
+function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site = NULL) {
+  $defaults['user']['title'] = t('Site users');
+}
+
+/**
  * @} End of "addtogroup hooks".
  */

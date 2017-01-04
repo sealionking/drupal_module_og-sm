@@ -126,6 +126,32 @@ $has_access = og_sm_feature_access('feature name', $site);
 ```
 
 
+### Returns a renderable form array for a given form ID and feature.
+Helper function to create a feature form callback, this callback can be used
+in a similar way as `drupal_get_form` in `hook_menu()`.
+
+The following example would create a global version of the user feature form.
+```php
+$items['admin/config/group/features/user'] = array(
+  'title' => 'User feature',
+  'page callback' => 'og_sm_feature_get_form',
+  'page arguments' => array('og_sm_user_feature_form', 'user'),
+);
+
+```
+
+To create a site version of the form simply add the site node to the page
+arguments.
+```php
+$items['group/%/%og_sm_site/admin/features/user'] = array(
+  'title' => 'User feature',
+  'page callback' => 'og_sm_feature_get_form',
+  'page arguments' => array('og_sm_user_feature_form', 'user', 2),
+);
+
+```
+
+
 
 ## Hooks
 > The hooks can be put in the `yourmodule.module` OR in the
@@ -184,5 +210,29 @@ hooks.
 ```php
 function hook_og_sm_feature_info_alter(&$info) {
   $info['news']['site configuration'] = 'admin/features/news-test';
+}
+```
+
+
+### Defines an array of default values for a feature settings form.
+The site argument is optional. If empty the global defaults are will be fetched.
+
+```php
+function hook_og_sm_feature_form_defaults($feature, $site = NULL) {
+  return array(
+    'user' => array(
+      'title' => t('Users'),
+    ),
+  );
+}
+```
+
+
+### Alters the default values collected by hook_og_sm_feature_form_defaults().
+The site argument is optional. If empty the global defaults are will be fetched.
+
+```php
+function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site = NULL) {
+  $defaults['user']['title'] = t('Site users');
 }
 ```

@@ -409,4 +409,26 @@ class OgSmFeatureApiTestCase extends OgSmWebTestCase {
     $this->assertFalse($info, 'Feature info (' . $foo_feature .') not found in the result of feature_info.');
   }
 
+  /**
+   * Test collection of the feature defaults.
+   */
+  public function testFeatureDefaults() {
+    $feature = 'news';
+
+    $expected = array(
+      $feature => array(
+        'title' => t('News test'),
+        'overview' => TRUE,
+      ),
+    );
+
+    $defaults = og_sm_feature_get_defaults($feature);
+    $this->assertEqual($expected, $defaults, 'Feature defaults for the ' . $feature . ' feature where found');
+
+    // Foo feature.
+    $foo_feature = 'foo';
+    $info = og_sm_feature_get_defaults($foo_feature);
+    $this->assertFalse($info, 'Feature defaults for the ' . $feature . ' feature were not found');
+  }
+
 }
