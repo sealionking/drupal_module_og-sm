@@ -215,9 +215,10 @@ function hook_og_sm_feature_info_alter(&$info) {
 
 
 ### Defines an array of default values for a feature settings form.
+The site argument is optional. If empty the global defaults are will be fetched.
 
 ```php
-function hook_og_sm_feature_form_defaults($feature, $site) {
+function hook_og_sm_feature_form_defaults($feature, $site = NULL) {
   return array(
     'user' => array(
       'title' => t('Users'),
@@ -228,9 +229,10 @@ function hook_og_sm_feature_form_defaults($feature, $site) {
 
 
 ### Alters the default values collected by hook_og_sm_feature_form_defaults().
+The site argument is optional. If empty the global defaults are will be fetched.
 
 ```php
-function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site) {
+function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site = NULL) {
   $defaults['user']['title'] = t('Site users');
 }
 ```

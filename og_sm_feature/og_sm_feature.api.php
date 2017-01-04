@@ -66,14 +66,13 @@ function hook_og_sm_feature_info_alter(&$info) {
  *
  * @param string $feature
  *   The feature name.
- * @param object|null $site
- *   The site node. Can be NULL, in this case the global defaults are being
- *   fetched.
+ * @param object $site
+ *   (optional) The site node. If empty the global defaults are will be fetched.
  *
  * @return array
  *   An array of defaults.
  */
-function hook_og_sm_feature_form_defaults($feature, $site) {
+function hook_og_sm_feature_form_defaults($feature, $site = NULL) {
   return array(
     'user' => array(
       'title' => t('Users'),
@@ -88,11 +87,10 @@ function hook_og_sm_feature_form_defaults($feature, $site) {
  *   The information collected by the hook_og_sm_feature_form_defaults() hook.
  * @param string $feature
  *   The feature name.
- * @param object|null $site
- *   The site node. Can be NULL, in this case the global defaults are being
- *   fetched.
+ * @param object $site
+ *   (optional) The site node. If empty the global defaults are will be fetched.
  */
-function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site) {
+function hook_og_sm_feature_form_defaults_alter(&$defaults, $feature, $site = NULL) {
   $defaults['user']['title'] = t('Site users');
 }
 
