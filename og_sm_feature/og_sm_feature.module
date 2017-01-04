@@ -668,8 +668,8 @@ function og_sm_feature_get_form($form_id, $feature, $site = NULL) {
   );
   $extra_arguments_offset = 2;
   $defaults = og_sm_feature_get_defaults($feature, $site);
+  $form_state['site'] = $site;
   if ($site) {
-    $form_state['site'] = $site;
     $extra_arguments_offset = 3;
   }
 
