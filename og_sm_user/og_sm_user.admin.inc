@@ -43,6 +43,9 @@ function og_sm_user_admin_feature(array $form, array &$form_state) {
  *   The form structure.
  */
 function og_sm_user_og_admin_feature(array $form, array &$form_state, $site) {
+  if (module_exists('og_sm_feature')) {
+    og_sm_feature_set_breadcrumb($site);
+  }
   $sid = $site->nid;
 
   $form['info'] = array(
