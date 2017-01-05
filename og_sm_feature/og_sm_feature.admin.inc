@@ -96,17 +96,22 @@ function _og_sm_feature_admin_overview_row(array $info) {
   // Create the config link (if any).
   $config = NULL;
   if (!empty($info['global configuration'])) {
-    $config = l(
-      t('Configuration'),
-      $info['global configuration'],
-      array('query' => drupal_get_destination())
+    $config = array(
+      '#theme' => 'link',
+      '#text' => t('Configuration'),
+      '#path' => $info['global configuration'],
+      '#options' => array(
+        'attributes' => array(),
+        'query' => drupal_get_destination(),
+        'html' => FALSE,
+      ),
     );
   }
 
   // Return the structure.
   return array(
     'name' => array('data' => $row_data),
-    'config' => $config,
+    'config' => array('data' => $config),
   );
 }
 
