@@ -628,6 +628,16 @@ function og_sm_feature_translated_menu_link_alter(&$item, $map) {
 }
 
 /**
+ * Helper function to set the breadcrumb for a feature site configuration page.
+ *
+ * @param $site
+ *   The site node.
+ */
+function og_sm_feature_set_breadcrumb($site) {
+  og_sm_set_breadcrumb($site, array(l(t('Features'), 'group/node/' . $site->nid . '/admin/features')));
+}
+
+/**
  * Gets an array of default configuration.
  *
  * @param $feature
