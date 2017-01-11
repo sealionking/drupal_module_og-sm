@@ -4,13 +4,13 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 
 
-## [Unreleased]
+## [7.x-1.14]
 ### Added
 - DMOGSM-78 : Added the og_sm_user_create module.
-- DMOGSM-78 : Make sure the create account tab is the primary tab when 
+- DMOGSM-78 : Make sure the create account tab is the primary tab when
   og_sm_user_create is enabled.
-- DMOGSM-111 : Added og_sm_feature_form_defaults and 
-  og_sm_feature_form_defaults_alter hooks.    
+- DMOGSM-111 : Added og_sm_feature_form_defaults and
+  og_sm_feature_form_defaults_alter hooks.
 
 
 ### Changed
@@ -262,7 +262,7 @@ First stable release of the og_sm module.
 
 
 
-[Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/develop%0Dmaster
+[7.x-1.14]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.14%0D7.x-1.13#diff
 [7.x-1.13]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.13%0D7.x-1.12#diff
 [7.x-1.12]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.12%0D7.x-1.11#diff
 [7.x-1.11]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.11%0D7.x-1.10#diff
