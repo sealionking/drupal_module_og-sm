@@ -12,9 +12,9 @@ function og_sm_content_views_data_alter(&$data) {
     'title' => t('Site content types'),
     'help' => t('Content types that can be used to create content within a Site.'),
     'filter' => array(
-      'handler' => 'ogSmContentViewsHandlerFilterContentType',
+      'handler' => 'OgSmContentViewsHandlerFilterContentType',
       'field' => 'type',
     ),
   );
-  $data['node']['type']['field']['handler'] = 'ogSmContentViewsHandlerFieldContentType';
+  $data['node']['type']['field']['handler'] = 'OgSmContentViewsHandlerFieldContentType';
 }

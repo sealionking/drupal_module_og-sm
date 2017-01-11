@@ -82,6 +82,9 @@ This module and its submodules adds functionality to support:
 * Allow Sites to disable the editing of profiles, eg. when no alterable
   sections are available.
 
+### Included in og_sm_user_create module
+* Allow users to be created from within a Site context.
+
 ### Included in og_sm_variable module
 * Store Site specific settings in og_sm_variable table.
 * Get/Set/Delete Site specific variables.

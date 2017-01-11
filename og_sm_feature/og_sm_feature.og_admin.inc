@@ -101,17 +101,22 @@ function _og_sm_feature_og_admin_overview_row($site, array $info) {
   // Create the config link (if any).
   $config = NULL;
   if (!empty($info['site configuration'])) {
-    $config = l(
-      t('Configuration'),
-      'group/node/' . $site->nid . '/' . $info['site configuration'],
-      array('query' => drupal_get_destination())
+    $config = array(
+      '#theme' => 'link',
+      '#text' => t('Configuration'),
+      '#path' => 'group/node/' . $site->nid . '/' . $info['site configuration'],
+      '#options' => array(
+        'attributes' => array(),
+        'query' => drupal_get_destination(),
+        'html' => FALSE,
+      ),
     );
   }
 
   // Return the structure.
   return array(
     'name' => array('data' => $row_data),
-    'config' => $config,
+    'config' => array('data' => $config),
   );
 }
 
