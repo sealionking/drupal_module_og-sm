@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2017-05-03 13:36+0200\n"
-"PO-Revision-Date: 2017-05-03 13:38+0200\n"
+"POT-Creation-Date: 2016-03-10 15:50+0100\n"
+"PO-Revision-Date: 2017-05-05 15:44+0200\n"
 "Last-Translator: Sebastien Van Rintel <sebastien.vanrintel@digipolis.gent>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -21,17 +21,15 @@ msgstr ""
 msgid "Roles"
 msgstr "Rollen"
 
-#: og_sm_user_create.admin.inc:88
-msgid "here"
-msgstr "hier"
-
-#: og_sm_user_create.admin.inc:90
-msgid "This user already exists. Click !link to add the user to your group."
+#: og_sm_user_create.admin.inc:92
+msgid ""
+"This user already exists. <a href=\"!link\">Click here</a> to add the user "
+"to your group."
 msgstr ""
-"Deze gebruiker bestaat reeds. Klik !link om de gebruiker toe te voegen aan "
-"deze groep."
+"Deze gebruiker bestaat reeds. <a href=\"!link\">Klik hier</a> om de "
+"gebruiker toe te voegen aan deze groep."
 
-#: og_sm_user_create.admin.inc:118
+#: og_sm_user_create.admin.inc:123
 msgid "%user has been added to the group %group-title."
 msgstr "%user is aan de site %group-title toegevoegd."
 
@@ -56,17 +54,3 @@ msgstr ""
 #: og_sm_user_create.module:96
 msgid "Resend one-time-loggin mail"
 msgstr "Eenmalige-login email opnieuw verzenden"
-
-#~ msgid "This user already exists. Click !link to add the user to your group?"
-#~ msgstr ""
-#~ "Deze gebruiker bestaat reeds. Klik !link om de gebruiker to te voegen aan "
-#~ "deze groep."
-
-#~ msgid "Site User Create"
-#~ msgstr "Site Gebruiker Creatie"
-
-#~ msgid "Allows creating drupal users from within a Site context."
-#~ msgstr "Laat toe om drupal gebruikers aan te maken binnen een Site context."
-
-#~ msgid "Organic Groups Site Manager"
-#~ msgstr "Organic Groups Site Beheerder"

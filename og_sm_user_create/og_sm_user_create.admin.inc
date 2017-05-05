@@ -85,10 +85,15 @@ function og_sm_user_create_user_validate_membership(array $form, array &$form_st
     'name' => $account->name,
     'roles' => $form_state['values']['og_roles'],
   );
-  $membership_link = l(t('here'), 'group/node/' . $site->nid . '/admin/people/add-user', array('query' => $query));
 
-  drupal_set_message(t('This user already exists. Click !link to add the user to your group.',
-    array('!link' => $membership_link)), 'warning');
+  $membership_link = url('group/node/' . $site->nid . '/admin/people/add-user', array('query' => $query));
+  drupal_set_message(
+    t(
+      'This user already exists. <a href="!link">Click here</a> to add the user to your group.',
+      array('!link' => $membership_link)
+    ),
+    'warning'
+  );
 }
 
 /**
