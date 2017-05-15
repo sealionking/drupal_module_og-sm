@@ -399,50 +399,11 @@ function og_sm_comment_pathauto_update_alias(stdClass $comment, $op, array $opti
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * Adds the comment settings to the content type form ONLY if the comments are
- * set to OPEN on global level.
+ * @see og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter()
  */
 function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(&$form, &$form_state) {
-  // Existing info.
-  $info = og_sm_content_get_type_info_by_site($form['#site'], $form['#content_type']);
-
-  // Add the comment settings only if comments are enabled for this content
-  // type.
-  if ((int) variable_get('comment_' . $info->type, 0) !== COMMENT_NODE_OPEN) {
-    return;
-  }
-
-  // Group the fields.
-  $form['content_comments'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Comments'),
-  );
-
-  $key = 'og_sm_content_' . $info->type . '_comment';
-  $description = t(
-    'Select whether the comment form can be shown for @content_type_plural.',
-    array('@content_type_plural' => drupal_strtolower($info->name_plural))
-  );
-  $help = array(
-    t('Hidden: No comments are allowed, and past comments are hidden.'),
-    t('Closed: No comments are allowed, but any past comments remain visible.'),
-    t('Open for anonymous users: Any content of this type is open to new comments by anonymous and logged in users.'),
-    t('Open: Any content of this type is open to new comments by logged in users.'),
-  );
-  $description .= '<ul><li>' . implode('</li><li>', $help) . '</li></ul>';
-
-  $form['content_comments'][$key] = array(
-    '#type' => 'select',
-    '#title' => t('Comments'),
-    '#description' => $description,
-    '#default_value' => $info->comment,
-    '#options' => array(
-      COMMENT_NODE_OPEN => t('Open'),
-      OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS => t('Open for anonymous users'),
-      COMMENT_NODE_CLOSED => t('Closed'),
-      COMMENT_NODE_HIDDEN => t('Hidden'),
-    ),
-  );
+  form_load_include($form_state, 'inc', 'og_sm_comment', 'og_sm_comment.form');
+  _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter($form, $form_state);
 }
 
 /**

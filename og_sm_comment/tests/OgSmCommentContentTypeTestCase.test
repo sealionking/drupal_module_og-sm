@@ -91,6 +91,21 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
       $noNodeTypeSiteContent->comment,
       'Default comment = global comment settings.'
     );
+    $this->assertEqual(
+      0,
+      $noNodeTypeSiteContent->comment_override,
+      'Comment settings can not be overridden on global level.'
+    );
+    $this->assertEqual(
+      0,
+      $noNodeTypeSiteContent->comment_override_default,
+      'Comment settings can not have a different default level on global level.'
+    );
+    $this->assertEqual(
+      COMMENT_NODE_OPEN,
+      $noNodeTypeSiteContent->comment_override_default_value,
+      'The default override comment settings is the same as the global value.'
+    );
 
     // Site content type without settings.
     $this->verbose('Site content type : Info retrieved from node_type.');
@@ -104,12 +119,36 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
       $nodeTypeSiteContent->comment,
       'Default comment = global comment settings.'
     );
+    $this->assertEqual(
+      0,
+      $noNodeTypeSiteContent->comment_override,
+      'Comment settings are by default not overridden.'
+    );
+    $this->assertEqual(
+      0,
+      $noNodeTypeSiteContent->comment_override_default,
+      'Not overridden comment settings have no default value.'
+    );
+    $this->assertEqual(
+      COMMENT_NODE_OPEN,
+      $noNodeTypeSiteContent->comment_override_default_value,
+      'The default override comment settings is the same as the global value.'
+    );
 
     // Site content with Site specific settings.
     $this->verbose('Site content type : Info overwritten by Site config.');
     $key_base = 'og_sm_content_' . $this->nodeTypeSiteContent->type . '_';
     og_sm_variable_set(
-      $this->siteNode->nid, $key_base . 'comment', COMMENT_NODE_CLOSED
+      $this->siteNode->nid, $key_base . 'comment', OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS
+    );
+    og_sm_variable_set(
+      $this->siteNode->nid, $key_base . 'comment_override', 1
+    );
+    og_sm_variable_set(
+      $this->siteNode->nid, $key_base . 'comment_override_default', 1
+    );
+    og_sm_variable_set(
+      $this->siteNode->nid, $key_base . 'comment_override_default_value', COMMENT_NODE_CLOSED
     );
     drupal_static_reset('og_sm_content_get_type_info_by_site');
     $nodeTypeSiteContent = og_sm_content_get_type_info_by_site(
@@ -117,9 +156,24 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
       $this->nodeTypeSiteContent
     );
     $this->assertEqual(
-      COMMENT_NODE_CLOSED,
+      OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS,
       $nodeTypeSiteContent->comment,
       'Comment settings (comment) is overridden by Site config.'
+    );
+    $this->assertEqual(
+      1,
+      $nodeTypeSiteContent->comment_override,
+      'Comment settings are overridable per content item.'
+    );
+    $this->assertEqual(
+      1,
+      $nodeTypeSiteContent->comment_override_default,
+      'Comment settings override have a default value.'
+    );
+    $this->assertEqual(
+      COMMENT_NODE_CLOSED,
+      $nodeTypeSiteContent->comment_override_default_value,
+      'Comment settings override have as default closed.'
     );
 
     // Global comment configuration restricts Site configuration.
@@ -132,6 +186,22 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
       $content_type->comment,
       'Site Comment settings is overruled by stricter global config (hidden).'
     );
+    $this->assertEqual(
+      0,
+      $content_type->comment_override,
+      'Comment settings can not be overridden when hidden globally.'
+    );
+    $this->assertEqual(
+      0,
+      $content_type->comment_override_default,
+      'Comment settings can not have a different default level when hidden globally.'
+    );
+    $this->assertEqual(
+      COMMENT_NODE_HIDDEN,
+      $content_type->comment_override_default_value,
+      'The default override comment settings is the same as the global value when hidden.'
+    );
+
 
     variable_set('comment_' . $this->nodeTypeSiteContent->type, COMMENT_NODE_CLOSED);
     drupal_static_reset('og_sm_content_get_type_info_by_site');
@@ -141,6 +211,21 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
       COMMENT_NODE_CLOSED,
       $content_type->comment,
       'Site Comment settings is overruled by stricter global config (closed).'
+    );
+    $this->assertEqual(
+      0,
+      $content_type->comment_override,
+      'Comment settings can not be overridden when closed globally.'
+    );
+    $this->assertEqual(
+      0,
+      $content_type->comment_override_default,
+      'Comment settings can not have a different default level when closed globally.'
+    );
+    $this->assertEqual(
+      COMMENT_NODE_CLOSED,
+      $content_type->comment_override_default_value,
+      'The default override comment settings is the same as the global value when closed.'
     );
   }
 
@@ -165,14 +250,44 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
       COMMENT_NODE_OPEN,
       'Field in the form to override the content type machine name (type).'
     );
+    $this->assertFieldById(
+      'edit-og-sm-content-og-sm-node-type-is-group-content-comment-override',
+      0,
+      'Checkbox to set the comment settings per node is available.'
+    );
+    $this->assertFieldById(
+      'edit-og-sm-content-og-sm-node-type-is-group-content-comment-override-default',
+      0,
+      'Checkbox to set a default comment setting is available.'
+    );
+    $this->assertFieldById(
+      'edit-og-sm-content-og-sm-node-type-is-group-content-comment-override-default-value',
+      COMMENT_NODE_OPEN,
+      'Select to set a default comment setting is available and is by default equal to site value.'
+    );
 
-    // Field is not in form if omments are globally not open.
+    // Field is not in form if comments are globally not open.
     variable_set('comment_' . $this->nodeTypeSiteContent->type, COMMENT_NODE_CLOSED);
     $this->drupalGet($path);
     $this->assertNoFieldById(
       'edit-og-sm-content-og-sm-node-type-is-group-content-comment',
       '',
       'Field is not in the form if the comment settings are globally not open.'
+    );
+    $this->assertNoFieldById(
+      'edit-og-sm-content-og-sm-node-type-is-group-content-comment-override',
+      '',
+      'Checkbox is not available to override comment settings per node.'
+    );
+    $this->assertNoFieldById(
+      'edit-og-sm-content-og-sm-node-type-is-group-content-comment-override-default',
+      '',
+      'Checkbox is not available to enable default value per node.'
+    );
+    $this->assertNoFieldById(
+      'edit-og-sm-content-og-sm-node-type-is-group-content-comment-override-default-value',
+      COMMENT_NODE_OPEN,
+      'Select is not available to set the default value per node.'
     );
   }
 
