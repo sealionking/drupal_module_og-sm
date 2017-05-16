@@ -229,6 +229,16 @@ function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level =
     ? $config->comment
     : $max_level;
 
+  $overridden = (int) !empty($node->og_sm_comment_override);
+  $override_default_value = !isset($node->og_sm_comment_override->comment)
+    ? $config->comment_override_default_value
+    : $node->og_sm_comment_override->comment;
+
+  // Make sure that the currently set value can be seen while updating the node.
+  if ($override_default_value > $max_level) {
+    $max_level = $override_default_value;
+  }
+
   // Remove the existing comments section.
   unset($form['comment_settings']);
 
@@ -261,12 +271,12 @@ function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level =
       'Override comment settings for this node (default: %default)',
       array('%default' => $site_config_label)
     ),
-    '#default_value' => 0,
+    '#default_value' => $overridden,
   );
   $form['comment_settings']['comment_override_value'] = array_merge(
     _og_sm_comment_settings_element(
       $node->type,
-      $config->comment_override_default_value,
+      $override_default_value,
       $max_level
     ),
     array(

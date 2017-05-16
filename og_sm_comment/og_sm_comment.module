@@ -466,6 +466,50 @@ function og_sm_comment_node_view($node, $view_mode, $langcode) {
 }
 
 /**
+ * Implements hook_node_insert().
+ *
+ * Save the overridden comment settings (if any).
+ */
+function og_sm_comment_node_insert($node) {
+  if (!empty($node->comment_override)) {
+    og_sm_comment_override_save($node->nid, $node->comment_override_value);
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ *
+ * Updated the overridden comment settings.
+ */
+function og_sm_comment_node_update($node) {
+  if (!isset($node->comment_override)) {
+    return;
+  }
+
+  og_sm_comment_override_delete($node->nid);
+  if (!empty($node->comment_override)) {
+    og_sm_comment_override_save($node->nid, $node->comment_override_value);
+  }
+}
+
+/**
+ * Implements hook_node_load().
+ */
+function og_sm_comment_node_load($nodes, $types) {
+  $overrides = og_sm_comment_override_load_multiple(array_keys($nodes));
+  foreach ($nodes as $nid => $node) {
+    $nodes[$nid]->og_sm_comment_override = $overrides[$nid];
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function og_sm_comment_node_delete($node) {
+  og_sm_comment_override_delete($node->nid);
+}
+
+/**
  * Helper to get all the comment settings labels.
  *
  * @return array
@@ -527,4 +571,69 @@ function og_sm_comment_config_description($comment_setting) {
   return empty($descriptions[$comment_setting])
     ? NULL
     : $descriptions[$comment_setting];
+}
+
+/**
+ * Save a custom comment setting.
+ *
+ * @param int $nid
+ *   The Node id.
+ * @param int $comment
+ *   The comment level.
+ */
+function og_sm_comment_override_save($nid, $comment) {
+  $query = db_insert('og_sm_comment');
+  $query->fields(array(
+    'nid' => $nid,
+    'comment' => $comment,
+  ));
+  $query->execute();
+}
+
+/**
+ * Load custom comment settings (if any).
+ *
+ * @param int $nid
+ *   The Node ID.
+ *
+ * @return object|false
+ *   The custom settings or false if no record has been found.
+ */
+function og_sm_comment_override_load($nid) {
+  $overrides = og_sm_comment_override_load_multiple(array($nid));
+  return $overrides[$nid];
+}
+
+/**
+ * Loads multiple custom settings at once.
+ *
+ * @param array $nids
+ *   Array of Node IDs.
+ *
+ * @return object[]
+ *   Array of overrides keyed by their Node ID.
+ */
+function og_sm_comment_override_load_multiple($nids) {
+  $query = db_select('og_sm_comment');
+  $query->fields('og_sm_comment');
+  $query->condition('nid', $nids);
+  $result = $query->execute();
+
+  $overrides = array_fill_keys($nids, FALSE);
+  foreach ($result as $override) {
+    $overrides[$override->nid] = $override;
+  }
+  return $overrides;
+}
+
+/**
+ * Delete a record.
+ *
+ * @param int $nid
+ *   The node id to delete the record for.
+ */
+function og_sm_comment_override_delete($nid) {
+  $query = db_delete('og_sm_comment');
+  $query->condition('nid', $nid);
+  $query->execute();
 }
