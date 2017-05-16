@@ -163,6 +163,125 @@ function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter_va
 }
 
 /**
+ * Adds the custom comment settings to the node form.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ */
+function _og_sm_comment_form_node_form_alter(array &$form, array &$form_state) {
+  $node = $form['#node'];
+
+  // Add the comment settings only if we are in a site context.
+  $site = og_sm_current_site();
+  if (!$site) {
+    return;
+  }
+
+  // Global comment administrators can always override!
+  if (user_access('administer comments')) {
+    _og_sm_comment_form_node_form_alter_elements($form, OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS);
+    return;
+  }
+
+  // Add the comment settings only if commenting is enabled for this content
+  // type on the platform level.
+  $global_config = (int) variable_get(sprintf('comment_%s', $node->type), 0);
+  if ($global_config !== COMMENT_NODE_OPEN) {
+    return;
+  }
+
+  // Check if override is activated.
+  $config = og_sm_content_get_type_info_by_site($site, $node->type);
+  if (!$config || !$config->comment_override) {
+    return;
+  }
+
+  // Access check.
+  if (!user_access(OG_SM_COMMENT_OG_PERM_OVERRIDE_NODE_COMMENT_SETTINGS)
+    && !og_sm_site_permission_access($site, OG_SM_COMMENT_OG_PERM_OVERRIDE_NODE_COMMENT_SETTINGS)
+  ) {
+    return;
+  }
+
+  // If we got here, the user has access to the form elements.
+  _og_sm_comment_form_node_form_alter_elements($form);
+}
+
+/**
+ * Actual form for the _og_sm_comment_form_node_form_alter() function.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param int|null $max_level
+ *   The max level a user has access to. If non given, the max level of the node
+ *   type settings will be used.
+ *
+ * @return array
+ */
+function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level = NULL) {
+  $node = $form['#node'];
+  $site = og_sm_current_site();
+  $config = og_sm_content_get_type_info_by_site($site, $node->type);
+  $site_config_label = og_sm_comment_config_label($config->comment);
+  $max_level = $max_level === NULL
+    ? $config->comment
+    : $max_level;
+
+  // Remove the existing comments section.
+  unset($form['comment_settings']);
+
+  // Replace by custom form.
+  $form['comment_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Comment settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#group' => 'additional_settings',
+    '#attributes' => array(
+      'class' => array(
+        0 => 'og-sm-comment-node-settings-form',
+      ),
+    ),
+    '#attached' => array(
+      'js' => array(
+        0 => drupal_get_path('module', 'og_sm_comment') . '/js/og-sm-comment-node-form.js',
+      ),
+    ),
+    '#weight' => 30,
+  );
+  $form['comment_settings']['comment_default'] = array(
+    '#type' => 'hidden',
+    '#value' => $site_config_label,
+  );
+  $form['comment_settings']['comment_override'] = array(
+    '#type' => 'checkbox',
+    '#title' => t(
+      'Override comment settings for this node (default: %default)',
+      array('%default' => $site_config_label)
+    ),
+    '#default_value' => 0,
+  );
+  $form['comment_settings']['comment_override_value'] = array_merge(
+    _og_sm_comment_settings_element(
+      $node->type,
+      $config->comment_override_default_value,
+      $max_level
+    ),
+    array(
+      '#states' => array(
+        'invisible' => array(
+          ':input[name="comment_override"]' => array(
+            'checked' => FALSE,
+          ),
+        ),
+      ),
+    )
+  );
+}
+
+/**
  * Helper to create the field to show the comment settings.
  *
  * @param string $node_type
@@ -183,12 +302,7 @@ function _og_sm_comment_settings_element($node_type, $default, $max_level = COMM
     'Select whether the comment form can be shown for @content_type_plural.',
     array('@content_type_plural' => drupal_strtolower($info->name_plural))
   );
-  $help = array(
-    COMMENT_NODE_HIDDEN => t('Hidden: No comments are allowed, and past comments are hidden.'),
-    COMMENT_NODE_CLOSED => t('Closed: No comments are allowed, but any past comments remain visible.'),
-    COMMENT_NODE_OPEN => t('Open: Any content of this type is open to new comments by logged in users.'),
-    OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS => t('Open for anonymous users: Any content of this type is open to new comments by anonymous and logged in users.'),
-  );
+  $help = og_sm_comment_config_descriptions();
   foreach (array_keys($help) as $key) {
     if ($key > $max_level) {
       unset($help[$key]);
@@ -196,12 +310,7 @@ function _og_sm_comment_settings_element($node_type, $default, $max_level = COMM
   }
   $description .= '<ul><li>' . implode('</li><li>', $help) . '</li></ul>';
 
-  $options = array(
-    COMMENT_NODE_HIDDEN => t('Hidden'),
-    COMMENT_NODE_CLOSED => t('Closed'),
-    COMMENT_NODE_OPEN => t('Open'),
-    OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS => t('Open for anonymous users'),
-  );
+  $options = og_sm_comment_config_labels();
   foreach (array_keys($options) as $key) {
     if ($key > $max_level) {
       unset($options[$key]);

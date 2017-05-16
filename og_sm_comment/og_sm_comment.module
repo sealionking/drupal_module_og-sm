@@ -12,6 +12,7 @@ define('OG_SM_COMMENT_OG_PERM_DELETE_OWN_COMMENTS', 'delete own comments');
 define('OG_SM_COMMENT_OG_PERM_EDIT_ALL_COMMENTS', 'edit all comments');
 define('OG_SM_COMMENT_OG_PERM_EDIT_OWN_COMMENTS', 'edit own comments');
 define('OG_SM_COMMENT_OG_PERM_ADMINISTER_COMMENTS', 'administer comments');
+define('OG_SM_COMMENT_OG_PERM_OVERRIDE_NODE_COMMENT_SETTINGS', 'override node comment settings');
 
 /**
  * Comments for this node are open for anonymous users.
@@ -63,6 +64,10 @@ function og_sm_comment_permission() {
       'title' => t('Edit all comments'),
       'description' => t('Allows the user to edit all comments.'),
     ),
+    OG_SM_COMMENT_OG_PERM_OVERRIDE_NODE_COMMENT_SETTINGS => array(
+      'title' => t('Override node comment settings'),
+      'description' => t('Allows the user to override the comment settings per node.'),
+    ),
   );
 }
 
@@ -90,6 +95,10 @@ function og_sm_comment_og_permission() {
     OG_SM_COMMENT_OG_PERM_EDIT_OWN_COMMENTS => array(
       'title' => t('Edit own comments'),
       'description' => t('Allows the user to edit his/her own comments.'),
+    ),
+    OG_SM_COMMENT_OG_PERM_OVERRIDE_NODE_COMMENT_SETTINGS => array(
+      'title' => t('Override node comment settings'),
+      'description' => t('Allows the user to override the comment settings per node.'),
     ),
   );
 }
@@ -399,11 +408,26 @@ function og_sm_comment_pathauto_update_alias(stdClass $comment, $op, array $opti
 /**
  * Implements hook_form_FORM_ID_alter().
  *
+ * Alters the Site admin page to manage content types: it adds the comment
+ * settings to them.
+ *
  * @see og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter()
  */
 function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(&$form, &$form_state) {
   form_load_include($form_state, 'inc', 'og_sm_comment', 'og_sm_comment.form');
   _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter($form, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alters the content form: it adds the comment settings (if applicable).
+ *
+ * @see _og_sm_comment_form_node_form_alter()
+ */
+function og_sm_comment_form_node_form_alter(&$form, &$form_state, $form_id) {
+  form_load_include($form_state, 'inc', 'og_sm_comment', 'og_sm_comment.form');
+  _og_sm_comment_form_node_form_alter($form, $form_state);
 }
 
 /**
@@ -439,4 +463,68 @@ function og_sm_comment_node_view($node, $view_mode, $langcode) {
   if ((int) $content_type->comment === COMMENT_NODE_HIDDEN) {
     unset($node->content['comments']);
   }
+}
+
+/**
+ * Helper to get all the comment settings labels.
+ *
+ * @return array
+ *   Array of comment level => label.
+ */
+function og_sm_comment_config_labels() {
+  return array(
+    COMMENT_NODE_HIDDEN => t('Hidden'),
+    COMMENT_NODE_CLOSED => t('Closed'),
+    COMMENT_NODE_OPEN => t('Open'),
+    OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS => t('Open for anonymous users'),
+  );
+}
+
+/**
+ * Get the comment settings label by its config value.
+ *
+ * @param int $comment_setting
+ *   The comment config value.
+ *
+ * @return string
+ *   The label (if any).
+ */
+function og_sm_comment_config_label($comment_setting) {
+  $labels = og_sm_comment_config_labels();
+
+  return empty($labels[$comment_setting])
+    ? NULL
+    : $labels[$comment_setting];
+}
+
+/**
+ * Helper to get all the comment settings descriptions.
+ *
+ * @return array
+ *   Array of comment level => description.
+ */
+function og_sm_comment_config_descriptions() {
+  return array(
+    COMMENT_NODE_HIDDEN => t('Hidden: No comments are allowed, and past comments are hidden.'),
+    COMMENT_NODE_CLOSED => t('Closed: No comments are allowed, but any past comments remain visible.'),
+    COMMENT_NODE_OPEN => t('Open: Any content of this type is open to new comments by logged in users.'),
+    OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS => t('Open for anonymous users: Any content of this type is open to new comments by anonymous and logged in users.'),
+  );
+}
+
+/**
+ * Get the comment settings description by its config value.
+ *
+ * @param int $comment_setting
+ *   The comment config value.
+ *
+ * @return string
+ *   The description (if any).
+ */
+function og_sm_comment_config_description($comment_setting) {
+  $descriptions = og_sm_comment_config_descriptions();
+
+  return empty($descriptions[$comment_setting])
+    ? NULL
+    : $descriptions[$comment_setting];
 }
