@@ -55,13 +55,20 @@ class OgSmCommentOverrideConfig
   public function __construct($global, $site = NULL, $overridable = FALSE, $default = NULL) {
     $this->globalComment = (int) $global;
 
-    if (NULL !== $site) {
+    // Site config only relevant if comments are enabled globally.
+    if (NULL !== $site && $this->getGlobalComment() === OgSmCommentLevels::OPEN) {
       $this->siteComment = (int) $site;
     }
 
-    $this->overridable = (bool) $overridable;
-    if ($this->overridable && NULL !== $default) {
-      $this->defaultComment = (int) $default;
+    // Only overridable if Site has comment settings.
+    if ($this->hasSiteComment()) {
+      $this->overridable = (bool) $overridable;
+    }
+    if (NULL !== $default && $this->isOverridable()) {
+      // Default can't be higher then the Site config.
+      $this->defaultComment = $default > $this->getSiteComment()
+        ? $this->getSiteComment()
+        : (int) $default;
     }
   }
 

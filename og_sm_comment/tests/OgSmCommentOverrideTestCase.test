@@ -26,6 +26,7 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     parent::setUp();
 
     // Require classes under test.
+    require_once __DIR__ . '/../src/Levels.php';
     require_once __DIR__ . '/../src/OverrideConfig.php';
     require_once __DIR__ . '/../src/OverrideNode.php';
   }
@@ -52,15 +53,61 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     $this->assertNull($override->getDefaultComment(), 'No default set = NULL.');
 
     // Override without override but with default value.
-    $override = new OgSmCommentOverrideConfig(2, 1, FALSE, 5);
+    $override = new OgSmCommentOverrideConfig(2, 1, FALSE, 1);
     $this->assertFalse($override->isOverridable(), 'Not overridable.');
     $this->assertFalse($override->hasDefaultComment(), 'No default when not overridable.');
     $this->assertNull($override->getDefaultComment(), 'The default value is not stored.');
 
     // Config with override and default value.
-    $override = new OgSmCommentOverrideConfig(2, 1, TRUE, '3');
+    $override = new OgSmCommentOverrideConfig(2, 1, TRUE, '1');
     $this->assertTrue($override->hasDefaultComment(), 'A default value is set.');
-    $this->assertIdentical(3, $override->getDefaultComment(), 'Default value is returned as integer.');
+    $this->assertIdentical(1, $override->getDefaultComment(), 'Default value is returned as integer.');
+
+    // Global restricts Site config.
+    $override = new OgSmCommentOverrideConfig(
+      OgSmCommentLevels::CLOSED,
+      OgSmCommentLevels::OPEN
+    );
+    $this->assertFalse(
+      $override->hasSiteComment(),
+      'Site comment disabled when comments are disabled globally.'
+    );
+
+    // Site restricts overridable.
+    $override = new OgSmCommentOverrideConfig(
+      OgSmCommentLevels::OPEN,
+      NULL,
+      TRUE
+    );
+    $this->assertFalse(
+      $override->isOverridable(),
+      'Not overridable if the Site comments are not set.'
+    );
+
+    // No default value if not overridable.
+    $override = new OgSmCommentOverrideConfig(
+      OgSmCommentLevels::OPEN,
+      OgSmCommentLevels::OPEN,
+      FALSE,
+      OgSmCommentLevels::CLOSED
+    );
+    $this->assertFalse(
+      $override->hasDefaultComment(),
+      'No default setting if the Site comments are not overridable.'
+    );
+
+    // Default value can(t be higher then Site config.
+    $override = new OgSmCommentOverrideConfig(
+      OgSmCommentLevels::OPEN,
+      OgSmCommentLevels::OPEN,
+      TRUE,
+      OgSmCommentLevels::OPEN_ANONYMOUS
+    );
+    $this->assertEqual(
+      OgSmCommentLevels::OPEN,
+      $override->getDefaultComment(),
+      'Default setting can not be higher then the maximum level within a Site.'
+    );
   }
 
   /**
