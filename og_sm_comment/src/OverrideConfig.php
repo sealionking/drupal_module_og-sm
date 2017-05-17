@@ -93,6 +93,20 @@ class OgSmCommentOverrideConfig
   }
 
   /**
+   * Are comments enabled on Site level.
+   *
+   * @return bool
+   *   Enabled.
+   */
+  public function isSiteEnabled() {
+    if (!$this->hasSiteComment()) {
+      return $this->isGlobalEnabled();
+    }
+
+    return $this->getSiteComment() >= OgSmCommentLevels::OPEN;
+  }
+
+  /**
    * Has a site value.
    *
    * @return bool

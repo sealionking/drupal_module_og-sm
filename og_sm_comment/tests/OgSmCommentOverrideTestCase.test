@@ -112,10 +112,23 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     // Globally enabled or not.
     $override = new OgSmCommentOverrideConfig(0);
     $this->assertFalse($override->isGlobalEnabled(), 'Hidden is not an enabled state.');
+    $this->assertFalse($override->isSiteEnabled(), 'Site follows global if not specific set.');
     $override = new OgSmCommentOverrideConfig(1);
     $this->assertFalse($override->isGlobalEnabled(), 'Closed is not an enabled state.');
+    $this->assertFalse($override->isSiteEnabled(), 'Site follows global if not specific set.');
     $override = new OgSmCommentOverrideConfig(2);
     $this->assertTrue($override->isGlobalEnabled(), 'Open is an enabled state.');
+    $this->assertTrue($override->isSiteEnabled(), 'Site follows global if not specific set.');
+
+    // Site enabled or not.
+    $override = new OgSmCommentOverrideConfig(2, 0);
+    $this->assertFalse($override->isSiteEnabled(), 'Hidden is not an enabled state.');
+    $override = new OgSmCommentOverrideConfig(2, 1);
+    $this->assertFalse($override->isSiteEnabled(), 'Closed is not an enabled state.');
+    $override = new OgSmCommentOverrideConfig(2, 2);
+    $this->assertTrue($override->isSiteEnabled(), 'Open is an enabled state.');
+    $override = new OgSmCommentOverrideConfig(2, 3);
+    $this->assertTrue($override->isSiteEnabled(), 'Open for anonymous is an enabled state.');
   }
 
   /**
