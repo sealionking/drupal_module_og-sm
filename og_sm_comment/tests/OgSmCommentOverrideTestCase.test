@@ -1,0 +1,64 @@
+<?php
+/**
+ * @file
+ * Tests for the og_sm_comment module.
+ */
+
+/**
+ * Tests the OG SM Comment Override functionality.
+ */
+class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Site Comment : Override'),
+      'description' => t('Tests the Site Comment override functionality.'),
+      'group' => t('Organic Groups Site Manager'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+
+    // Require classes under test.
+    require_once __DIR__ . '/../src/OverrideConfig.php';
+  }
+
+  /**
+   * Test OverrideConfig.
+   */
+  public function testOverrideConfig() {
+    // Config without override.
+    $override = new OgSmCommentOverrideConfig(FALSE);
+    $this->pass(var_export($override->isOverridable(), TRUE));
+    $this->pass(var_export($override->hasDefault(), TRUE));
+    $this->pass(var_export($override->getDefault(), TRUE));
+
+    $this->assertFalse($override->isOverridable(), 'By default not overridable');
+    $this->assertFalse($override->hasDefault(), 'No default is set.');
+    $this->assertNull($override->getDefault(), 'No default set = NULL.');
+
+    // Config with override but without default value.
+    $override = new OgSmCommentOverrideConfig(TRUE);
+    $this->assertTrue($override->isOverridable(), 'Overridable is set.');
+    $this->assertFalse($override->hasDefault(), 'No default is set.');
+    $this->assertNull($override->getDefault(), 'No default set = NULL.');
+
+    // Override without override but with default value.
+    $override = new OgSmCommentOverrideConfig(FALSE, 5);
+    $this->assertFalse($override->isOverridable(), 'Not overridable.');
+    $this->assertFalse($override->hasDefault(), 'No default when not overridable.');
+    $this->assertNull($override->getDefault(), 'The default value is not stored.');
+
+    // Config with override and default value.
+    $override = new OgSmCommentOverrideConfig(TRUE, 3);
+    $this->assertTrue($override->hasDefault(), 'A default value is set.');
+    $this->assertEqual(3, $override->getDefault(), 'Default value is returned.');
+  }
+
+}

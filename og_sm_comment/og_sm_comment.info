@@ -11,6 +11,9 @@ dependencies[] = views
 files[] = views/og_sm_comment_handler_field_comment_link_delete.inc
 files[] = views/og_sm_comment_handler_field_comment_link_edit.inc
 
+; Library
+files[] = src/OverrideConfig.php
 ; Tests.
 files[] = tests/OgSmCommentContentTypeTestCase.test
 files[] = tests/OgSmCommentTestCase.test
+files[] = tests/OgSmCommentOverrideTestCase.test
