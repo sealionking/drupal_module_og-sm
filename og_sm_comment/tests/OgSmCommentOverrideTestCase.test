@@ -26,6 +26,7 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     parent::setUp();
 
     // Require classes under test.
+    require_once __DIR__ . '/../src/Access.php';
     require_once __DIR__ . '/../src/Levels.php';
     require_once __DIR__ . '/../src/OverrideConfig.php';
     require_once __DIR__ . '/../src/OverrideNode.php';
@@ -145,6 +146,145 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     $override = new OgSmCommentOverrideNode('2', '2');
     $this->assertTrue($override->isOverridden(), 'Overridden if the comment value is passed.');
     $this->assertIdentical(2, $override->getComment(), 'Comment setting is saved as an integer.');
+  }
+
+  /**
+   * Test Access.
+   */
+  public function testAccess() {
+    $configHidden = new OgSmCommentOverrideConfig(2, 0);
+    $configClosed = new OgSmCommentOverrideConfig(2, 1);
+    $configOpen = new OgSmCommentOverrideConfig(2, 2);
+    $configOpenAnonymous = new OgSmCommentOverrideConfig(2, 3);
+    $configOverrideDefaultHidden = new OgSmCommentOverrideConfig(2, 2, TRUE, 0);
+    $configOverrideDefaultClosed = new OgSmCommentOverrideConfig(2, 2, TRUE, 1);
+    $configOverrideDefaultOpen = new OgSmCommentOverrideConfig(2, 2, TRUE, 2);
+    $configOverrideDefaultOpenAnonymous = new OgSmCommentOverrideConfig(2, 3, TRUE, 3);
+
+    $overrideNone = new OgSmCommentOverrideNode(1);
+    $overrideHidden = new OgSmCommentOverrideNode(1, 0);
+    $overrideClosed = new OgSmCommentOverrideNode(1, 1);
+    $overrideOpen = new OgSmCommentOverrideNode(1, 2);
+    $overrideOpenAnonymous = new OgSmCommentOverrideNode(1, 3);
+
+    // Hidden.
+    $access = new OgSmCommentAccess($configHidden, $overrideNone);
+    $this->assertTrue($access->commentsAreHidden(), 'Hidden when comments are hidden and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are hidden and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are hidden and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are hidden and no override is set.');
+
+    $access = new OgSmCommentAccess($configOverrideDefaultHidden, $overrideNone);
+    $this->assertTrue($access->commentsAreHidden(), 'Hidden when comments are overridden as hidden by default and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are overridden as hidden by default and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are overridden as hidden by default and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are overridden as hidden by default and no override is set.');
+
+    $access = new OgSmCommentAccess($configOpen, $overrideHidden);
+    $this->assertTrue($access->commentsAreHidden(), 'Hidden when comments are open but override is set to hidden.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are open but override is set to hidden.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are open but override is set to hidden.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are open but override is set to hidden.');
+
+    // Closed.
+    $access = new OgSmCommentAccess($configClosed, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are closed and no override is set.');
+    $this->assertTrue($access->commentsAreClosed(), 'Closed when comments are closed and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are closed and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are closed and no override is set.');
+
+    $access = new OgSmCommentAccess($configOverrideDefaultClosed, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are overridden as closed by default and no override is set.');
+    $this->assertTrue($access->commentsAreClosed(), 'Closed when comments are overridden as closed by default and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are overridden as closed by default and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are overridden as closed by default and no override is set.');
+
+    $access = new OgSmCommentAccess($configOpen, $overrideClosed);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are open but override is set to closed.');
+    $this->assertTrue($access->commentsAreClosed(), 'Closed when comments are open but override is set to closed.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are open but override is set to closed.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are open but override is set to closed.');
+
+    // Open.
+    $access = new OgSmCommentAccess($configOpen, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are open and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are open and no override is set.');
+    $this->assertTrue($access->commentsAreOpen(), 'Open when comments are open and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are open and no override is set.');
+
+    $access = new OgSmCommentAccess($configOverrideDefaultOpen, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are overridden as open by default and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are overridden as open by default and no override is set.');
+    $this->assertTrue($access->commentsAreOpen(), 'Open when comments are overridden as open by default and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are overridden as open by default and no override is set.');
+
+    $access = new OgSmCommentAccess($configHidden, $overrideOpen);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are hidden but override is set to open.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are hidden but override is set to open.');
+    $this->assertTrue($access->commentsAreOpen(), 'Open when comments are hidden but override is set to open.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are hidden but override is set to open.');
+
+    // Open for Anonymous.
+    $access = new OgSmCommentAccess($configOpenAnonymous, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are open for anonymous and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are open for anonymous and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are open for anonymous and no override is set.');
+    $this->assertTrue($access->commentsAreOpenAnonymous(), 'Open for anonymous when comments are open for anonymous and no override is set.');
+
+    $access = new OgSmCommentAccess($configOverrideDefaultOpenAnonymous, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are overridden as open for anonymous by default and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are overridden as open for anonymous by default and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are overridden as open for anonymous by default and no override is set.');
+    $this->assertTrue($access->commentsAreOpenAnonymous(), 'Open for anonymous when comments are overridden as open for anonymous by default and no override is set.');
+
+    $access = new OgSmCommentAccess($configHidden, $overrideOpenAnonymous);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are hidden but override is set to open for anonymous.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are hidden but override is set to open for anonymous.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are hidden but override is set to open for anonymous.');
+    $this->assertTrue($access->commentsAreOpenAnonymous(), 'Open for anonymous when comments are hidden but override is set to open for anonymous.');
+
+    // Comments disabled globally.
+    $access = new OgSmCommentAccess($configClosed, $overrideNone);
+    $this->assertFalse($access->canCreate(TRUE, FALSE), 'No access if comments are disabled and no override is set.');
+
+    $access = new OgSmCommentAccess($configClosed, $overrideClosed);
+    $this->assertFalse($access->canCreate(TRUE, FALSE), 'No access if comments are disabled and override is closed.');
+
+    $access = new OgSmCommentAccess($configClosed, $overrideOpen);
+    $this->assertFalse($access->canCreate(FALSE, FALSE), 'No access if user has no permission.');
+    $this->assertTrue($access->canCreate(TRUE, FALSE), 'Access if comments are disabled, override is open and user is logged in.');
+    $this->assertFalse($access->canCreate(TRUE, TRUE), 'No access if comments are disabled, override is open but user is anonymous.');
+
+    $access = new OgSmCommentAccess($configClosed, $overrideOpenAnonymous);
+    $this->assertFalse($access->canCreate(FALSE, FALSE), 'No access if user has no permission.');
+    $this->assertTrue($access->canCreate(TRUE, FALSE), 'Access if comments are disabled, override is open for anonymous and user is logged in.');
+    $this->assertTrue($access->canCreate(TRUE, TRUE), 'Access if comments are disabled, override is open for anonymous and user is anonymous.');
+
+    // Comments are enabled.
+    $access = new OgSmCommentAccess($configOpen, $overrideNone);
+    $this->assertFalse($access->canCreate(FALSE, FALSE), 'No access if user has no permission.');
+    $this->assertTrue($access->canCreate(TRUE, FALSE), 'Access if comments are enabled, no override is set and user has comment post permission.');
+    $this->assertFalse($access->canCreate(TRUE, TRUE), 'No access if comments are enabled, no override is set, user has comment post permission but user is anonymous.');
+
+    $access = new OgSmCommentAccess($configOpen, $overrideClosed);
+    $this->assertFalse($access->canCreate(FALSE, FALSE), 'No access if user has no permission.');
+    $this->assertFalse($access->canCreate(TRUE, FALSE), 'No access if comments are disabled by override.');
+    $this->assertFalse($access->canCreate(TRUE, TRUE), 'No access if comments are disabled by override.');
+
+    $access = new OgSmCommentAccess($configOpen, $overrideOpen);
+    $this->assertFalse($access->canCreate(FALSE, FALSE), 'No access if user has no permission.');
+    $this->assertTrue($access->canCreate(TRUE, FALSE), 'Access if comments are enabled, Override is enabled and user has comment post permission.');
+    $this->assertFalse($access->canCreate(TRUE, TRUE), 'No access if comments are enabled, Override is enabled, user has comment post permission but user is anonymous.');
+
+    $access = new OgSmCommentAccess($configOpen, $overrideOpenAnonymous);
+    $this->assertFalse($access->canCreate(FALSE, FALSE), 'No access if user has no permission.');
+    $this->assertTrue($access->canCreate(TRUE, FALSE), 'Access if comments are enabled, Override is enabled for anonymous and user has comment post permission.');
+    $this->assertTrue($access->canCreate(TRUE, TRUE), 'Access if comments are enabled, Override is enabled for anonymous, user has comment post permission and user is anonymous.');
+
+    $access = new OgSmCommentAccess($configOpenAnonymous, $overrideNone);
+    $this->assertFalse($access->canCreate(FALSE, FALSE), 'No access if user has no permission.');
+    $this->assertTrue($access->canCreate(TRUE, FALSE), 'Access if comments are enabled for anonymous, no override is set and user has comment post permission.');
+    $this->assertTrue($access->canCreate(TRUE, TRUE), 'Access if comments are enabled for anonymous, no override is set, user has comment post permission and user is anonymous.');
   }
 
 }

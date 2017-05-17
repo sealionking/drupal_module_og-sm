@@ -168,9 +168,8 @@ function _og_sm_comment_form_node_form_alter(array &$form, array &$form_state) {
     return;
   }
 
-  $config = og_sm_comment_get_config($node->type, $site);
-
   // Show only if comments are enabled and overridable.
+  $config = og_sm_comment_get_config($node->type, $site);
   if (!$config->isSiteEnabled() || !$config->isOverridable()) {
     return;
   }
@@ -194,23 +193,18 @@ function _og_sm_comment_form_node_form_alter(array &$form, array &$form_state) {
  * @param int|null $max_level
  *   The max level a user has access to. If non given, the max level of the node
  *   type settings will be used.
- *
- * @return array
  */
 function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level = NULL) {
   $node = $form['#node'];
   $site = og_sm_current_site();
-  $config = og_sm_content_get_type_info_by_site($site, $node->type);
-  $site_config_label = og_sm_comment_config_label($config->comment);
-  $max_level = $max_level === NULL
-    ? $config->comment
-    : $max_level;
+  $config = og_sm_comment_get_config($node->type, $site);
+  $override = og_sm_comment_get_override($node);
+  $override_default_value = $override->getComment();
 
-  $overridden = (int) !empty($node->og_sm_comment_override);
-  $override_default_value = !isset($node->og_sm_comment_override->comment)
-    ? $config->comment_override_default_value
-    : $node->og_sm_comment_override->comment;
-
+  $site_config_label = og_sm_comment_config_label($config->getSiteComment());
+  if (NULL === $max_level) {
+    $max_level = $config->getSiteComment();
+  }
   // Make sure that the currently set value can be seen while updating the node.
   if ($override_default_value > $max_level) {
     $max_level = $override_default_value;
@@ -248,7 +242,7 @@ function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level =
       'Override comment settings for this node (default: %default)',
       array('%default' => $site_config_label)
     ),
-    '#default_value' => $overridden,
+    '#default_value' => (int) $override->isOverridden(),
   );
   $form['comment_settings']['comment_override_value'] = array_merge(
     _og_sm_comment_settings_element(
