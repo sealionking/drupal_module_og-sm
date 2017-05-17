@@ -28,35 +28,39 @@ function og_sm_comment_og_sm_admin_menu() {
  * Implements hook_og_sm_content_type_info_alter().
  */
 function og_sm_comment_og_sm_content_type_info_alter(&$type_info, $site) {
-  // Global value as fallback.
-  $comment_global = variable_get('comment_' . $type_info->type, COMMENT_NODE_OPEN);
-  $type_info->comment = $comment_global;
-  $type_info->comment_override = 0;
-  $type_info->comment_override_default = 0;
-  $type_info->comment_override_default_value = $comment_global;
-
-  // The comment setting can only be overridden when the node type's comments
-  // are open.
-  if ((int) $comment_global === COMMENT_NODE_OPEN) {
-    $type_info->comment = og_sm_variable_get(
+  $type_info->comment_config = new OgSmCommentOverrideConfig(
+    variable_get('comment_' . $type_info->type, COMMENT_NODE_OPEN),
+    og_sm_variable_get(
       $site->nid,
-      sprintf('og_sm_content_%s_comment', $type_info->type),
-      $type_info->comment
-    );
-    $type_info->comment_override = og_sm_variable_get(
+      sprintf('og_sm_content_%s_comment', $type_info->type)
+    ),
+    og_sm_variable_get(
       $site->nid,
       sprintf('og_sm_content_%s_comment_override', $type_info->type),
-      $type_info->comment_override
-    );
-    $type_info->comment_override_default = og_sm_variable_get(
+      FALSE
+    ),
+    og_sm_variable_get(
       $site->nid,
-      sprintf('og_sm_content_%s_comment_override_default', $type_info->type),
-      $type_info->comment_override_default
-    );
-    $type_info->comment_override_default_value = og_sm_variable_get(
-      $site->nid,
-      sprintf('og_sm_content_%s_comment_override_default_value', $type_info->type),
-      $type_info->comment_override_default_value
-    );
+      sprintf('og_sm_content_%s_comment_override_default', $type_info->type)
+    )
+  );
+
+  $config = $type_info->comment_config;
+
+  // TODO: remove!
+  $type_info->comment = $config->getGlobalComment();
+  if ($config->hasSiteComment()) {
+    $type_info->comment = $config->getSiteComment();
   }
+  $type_info->comment_override = 0;
+  if ($config->isOverridable()) {
+    $type_info->comment_override = 1;
+  }
+  $type_info->comment_override_default = 0;
+  $type_info->comment_override_default_value = $type_info->comment;
+  if ($config->hasDefaultComment()) {
+    $type_info->comment_override_default = (int) $config->hasDefaultComment();
+    $type_info->comment_override_default_value = $config->getDefaultComment();
+  }
+
 }
