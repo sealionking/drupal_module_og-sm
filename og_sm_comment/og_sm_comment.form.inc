@@ -168,16 +168,10 @@ function _og_sm_comment_form_node_form_alter(array &$form, array &$form_state) {
     return;
   }
 
-  // Add the comment settings only if commenting is enabled for this content
-  // type on the platform level.
-  $global_config = (int) variable_get(sprintf('comment_%s', $node->type), 0);
-  if ($global_config !== COMMENT_NODE_OPEN) {
-    return;
-  }
+  $config = og_sm_comment_get_config($node->type, $site);
 
-  // Check if override is activated.
-  $config = og_sm_content_get_type_info_by_site($site, $node->type);
-  if (!$config || !$config->comment_override) {
+  // Show only if comments are enabled and overridable.
+  if (!$config->isSiteEnabled() || !$config->isOverridable()) {
     return;
   }
 
