@@ -13,6 +13,8 @@ files[] = views/og_sm_comment_handler_field_comment_link_edit.inc
 
 ; Library
 files[] = src/OverrideConfig.php
+files[] = src/OverrideNode.php
+
 ; Tests.
 files[] = tests/OgSmCommentContentTypeTestCase.test
 files[] = tests/OgSmCommentTestCase.test

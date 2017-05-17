@@ -27,6 +27,7 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
 
     // Require classes under test.
     require_once __DIR__ . '/../src/OverrideConfig.php';
+    require_once __DIR__ . '/../src/OverrideNode.php';
   }
 
   /**
@@ -35,9 +36,6 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
   public function testOverrideConfig() {
     // Config without override.
     $override = new OgSmCommentOverrideConfig(FALSE);
-    $this->pass(var_export($override->isOverridable(), TRUE));
-    $this->pass(var_export($override->hasDefault(), TRUE));
-    $this->pass(var_export($override->getDefault(), TRUE));
 
     $this->assertFalse($override->isOverridable(), 'By default not overridable');
     $this->assertFalse($override->hasDefault(), 'No default is set.');
@@ -56,9 +54,25 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     $this->assertNull($override->getDefault(), 'The default value is not stored.');
 
     // Config with override and default value.
-    $override = new OgSmCommentOverrideConfig(TRUE, 3);
+    $override = new OgSmCommentOverrideConfig(TRUE, '3');
     $this->assertTrue($override->hasDefault(), 'A default value is set.');
-    $this->assertEqual(3, $override->getDefault(), 'Default value is returned.');
+    $this->assertIdentical(3, $override->getDefault(), 'Default value is returned as integer.');
+  }
+
+  /**
+   * Test OverrideNode.
+   */
+  public function testOverrideNode() {
+    // Without overridden setting.
+    $override = new OgSmCommentOverrideNode('1');
+    $this->assertIdentical(1, $override->getNid(), 'Node ID is set as integer.');
+    $this->assertFalse($override->isOverridden(), 'Not overridden if the comment value is not passed.');
+    $this->assertNull($override->getComment(), 'Comment setting is by default = NULL.');
+
+    // With overridden setting.
+    $override = new OgSmCommentOverrideNode('2', '2');
+    $this->assertTrue($override->isOverridden(), 'Overridden if the comment value is passed.');
+    $this->assertIdentical(2, $override->getComment(), 'Comment setting is saved as an integer.');
   }
 
 }
