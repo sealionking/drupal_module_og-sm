@@ -22,10 +22,11 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
   // Existing info.
   $info = $form['#content_type_info'];
   $content_type = $info->site_type;
+  $config = $info->comment_config;
+  /* @var $config OgSmCommentOverrideConfig */
 
-  // Add the comment settings only if comments are enabled for this content
-  // type.
-  if ((int) variable_get('comment_' . $content_type, 0) !== COMMENT_NODE_OPEN) {
+  // Add the comment settings only if comments are enabled on platform level.
+  if (!$config->isGlobalEnabled()) {
     return;
   }
 
@@ -39,7 +40,7 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
   $key_comment = sprintf('og_sm_content_%s_comment', $content_type);
   $form['content_comments'][$key_comment] = _og_sm_comment_settings_element(
     $form['#content_type'],
-    $info->comment,
+    $config->hasSiteComment() ? $config->getSiteComment() : $config->getGlobalComment(),
     OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS
   );
 
@@ -74,40 +75,26 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
     '#type' => 'checkbox',
     '#title' => t('Comment settings can be set per content item'),
     '#description' => t('If and who can post comments is by default set on the site level. Enabeling this option will allow users to override this per content item.'),
-    '#default_value' => $info->comment_override,
+    '#default_value' => (int) $config->isOverridable(),
   );
 
   $key_comment_override_default = sprintf('og_sm_content_%s_comment_override_default', $content_type);
-  $form['content_comments']['override'][$key_comment_override_default] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Default value when no override is set for a content item is different then the site setting.'),
-    '#default_value' => $info->comment_override_default,
-    '#states' => array(
-      'invisible' => array(
-        sprintf(':input[name="%s"]', $key_comment_override) => array(
-          'checked' => FALSE,
-        ),
-      ),
-    ),
-  );
-
-  $key_comment_override_default_value = sprintf('og_sm_content_%s_comment_override_default_value', $content_type);
-  $form['content_comments']['override'][$key_comment_override_default_value] = array_merge(
+  $form['content_comments']['override'][$key_comment_override_default] = array_merge(
       _og_sm_comment_settings_element(
       $form['#content_type'],
-      $info->comment_override_default_value,
+      $config->getDefaultComment(),
       OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS
     ),
     array(
-      '#title' => t('Default per content item'),
-      '#description' => t('The default comment setting for each newly created content item when no explicit override is set.'),
+      '#title' => t('Default when no specific value is set for a content item'),
+      '#description' => t('The default comment setting for each newly created content item when no explicit override is set. If no default is set, the Site comment setting will be used.'),
+      '#required' => FALSE,
+      '#empty_value' => TRUE,
+      '#empty_option' => t(' - Same as site -'),
       '#states' => array(
-        'visible' => array(
+        'invisible' => array(
           sprintf(':input[name="%s"]', $key_comment_override) => array(
-            'checked' => TRUE,
-          ),
-          sprintf(':input[name="%s"]', $key_comment_override_default) => array(
-            'checked' => TRUE,
+            'checked' => FALSE,
           ),
         ),
       ),
@@ -118,7 +105,6 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
     'comment' => $key_comment,
     'comment_override' => $key_comment_override,
     'comment_override_default' => $key_comment_override_default,
-    'comment_override_default_value' => $key_comment_override_default_value,
   );
 
   // Custom validator for this complex form alter.
@@ -137,26 +123,23 @@ function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter_va
   $keys = $form['#comment_keys'];
   $values = $form_state['values'];
 
-  // Extract values.
-  $comment = (int) $values[$keys['comment']];
-  $comment_override = (int) $values[$keys['comment_override']];
-  $comment_override_default = (int) $values[$keys['comment_override_default']];
-  $comment_override_default_value = (int) $values[$keys['comment_override_default_value']];
+  $config_old = $form['#content_type_info']->comment_config;
+  /* @var $config_old \OgSmCommentOverrideConfig */
+  $config_new = new OgSmCommentOverrideConfig(
+    $config_old->getGlobalComment(),
+    (int) $values[$keys['comment']],
+    (int) $values[$keys['comment_override']],
+    (int) $values[$keys['comment_override_default']]
+  );
 
-  // Change values if not overridden.
-  if ($comment < COMMENT_NODE_OPEN || !$comment_override) {
-    $form_state['values'][$keys['comment_override']] = 0;
-    $form_state['values'][$keys['comment_override_default']] = 0;
-    $form_state['values'][$keys['comment_override_default_value']] = $comment;
-  }
-  // Reset override value if no default is set.
-  elseif (!$comment_override_default) {
-    $form_state['values'][$keys['comment_override_default_value']] = $comment;
+  // Change values if comments are not allowed or are not overidable.
+  if (!$config_new->isSiteEnabled() || !$config_new->isOverridable()) {
+    $form_state['values'][$keys['comment_override_default']] = NULL;
   }
   // Validate that the max level is higher then the maximum allowed one.
-  elseif ($comment < $comment_override_default_value) {
+  elseif ($config_new->getSiteComment() < (int) $values[$keys['comment_override_default']]) {
     form_set_error(
-      $keys['comment_override_default_value'],
+      $keys['comment_override_default'],
       t('The default overridden value can not be more open then the comment setting.')
     );
   }
