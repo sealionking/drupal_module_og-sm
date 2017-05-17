@@ -35,28 +35,32 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
    */
   public function testOverrideConfig() {
     // Config without override.
-    $override = new OgSmCommentOverrideConfig(FALSE);
-
+    $override = new OgSmCommentOverrideConfig('2');
+    $this->assertIdentical(2, $override->getGlobalComment(), 'Global config is casted to integer.');
+    $this->assertFalse($override->hasSiteComment(), 'No site is set.');
+    $this->assertNull($override->getSiteComment(), 'No site set = NULL.');
     $this->assertFalse($override->isOverridable(), 'By default not overridable');
-    $this->assertFalse($override->hasDefault(), 'No default is set.');
-    $this->assertNull($override->getDefault(), 'No default set = NULL.');
+    $this->assertFalse($override->hasDefaultComment(), 'No default is set.');
+    $this->assertNull($override->getDefaultComment(), 'No default set = NULL.');
 
     // Config with override but without default value.
-    $override = new OgSmCommentOverrideConfig(TRUE);
+    $override = new OgSmCommentOverrideConfig(2, '1', TRUE);
+    $this->assertTrue($override->hasSiteComment(), 'Site comment level is set.');
+    $this->assertIdentical(1, $override->getSiteComment(), 'Site comment casted to integer.');
     $this->assertTrue($override->isOverridable(), 'Overridable is set.');
-    $this->assertFalse($override->hasDefault(), 'No default is set.');
-    $this->assertNull($override->getDefault(), 'No default set = NULL.');
+    $this->assertFalse($override->hasDefaultComment(), 'No default is set.');
+    $this->assertNull($override->getDefaultComment(), 'No default set = NULL.');
 
     // Override without override but with default value.
-    $override = new OgSmCommentOverrideConfig(FALSE, 5);
+    $override = new OgSmCommentOverrideConfig(2, 1, FALSE, 5);
     $this->assertFalse($override->isOverridable(), 'Not overridable.');
-    $this->assertFalse($override->hasDefault(), 'No default when not overridable.');
-    $this->assertNull($override->getDefault(), 'The default value is not stored.');
+    $this->assertFalse($override->hasDefaultComment(), 'No default when not overridable.');
+    $this->assertNull($override->getDefaultComment(), 'The default value is not stored.');
 
     // Config with override and default value.
-    $override = new OgSmCommentOverrideConfig(TRUE, '3');
-    $this->assertTrue($override->hasDefault(), 'A default value is set.');
-    $this->assertIdentical(3, $override->getDefault(), 'Default value is returned as integer.');
+    $override = new OgSmCommentOverrideConfig(2, 1, TRUE, '3');
+    $this->assertTrue($override->hasDefaultComment(), 'A default value is set.');
+    $this->assertIdentical(3, $override->getDefaultComment(), 'Default value is returned as integer.');
   }
 
   /**
