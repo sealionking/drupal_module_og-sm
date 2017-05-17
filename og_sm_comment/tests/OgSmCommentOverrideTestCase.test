@@ -108,6 +108,14 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
       $override->getDefaultComment(),
       'Default setting can not be higher then the maximum level within a Site.'
     );
+
+    // Globally enabled or not.
+    $override = new OgSmCommentOverrideConfig(0);
+    $this->assertFalse($override->isGlobalEnabled(), 'Hidden is not an enabled state.');
+    $override = new OgSmCommentOverrideConfig(1);
+    $this->assertFalse($override->isGlobalEnabled(), 'Closed is not an enabled state.');
+    $override = new OgSmCommentOverrideConfig(2);
+    $this->assertTrue($override->isGlobalEnabled(), 'Open is an enabled state.');
   }
 
   /**

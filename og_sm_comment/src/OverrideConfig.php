@@ -73,6 +73,16 @@ class OgSmCommentOverrideConfig
   }
 
   /**
+   * Are comments globally enabled.
+   *
+   * @return bool
+   *   Enabled.
+   */
+  public function isGlobalEnabled() {
+    return $this->getGlobalComment() >= OgSmCommentLevels::OPEN;
+  }
+
+  /**
    * Get the global comment value.
    *
    * @return int
