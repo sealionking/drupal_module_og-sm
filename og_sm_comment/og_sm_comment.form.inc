@@ -86,8 +86,8 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
       OG_SM_COMMENT_NODE_OPEN_FOR_ANONYMOUS
     ),
     array(
-      '#title' => t('Default when no specific value is set for a content item'),
-      '#description' => t('The default comment setting for each newly created content item when no explicit override is set. If no default is set, the Site comment setting will be used.'),
+      '#title' => t('Default value'),
+      '#description' => t('The default comment setting for each content item that has no explicit override set.'),
       '#required' => FALSE,
       '#empty_value' => NULL,
       '#empty_option' => sprintf(' - %s - ', t('Same as site')),
@@ -301,7 +301,7 @@ function _og_sm_comment_settings_element($node_type, $default, $max_level = COMM
   $info = og_sm_content_get_type_info_by_site($site, $node_type);
 
   $description = t(
-    'Select whether the comment form can be shown for @content_type_plural.',
+    'Select whether the comments and comment form can be shown for @content_type_plural.',
     array('@content_type_plural' => drupal_strtolower($info->name_plural))
   );
   $help = og_sm_comment_config_descriptions();
