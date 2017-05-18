@@ -64,7 +64,7 @@ class OgSmCommentOverrideConfig
     if ($this->hasSiteComment()) {
       $this->overridable = (bool) $overridable;
     }
-    if (NULL !== $default && $this->isOverridable()) {
+    if (NULL !== $default && '' !== $default && $this->isOverridable()) {
       // Default can't be higher then the Site config.
       $this->defaultComment = $default > $this->getSiteComment()
         ? $this->getSiteComment()

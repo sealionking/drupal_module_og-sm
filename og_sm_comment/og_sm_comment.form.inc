@@ -89,7 +89,7 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
       '#title' => t('Default when no specific value is set for a content item'),
       '#description' => t('The default comment setting for each newly created content item when no explicit override is set. If no default is set, the Site comment setting will be used.'),
       '#required' => FALSE,
-      '#empty_value' => TRUE,
+      '#empty_value' => NULL,
       '#empty_option' => t(' - Same as site -'),
       '#states' => array(
         'invisible' => array(
@@ -123,13 +123,18 @@ function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter_va
   $keys = $form['#comment_keys'];
   $values = $form_state['values'];
 
+  // Forms don't post NULL values.
+  if ('' === $values[$keys['comment_override_default']]) {
+    $values[$keys['comment_override_default']] = NULL;
+  }
+
   $config_old = $form['#content_type_info']->comment_config;
   /* @var $config_old \OgSmCommentOverrideConfig */
   $config_new = new OgSmCommentOverrideConfig(
     $config_old->getGlobalComment(),
-    (int) $values[$keys['comment']],
-    (int) $values[$keys['comment_override']],
-    (int) $values[$keys['comment_override_default']]
+    $values[$keys['comment']],
+    $values[$keys['comment_override']],
+    $values[$keys['comment_override_default']]
   );
 
   // Change values if comments are not allowed or are not overidable.
@@ -201,9 +206,23 @@ function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level =
   $site = og_sm_current_site();
   $config = og_sm_comment_get_config($node->type, $site);
   $override = og_sm_comment_get_override($node);
-  $override_default_value = $override->getComment();
 
-  $site_config_label = og_sm_comment_config_label($config->getSiteComment());
+  // Define default value for the overridden field.
+  // Define default label when no iverride is set.
+  $override_default_value = $config->getGlobalComment();
+  $override_default_label = og_sm_comment_config_label($config->getGlobalComment());
+  if ($config->hasSiteComment()) {
+    $override_default_value = $config->getSiteComment();
+    $override_default_label = og_sm_comment_config_label($config->getSiteComment());
+  }
+  if ($config->hasDefaultComment()) {
+    $override_default_value = $config->getDefaultComment();
+    $override_default_label = og_sm_comment_config_label($config->getDefaultComment());
+  }
+  if ($override->isOverridden()) {
+    $override_default_value = $override->getComment();
+  }
+
   if (NULL === $max_level) {
     $max_level = $config->getSiteComment();
   }
@@ -236,13 +255,13 @@ function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level =
   );
   $form['comment_settings']['comment_default'] = array(
     '#type' => 'hidden',
-    '#value' => $site_config_label,
+    '#value' => $override_default_label,
   );
   $form['comment_settings']['comment_override'] = array(
     '#type' => 'checkbox',
     '#title' => t(
       'Override comment settings for this node (default: %default)',
-      array('%default' => $site_config_label)
+      array('%default' => $override_default_label)
     ),
     '#default_value' => (int) $override->isOverridden(),
   );
