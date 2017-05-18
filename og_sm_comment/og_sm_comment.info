@@ -6,6 +6,7 @@ core = 7.x
 dependencies[] = og_sm
 dependencies[] = comment
 dependencies[] = views
+dependencies[] = views_bulk_operations
 
 ; Views plugins.
 files[] = views/og_sm_comment_handler_field_comment_link_delete.inc
