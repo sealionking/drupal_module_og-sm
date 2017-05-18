@@ -157,7 +157,9 @@ function _og_sm_comment_form_node_form_alter(array &$form, array &$form_state) {
   $node = $form['#node'];
 
   // Add the comment settings only if we are in a site context.
-  $site = og_sm_current_site();
+  $site = empty($node->nid)
+    ? og_sm_current_site()
+    : og_sm_content_get_site($node);
   if (!$site) {
     return;
   }
