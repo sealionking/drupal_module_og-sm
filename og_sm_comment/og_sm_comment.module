@@ -598,6 +598,21 @@ function og_sm_comment_override_load($nid) {
 }
 
 /**
+ * Temporary helper to check if the og_sm_comment table exists.
+ *
+ * @TODO: remove after this version is deployed on all platforms.
+ *
+ * @return bool
+ */
+function og_sm_comment_table_exists() {
+  static $exists;
+  if (NULL === $exists) {
+    $exists = db_table_exists('og_sm_comment');
+  }
+  return $exists;
+}
+
+/**
  * Loads multiple custom settings at once.
  *
  * @param array $nids
@@ -607,20 +622,24 @@ function og_sm_comment_override_load($nid) {
  *   Array of overrides keyed by their Node ID.
  */
 function og_sm_comment_override_load_multiple(array $nids) {
-  $query = db_select('og_sm_comment');
-  $query->fields('og_sm_comment');
-  $query->condition('nid', $nids);
-  $result = $query->execute();
-
+  $overrides = array();
   foreach ($nids as $nid) {
     $overrides[$nid] = new OgSmCommentOverrideNode($nid);
   }
 
-  foreach ($result as $override) {
-    $overrides[$override->nid] = new OgSmCommentOverrideNode(
-      $override->nid,
-      $override->comment
-    );
+  // @TODO: Remove the if after this version is deployed on all platforms.
+  if (og_sm_comment_table_exists()) {
+    $query = db_select('og_sm_comment');
+    $query->fields('og_sm_comment');
+    $query->condition('nid', $nids);
+    $result = $query->execute();
+
+    foreach ($result as $override) {
+      $overrides[$override->nid] = new OgSmCommentOverrideNode(
+        $override->nid,
+        $override->comment
+      );
+    }
   }
 
   return $overrides;
