@@ -252,7 +252,7 @@ function og_sm_comment_create_access($node, $account = NULL) {
 
   return $access->canCreate(
     user_access('post comments', $account),
-    empty($user->uid)
+    empty($account->uid)
   );
 }
 
@@ -702,6 +702,10 @@ function og_sm_comment_get_override($node) {
  *   The access object.
  */
 function og_sm_comment_get_access($node, $site = NULL) {
+  if (!$site) {
+    $site = og_sm_content_get_site($node);
+  }
+
   return new OgSmCommentAccess(
     og_sm_comment_get_config($node->type, $site),
     og_sm_comment_get_override($node)

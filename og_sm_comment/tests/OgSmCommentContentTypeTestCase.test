@@ -76,8 +76,8 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
     variable_set('comment_' . $this->nodeTypeSiteContent->type, COMMENT_NODE_OPEN);
 
     // Disable all contexts to avoid notices.
-    variable_set('og_context_negotiation_group_context', array());
-    variable_set('og_context_providers_weight_group_context', array());
+    //variable_set('og_context_negotiation_group_context', array());
+    //variable_set('og_context_providers_weight_group_context', array());
 
     // Allow anonymous users to access and post comments.
     user_role_change_permissions(DRUPAL_ANONYMOUS_RID, array(
@@ -235,13 +235,15 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Test setting site specific info for a content type.
    */
-  public function _testSiteSpecificContentType() {
+  public function testSiteSpecificContentType() {
     $admin = $this->ogSmCreateAdminUser();
     $this->drupalLogin($admin);
 
     $site_id = $this->siteNode->nid;
     $key_global = 'comment_' . $this->nodeTypeSiteContent->type;
     $key_site = 'og_sm_content_' . $this->nodeTypeSiteContent->type . '_comment';
+    $key_site_override = $key_site . '_override';
+    $key_site_override_default = $key_site . '_override_default';
 
     // Create a Site content node.
     $node = $this->ogSmCreateGroupContent(
@@ -336,14 +338,16 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Test the og_sm_comment_create_access() callback.
    */
-  public function _testCommentCreateAccessCallback() {
+  public function testCommentCreateAccessCallback() {
     $node = $this->ogSmCreateGroupContent($this->nodeTypeSiteContent->type, array($this->siteNode));
-
     $user1 = $this->ogSmCreateGroupUser(array(), array($this->siteNode));
 
-    // Verify that user 1 can view, delete and edit his own comment.
+    $this->drupalLogin($user1);
+    $this->drupalGet('node/' . $node->nid);
+
+    // Verify that Site user can create a comment within the site.
     $access = og_sm_comment_create_access($node, $user1);
-    $this->assertTrue($access, 'User 1 can create a comment');
+    $this->assertTrue($access, 'Site User can create a comment.');
 
     // Verify that an anonymous user can't create a comment when the global
     // permission is turned off.

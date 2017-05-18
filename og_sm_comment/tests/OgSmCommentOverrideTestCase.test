@@ -152,6 +152,9 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
    * Test Access.
    */
   public function testAccess() {
+    $configNoSiteHidden = new OgSmCommentOverrideConfig(0);
+    $configNoSiteClosed = new OgSmCommentOverrideConfig(1);
+    $configNoSiteOpen = new OgSmCommentOverrideConfig(2);
     $configHidden = new OgSmCommentOverrideConfig(2, 0);
     $configClosed = new OgSmCommentOverrideConfig(2, 1);
     $configOpen = new OgSmCommentOverrideConfig(2, 2);
@@ -168,6 +171,12 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     $overrideOpenAnonymous = new OgSmCommentOverrideNode(1, 3);
 
     // Hidden.
+    $access = new OgSmCommentAccess($configNoSiteHidden, $overrideNone);
+    $this->assertTrue($access->commentsAreHidden(), 'Hidden when comments are hidden globally, no Site comment settings are set and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are hidden globally, no Site comment settings are set and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are hidden globally, no Site comment settings are set and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open when comments are hidden globally, no Site comment settings are set and no override is set.');
+
     $access = new OgSmCommentAccess($configHidden, $overrideNone);
     $this->assertTrue($access->commentsAreHidden(), 'Hidden when comments are hidden and no override is set.');
     $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are hidden and no override is set.');
@@ -187,6 +196,12 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are open but override is set to hidden.');
 
     // Closed.
+    $access = new OgSmCommentAccess($configNoSiteClosed, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are closed globally, no Site comment settings are set and no override is set.');
+    $this->assertTrue($access->commentsAreClosed(), 'Closed when comments are closed globally, no Site comment settings are set and no override is set.');
+    $this->assertFalse($access->commentsAreOpen(), 'Not Open when comments are closed globally, no Site comment settings are set and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open when comments are closed globally, no Site comment settings are set and no override is set.');
+
     $access = new OgSmCommentAccess($configClosed, $overrideNone);
     $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are closed and no override is set.');
     $this->assertTrue($access->commentsAreClosed(), 'Closed when comments are closed and no override is set.');
@@ -206,6 +221,12 @@ class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
     $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open for anonymous when comments are open but override is set to closed.');
 
     // Open.
+    $access = new OgSmCommentAccess($configNoSiteOpen, $overrideNone);
+    $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are open globally, no Site comment settings are set and no override is set.');
+    $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are open globally, no Site comment settings are set and no override is set.');
+    $this->assertTrue($access->commentsAreOpen(), 'Open when comments are open globally, no Site comment settings are set and no override is set.');
+    $this->assertFalse($access->commentsAreOpenAnonymous(), 'Not Open when comments are open globally, no Site comment settings are set and no override is set.');
+
     $access = new OgSmCommentAccess($configOpen, $overrideNone);
     $this->assertFalse($access->commentsAreHidden(), 'Not Hidden when comments are open and no override is set.');
     $this->assertFalse($access->commentsAreClosed(), 'Not Closed when comments are open and no override is set.');

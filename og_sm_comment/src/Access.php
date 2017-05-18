@@ -126,7 +126,11 @@ class OgSmCommentAccess
       return $this->config->getDefaultComment();
     }
 
-    return $this->config->getSiteComment();
+    if ($this->config->hasSiteComment()) {
+      return $this->config->getSiteComment();
+    }
+
+    return $this->config->getGlobalComment();
   }
 
 }
