@@ -8,8 +8,7 @@
 /**
  * Class describing the logic of the Node override state.
  */
-class OgSmCommentOverrideNode
-{
+class OgSmCommentOverrideNode {
   /**
    * The Node ID the override settings are about.
    *

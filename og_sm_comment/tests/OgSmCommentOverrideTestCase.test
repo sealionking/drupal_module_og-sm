@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Tests for the og_sm_comment module.
@@ -8,6 +9,7 @@
  * Tests the OG SM Comment Override functionality.
  */
 class OgSmCommentOverrideTestCase extends DrupalUnitTestCase {
+
   /**
    * {@inheritdoc}
    */

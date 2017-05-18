@@ -90,7 +90,7 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
       '#description' => t('The default comment setting for each newly created content item when no explicit override is set. If no default is set, the Site comment setting will be used.'),
       '#required' => FALSE,
       '#empty_value' => NULL,
-      '#empty_option' => t(' - Same as site -'),
+      '#empty_option' => sprintf(' - %s - ', t('Same as site')),
       '#states' => array(
         'invisible' => array(
           sprintf(':input[name="%s"]', $key_comment_override) => array(
@@ -119,7 +119,7 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
  * @param array $form_state
  *   The form state.
  */
-function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter_validate($form, &$form_state) {
+function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter_validate(array $form, array &$form_state) {
   $keys = $form['#comment_keys'];
   $values = $form_state['values'];
 

@@ -5,8 +5,10 @@
  * Access object to determen if user has access to post a comment.
  */
 
-class OgSmCommentAccess
-{
+/**
+ * The Access class combines Site config and Node override to get the access.
+ */
+class OgSmCommentAccess {
   /**
    * The config for the node type for the site.
    *

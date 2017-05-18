@@ -8,8 +8,7 @@
 /**
  * Object describing the Comment Override Config.
  */
-class OgSmCommentOverrideConfig
-{
+class OgSmCommentOverrideConfig {
 
   /**
    * The global comment level.

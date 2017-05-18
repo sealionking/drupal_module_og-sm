@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Tests for the og_sm_comment module.
@@ -11,7 +12,7 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
   /**
    * Site node to test with.
    *
-   * @param object
+   * @var object
    */
   protected $siteNode;
 

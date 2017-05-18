@@ -1,3 +1,7 @@
+/**
+ * @file
+ * Behaviour to set the proper state to vrtical tabs.
+ */
 
 (function ($) {
 
