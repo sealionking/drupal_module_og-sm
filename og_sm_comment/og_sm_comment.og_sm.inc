@@ -45,23 +45,4 @@ function og_sm_comment_og_sm_content_type_info_alter(&$type_info, $site) {
       sprintf('og_sm_content_%s_comment_override_default', $type_info->type)
     )
   );
-
-  $config = $type_info->comment_config;
-
-  // TODO: remove!
-  $type_info->comment = $config->getGlobalComment();
-  if ($config->hasSiteComment()) {
-    $type_info->comment = $config->getSiteComment();
-  }
-  $type_info->comment_override = 0;
-  if ($config->isOverridable()) {
-    $type_info->comment_override = 1;
-  }
-  $type_info->comment_override_default = 0;
-  $type_info->comment_override_default_value = $type_info->comment;
-  if ($config->hasDefaultComment()) {
-    $type_info->comment_override_default = (int) $config->hasDefaultComment();
-    $type_info->comment_override_default_value = $config->getDefaultComment();
-  }
-
 }
