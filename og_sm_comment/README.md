@@ -7,22 +7,35 @@ This module provides comment management functionality within a Site context.
 ### Extra permissions for comment actions
 The Site Comment module adds extra permission to manage comments. The following
 permissions are added :
-* Delete own comments : Allows the user to delete his/her own comments.
-* Delete all comments : Allows the user to delete all comments.
-* Edit all comments : Allows the user to edit all comments.
+* **Delete own comments** : Allows the user to delete his/her own comments.
+* **Delete all comments** : Allows the user to delete all comments.
+* **Edit all comments** : Allows the user to edit all comments.
+* **Override node comment settings** : Allows the user to override the comment 
+  settings per node.
 
 These permissions can be used on global level and site level.
+
 
 ### Manage comment settings per site content type
 This module allows overriding comment behaviour per content type within a site
 context.
 Possible statuses are:
-* Open: Any content of this type is open to new comments.
-* Open for anonymous users: Allow anonymous users to comment on this content
+
+* **Closed**: No comments are allowed, but any past comments remain visible.
+* **Hidden**: No comments are allowed, and past comments are hidden.
+* **Open**: Any content of this type is open to new comments.
+* **Open for anonymous users**: Allow anonymous users to comment on this content
   type. This only works when the anonymous role has the 'post comments'
   permission.
-* Closed: No comments are allowed, but any past comments remain visible.
-* Hidden: No comments are allowed, and past comments are hidden.
+
+
+### Override site comment settings per content item
+By default comment settings are set on the site level (all content items get 
+the same comment setting).
+
+This module foresees a setting on Site content item level to allow users to 
+override the comment settings per content item.
+
 
 ### Context detection: Site Comment
 This module provides context detection for site comments.
@@ -31,10 +44,12 @@ The site comment provider checks if a path starts with `comment/CID`. If so it
 will load the comment's node and checks if it is a Site or a Site Content. If so
 it will return the related Site nid as context.
 
+
 ### Pathauto integration for comments
 This module provides integration to create path aliases for comment pages.
 
 To make use of this feature the pathauto module needs to be enabled.
+
 
 ### TIP: Aliases for comment/CID/edit and comment/CID/delete
 This module does not provide path aliases for `comment/CID/edit` and
@@ -47,6 +62,8 @@ functionality.
 ### Manage comments within a Site
 A new Site admin page is provided by this module:
 * `[site-path]/admin/comments` : Overview of all comments within the Site.
+
+
 
 ## Requirements
 * Organic Groups Site Manager
@@ -69,7 +86,7 @@ A new Site admin page is provided by this module:
 Find the site node that is linked to the node on which the comment was made.
 
 ```php
-$has_access = og_sm_comment_get_site($comment);
+$site = og_sm_comment_get_site($comment);
 ```
 
 

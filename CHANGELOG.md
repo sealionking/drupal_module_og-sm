@@ -2,6 +2,12 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
+## [Unreleased]
+### Added
+- PPL-1081 : Added the option to allow users to override the comment settings on
+  per site content item.
+
+
 
 
 ## [7.x-1.14]
@@ -115,16 +121,10 @@ All Notable changes to **Organic Groups Site Manager** module suite.
 
 ## [7.x-1.6]
 ### Added
+- PPL-652 : Added hook_og_sm_ajax_paths_alter.
 - PPL-679 : Added og_sm_dashboard module.
 - DMOGSM-66 : Automatically clear Site variable cache when an
   og_sm_variable_settings_form is submitted.
-
-
-
-
-## [Unreleased]
-### Added
-- PPL-652 : Added hook_og_sm_ajax_paths_alter.
 
 
 
@@ -261,7 +261,7 @@ First stable release of the og_sm module.
 
 
 
-
+[Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.x-dev%0D7.x-1.x
 [7.x-1.14]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.14%0D7.x-1.13#diff
 [7.x-1.13]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.13%0D7.x-1.12#diff
 [7.x-1.12]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.12%0D7.x-1.11#diff
