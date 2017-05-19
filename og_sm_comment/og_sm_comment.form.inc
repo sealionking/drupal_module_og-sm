@@ -74,7 +74,7 @@ function _og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter(a
   $form['content_comments']['override'][$key_comment_override] = array(
     '#type' => 'checkbox',
     '#title' => t('Comment settings can be set per content item'),
-    '#description' => t('If and who can post comments is by default set on the site level. Enabeling this option will allow users to override this per content item.'),
+    '#description' => t('If and who can post comments is by default set on the site level. Enabling this option will allow users to override this per content item.'),
     '#default_value' => (int) $config->isOverridable(),
   );
 
@@ -137,7 +137,7 @@ function og_sm_comment_form_og_sm_content_admin_overview_type_edit_form_alter_va
     $values[$keys['comment_override_default']]
   );
 
-  // Change values if comments are not allowed or are not overidable.
+  // Change values if comments are not allowed or are not overridable.
   if (!$config_new->isSiteEnabled() || !$config_new->isOverridable()) {
     $form_state['values'][$keys['comment_override_default']] = NULL;
   }
@@ -208,7 +208,7 @@ function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level =
   $override = og_sm_comment_get_override($node);
 
   // Define default value for the overridden field.
-  // Define default label when no iverride is set.
+  // Define default label when no override is set.
   $override_default_value = $config->getGlobalComment();
   $override_default_label = og_sm_comment_config_label($config->getGlobalComment());
   if ($config->hasSiteComment()) {
@@ -243,12 +243,12 @@ function _og_sm_comment_form_node_form_alter_elements(array &$form, $max_level =
     '#group' => 'additional_settings',
     '#attributes' => array(
       'class' => array(
-        0 => 'og-sm-comment-node-settings-form',
+        'og-sm-comment-node-settings-form',
       ),
     ),
     '#attached' => array(
       'js' => array(
-        0 => drupal_get_path('module', 'og_sm_comment') . '/js/og-sm-comment-node-form.js',
+        drupal_get_path('module', 'og_sm_comment') . '/js/og-sm-comment-node-form.js',
       ),
     ),
     '#weight' => 30,
@@ -310,7 +310,7 @@ function _og_sm_comment_settings_element($node_type, $default, $max_level = COMM
       unset($help[$key]);
     }
   }
-  $description .= '<ul><li>' . implode('</li><li>', $help) . '</li></ul>';
+  $description .= theme('item_list', array('items' => $help));
 
   $options = og_sm_comment_config_labels();
   foreach (array_keys($options) as $key) {

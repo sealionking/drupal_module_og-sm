@@ -242,8 +242,6 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
     $site_id = $this->siteNode->nid;
     $key_global = 'comment_' . $this->nodeTypeSiteContent->type;
     $key_site = 'og_sm_content_' . $this->nodeTypeSiteContent->type . '_comment';
-    $key_site_override = $key_site . '_override';
-    $key_site_override_default = $key_site . '_override_default';
 
     // Create a Site content node.
     $node = $this->ogSmCreateGroupContent(
@@ -326,8 +324,6 @@ class OgSmCommentContentTypeTestCase extends OgSmWebTestCase {
     // Create Site node.
     $node = $this->ogSmCreateGroupContent($this->nodeTypeSiteContent->type, [$this->siteNode]);
     $node_uri = 'node/' . $node->nid . '/edit';
-    $permissionAdminNodes = ['administer nodes'];
-    $permissionAdminNodesOverride = $permissionAdminNodes + [OG_SM_COMMENT_OG_PERM_OVERRIDE_NODE_COMMENT_SETTINGS];
 
     // Administrators can always override the comment settings.
     $this->drupalGet($node_uri);

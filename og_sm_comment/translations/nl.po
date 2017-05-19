@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2016-05-02 15:50+0100\n"
-"PO-Revision-Date: 2017-05-18 11:51+0200\n"
+"PO-Revision-Date: 2017-05-19 08:05+0200\n"
 "Last-Translator: Peter Decuyper <peter.decuyper@digipolis.gent>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgid "Comment settings can be set per content item"
 msgstr "Reactie instellingen kunnen aangepast worden per inhoud item"
 
 #: og_sm_comment.form.inc:77
-msgid "If and who can post comments is by default set on the site level. Enabeling this option will allow users to override this per content item."
+msgid "If and who can post comments is by default set on the site level. Enabling this option will allow users to override this per content item."
 msgstr "Als en wie reacties kan plaatsen wordt standaard ingesteld op site nivo. Door deze optie te activeren kunnen gebruikers dit aanpassen per inhoud item."
 
 #: og_sm_comment.form.inc:89
