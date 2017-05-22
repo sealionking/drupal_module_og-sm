@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Site Manager (og_sm) related hooks.
@@ -28,16 +29,20 @@ function og_sm_comment_og_sm_admin_menu() {
  * Implements hook_og_sm_content_type_info_alter().
  */
 function og_sm_comment_og_sm_content_type_info_alter(&$type_info, $site) {
-  // Global value as fallback.
-  $type_info->comment = variable_get('comment_' . $type_info->type, COMMENT_NODE_OPEN);
-
-  // The comment setting can only be overridden when the node type's comments
-  // are open.
-  if ((int) $type_info->comment === COMMENT_NODE_OPEN) {
-    $type_info->comment = og_sm_variable_get(
+  $type_info->comment_config = new OgSmCommentOverrideConfig(
+    variable_get('comment_' . $type_info->type, COMMENT_NODE_OPEN),
+    og_sm_variable_get(
       $site->nid,
-      'og_sm_content_' . $type_info->type . '_comment',
-      $type_info->comment
-    );
-  }
+      sprintf('og_sm_content_%s_comment', $type_info->type)
+    ),
+    og_sm_variable_get(
+      $site->nid,
+      sprintf('og_sm_content_%s_comment_override', $type_info->type),
+      FALSE
+    ),
+    og_sm_variable_get(
+      $site->nid,
+      sprintf('og_sm_content_%s_comment_override_default', $type_info->type)
+    )
+  );
 }

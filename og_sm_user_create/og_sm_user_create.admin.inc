@@ -18,8 +18,9 @@
  * @return array
  *   The form definition.
  */
-function og_sm_user_create_register_form($form, &$form_state, $site) {
+function og_sm_user_create_register_form(array $form, array &$form_state, $site) {
   global $user;
+  $form['#site'] = $site;
 
   // Since user_register_form does several checks on the 'administer users'
   // permission we are overriding the static user_access cache here and setting
@@ -47,9 +48,52 @@ function og_sm_user_create_register_form($form, &$form_state, $site) {
     );
   }
 
+  $form['#validate'][] = 'og_sm_user_create_user_validate_membership';
   $form['#submit'][] = 'og_sm_user_create_user_add_membership';
 
   return $form;
+}
+
+/**
+ * Validate handler for the user create form within a site context.
+ *
+ * @param array $form
+ *   The form array.
+ * @param array $form_state
+ *   The current form state.
+ */
+function og_sm_user_create_user_validate_membership(array $form, array &$form_state) {
+  $mail = $form_state['values']['mail'];
+  $site = $form['#site'];
+
+  if (empty($mail)) {
+    return;
+  }
+
+  $account = user_load_by_mail($mail);
+  if (!$account) {
+    return;
+  }
+
+  $membership = og_get_membership('node', $site->nid, 'user', $account->uid);
+
+  if ($membership) {
+    return;
+  }
+
+  $query = array(
+    'name' => $account->name,
+    'roles' => $form_state['values']['og_roles'],
+  );
+
+  $membership_link = url('group/node/' . $site->nid . '/admin/people/add-user', array('query' => $query));
+  drupal_set_message(
+    t(
+      'This user already exists. <a href="!link">Click here</a> to add the user to your group.',
+      array('!link' => $membership_link)
+    ),
+    'warning'
+  );
 }
 
 /**

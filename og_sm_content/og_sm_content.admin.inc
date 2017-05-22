@@ -65,11 +65,11 @@ function og_sm_content_admin_overview_types($site) {
  *   The form definition.
  */
 function og_sm_content_admin_overview_type_edit_form($form, &$form_state, $site, $content_type) {
-  $info = og_sm_content_get_type_info_by_site($site, $content_type);
-
   // Add info useful for form alter functions.
   $form['#site'] = $site;
   $form['#content_type'] = $content_type;
+  $info = og_sm_content_get_type_info_by_site($site, $content_type);
+  $form['#content_type_info'] = $info;
 
   // Group the Content type name fields.
   $form['content_name'] = array(

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Administration pages for the og_sm_comment module.

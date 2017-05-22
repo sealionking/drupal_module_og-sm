@@ -75,3 +75,42 @@ function og_sm_user_create_access($site, $account = NULL) {
 
   return FALSE;
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function og_sm_user_create_form_og_ui_add_users_alter(array &$form, array &$form_state) {
+  $parameters = drupal_get_query_parameters();
+
+  // Prefill the form with the url parameters.
+  if (!empty($parameters['name'])) {
+    $form['og_user']['name']['#default_value'] = check_plain($parameters['name']);
+  }
+
+  if (!empty($parameters['name'])) {
+    $form['og_user']['roles']['#default_value'] = $parameters['roles'];
+  }
+
+  $form['sent_mail'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Resend one-time-loggin mail'),
+  );
+
+  $form['#submit'][] = 'og_sm_user_create_form_og_ui_add_users_submit';
+}
+
+/**
+ * Submit handler for og_ui_add_users form.
+ *
+ * @param array $form
+ *   The form structure.
+ * @param array $form_state
+ *   The form state.
+ */
+function og_sm_user_create_form_og_ui_add_users_submit(array $form, array $form_state) {
+  if ($form_state['values']['sent_mail']) {
+    $account = user_load_by_name($form_state['values']['name']);
+    $params['account'] = $account;
+    drupal_mail('user', 'register_no_approval_required', $account->mail, language_default(), $params);
+  }
+}
