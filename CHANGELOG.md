@@ -2,7 +2,7 @@
 All Notable changes to **Organic Groups Site Manager** module suite.
 
 
-## [Unreleased]
+## [7.x-1.15]
 ### Added
 - PPL-1081 : Added the option to allow users to override the comment settings on
   per site content item.
@@ -262,6 +262,7 @@ First stable release of the og_sm module.
 
 
 [Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.x-dev%0D7.x-1.x
+[7.x-1.15]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.15%0D7.x-1.14#diff
 [7.x-1.14]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.14%0D7.x-1.13#diff
 [7.x-1.13]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.13%0D7.x-1.12#diff
 [7.x-1.12]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/7.x-1.12%0D7.x-1.11#diff
