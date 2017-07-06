@@ -112,149 +112,184 @@ Enable:
 
 ## API
 
+> *NOTE* : In the following examples the og_sm services are accessed directly for
+sake of simplicity, however it is recommended to access these using [dependency 
+injection][link-dependency-injection] whenever possible.
+
 ### Load a Site node
 Get a Site node by its Node ID (nid). Will only return the node object if the
 node exists and it is a Site node type.
 ```php
-$site = og_sm_site_load($site_nid);
+$site = \Drupal::service('og_sm.site_manager')->load($site_nid);
 ```
 
 ### Currently active Site
 A lot of code depends if we are currently in an active Site context.
 
-A helper function is available to get the currently active Site node.
-This is a wrapper around the og_context() function + loading the node.
+A helper method is available to get the currently active Site node.
+This is a wrapper around the `OgContext::getGroup()` method + loading the node.
 
 Get the currently active Site node:
 ```php
-$site = og_sm_current_site();
+$site = \Drupal::service('og_sm.site_manager')->currentSite();
 ```
 
 ### Clear all cache for Site
 Clear all cache for one site.
 
-This function does not clear the cache itself, it calls all the implemented
-hook_og_sm_site_cache_clear_all() hooks so modules can clear their specific
-cached Site parts.
+This method does not clear the cache itself, it triggers the
+`SiteEvents::CACHE_CLEAR` event so modules can clear their
+specific cached Site parts
 
 ```php
-og_sm_site_cache_clear_all($site);
+$site = \Drupal::service('og_sm.site_manager')->clearSiteCache($site);
 ```
 
 ### Site types
 Get a list of node types that are Site node types:
 ```php
-$site_types = og_sm_get_site_types();
+$site_types = \Drupal::service('og_sm.site_type_manager')->getSiteTypes();
 ```
 
 ### Check if node is a Site
-The module provides helper functions to detect is a node or node type is a Site
+The module provides helper methods to detect is a node or node type is a Site
 node type:
 
 Check if the given node is a Site type:
 ```php
-$is_site = og_sm_is_site($node);
+$is_site = \Drupal::service('og_sm.site_manager')->isSite($node);
 ```
 
 ### Check if a node type is a Site type
 Check if the given node type is a Site type:
 ```php
-$is_site_type = og_sm_is_site_type($node_type);
-```
-
-### Set the breacrumb for a site
-This is a wrapper around the og_set_breadcrumb.
-
-```php
-og_sm_set_breadcrumb($site, 'path/to/set/the/breadcrumb');
+$is_site_type = \Drupal::service('og_sm.site_type_manager')->isSiteType($type);
 ```
 
 ### Get the path to the Site homepage
-Get the path to the homepage of a Site. This will return by default the path to
+Get the url to the homepage of a Site. This will return by default the path to
 the detail page of the Site. Modules can implement
-hook_og_dm_site_homepage_alter() to alter the path.
+`hook_og_sm_site_homepage_alter()` to alter the path.
 
-The function will return the path based on the given Site or, if no Site is
+The function will return the url instance based on the given Site or, if no Site is
 provided, the current Site (from OG context) will be used.
 
 ```php
-$homepage_path = og_sm_site_homepage($site);
-if ($homepage_path) {
-  $homepage_url = url($homepage_path);
-}
+$homepage_url = \Drupal::service('og_sm.site_manager')->getSiteHomePage($type);
 ```
 
 ### Site content types
-Helper function to get a list of site type objects that can be used to create
+Helper method to get a list of site type objects that can be used to create
 content within a site.
 
 ```php
-$site_content_types = og_sm_content_get_types();
+$site_content_types = \Drupal::service('og_sm.site_type_manager')->getContentTypes();
 ```
 
 ### Check if a content type can be used within a Site
-Helper function to check if a given content type (by its name) can be used to
-create content within a Site.
+Helper method to check if a given content type can be used to create content 
+within a Site.
 
 ```php
-$is_site_content_type = og_sm_content_is_site_content_type($type_name);
+$is_site_content_type = \Drupal::service('og_sm.site_type_manager')->isSiteContentType($type);
 ```
 
 ### Check if content belongs to a Site
-Helper functions to get the Site (if any) of a given content item (node) belongs
+Helper methods to get the Site (if any) of a given content item (node) belongs
 to.
 
 Get all the Site nodes a node belongs to.
 ```php
-$sites = og_sm_content_get_sites($node);
+$sites = \Drupal::service('og_sm.site_manager')->getSitesFromContent($node);
 ```
 
 Get the Site node object from a given node object.
 If a node belongs to multiple Sites only the first Site will be returned.
 
 ```php
-$site = og_sm_content_get_site($node);
+$site = \Drupal::service('og_sm.site_manager')->getSiteFromContent($node);
 ```
 
 Check if the given node belongs to a Site:
 ```php
-$is_site_content = og_sm_content_is_site_content($node);
+$is_site_content = \Drupal::service('og_sm.site_manager')->isSiteContent($node);
 ```
 
 Check if the given node is a member of the given Site:
 ```php
-$is_member = og_sm_content_is_site_member($node, $site);
+$is_member = \Drupal::service('og_sm.site_manager')->contentIsSiteMember($node, $site);
 ```
 
 ### Check if user is member of a Site
-Helper functions about the Sites a user is member of.
+Helper methods about the Sites a user is member of.
 
 Get the Site nodes a given user belongs to:
 ```php
-$sites = og_sm_user_get_sites($account);
+$sites = \Drupal::service('og_sm.site_manager')->getUserSites($account);
 ```
 
 Check if a user is member of the given site:
 ```php
-$is_member = og_sm_user_is_member_of_site($account, $site);
+$is_member =  \Drupal::service('og_sm.site_manager')->userIsMemberOfSite($account, $site);
 ```
 
-### Check access to Site permission
-The OG module provides functionality to grant Site specific permissions.
+## Events
+The og_sm module triggers multiple events to make it easier to alter
+functionality when a Site is involved.
 
-The Site Manager module has wrappers around this functionality to check
-permission acces for a site.
 
-These functions can be used in Menu items ($account is optional):
+### Clear all Site cache
+When `SiteManager::clearSiteCache()` is called, it will not clear any cache
+itself. It will trigger the  `SiteEvents::CACHE_CLEAR` event
+so modules can clear the Site parts they have cached.
 
-* `og_sm_site_permission_access($site, $permission, $account)` : Check by Site
-  node and permission name.
-* `og_sm_site_nid_permission_access($site_nid, $permission, $account)` : Check
-  by Site node id and permission name.
+* `SiteEvents::CACHE_CLEAR` : Cache clear method is called for the given Site.
+
+
+### Site node type action events
+The module triggers events when a node type is being added or removed as being a
+Site node type.
+
+* `SiteTypeEvents::ADD` : Site node type is being added as a Site type.
+* `SiteTypeEvents::REMOVE` : Site node type is no longer a Site type.
+
+
+### Site action events
+The module watches actions taken place on Site nodes and triggers its own events
+when an action happens:
+
+* `SiteEvents::PRESAVE` : Site node being prepared to be inserted or
+  updated in the database.
+* `SiteEvents::INSERT`  : Site node being inserted.
+* `SiteEvents::UPDATE`  : Site node being updated.
+* `SiteEvents::SAVE`  : Act on a Site node being saved. Will be
+  triggered after a node is inserted or updated. It will always be called after
+  all the `SiteEvents::INSERT`/`SiteEvents::UPDATE` events listeners are processed.
+* `SiteEvents::DELETE`  : Site node being deleted.
+
+There are also special post-action events available: the default action hooks
+(insert, update, save and delete) are called during a DB transaction. This means
+that it is not possible to perform actions based data in the database as all SQL
+operations are not committed yet.
+
+To allow modules to interact with a Site node actions after the Site node & all
+queries by implemented events are stored in the database, following extra action
+events are triggered:
+
+* `SiteEvents::POST_INSERT` : Site node is inserted in the DB and all
+  `SiteEvents::INSERT` event listeners are processed.
+* `SiteEvents::POST_UPDATE` : Site node is updated in the DB and all
+  `SiteEvents::UPDATE` event listeners are processed.
+* `SiteEvents::POST_SAVE` : Site is inserted or updated in the DB and all
+  `SiteEvents::INSERT`, `SiteEvents::UPDATE`, and `SiteEvents::SAVE` event 
+  listeners are processed.
+* `SiteEvents::POST_DELETE` : Site is deleted from DB and all
+  `SiteEvents::DELETE` event listeners are processed.
+
 
 
 ## Hooks
-The og_sm module provides multiple hooks to make it easier to alter
+The og_sm module also provides multiple hooks to make it easier to alter
 functionality when a Site is involved.
 
 > The hooks can be put in the `yourmodule.module` OR in the
@@ -263,64 +298,36 @@ functionality when a Site is involved.
 > .module file cleaner and makes the platform load less code by default.
 
 
-### Clear all Site cache
-When `og_sm_site_cache_clear_all()` is called, it will not clear any cache
-itself. It will call all implemented `hook_og_sm_site_cache_clear_all()` hooks
-so modules can clear the Site parts they have cached.
+### The site node is viewed.
+Will only be triggered when the node_view hook is triggered for a node type that
+is a Site type.
+```php
+/**
+ * Implements hook_og_sm_site_view().
+ *
+ * @param &$build
+ *   A renderable array representing the entity content. The module may add
+ *   elements to $build prior to rendering. The structure of $build is a
+ *   renderable array as expected by drupal_render().
+ * @param \Drupal\node\NodeInterface $site
+ *   The site node.
+ * @param \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display
+ *   The entity view display holding the display options configured for the
+ *   entity components.
+ * @param $view_mode
+ *   The view mode the entity is rendered in.
+ *
+ * @see hook_node_view()
+ */
+function hook_og_sm_site_view(array &$build, \Drupal\node\NodeInterface $site, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
 
-* `hook_og_sm_site_cache_clear_all($site)` : Cache clear call is called for the
-  given Site.
-
-
-### Site node type action hooks
-The module triggers hooks when a node type is being added or removed as being a
-Site node type.
-
-* `hook_og_sm_site_type_add($type)` : Site node type is being added as a Site
-  type.
-* `hook_og_sm_site_type_remove($type)` : Site node type is no longer a Site
-  type.
-
-
-### Site action hooks
-The module watches actions taken place on Site nodes and triggers its own hooks
-when an action happens:
-
-* `hook_og_sm_site_prepare($site)` : Site node being prepared to being shown on a
-  node add/edit form.
-* `hook_og_sm_site_presave($site)` : Site node being prepared to be inserted or
-  updated in the database.
-* `hook_og_sm_site_view($site, $view_mode, $langcode)` : Site node being
-  prepared to being shown on the screen.
-* `hook_og_sm_site_insert($site)` : Site node being inserted.
-* `hook_og_sm_site_update($site)` : Site node being updated.
-* `hook_og_sm_site_save($site)` : Act on a Site node being saved. Will be
-  triggered after a node is inserted or updated. It will always be called after
-  all the hook_site_insert/update hooks are processed.
-* `hook_og_sm_site_delete($site)` : Site node being deleted.
-
-There are also special post-action hooks available: the default action hooks
-(insert, update, save and delete) are called during a DB transation. This means
-that it is not possible to perform actions based data in the database as all SQL
-operations are not committed yet.
-
-To allow modules to interact with a Site node actions after the Site node & all
-queries by implemented hooks are stored in the database, following extra action
-hooks are provided:
-
-* `hook_og_sm_site_post_insert($site)` : Site node is inserted in the DB and all
-  *_insert hooks are processed.
-* `hook_og_sm_site_post_update($site)` : Site node is updated in the DB and all
-  *_update hooks are processed.
-* `hook_og_sm_site_post_save($site)` : Site is inserted or updated in the DB and all
-  *_insert, *_update, and *_save hooks are processed.
-* `hook_og_sm_site_post_delete($site)` : Site is deleted from DB and all
-  *_delete hooks are processed.
+}
+```
 
 
 ### Alter the Site homepage path.
-The og_sm_site_homepage() function creates and returns the path (as string) to
-the frontpage (homepage) of a Site. That homepage is by default the Site node
+The `SiteManager::getSiteHomePage()` method creates and returns the url instance
+to the frontpage (homepage) of a Site. That homepage is by default the Site node
 detail page (node/[site-nid]).
 
 Implementations can require that the homepage links to a different page (eg.
@@ -332,37 +339,18 @@ This alter function allows modules to alter that path.
 /**
  * Implements hook_og_sm_site_homepage_alter().
  *
- * @param string $path
- *   The current path to the Site homepage.
- * @param object $site
- *    The Site object to alter the homepage path for.
+ * @param \Drupal\node\NodeInterface $site
+ *   The entity object.
+ * @param string $route_name
+ *   The route name.
+ * @param array $route_parameters
+ *   The route parameters.
  */
-function mymodule_og_sm_site_homepage_alter(&$path, $site) {
-  $path = 'group/node/' . $site->nid . '/dashboard';
+function hook_og_sm_site_homepage_alter(\Drupal\node\NodeInterface $site, &$route_name, array &$route_parameters) {
+  $route_name = 'og_sm.site.dashboard';
 }
 ```
-
-### Alter the platform administration page path.
-The og_sm_platform_administration_page() function creates and returns the path
-(as string) to the platform adminstration page.
-
-Implementations can require that the page links to a different page (eg.
-admin/dashboard).
-
-This alter function allows modules to alter that path.
-
-```php
-/**
- * Implements hook_og_sm_platform_administration_page_alter().
- *
- * @param string $path
- *   The current path to the Site homepage.
- */
-function mymodule_og_sm_platform_administration_page_alter(&$path) {
-  $path = 'admin/dashboard';
-}
-```
-
 
 
 [link-og]: https://www.drupal.org/project/og
+[link-dependency-injection]: https://www.drupal.org/docs/8/api/services-and-dependency-injection/services-and-dependency-injection-in-drupal-8

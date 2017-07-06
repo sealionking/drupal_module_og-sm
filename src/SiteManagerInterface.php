@@ -1,0 +1,187 @@
+<?php
+
+namespace Drupal\og_sm;
+
+use Drupal\Core\Session\AccountInterface;
+use Drupal\node\NodeInterface;
+
+/**
+ * Interface for site manager classes.
+ */
+interface SiteManagerInterface {
+
+  /**
+   * Check if the given node is a Site type.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node object.
+   *
+   * @return bool
+   *   Is a Site node.
+   */
+  public function isSite(NodeInterface $node);
+
+  /**
+   * Get the currently active Site.
+   *
+   * @return \Drupal\node\NodeInterface
+   *   The active Site node (if any).
+   */
+  public function currentSite();
+
+  /**
+   * Load a Site node by its Node ID.
+   *
+   * This will only return a node object if:
+   * - The node exists.
+   * - The node is a Site node.
+   *
+   * @param int $id
+   *   The Site Node ID.
+   *
+   * @return \Drupal\node\NodeInterface|false
+   *   The Site Node (if any).
+   */
+  public function load($id);
+
+  /**
+   * Get the homepage url for a Site.
+   *
+   * @param \Drupal\node\NodeInterface $site
+   *   The optional Site node. Will use the current Site from context if no Site
+   *   is provided.
+   *
+   * @return \Drupal\Core\Url
+   *   The Site homepage url object.
+   */
+  public function getSiteHomePage(NodeInterface $site);
+
+  /**
+   * Clear all cache for one site.
+   *
+   * This function does not clear the cache itself, it triggers the
+   * \Drupal\og_sm\SiteEvents::CACHE_CLEAR event so modules can clear their
+   * specific cached Site parts.
+   *
+   * @param \Drupal\node\NodeInterface $site
+   *   The Site to clear the cache for.
+   */
+  public function clearSiteCache(NodeInterface $site);
+
+  /**
+   * Helper function to dispatch a site event for site changes.
+   *
+   * This is used to let other modules know that an action was performed on a
+   * node that is a Site type. This reduces the code module maintainers need to
+   * write to detect if something changed on a Site node type.
+   *
+   * @param string $action
+   *   Action that is triggered.
+   * @param \Drupal\node\NodeInterface $node
+   *   The node for who to dispatch the event.
+   */
+  public function eventDispatch($action, NodeInterface $node);
+
+  /**
+   * Get an array of all Site Node ID's.
+   *
+   * WARNING: There is no node_access check on this function!
+   *
+   * @return int[]
+   *   Array of all Site Node ID's.
+   */
+  public function getAllSiteNodeIds();
+
+  /**
+   * Get all the sites nodes within the platform.
+   *
+   * @return \Drupal\node\NodeInterface[]
+   *   All Site nodes keyed by their nid.
+   */
+  public function getAllSites();
+
+  /**
+   * Get all the Sites a node belongs to.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The site content.
+   *
+   * @return \Drupal\node\NodeInterface[]
+   *   All Site nodes keyed by their nid.
+   */
+  public function getSitesFromContent(NodeInterface $node);
+
+  /**
+   * Get the Site object the Site content node belongs to.
+   *
+   * If a content node belongs to multiple Sites, only the first will be
+   * returned.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The site content.
+   *
+   * @return \Drupal\node\NodeInterface|false
+   *   The site node (if any).
+   */
+  public function getSiteFromContent(NodeInterface $node);
+
+  /**
+   * Check if a given node is content within a Site.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to check.
+   *
+   * @return bool
+   *   Is Site content.
+   */
+  public function isSiteContent(NodeInterface $node);
+
+  /**
+   * Check if a given node is member of the given Site.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to check.
+   * @param \Drupal\node\NodeInterface $site
+   *   The site node.
+   *
+   * @return bool
+   *   Is Site member.
+   */
+  public function contentIsSiteMember(NodeInterface $node, NodeInterface $site);
+
+  /**
+   * Get all the sites a User belongs to.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user object.
+   *
+   * @return \Drupal\node\NodeInterface[]
+   *   All Site nodes keyed by their nid.
+   */
+  public function getUserSites(AccountInterface $account);
+
+  /**
+   * Get all the sites a User can manage.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user object.
+   *
+   * @return \Drupal\node\NodeInterface[]
+   *   All Site nodes keyed by their nid.
+   */
+  public function getUserManageableSites(AccountInterface $account = NULL);
+
+  /**
+   * Check if a given account is member of the given Site.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user object.
+   * @param \Drupal\node\NodeInterface $site
+   *   The Site node object.
+   *
+   * @return bool
+   *   Is site member.
+   */
+  public function userIsMemberOfSite(AccountInterface $account, NodeInterface $site);
+
+}

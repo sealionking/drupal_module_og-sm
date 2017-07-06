@@ -7,6 +7,8 @@
 
 /**
  * Implements hook_og_sm_admin_menu().
+ *
+ * @todo: Needs to be converted to yml file once og_sm_admin_menu is ported.
  */
 function og_sm_og_sm_admin_menu() {
   $items = array();
