@@ -139,7 +139,7 @@ class SiteManager implements SiteManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSiteHomePage(NodeInterface $site) {
+  public function getSiteHomePage(NodeInterface $site = NULL) {
     // Fallback to current Site.
     if (!$site) {
       $site = $this->currentSite();

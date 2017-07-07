@@ -42,6 +42,11 @@ function _og_sm_form_node_type_form_alter(array &$form, FormStateInterface $form
     '#default_value' => OgSm::isSiteType($type),
     '#element_validate' => ['og_sm_node_type_form_field_validate'],
     '#description' => implode('<br />', $description),
+    '#states' => [
+      'disabled' => [
+        ':input[name="og_is_group"]' => ['checked' => FALSE],
+      ]
+    ],
   ];
   $form['#entity_builders'][] = 'og_sm_node_type_form_builder';
 }

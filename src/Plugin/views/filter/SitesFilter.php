@@ -4,6 +4,7 @@ namespace Drupal\og_sm\Plugin\views\filter;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\og_sm\SiteManagerInterface;
 use Drupal\views\Plugin\views\filter\InOperator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -35,11 +36,13 @@ class SitesFilter extends InOperator implements ContainerFactoryPluginInterface 
    *   The plugin implementation definition.
    * @param \Drupal\og_sm\SiteManagerInterface $siteManager
    *   The language manager.
+   * @param \Drupal\Core\StringTranslation\TranslationInterface $stringTranslation
+   *   The string translation manager.
    */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, SiteManagerInterface $siteManager) {
+  public function __construct(array $configuration, $pluginId, $pluginDefinition, SiteManagerInterface $siteManager, TranslationInterface $stringTranslation) {
     parent::__construct($configuration, $pluginId, $pluginDefinition);
-
     $this->siteManager = $siteManager;
+    $this->stringTranslation = $stringTranslation;
   }
 
   /**
@@ -50,7 +53,8 @@ class SitesFilter extends InOperator implements ContainerFactoryPluginInterface 
       $configuration,
       $pluginId,
       $pluginDefinition,
-      $container->get('og_sm.site_manager')
+      $container->get('og_sm.site_manager'),
+      $container->get('string_translation')
     );
   }
 
@@ -70,7 +74,7 @@ class SitesFilter extends InOperator implements ContainerFactoryPluginInterface 
     parent::buildOptionsForm($form, $formState);
     $form['manageable_sites'] = array(
       '#type' => 'checkbox',
-      '#title' => t("Limit options to the current user's manageable sites"),
+      '#title' => $this->t("Limit options to the current user's manageable sites"),
       '#default_value' => $this->options['manageable_sites'],
     );
   }

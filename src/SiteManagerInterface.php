@@ -54,7 +54,7 @@ interface SiteManagerInterface {
    * @return \Drupal\Core\Url
    *   The Site homepage url object.
    */
-  public function getSiteHomePage(NodeInterface $site);
+  public function getSiteHomePage(NodeInterface $site = NULL);
 
   /**
    * Clear all cache for one site.
