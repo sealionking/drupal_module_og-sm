@@ -39,7 +39,6 @@ class ManageableSitesByCurrentUser extends BooleanOperator implements ContainerF
    */
   public function __construct(array $configuration, $pluginId, $pluginDefinition, SiteManagerInterface $siteManager) {
     parent::__construct($configuration, $pluginId, $pluginDefinition);
-
     $this->siteManager = $siteManager;
   }
 

@@ -42,7 +42,7 @@ class SitesFilter extends InOperator implements ContainerFactoryPluginInterface 
   public function __construct(array $configuration, $pluginId, $pluginDefinition, SiteManagerInterface $siteManager, TranslationInterface $stringTranslation) {
     parent::__construct($configuration, $pluginId, $pluginDefinition);
     $this->siteManager = $siteManager;
-    $this->stringTranslation = $stringTranslation;
+    $this->setStringTranslation($stringTranslation);
   }
 
   /**
