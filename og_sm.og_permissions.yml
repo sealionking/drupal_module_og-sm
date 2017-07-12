@@ -1,0 +1,5 @@
+administer site:
+  title: 'Administer Site'
+  description: 'View the Site administration pages.'
+  'default roles':
+    - ADMINISTRATOR_ROLE
