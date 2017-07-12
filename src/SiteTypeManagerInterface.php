@@ -26,28 +26,22 @@ interface SiteTypeManagerInterface {
   public function isSiteType(NodeTypeInterface $type);
 
   /**
+   * Sets the site type setting on a node type.
+   *
+   * @param \Drupal\node\NodeTypeInterface $type
+   *   The content type to add.
+   * @param bool $isSiteType
+   *   Whether this is a site type or not.
+   */
+  public function setIsSiteType(NodeTypeInterface $type, $isSiteType);
+
+  /**
    * Get a list of Site node types.
    *
    * @return \Drupal\node\NodeTypeInterface[]
    *   List of node types that are Sites.
    */
   public function getSiteTypes();
-
-  /**
-   * Add a node type as a site type.
-   *
-   * @param \Drupal\node\NodeTypeInterface $type
-   *   The content type to add.
-   */
-  public function addSiteType(NodeTypeInterface $type);
-
-  /**
-   * Remove a node type a a site type.
-   *
-   * @param \Drupal\node\NodeTypeInterface $type
-   *   The content type to remove.
-   */
-  public function removeSiteType(NodeTypeInterface $type);
 
   /**
    * Get a list of content types that can be used to create Site content.

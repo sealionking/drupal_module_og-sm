@@ -84,22 +84,5 @@ function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
  * This will check if the node type is also a group type.
  */
 function og_sm_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
-  if ($form_state->getValue('og_sm_site_type')) {
-    OgSm::addSiteType($type);
-  }
-  else {
-    OgSm::removeSiteType($type);
-  }
-}
-
-/**
- * Page callback for group/node/%og_sm_site/admin/site-edit.
- *
- * Redirects to the node/%nid/edit URL.
- *
- * @param object $site
- *   The Site node to edit.
- */
-function og_sm_admin_site_edit($site) {
-  drupal_goto('node/' . $site->nid . '/edit');
+  OgSm::setSiteType($type, $form_state->getValue('og_sm_site_type'));
 }

@@ -16,7 +16,7 @@ final class SiteTypeEvents {
    *
    * @Event
    *
-   * @see \Drupal\og_sm\SiteTypeManagerInterface::addSiteType()
+   * @see _og_sm_node_type_save()
    */
   const ADD = 'og_sm.site_type.add';
 
@@ -29,7 +29,8 @@ final class SiteTypeEvents {
    *
    * @Event
    *
-   * @see \Drupal\og_sm\SiteTypeManagerInterface::removeSiteType()
+   * @see _og_sm_node_type_save()
+   * @see og_sm_node_type_delete()
    */
   const REMOVE = 'og_sm.site_type.remove';
 

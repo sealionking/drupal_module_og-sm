@@ -1,4 +1,4 @@
-node.type.*.third_party.scheduler:
+node.type.*.third_party.og_sm:
   type: mapping
   label: 'Site manager content type settings'
   mapping:

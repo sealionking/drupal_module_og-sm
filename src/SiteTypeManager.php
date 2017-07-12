@@ -5,8 +5,6 @@ namespace Drupal\og_sm;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\NodeTypeInterface;
 use Drupal\og\GroupTypeManager;
-use Drupal\og_sm\Event\SiteTypeEvent;
-use Drupal\og_sm\Event\SiteTypeEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -61,32 +59,17 @@ class SiteTypeManager implements SiteTypeManagerInterface {
   /**
    * {@inheritdoc}
    */
+  public function setIsSiteType(NodeTypeInterface $type, $isSiteType) {
+    $type->setThirdPartySetting('og_sm', static::SITE_TYPE_SETTING_KEY, $isSiteType);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSiteTypes() {
     $types = $this->nodeTypeStorage->loadMultiple();
     $types = array_filter($types, [$this, 'isSiteType']);
     return $types;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addSiteType(NodeTypeInterface $type) {
-    if (!$this->isSiteType($type)) {
-      $type->setThirdPartySetting('og_sm', static::SITE_TYPE_SETTING_KEY, TRUE);
-      $event = new SiteTypeEvent($type);
-      $this->eventDispatcher->dispatch(SiteTypeEvents::ADD, $event);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function removeSiteType(NodeTypeInterface $type) {
-    if ($this->isSiteType($type)) {
-      $type->setThirdPartySetting('og_sm', static::SITE_TYPE_SETTING_KEY, FALSE);
-      $event = new SiteTypeEvent($type);
-      $this->eventDispatcher->dispatch(SiteTypeEvents::REMOVE, $event);
-    }
   }
 
   /**
