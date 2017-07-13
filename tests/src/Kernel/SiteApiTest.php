@@ -35,26 +35,26 @@ class SiteApiTest extends OgSmKernelTestBase {
     $site_manager = OgSm::siteManager();
 
     // Test og_sm_is_site.
-    static::assertFalse($site_manager->isSite($node));
-    static::assertFalse($site_manager->isSite($group));
+    $this->assertFalse($site_manager->isSite($node));
+    $this->assertFalse($site_manager->isSite($group));
     $site_type_manager->setIsSiteType($type_group, TRUE);
     $type_group->save();
-    static::assertTrue($site_manager->isSite($group));
+    $this->assertTrue($site_manager->isSite($group));
 
     // Test og_sm_site_load.
     $site = $site_manager->load($group->id());
-    static::assertEquals($group->label(), $site->label());
+    $this->assertEquals($group->label(), $site->label());
     $site_type_manager->setIsSiteType($type_group, FALSE);
     $type_group->save();
-    static::assertFalse($site_manager->load($group->id()));
+    $this->assertFalse($site_manager->load($group->id()));
 
     // Test og_sm_site_load with non-existing node id.
-    static::assertFalse($site_manager->load(9877654321));
+    $this->assertFalse($site_manager->load(9877654321));
 
     // Test getting all site Nodes ID's.
     $group2 = $this->createGroup($type_group->id());
     $group3 = $this->createGroup($type_group->id());
-    static::assertEquals([], $site_manager->getAllSites());
+    $this->assertEquals([], $site_manager->getAllSites());
     $site_type_manager->setIsSiteType($type_group, TRUE);
     $type_group->save();
     $expected = [
@@ -62,7 +62,7 @@ class SiteApiTest extends OgSmKernelTestBase {
       $group2->id(),
       $group3->id(),
     ];
-    static::assertEquals($expected, array_keys($site_manager->getAllSites()));
+    $this->assertEquals($expected, array_keys($site_manager->getAllSites()));
   }
 
   /**
@@ -81,7 +81,7 @@ class SiteApiTest extends OgSmKernelTestBase {
 
     $expected = [$group2->id() => $group2, $group1->id() => $group1];
     $sites = OgSm::siteManager()->filterSitesFromGroups($groups);
-    static::assertEquals($expected, $sites);
+    $this->assertEquals($expected, $sites);
   }
 
   /**
@@ -117,16 +117,16 @@ class SiteApiTest extends OgSmKernelTestBase {
     /* @var \Drupal\og\OgAccessInterface $og_access */
     $og_access = $this->container->get('og.access');
     // Always give access to user 1.
-    static::assertTrue($og_access->userAccess($site, $administer_site_permission, $user1)->isAllowed());
+    $this->assertTrue($og_access->userAccess($site, $administer_site_permission, $user1)->isAllowed());
 
     // No access for non site member.
-    static::assertTrue($og_access->userAccess($site, $administer_site_permission, $user)->isForbidden());
+    $this->assertTrue($og_access->userAccess($site, $administer_site_permission, $user)->isForbidden());
 
     // No access for site members who has not the proper role(s).
-    static::assertTrue($og_access->userAccess($site, $administer_site_permission, $site_user)->isForbidden());
+    $this->assertTrue($og_access->userAccess($site, $administer_site_permission, $site_user)->isForbidden());
 
     // Access for site members with the proper role(s).
-    static::assertTrue($og_access->userAccess($site, $administer_site_permission, $site_manager)->isAllowed());
+    $this->assertTrue($og_access->userAccess($site, $administer_site_permission, $site_manager)->isAllowed());
   }
 
   /**
@@ -142,14 +142,14 @@ class SiteApiTest extends OgSmKernelTestBase {
     $site_manager = $this->container->get('og_sm.site_manager');
 
     // Default when no context is active.
-    static::assertFalse(
+    $this->assertFalse(
       $site_manager->getSiteHomePage(),
       'No path if no Site in current OG context.'
     );
 
     // Path based on the given Site.
     $expected = '/node/' . $site->id();
-    static::assertEquals(
+    $this->assertEquals(
       $expected,
       $site_manager->getSiteHomePage($site)->toString(),
       'Site homepage is the Site node.'
@@ -159,7 +159,7 @@ class SiteApiTest extends OgSmKernelTestBase {
     $site_manager = $this->container->get('og_sm.site_manager');
 
     // Path from current OG context.
-    static::assertEquals(
+    $this->assertEquals(
       $expected,
       $site_manager->getSiteHomePage()->toString(),
       'Fallback to Site homepage of the active OG context.'
@@ -168,7 +168,7 @@ class SiteApiTest extends OgSmKernelTestBase {
     // Enable module that alters the path.
     $this->enableModules(['og_sm_test']);
     $site_manager = $this->container->get('og_sm.site_manager');
-    static::assertEquals(
+    $this->assertEquals(
       Url::fromUserInput('/group/node/' . $site->id() . '/admin/site-edit')->toString(),
       $site_manager->getSiteHomePage($site)->toString(),
       'Modules can alter the Site path.'

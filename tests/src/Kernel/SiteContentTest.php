@@ -31,11 +31,11 @@ class SiteContentTest extends OgSmKernelTestBase {
     $site_manager = OgSm::siteManager();
 
     // Create group content.
-    static::assertEquals([], $site_manager->getSitesFromContent($content_no_groups));
-    static::assertEquals([], $site_manager->getSitesFromContent($content_with_groups));
-    static::assertFalse($site_manager->getSiteFromContent($content_with_groups));
-    static::assertFalse($site_manager->isSiteContent($content_with_groups));
-    static::assertFalse($site_manager->contentBelongsToSite($content_with_groups, $group1));
+    $this->assertEquals([], $site_manager->getSitesFromContent($content_no_groups));
+    $this->assertEquals([], $site_manager->getSitesFromContent($content_with_groups));
+    $this->assertFalse($site_manager->getSiteFromContent($content_with_groups));
+    $this->assertFalse($site_manager->isSiteContent($content_with_groups));
+    $this->assertFalse($site_manager->contentBelongsToSite($content_with_groups, $group1));
 
     // Make the group type a Site type.
     OgSm::siteTypeManager()->setIsSiteType($type_group, TRUE);
@@ -43,21 +43,21 @@ class SiteContentTest extends OgSmKernelTestBase {
 
     // Get all sites a node belongs to.
     $sites = $site_manager->getSitesFromContent($content_with_groups);
-    static::assertCount(2, $sites);
+    $this->assertCount(2, $sites);
 
     // Get a site (first membership).
     $site = $site_manager->getSiteFromContent($content_with_groups);
-    static::assertEquals($group1->id(), $site->id());
+    $this->assertEquals($group1->id(), $site->id());
 
     // Content should be Site content.
-    static::assertTrue($site_manager->isSiteContent($content_with_groups));
+    $this->assertTrue($site_manager->isSiteContent($content_with_groups));
 
     // Content should be a member of both groups.
-    static::assertTrue($site_manager->contentBelongsToSite($content_with_groups, $group1));
-    static::assertTrue($site_manager->contentBelongsToSite($content_with_groups, $group2));
+    $this->assertTrue($site_manager->contentBelongsToSite($content_with_groups, $group1));
+    $this->assertTrue($site_manager->contentBelongsToSite($content_with_groups, $group2));
 
     // No Site group types are ignored.
-    static::assertFalse($site_manager->contentBelongsToSite($content_with_groups, $group3));
+    $this->assertFalse($site_manager->contentBelongsToSite($content_with_groups, $group3));
   }
 
   /**
@@ -74,7 +74,7 @@ class SiteContentTest extends OgSmKernelTestBase {
       $site_content_aaa->label() => $site_content_aaa,
       $site_content_zzz->label() => $site_content_zzz,
     ];
-    static::assertEquals($expected, OgSm::siteTypeManager()->getContentTypes());
+    $this->assertEquals($expected, OgSm::siteTypeManager()->getContentTypes());
   }
 
   /**
@@ -85,11 +85,11 @@ class SiteContentTest extends OgSmKernelTestBase {
     $is_site_content_type = $this->createGroupContentNodeType(self::TYPE_IS_GROUP_CONTENT);
     $site_type_manager = OgSm::siteTypeManager();
 
-    static::assertFalse(
+    $this->assertFalse(
       $site_type_manager->isSiteContentType($not_site_content_type),
       'Global content type without OG Audience field is not a Site content type.'
     );
-    static::assertTrue(
+    $this->assertTrue(
       $site_type_manager->isSiteContentType($is_site_content_type),
       'Global content type with OG Audience field id Site content type.'
     );
