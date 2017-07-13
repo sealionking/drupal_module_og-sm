@@ -149,7 +149,7 @@ interface SiteManagerInterface {
   public function isSiteContent(NodeInterface $node);
 
   /**
-   * Check if a given node is belongs of the given Site.
+   * Check if a given node belongs of the given Site.
    *
    * @param \Drupal\node\NodeInterface $node
    *   The node to check.
