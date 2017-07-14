@@ -53,23 +53,15 @@ class OgSm {
   }
 
   /**
-   * Add a node type as a site type.
+   * Sets the site type setting on a node type.
    *
    * @param \Drupal\node\NodeTypeInterface $type
    *   The content type to add.
+   * @param bool $isSiteType
+   *   Whether this is a site type or not.
    */
-  public static function addSiteType(NodeTypeInterface $type) {
-    static::siteTypeManager()->addSiteType($type);
-  }
-
-  /**
-   * Remove a node type a a site type.
-   *
-   * @param \Drupal\node\NodeTypeInterface $type
-   *   The content type to remove.
-   */
-  public static function removeSiteType(NodeTypeInterface $type) {
-    static::siteTypeManager()->removeSiteType($type);
+  public static function setSiteType(NodeTypeInterface $type, $isSiteType) {
+    static::siteTypeManager()->setIsSiteType($type, $isSiteType);
   }
 
   /**

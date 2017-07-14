@@ -72,11 +72,11 @@ class SitesFilter extends InOperator implements ContainerFactoryPluginInterface 
    */
   public function buildOptionsForm(&$form, FormStateInterface $formState) {
     parent::buildOptionsForm($form, $formState);
-    $form['manageable_sites'] = array(
+    $form['manageable_sites'] = [
       '#type' => 'checkbox',
       '#title' => $this->t("Limit options to the current user's manageable sites"),
       '#default_value' => $this->options['manageable_sites'],
-    );
+    ];
   }
 
   /**
@@ -94,7 +94,7 @@ class SitesFilter extends InOperator implements ContainerFactoryPluginInterface 
       $sites = $this->siteManager->getAllSites();
     }
 
-    $options = array();
+    $options = [];
     foreach ($sites as $site) {
       $options[$site->id()] = $site->label();
     }

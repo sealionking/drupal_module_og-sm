@@ -7,21 +7,24 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\NodeInterface;
+use Drupal\node\NodeTypeInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\og_sm\OgSm;
 use Drupal\og_sm\Event\SiteEvents;
+use Drupal\og_sm\Event\SiteTypeEvent;
+use Drupal\og_sm\Event\SiteTypeEvents;
 use Zend\Diactoros\Exception\DeprecatedMethodException;
 
 /**
  * Implements hook_hook_info().
  */
 function og_sm_hook_info() {
-  $group = array('group' => 'og_sm');
+  $group = ['group' => 'og_sm'];
 
-  $hooks = array(
+  $hooks = [
     'og_sm_site_view' => $group,
     'og_sm_site_homepage_alter' => $group,
-  );
+  ];
 
   return $hooks;
 }
@@ -37,16 +40,15 @@ function og_sm_form_node_type_form_alter(array &$form, FormStateInterface $form_
 /**
  * Set the breadcrumb for the given Site.
  *
- * @todo: Check if this is still needed.
- *
- * @param object $site
+ * @param \Drupal\node\NodeInterface $site
  *   The site object to setthe breadcrumb for.
  * @param array $path
  *   Array of links to append to the breadcumb.
  *
+ * @todo: Check if this is still needed.
  * @deprecated in Drupal 8.x and will be removed before stable release.
  */
-function og_sm_set_breadcrumb($site, $path = array()) {
+function og_sm_set_breadcrumb(NodeInterface $site, array $path = []) {
   throw new DeprecatedMethodException('og_sm_set_breadcrumb() still needs to be ported.');
 }
 
@@ -58,7 +60,12 @@ function og_sm_node_view(array &$build, NodeInterface $node, EntityViewDisplayIn
   if (!OgSm::isSite($node)) {
     return;
   }
-  Drupal::moduleHandler()->invokeAll('og_sm_site_view', [$build, $node, $display, $view_mode]);
+  Drupal::moduleHandler()->invokeAll('og_sm_site_view', [
+    $build,
+    $node,
+    $display,
+    $view_mode,
+  ]);
 }
 
 /**
@@ -87,4 +94,55 @@ function og_sm_node_update(NodeInterface $node) {
  */
 function og_sm_node_insert(NodeInterface $node) {
   OgSm::siteEventDispatch(SiteEvents::INSERT, $node);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for node_type entities.
+ */
+function og_sm_node_type_update(NodeTypeInterface $node_type) {
+  _og_sm_node_type_save($node_type);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for node_type entities.
+ */
+function og_sm_node_type_insert(NodeTypeInterface $node_type) {
+  _og_sm_node_type_save($node_type);
+}
+
+/**
+ * Helper function called when a node type is either inserted or updated.
+ *
+ * @param \Drupal\node\NodeTypeInterface $node_type
+ *   The node type.
+ */
+function _og_sm_node_type_save(NodeTypeInterface $node_type) {
+  $is_site_type_original = FALSE;
+  if (isset($node_type->original)) {
+    $is_site_type_original = OgSm::isSiteType($node_type->original);
+  }
+
+  $is_site_type = OgSm::isSiteType($node_type);
+  if ($is_site_type_original === $is_site_type) {
+    return;
+  }
+
+  $event = new SiteTypeEvent($node_type);
+  if ($is_site_type) {
+    $event_name = SiteTypeEvents::ADD;
+  }
+  else {
+    $event_name = SiteTypeEvents::REMOVE;
+  }
+  \Drupal::service('event_dispatcher')->dispatch($event_name, $event);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for node_type entities.
+ */
+function og_sm_node_type_delete(NodeTypeInterface $node_type) {
+  if (OgSm::isSiteType($node_type)) {
+    $event = new SiteTypeEvent($node_type);
+    \Drupal::service('event_dispatcher')->dispatch(SiteTypeEvents::REMOVE, $event);
+  }
 }

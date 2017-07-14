@@ -101,6 +101,18 @@ interface SiteManagerInterface {
   public function getAllSites();
 
   /**
+   * Helper function to get a list of Site objects from a list of group id's.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface[][] $groups
+   *   An associative array, keyed by group entity type, each item an array of
+   *   group entities.
+   *
+   * @return \Drupal\node\NodeInterface[]
+   *   All Site nodes keyed by their nid.
+   */
+  public function filterSitesFromGroups(array $groups);
+
+  /**
    * Get all the Sites a node belongs to.
    *
    * @param \Drupal\node\NodeInterface $node
@@ -137,7 +149,7 @@ interface SiteManagerInterface {
   public function isSiteContent(NodeInterface $node);
 
   /**
-   * Check if a given node is member of the given Site.
+   * Check if a given node belongs of the given Site.
    *
    * @param \Drupal\node\NodeInterface $node
    *   The node to check.
@@ -147,7 +159,7 @@ interface SiteManagerInterface {
    * @return bool
    *   Is Site member.
    */
-  public function contentIsSiteMember(NodeInterface $node, NodeInterface $site);
+  public function contentBelongsToSite(NodeInterface $node, NodeInterface $site);
 
   /**
    * Get all the sites a User belongs to.

@@ -215,9 +215,9 @@ Check if the given node belongs to a Site:
 $is_site_content = \Drupal::service('og_sm.site_manager')->isSiteContent($node);
 ```
 
-Check if the given node is a member of the given Site:
+Check if the given node belongs to a given Site:
 ```php
-$is_member = \Drupal::service('og_sm.site_manager')->contentIsSiteMember($node, $site);
+$is_member = \Drupal::service('og_sm.site_manager')->contentBelongsToSite($node, $site);
 ```
 
 ### Check if user is member of a Site

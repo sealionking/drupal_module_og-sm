@@ -8,7 +8,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
-use Drupal\node\NodeTypeInterface;
 use Drupal\og\MembershipManagerInterface;
 use Drupal\og\OgContextInterface;
 use Drupal\og_sm\Event\SiteEvent;
@@ -77,6 +76,13 @@ class SiteManager implements SiteManagerInterface {
   protected $accountProxy;
 
   /**
+   * An array of previously loaded site homepage urls.
+   *
+   * @var array
+   */
+  protected $homepageUrls;
+
+  /**
    * Constructs a SiteManager object.
    *
    * @param \Drupal\og_sm\SiteTypeManagerInterface $siteTypeManager
@@ -118,7 +124,7 @@ class SiteManager implements SiteManagerInterface {
    */
   public function currentSite() {
     $entity = $this->ogContext->getGroup();
-    if (!$entity || !$entity instanceof NodeTypeInterface || $this->isSite($entity)) {
+    if (!$entity || !$entity instanceof NodeInterface || !$this->isSite($entity)) {
       return NULL;
     }
 
@@ -150,17 +156,15 @@ class SiteManager implements SiteManagerInterface {
       return FALSE;
     }
 
-    // This can be called multiple times, lets add some static caching.
-    $urls = &drupal_static(__FUNCTION__, array());
-    if (isset($urls[$site->id()])) {
-      return $urls[$site->id()];
+    if (isset($this->homepageUrls[$site->id()])) {
+      return $this->homepageUrls[$site->id()];
     }
 
     $routeName = 'entity.node.canonical';
     $routeParameters = ['node' => $site->id()];
     $this->moduleHandler->alter('og_sm_site_homepage', $site, $routeName, $routeParameters);
-    $urls[$site->id()] = Url::fromRoute($routeName, $routeParameters);
-    return $urls[$site->id()];
+    $this->homepageUrls[$site->id()] = Url::fromRoute($routeName, $routeParameters);
+    return $this->homepageUrls[$site->id()];
   }
 
   /**
@@ -229,16 +233,9 @@ class SiteManager implements SiteManagerInterface {
   }
 
   /**
-   * Helper function to get a list of Site objects from a list of group id's.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface[][] $groups
-   *   An associative array, keyed by group entity type, each item an array of
-   *   group entities.
-   *
-   * @return \Drupal\node\NodeInterface[]
-   *   All Site nodes keyed by their nid.
+   * {@inheritdoc}
    */
-  protected function filterSitesFromGroups(array $groups) {
+  public function filterSitesFromGroups(array $groups) {
     $sites = [];
     if (!isset($groups['node'])) {
       return $sites;
@@ -284,8 +281,8 @@ class SiteManager implements SiteManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function contentIsSiteMember(NodeInterface $node, NodeInterface $site) {
-    $sites = $this->getSiteFromContent($node);
+  public function contentBelongsToSite(NodeInterface $node, NodeInterface $site) {
+    $sites = $this->getSitesFromContent($node);
     return !empty($sites[$site->id()]);
   }
 
