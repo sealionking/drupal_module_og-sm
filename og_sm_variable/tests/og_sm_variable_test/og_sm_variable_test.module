@@ -1,9 +1,0 @@
-<?php
-/**
- * @file
- * Dummy module to test the hook functionality.
- */
-
-// This dummy module is only here to test the implementation of the
-// hook_og_sm_variable_defaults() hook and the automatic creation of the values
-// when a new Site is created.
