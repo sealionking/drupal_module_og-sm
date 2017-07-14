@@ -62,4 +62,15 @@ class OgSmKernelTestBase extends KernelTestBase {
     $this->container->set('og_sm.site_manager', NULL);
   }
 
+  /**
+   * Reset the Og Context.
+   */
+  protected function resetOgContext() {
+    $this->container->set('og.context', $this->getMock(OgContextInterface::class));
+    $this->container->get('og.context')
+      ->method('getGroup')
+      ->willReturn(NULL);
+    $this->container->set('og_sm.site_manager', NULL);
+  }
+
 }

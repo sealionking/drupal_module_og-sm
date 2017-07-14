@@ -59,6 +59,6 @@ interface SiteConfigFactoryOverrideInterface extends ConfigFactoryOverrideInterf
    *
    * @return $this
    */
-  public function setSite(NodeInterface $site);
+  public function setSite(NodeInterface $site = NULL);
 
 }

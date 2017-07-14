@@ -70,4 +70,55 @@ class SiteConfigOverride extends StorableConfigBase {
     return $this->getSiteIdFromCollectionName($this->getStorage()->getCollectionName());
   }
 
+  /**
+   * Gets data from a list of configuration keys.
+   *
+   * @param array $keys
+   *   The keys from which the data was requested.
+   *
+   * @return array
+   *   An array of mixed data values.
+   */
+  public function getMultiple(array $keys) {
+    $data = [];
+    foreach ($keys as $key) {
+      $data[$key] = $this->get($key);
+    }
+    array_filter($data);
+    return $data;
+  }
+
+  /**
+   * Gets data from a keys that match the passed pattern.
+   *
+   * @param string $pattern
+   *   The pattern.
+   *
+   * @return array
+   *   An array of mixed data values.
+   */
+  public function getMultipleByPattern($pattern) {
+    $data = $this->get();
+    foreach ($data as $key => $value) {
+      if (!preg_match($pattern, $key)) {
+        unset($data[$key]);
+      }
+    }
+    return $data;
+  }
+
+  /**
+   * Gets data from a keys that start with the passed prefix.
+   *
+   * @param string $prefix
+   *   The prefix.
+   *
+   * @return array
+   *   An array of mixed data values.
+   */
+  public function getMultipleByPrefix($prefix) {
+    $pattern = '#^' . $prefix . '#';
+    return $this->getMultipleByPattern($pattern);
+  }
+
 }

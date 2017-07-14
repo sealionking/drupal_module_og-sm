@@ -10,6 +10,8 @@ use Drupal\Core\Config\ConfigRenameEvent;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\node\NodeInterface;
+use Drupal\og_sm\Event\SiteEvent;
+use Drupal\og_sm\Event\SiteEvents;
 use Drupal\og_sm\SiteManagerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -77,31 +79,6 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
   }
 
   /**
-   * Sets the default site when the request dispatching has started.
-   *
-   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
-   *   The Event to process.
-   */
-  public function onKernelRequestSetSite(GetResponseEvent $event) {
-    if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
-      return;
-    }
-    $currentSite = $this->siteManager->currentSite();
-    if ($currentSite) {
-      $this->setSite($currentSite);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getSubscribedEvents() {
-    $events = parent::getSubscribedEvents();
-    $events[KernelEvents::REQUEST][] = ['onKernelRequestSetSite'];
-    return $events;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getSite() {
@@ -111,7 +88,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
   /**
    * {@inheritdoc}
    */
-  public function setSite(NodeInterface $site) {
+  public function setSite(NodeInterface $site = NULL) {
     $this->site = $site;
   }
 
@@ -152,6 +129,16 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
       $this->storages[$collectionName] = $this->baseStorage->createCollection($collectionName);
     }
     return $this->storages[$collectionName];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getSubscribedEvents() {
+    $events = parent::getSubscribedEvents();
+    $events[KernelEvents::REQUEST][] = ['onKernelRequestSetSite'];
+    $events[SiteEvents::DELETE][] = ['onSiteDelete'];
+    return $events;
   }
 
   /**
@@ -198,6 +185,32 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
         $config_override->delete();
       }
     }
+  }
+
+  /**
+   * Sets the default site when the request dispatching has started.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   *   The Event to process.
+   */
+  public function onKernelRequestSetSite(GetResponseEvent $event) {
+    if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
+      return;
+    }
+    $currentSite = $this->siteManager->currentSite();
+    if ($currentSite) {
+      $this->setSite($currentSite);
+    }
+  }
+
+  /**
+   * Removes the site override collection when the site has been deleted.
+   *
+   * @param \Drupal\og_sm\Event\SiteEvent $event
+   *   The site Event.
+   */
+  public function onSiteDelete(SiteEvent $event) {
+    $this->getStorage($event->getSite())->deleteAll();
   }
 
   /**
