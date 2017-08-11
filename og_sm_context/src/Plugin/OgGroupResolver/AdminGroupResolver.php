@@ -31,8 +31,11 @@ class AdminGroupResolver extends OgSmGroupResolverBase {
       return;
     }
     $group = $this->routeMatch->getParameter('group');
-    $collection->addGroup($group, ['url']);
-    $this->stopPropagation();
+
+    if ($this->siteManager->isSite($group)) {
+      $collection->addGroup($group, ['url']);
+      $this->stopPropagation();
+    }
   }
 
 }
