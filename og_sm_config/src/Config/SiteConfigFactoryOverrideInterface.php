@@ -2,17 +2,8 @@
 
 namespace Drupal\og_sm_config\Config;
 
-use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Config\ConfigCollectionInfo;
-use Drupal\Core\Config\ConfigCrudEvent;
-use Drupal\Core\Config\ConfigFactoryOverrideBase;
 use Drupal\Core\Config\ConfigFactoryOverrideInterface;
-use Drupal\Core\Config\ConfigRenameEvent;
-use Drupal\Core\Config\StorageInterface;
-use Drupal\Core\Config\TypedConfigManagerInterface;
-use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
-use Drupal\og_sm\SiteManagerInterface;
 
 /**
  * Provides site overrides for the configuration factory.
@@ -35,18 +26,18 @@ interface SiteConfigFactoryOverrideInterface extends ConfigFactoryOverrideInterf
   /**
    * Returns the storage instance for a particular site.
    *
-   * @param NodeInterface $site
+   * @param \Drupal\node\NodeInterface $site
    *   The site node.
    *
    * @return \Drupal\Core\Config\StorageInterface
    *   The storage instance for a particular site.
    */
-  public function getStorage($site);
+  public function getStorage(NodeInterface $site);
 
   /**
    * Gets the site node used to override configuration data.
    *
-   * @return \Drupal\node\NodeInterface $site
+   * @return \Drupal\node\NodeInterface
    *   The site node.
    */
   public function getSite();
@@ -56,8 +47,6 @@ interface SiteConfigFactoryOverrideInterface extends ConfigFactoryOverrideInterf
    *
    * @param \Drupal\node\NodeInterface $site
    *   The site node.
-   *
-   * @return $this
    */
   public function setSite(NodeInterface $site = NULL);
 
