@@ -1,20 +1,19 @@
-# Organic Groups : Site Variable
+# Organic Groups : Site Configuration
 Module to support site specific settings by storing them in a separate table and
 link them to the Site they belong to.
 
-The difference between this module and og_variables is that the og_variables
-module overwrites global variables, while the og_sm_variable module adds new
-variables.
-
 
 ## Functionality
-This module provides:
-* API to set and get a single variable per Site.
-* Get all variables at once for a Site.
-* Get for all sites the values of a specific variable name.
-* Delete all variables at once for a Site.
-* Caching to speed up variable access.
-* Mechanism to define default variables to set when a new Site is created.
+This module provides no helper functions, site configuration should be fetched
+just like normal configuration, config overrides will be loaded based on the
+current site context.
+
+In case you want to load site configuration outside of a site context you could
+use the "og_sm.config_factory_override" service.
+
+Site configuration is mostly based on the config override system, the most
+important difference is that it uses a custom config storage table, this prevents
+the configuration from being exported/imported.
 
 
 
@@ -24,134 +23,16 @@ This module provides:
 
 
 ## Installation
-1. Enable the module. Variables are set by modules that store their settings in
-   the variables table.
+1. Enable the module.
+
 
 
 ## API
+All the logic for fetching configuration is done in the background so should be
+no concern of the developer.
 
-### Get a variable value
-Get a variable by its name:
-
-```php
-$value = og_sm_variable_get($site_nid, 'variable_name');
-```
-
-It is not required to pass a default value, if the variable is not set NULL will
-be returned. You can pass in a default value if the value does not exists yet:
-```php
-$value = og_sm_variable_get($site_nid, 'variable_name', 'default value');
-```
-
-### Set a variable value
-Set a variable by its name:
-
-```php
-og_sm_variable_set($site_nid, 'variable_name', 'variable value');
-```
-
-### Delete a variable
-A variable can be removed from the variables table:
-
-```php
-og_sm_variable_delete($site_nid, 'variable_name');
-```
-
-### Get all variables for a site
-Get all variables at once for a site. The values will be sorted by the variable
-name. The array will be keyed by the variable names.
-
-```php
-$variables = og_sm_variable_get_all($site_nid);
-```
-
-### Delete all variables for a site
-Delete all variables belonging to a Site at once.
-
-```php
-og_sm_variable_delete_all($site_nid);
-```
-
-### Get variable values for all sites
-This will get an array of all values set for a specific variable name keyed by
-the Site node id.
-
-```php
-$values = og_sm_variable_get_all_sites($name);
-```
-
-### Copy variables from one Site to another by their names
-Copy variables from one site to another by passing an array of variable names.
-
-```php
-og_sm_variable_copy_from_to_by_names(
-  $site_from_nid,
-  $site_to_nid,
-  array('variable_name_1', 'variable_name_2')
-);
-```
-
-### Copy variables from one Site to another by a name pattern
-Copy variables from one site to another when their names match a given regular
-expression pattern.
-
-```php
-og_sm_variable_copy_from_to_by_pattern(
-  $site_from_nid,
-  $site_to_nid,
-  '#_name_#');
-```
-
-### Copy variables from one Site to another by a name prefix
-Copy all variables from one Site to another if their names begin with the given
-prefix.
-
-```php
-og_sm_variable_copy_from_to_by_prefix(
-  $site_from_nid,
-  $site_to_nid,
-  'variable_'
-);
-```
-
-
-
-## Hooks
-
-### Hooks to set the default variables for a new Site
-This module provides hooks to define the default variable values to set when a
-new Site is created.
-
-> The hooks can be put in the `yourmodule.module` OR in the
-> `yourmodule.og_sm.inc` file.
-> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
-> .module file cleaner and makes the platform load less code by default.
-
-#### hook_og_sm_variable_defaults($site)
-This hook is used to define default variables for the Site that is created and
-saved in the database.
-
-The hook should return an array of values keyed by their variable name.
-
-```php
-function my_module_og_sm_variable_defaults($site) {
-  $items = array(
-    'theme' => 'bartik',
-    'og_sm_content_article_comment' => COMMENT_NODE_OPEN,
-    'og_sm_content_article_machine_name' => 'news',
-    'og_sm_content_article_name' => 'news',
-    'og_sm_content_article_name_plural' => 'news',
-  );
-
-  return $items;
-}
-```
-
-#### hook_og_sm_variable_defaults_alter(&$items, $site)
-Use this hook to alter variables as defined by other modules.
-
-```php
-function my_module_og_sm_variable_defaults_alter(&$items, $site) {
-  $items['theme'] = 'my-theme';
-}
-```
+To store configuration within a site context the configuration form should be
+extended from the `SiteConfigFormBase` class.
+Using the form with a route that allows determining site context will result in
+configuration saved under that site context. See `og_sm_config_test` module for a
+simple implementation.
