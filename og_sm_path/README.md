@@ -45,7 +45,7 @@ alias.
 
 
 ### Aliases for node/NID/edit and node/NID/delete
-This module does not provide path alaises for `node/NID/edit` and
+This module does not provide path aliases for `node/NID/edit` and
 `node/NID/delete` paths.
 
 Install the [Extended Path Aliases][link-path_alias_xt] module to provide this

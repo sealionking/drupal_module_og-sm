@@ -286,7 +286,7 @@ function og_sm_admin_menu_load_site_switcher() {
 /**
  * Implements hook_admin_menu_output_alter().
  */
-function og_sm_admin_menu_admin_menu_output_alter(&$content) {
+function _og_sm_admin_menu_admin_menu_output_alter(&$content) {
   $site = og_sm_current_site();
 
   // Only if there is an active Site.

@@ -20,7 +20,7 @@ class SiteEvent extends Event {
   protected $site;
 
   /**
-   * Constructs a configuration event object.
+   * Constructs a site event object.
    *
    * @param \Drupal\node\NodeInterface $site
    *   The site node.

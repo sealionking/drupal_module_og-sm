@@ -35,7 +35,7 @@ class ManageableSitesByCurrentUser extends BooleanOperator implements ContainerF
    * @param mixed $pluginDefinition
    *   The plugin implementation definition.
    * @param \Drupal\og_sm\SiteManagerInterface $siteManager
-   *   The language manager.
+   *   The site manager.
    */
   public function __construct(array $configuration, $pluginId, $pluginDefinition, SiteManagerInterface $siteManager) {
     parent::__construct($configuration, $pluginId, $pluginDefinition);

@@ -1,0 +1,5 @@
+change site path:
+  title: 'Change Site path'
+  description: 'Allow a user to change the Site path (used when creating aliased paths for all Site pages).'
+  'default roles':
+    - ADMINISTRATOR_ROLE

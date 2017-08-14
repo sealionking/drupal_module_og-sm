@@ -410,7 +410,7 @@ function og_sm_content_add_uri($site, $node_type) {
 /**
  * Implements hook_admin_menu_output_alter().
  */
-function og_sm_content_admin_menu_output_alter(&$content) {
+function _og_sm_content_admin_menu_output_alter(&$content) {
   $site = og_sm_current_site();
 
   // Only if there is an active Site.
