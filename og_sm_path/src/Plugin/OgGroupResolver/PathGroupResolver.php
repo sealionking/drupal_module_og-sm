@@ -54,7 +54,7 @@ class PathGroupResolver extends OgGroupResolverBase implements ContainerFactoryP
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The current request.
    * @param \Drupal\og_sm_path\SitePathManagerInterface $site_path_manager
-   *   The site path manager
+   *   The site path manager.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, Request $request, SitePathManagerInterface $site_path_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);

@@ -65,7 +65,7 @@ class SitePathManager implements SitePathManagerInterface {
   /**
    * The cache tag invalidator service.
    *
-   * @var CacheTagsInvalidatorInterface
+   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
    */
   protected $invalidator;
 

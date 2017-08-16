@@ -36,7 +36,7 @@ function og_sm_path_site_alias_update_batch(NodeInterface $site) {
  *
  * This will create/update aliases for all content pages of a single Site.
  *
- * @param NodeInterface $site
+ * @param \Drupal\node\NodeInterface $site
  *   The Site Node to run the process for.
  * @param array $context
  *   The process context.

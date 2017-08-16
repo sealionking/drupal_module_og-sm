@@ -2,18 +2,17 @@
 
 namespace Drupal\og_sm_path\PathProcessor;
 
-use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\PathProcessor\OutboundPathProcessorInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
-use Drupal\og_sm\OgSm;
 use Drupal\og_sm\SiteManagerInterface;
-use Drupal\og_sm_path\SitePathManager;
 use Drupal\og_sm_path\SitePathManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-
+/**
+ * Path processor manager.
+ */
 class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathProcessorInterface {
 
   /**
@@ -44,7 +43,7 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
   }
 
   /**
-   * Returns an array of ajax paths that should be rewritten to have site context.
+   * Returns an array of paths that should be rewritten to have site context.
    *
    * @return array
    *   An array of ajax paths.
@@ -81,7 +80,8 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
    * {@inheritdoc}
    */
   public function processOutbound($path, &$options = [], Request $request = NULL, BubbleableMetadata $bubbleable_metadata = NULL) {
-    // Rewrite all outgoing site admin paths for paths that do not have an alias.
+    // Rewrite all outgoing site admin paths for paths that do not have an
+    // alias.
     if (preg_match('#^/group/node/([0-9]+)/(admin.*)#', $path, $parts)) {
       $site = $this->siteManager->load($parts[1]);
       if ($site) {

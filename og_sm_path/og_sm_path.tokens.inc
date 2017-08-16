@@ -29,7 +29,7 @@ function og_sm_path_token_info() {
 /**
  * Implements hook_tokens().
  */
-function og_sm_path_tokens($type, $tokens, array $data = [], array $options = [], BubbleableMetadata $bubbleable_metadata) {
+function og_sm_path_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
 
   switch ($type) {
@@ -88,7 +88,7 @@ function _og_sm_path_tokens_node(array $tokens, array $data, array $options, Bub
  * @param bool $sanitize
  *   Should the output be sanitized.
  *
- * @return string|NULL
+ * @return string|null
  *   Token string if any.
  */
 function _og_sm_path_tokens_site_path(NodeInterface $node, $sanitize) {

@@ -40,10 +40,9 @@ function _og_sm_path_form_node_site_form_alter(array &$form, FormStateInterface 
     '#description' => t('Choose a Site path. May contain only lowercase letters, numbers and dashes. e.g. "my-site".'),
     '#default_value' => $default,
     '#required' => TRUE,
-    '#element_validate' => array('_og_sm_path_field_site_path_validate'),
+    '#element_validate' => ['_og_sm_path_field_site_path_validate'],
     '#field_prefix' => trim($base_path, '/'),
   ];
-
 
   // Check access to the Site path field.
   if (!$site->isNew() && !OgSmPath::changeAccess($site)) {
@@ -69,7 +68,7 @@ function _og_sm_path_form_node_site_form_alter(array &$form, FormStateInterface 
  *
  * @see _og_sm_pathauto_form_node_site_form_alter()
  */
-function _og_sm_path_field_site_path_validate($element, FormStateInterface $form_state, $form) {
+function _og_sm_path_field_site_path_validate(array $element, FormStateInterface $form_state, array $form) {
   // Check if there is already a Site with the same path.
   $path = $element['#value'];
 
@@ -114,10 +113,8 @@ function _og_sm_path_field_site_path_validate($element, FormStateInterface $form
  *   The complete form array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The current state of the form.
- *
- * This will check if the node type is also a group type.
  */
-function og_sm_path_site_node_form_builder($entity_type, NodeInterface $node, &$form, FormStateInterface $form_state) {
+function og_sm_path_site_node_form_builder($entity_type, NodeInterface $node, array &$form, FormStateInterface $form_state) {
   $node->site_path = $form_state->getValue('site_path');
 }
 

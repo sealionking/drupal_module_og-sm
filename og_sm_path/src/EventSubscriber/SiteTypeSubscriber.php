@@ -24,7 +24,7 @@ class SiteTypeSubscriber implements EventSubscriberInterface {
    * Constructs a PathProcessorAlias object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager
+   *   The entity type manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
     $this->pathautoPatternStorage = $entity_type_manager->getStorage('pathauto_pattern');
@@ -61,7 +61,7 @@ class SiteTypeSubscriber implements EventSubscriberInterface {
         'bundles' => [$node_type->id() => $node_type->id()],
         'negate' => FALSE,
         'context_mapping' => [
-          'node' => 'node'
+          'node' => 'node',
         ],
       ]);
     }
