@@ -109,9 +109,24 @@ class SitePathManager implements SitePathManagerInterface {
   /**
    * {@inheritdoc}
    */
+  public function lookupPathAlias($path) {
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+    $path_alias = $this->aliasStorage->lookupPathAlias($path, $langcode);
+
+    if (!$path_alias) {
+      $source = $this->aliasStorage->lookupPathSource($path, $langcode);
+      $path_alias = $source ? $path : $path_alias;
+    }
+    return $path_alias;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSiteFromPath($path) {
-    $language = $this->languageManager->getCurrentLanguage()->getId();
-    $path = $this->aliasStorage->lookupPathSource($path, $language);
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+    $path = $this->aliasStorage->lookupPathSource($path, $langcode);
+
     $params = Url::fromUri("internal:" . $path)->getRouteParameters();
     $entity_type = key($params);
     if ($entity_type === 'node') {

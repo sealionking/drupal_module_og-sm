@@ -81,11 +81,13 @@ class PathGroupResolver extends OgGroupResolverBase implements ContainerFactoryP
   public function resolve(OgResolvedGroupCollectionInterface $collection) {
     // Get the alias or URL outbound alter of the current URL.
     $path = $this->request->getRequestUri();
+    $alias = $this->sitePathManager->lookupPathAlias($path);
+    $path = $alias ?: $path;
     $path = trim($path, '/');
     $parts = explode('/', $path);
     $site_path = reset($parts);
-
     $site = $this->sitePathManager->getSiteFromPath('/' . $site_path);
+
     if ($site) {
       $collection->addGroup($site, ['url']);
       $this->stopPropagation();

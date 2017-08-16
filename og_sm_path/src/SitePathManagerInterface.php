@@ -21,6 +21,20 @@ interface SitePathManagerInterface {
   public function getPathFromSite(NodeInterface $site);
 
   /**
+   * Returns an alias of Drupal system URL.
+   *
+   * The default implementation performs case-insensitive matching on the
+   * 'source' and 'alias' strings.
+   *
+   * @param string $path
+   *   The path to investigate for corresponding path aliases.
+   *
+   * @return string|false
+   *   A path alias, or FALSE if no path was found.
+   */
+  public function lookupPathAlias($path);
+
+  /**
    * Gets a site node based on the passed path.
    *
    * @param string $path
