@@ -2,7 +2,7 @@
 
 namespace Drupal\og_sm_path;
 
-use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
 
 /**
@@ -15,13 +15,13 @@ class OgSmPath {
    *
    * @param \Drupal\node\NodeInterface $site
    *   The Site to change the path for.
-   * @param \Drupal\Core\Session\AccountProxyInterface $account
+   * @param \Drupal\Core\Session\AccountInterface $account
    *   (optional) The account to check the access for.
    *
    * @return bool
    *   Whether the user has access or not.
    */
-  public static function changeAccess(NodeInterface $site, AccountProxyInterface $account = NULL) {
+  public static function changeAccess(NodeInterface $site, AccountInterface $account = NULL) {
     if (!$account) {
       $account = \Drupal::currentUser();
     }
@@ -30,17 +30,13 @@ class OgSmPath {
       return TRUE;
     }
 
-    if ($site->getOwner()->id() === $account->id() && $account->hasPermission('change own site paths')) {
+    if ($account->hasPermission('change own site paths') && $site->getOwner()->id() === $account->id()) {
       return TRUE;
     }
 
     /* @var \Drupal\og\OgAccessInterface $og_access */
     $og_access = \Drupal::service('og.access');
-    if ($og_access->userAccess($site, 'change site path', $account, FALSE, TRUE)) {
-      return TRUE;
-    }
-
-    return FALSE;
+    return $og_access->userAccess($site, 'change site path', $account, FALSE, TRUE)->isAllowed();
   }
 
   /**
