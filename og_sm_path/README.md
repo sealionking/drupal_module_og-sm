@@ -17,11 +17,9 @@ Changing existing Site paths can be limited by global and Site roles.
 
 ### URL alter
 This module will automatically alter all outgoing URL's from:
-* `group/node/[nid]/admin/…` to `[site-path]/admin/…`.
-* `system/ajax` to `[site-path]/system/ajax` (only if the URL is created within
-  an active Site context).
-* `views/ajax` to `[site-path]/views/ajax` (only if the URL is created within
-  an active Site context).
+* `/group/node/[nid]/admin/…` to `/[site-path]/admin/…`.
+* `/entity_reference_autocomplete/*/*/*` to `[site-path]/entity_reference_autocomplete/*/*/*`
+  (only if the URL is created within an active Site context).
 
 It will transform incoming altered URL's back to its original path.
 
@@ -64,13 +62,6 @@ Content created within the Site needs to get a path prefixed with the Site path.
 See installation instructions.
 
 
-### OG Context provider by GET parameter
-Context provider to detect if a Group context was set using a GET parameter with
-the name "og_sm_context_site_id". This GET parameter is used to pass any context
-detaction during the URL inbound alter of system paths starting with a site-path
-prefix (eg. [site-path]/system/ajax, [site-path]/views/ajax).
-
-
 
 ## Requirements
 * Organic Groups Site Manager
@@ -97,17 +88,22 @@ prefix (eg. [site-path]/system/ajax, [site-path]/views/ajax).
 
 
 ## API
+
+> *NOTE* : In the following examples the og_sm services are accessed directly for
+sake of simplicity, however it is recommended to access these using [dependency
+injection][link-dependency-injection] whenever possible.q
+
 ### Get the path of a Site
 Get the path of the given Site:
 ```php
-$path = og_sm_path($site);
+$path = $site = \Drupal::service('og_sm_path.site_path_manager')->getPathFromSite($site);
 ```
 
 
 ### Get a Site by its path
 Get the Site object by its path:
 ```php
-$site = og_sm_path_load_site($path);
+$path = $site = \Drupal::service('og_sm_path.site_path_manager')->getSiteFromPath($path);
 ```
 
 
@@ -117,40 +113,27 @@ Pragmatically set the path for a given site.
 This will:
 - Check if the new path is different from the current if so it will:
   - Set the path variable for the site.
-  - Trigger a hook `og_sm_site_path_change` to inform the platform about the
+  - Trigger an event `SitePathEvents:CHANGE` to inform the platform about the
     path change.
 ```php
-og_sm_path_set($site, 'my-site-path');
+\Drupal::service('og_sm_path.site_path_manager')->setPath($site, '/my-site-path');
 ```
 
-Triggering the `og_sm_site_path_change` can be disabled:
+Triggering the `SitePathEvents:CHANGE` event can be disabled:
 ```php
-og_sm_path_set($site, 'my-site-path', FALSE);
+\Drupal::service('og_sm_path.site_path_manager')->setPath($site, '/my-site-path', FALSE);
 ```
 
 
-## Hooks
+## Events
 ### Site action hooks
-The module watches actions taken place on Site nodes and triggers its own hooks
-when an action happens:
+The og_sm_path module triggers multiple events to make it easier to alter
+functionality when a Site is involved.
 
-* `hook_og_sm_site_path_change($site, $path_old, $path_new)` : Site node path 
-  has changed.
-
-> The hooks can be put in the `yourmodule.module` OR in the
-> `yourmodule.og_sm.inc` file.
-> The recommended place is in the yourmodule.og_sm.inc file as it keeps your
-> .module file cleaner and makes the platform load less code by default.
+* `SitePathEvents:CHANGE` : Site node path has changed. The event listener method
+  receives a `SitePathEvent` instance.
 
 
-### Alter a list of ajax paths.
-Hook to alter a list of ajax paths that will be rewritten to have site context.
-
-```php
-function hook_og_sm_ajax_paths_alter(&$paths) {
-  $paths[] = 'media/browser';
-}
-```
 
 
 [link-path_alias_xt]: https://www.drupal.org/project/path_alias_xt
