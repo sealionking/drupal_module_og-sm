@@ -2,12 +2,10 @@
 
 namespace Drupal\Tests\og_sm_path\Unit;
 
-use Drupal\og_sm_context\Plugin\OgGroupResolver\QueryParamGroupResolver;
 use Drupal\og_sm_path\Plugin\OgGroupResolver\PathGroupResolver;
 use Drupal\og_sm_path\SitePathManagerInterface;
 use Drupal\Tests\og_sm_context\Unit\OgSmGroupResolverTestBase;
 use Prophecy\Argument;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -38,7 +36,7 @@ class PathGroupResolverTest extends OgSmGroupResolverTestBase {
   /**
    * The site path manager.
    *
-   * @var \Drupal\og_sm_path\SitePathManagerInterface
+   * @var \Drupal\og_sm_path\SitePathManagerInterface|\Prophecy\Prophecy\ObjectProphecy
    */
   protected $sitePathManager;
 
@@ -151,7 +149,7 @@ class PathGroupResolverTest extends OgSmGroupResolverTestBase {
       [
         '/site/whatever/foo/bar/biz/baz',
         'site',
-      ]
+      ],
     ];
   }
 

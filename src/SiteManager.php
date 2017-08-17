@@ -8,6 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\node\NodeTypeInterface;
 use Drupal\og\MembershipManagerInterface;
 use Drupal\og\OgContextInterface;
 use Drupal\og_sm\Event\SiteEvent;
@@ -116,7 +117,10 @@ class SiteManager implements SiteManagerInterface {
    */
   public function isSite(NodeInterface $node) {
     $type = $this->nodeTypeStorage->load($node->getType());
-    return $this->siteTypeManager->isSiteType($type);
+    if ($type instanceof NodeTypeInterface) {
+      return $this->siteTypeManager->isSiteType($type);
+    }
+    return FALSE;
   }
 
   /**

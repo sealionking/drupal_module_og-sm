@@ -9,6 +9,7 @@ use Drupal\Core\Cache\Cache;
 use Drupal\node\NodeInterface;
 use Drupal\node\Entity\Node;
 use Drupal\og\OgGroupAudienceHelperInterface;
+use Drupal\field\Entity\FieldStorageConfig;
 
 /**
  * Create a batch for a single Site to update ALL aliases (admin & content).
@@ -76,7 +77,7 @@ function og_sm_path_site_alias_update_content_process(NodeInterface $site, array
   );
 
   // Progress.
-  $context['finised'] = $context['sandbox']['progress'] / $context['sandbox']['total'];
+  $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['total'];
 }
 
 /**
@@ -107,7 +108,7 @@ function og_sm_path_site_alias_update_menu_process(array &$context) {
  */
 function _og_sm_path_site_alias_update_content_init(NodeInterface $site, array &$context) {
   // Initiate the batch.
-  if (empty($context['sandbox'])) {
+  if (empty($context['sandbox']) && FieldStorageConfig::loadByName('node', OgGroupAudienceHelperInterface::DEFAULT_FIELD)) {
     // Count relevant nodes.
     $query = \Drupal::entityQuery('node');
     $total = $query

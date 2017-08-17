@@ -140,7 +140,7 @@ function _og_sm_path_form_pathauto_patterns_form_alter(array &$form, FormStateIn
 
   $default_bundle = NULL;
   foreach ($pattern->getSelectionConditions() as $condition_id => $condition) {
-    if (in_array($condition->getPluginId(), ['entity_bundle:node', 'node_type'])) {
+    if (in_array($condition->getPluginId(), ['entity_bundle:node', 'node_type'], TRUE)) {
       $default_bundle = reset($condition->getConfiguration()['bundles']);
       break;
     }

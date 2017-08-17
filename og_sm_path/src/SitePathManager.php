@@ -124,15 +124,11 @@ class SitePathManager implements SitePathManagerInterface {
    * {@inheritdoc}
    */
   public function getSiteFromPath($path) {
-    $langcode = $this->languageManager->getCurrentLanguage()->getId();
-    $path = $this->aliasStorage->lookupPathSource($path, $langcode);
-
-    $params = Url::fromUri("internal:" . $path)->getRouteParameters();
-    $entity_type = key($params);
-    if ($entity_type === 'node') {
-      return $this->siteManager->load($params[$entity_type]);
+    foreach ($this->siteManager->getAllSites() as $site) {
+      if ($this->getPathFromSite($site) === $path) {
+        return $site;
+      }
     }
-
     return FALSE;
   }
 
@@ -146,7 +142,7 @@ class SitePathManager implements SitePathManagerInterface {
     $select = $this->connection->select(AliasStorage::TABLE);
     $select->condition('source', $path, 'LIKE');
     $select->fields(AliasStorage::TABLE, ['pid', 'source']);
-    $path_ids = $select->execute()->fetchAllKeyed();
+    $path_ids = (array) $select->execute()->fetchAllKeyed();
 
     $tags = [];
     foreach ($path_ids as $pid => $source) {

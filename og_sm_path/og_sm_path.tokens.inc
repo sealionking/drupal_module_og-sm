@@ -93,7 +93,7 @@ function _og_sm_path_tokens_node(array $tokens, array $data, array $options, Bub
  */
 function _og_sm_path_tokens_site_path(NodeInterface $node, $sanitize) {
   $site_manager = OgSm::siteManager();
-  $site = ($site_manager->isSite($node))
+  $site = $site_manager->isSite($node)
     ? $node
     : $site_manager->getSiteFromContent($node);
 

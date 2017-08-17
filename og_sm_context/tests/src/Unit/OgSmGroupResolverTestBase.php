@@ -9,8 +9,6 @@ use Drupal\Tests\og\Unit\Plugin\OgGroupResolver\OgGroupResolverTestBase;
 
 /**
  * Base class for testing OgGroupResolver plugins defined by og_sm.
- *
- * @group og_sm
  */
 abstract class OgSmGroupResolverTestBase extends OgGroupResolverTestBase {
 

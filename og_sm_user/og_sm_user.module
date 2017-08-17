@@ -270,7 +270,7 @@ function og_sm_user_url_inbound_alter(&$path, $original_path, $path_language) {
 /**
  * Implements hook_admin_menu_output_alter().
  */
-function _og_sm_user_admin_menu_output_alter(&$content) {
+function og_sm_user_admin_menu_output_alter(&$content) {
   global $user;
   $content['account']['account']['#href'] = og_sm_user_profile_path($user);
 

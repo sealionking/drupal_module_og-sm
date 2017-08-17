@@ -11,7 +11,7 @@ use Drupal\og_sm\Tests\SiteCreationTrait;
 /**
  * Base class to do kernel tests for OG Site Manager functionality.
  */
-class OgSmKernelTestBase extends KernelTestBase {
+abstract class OgSmKernelTestBase extends KernelTestBase {
 
   use UserCreationTrait;
   use SiteCreationTrait;

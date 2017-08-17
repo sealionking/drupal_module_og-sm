@@ -90,7 +90,7 @@ class SitePathProcessorTest extends UnitTestCase {
 
         $unrouted_url_assembler
           ->assemble(Argument::containingString('base:group/node/' . $node_id), [], FALSE)
-          ->will(function($args) use ($node_id, $path) {
+          ->will(function ($args) use ($node_id, $path) {
             $uri = substr($args[0], 5);
             return str_replace('group/node/' . $node_id, $path, $uri);
           });
@@ -103,7 +103,7 @@ class SitePathProcessorTest extends UnitTestCase {
 
     $unrouted_url_assembler
       ->assemble(Argument::any(), [], FALSE)
-      ->will(function($args) {
+      ->will(function ($args) {
         return str_replace('base:', '/', $args[0]);
       });
 
@@ -111,7 +111,6 @@ class SitePathProcessorTest extends UnitTestCase {
     $container->set('path.validator', $this->prophesize(PathValidatorInterface::class)->reveal());
     $container->set('unrouted_url_assembler', $unrouted_url_assembler->reveal());
     \Drupal::setContainer($container);
-
 
     $this->request = $this->prophesize(Request::class)->reveal();
     $this->bubbleableMetadata = $this->prophesize(BubbleableMetadata::class)->reveal();
@@ -153,7 +152,7 @@ class SitePathProcessorTest extends UnitTestCase {
    * @covers ::processOutbound
    * @dataProvider processOutboundProvider
    */
-  public function testProcessOutbound($original_path, $original_options, $expected_path, $expected_options) {
+  public function testProcessOutbound($original_path, array $original_options, $expected_path, array $expected_options) {
     $path = $this->sitePathProcessor->processOutbound($original_path, $original_options, $this->request, $this->bubbleableMetadata);
     $this->assertEquals($expected_path, $path);
     $this->assertArrayEquals($expected_options, $original_options);
@@ -206,13 +205,13 @@ class SitePathProcessorTest extends UnitTestCase {
         [
           'query' => [
             'destination' => '/group/node/987654321/admin/content',
-          ]
+          ],
         ],
         '/group/node/987654321/admin/content',
         [
           'query' => [
             'destination' => '/group/node/987654321/admin/content',
-          ]
+          ],
         ],
       ],
       [
