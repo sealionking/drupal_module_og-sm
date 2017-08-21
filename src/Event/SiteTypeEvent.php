@@ -20,7 +20,7 @@ class SiteTypeEvent extends Event {
   protected $type;
 
   /**
-   * Constructs a configuration event object.
+   * Constructs a site type event object.
    *
    * @param \Drupal\node\NodeTypeInterface $type
    *   Configuration object.

@@ -9,8 +9,6 @@ use Drupal\Tests\og\Unit\Plugin\OgGroupResolver\OgGroupResolverTestBase;
 
 /**
  * Base class for testing OgGroupResolver plugins defined by og_sm.
- *
- * @group og_sm
  */
 abstract class OgSmGroupResolverTestBase extends OgGroupResolverTestBase {
 
@@ -122,6 +120,12 @@ abstract class OgSmGroupResolverTestBase extends OgGroupResolverTestBase {
         'type' => 'node',
         'bundle' => 'content',
         'group_content' => ['site'],
+      ],
+      // Content that belong to the group.
+      'group_content' => [
+        'type' => 'node',
+        'bundle' => 'content',
+        'group_content' => ['group'],
       ],
       // A non-group, non-group-content node.
       'non_group' => ['type' => 'entity_test', 'bundle' => 'non_group'],

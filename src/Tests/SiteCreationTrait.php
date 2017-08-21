@@ -4,6 +4,7 @@ namespace Drupal\og_sm\Tests;
 
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
+use Drupal\og\Entity\OgRole;
 use Drupal\og\Og;
 use Drupal\og\OgGroupAudienceHelperInterface;
 use Drupal\taxonomy\Entity\Term;
@@ -113,12 +114,35 @@ trait SiteCreationTrait {
    * @return \Drupal\Core\Session\AccountInterface
    *   The user object.
    */
-  protected function createGroupUser(array $permissions = [], array $groups = []) {
+  protected function createGroupUser(array $permissions = [], array $groups = [], $site_permissions = []) {
+    $og_roles = [];
     $account = $this->createUser($permissions);
     // Add the group memberships (if any).
     foreach ($groups as $group) {
-      Og::createMembership($group, $account)->save();
+      $membership = Og::createMembership($group, $account);
+
+      if ($site_permissions) {
+        if (!isset($og_roles[$group->getEntityTypeId()][$group->bundle()])) {
+          $og_role = OgRole::create();
+          $og_role
+            ->setName($this->randomMachineName())
+            ->setLabel($this->randomString())
+            ->setGroupBundle($group->bundle())
+            ->setGroupType($group->getEntityTypeId());
+
+          foreach ($site_permissions as $site_permission) {
+            $og_role->grantPermission($site_permission);
+          }
+          $og_role->save();
+          $og_roles[$group->getEntityTypeId()][$group->bundle()] = $og_role;
+        }
+        $membership->addRole($og_roles[$group->getEntityTypeId()][$group->bundle()]);
+      }
+
+      $membership->save();
     }
+
+
     return $account;
   }
 

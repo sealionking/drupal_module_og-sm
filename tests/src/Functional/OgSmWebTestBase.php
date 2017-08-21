@@ -2,13 +2,13 @@
 
 namespace Drupal\Tests\og_sm\Functional;
 
-use Drupal\simpletest\WebTestBase;
 use Drupal\og_sm\Tests\SiteCreationTrait;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Base class to do functional tests for OG Site Manager functionality.
  */
-class OgSmWebTestBase extends WebTestBase {
+abstract class OgSmWebTestBase extends BrowserTestBase {
 
   use SiteCreationTrait;
 
