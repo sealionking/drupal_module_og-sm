@@ -12,19 +12,3 @@ og_sm.site.structure:
     attributes:
       class:
         - 'toolbar-icon-system-admin-structure'
-og_sm.site.members:
-  title: 'Members'
-  route_name: entity.node.og_admin_routes.members
-  parent: og_sm.site.admin
-  menu_name: og_sm_admin_menu
-  weight: 40
-  options:
-    attributes:
-      class:
-        - 'toolbar-icon-entity-user-collection'
-og_sm.site.members.overview:
-  title: 'Member overview'
-  description: 'Administer site members'
-  route_name: entity.node.og_admin_routes.members
-  parent: og_sm.site.members
-  menu_name: og_sm_admin_menu

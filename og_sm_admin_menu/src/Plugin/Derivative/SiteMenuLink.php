@@ -49,8 +49,11 @@ class SiteMenuLink extends DeriverBase implements ContainerDeriverInterface {
     $yaml_discovery->addTranslatableProperty('title', 'title_context');
     $yaml_discovery->addTranslatableProperty('description', 'description_context');
 
+    $definitions = $yaml_discovery->getDefinitions();
+    $this->moduleHandler->alter('og_sm_site_menu_links_discovered', $definitions);
+
     $links = [];
-    foreach ($yaml_discovery->getDefinitions() as $plugin_id => $plugin_definition) {
+    foreach ($definitions as $plugin_id => $plugin_definition) {
       if (!empty($plugin_definition['parent'])) {
         $plugin_definition['parent'] = 'og_sm_admin_menu:' . $plugin_definition['parent'];
       }

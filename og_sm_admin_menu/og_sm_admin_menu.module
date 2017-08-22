@@ -30,13 +30,6 @@ function og_sm_admin_menu_local_tasks_alter(&$local_tasks) {
 }
 
 /**
- * Implements hook_menu_links_discovered_alter().
- */
-function og_sm_admin_menu_menu_links_discovered_alter(array &$links) {
-  \Drupal::moduleHandler()->alter('og_sm_site_menu_links_discovered', $links);
-}
-
-/**
  * Implements hook_toolbar().
  */
 function og_sm_admin_menu_toolbar() {
@@ -138,6 +131,8 @@ function og_sm_admin_menu_prerender_toolbar_administration_tray(array $element) 
     return $admin_toolbar_exists ? admin_toolbar_prerender_toolbar_administration_tray($element) : toolbar_prerender_toolbar_administration_tray($element);
   }
 
+  // @todo: This can be simplified once https://www.drupal.org/node/1869638 has
+  // been implemented in core and the "admin_toolbar" module.
   /* @var \Drupal\Core\Menu\MenuLinkTreeInterface $menu_tree */
   $menu_tree = \Drupal::service('toolbar.menu_tree');
   $parameters = new MenuTreeParameters();
@@ -146,11 +141,11 @@ function og_sm_admin_menu_prerender_toolbar_administration_tray(array $element) 
   $max_depth = $admin_toolbar_exists ? 4 : 2;
   $parameters->setMinDepth(2)->setMaxDepth($max_depth)->onlyEnabledLinks();
   $tree = $menu_tree->load('og_sm_admin_menu', $parameters);
-  $manipulators = array(
-    array('callable' => 'menu.default_tree_manipulators:checkAccess'),
-    array('callable' => 'menu.default_tree_manipulators:generateIndexAndSort'),
-    array('callable' => 'toolbar_tools_menu_navigation_links'),
-  );
+  $manipulators = [
+    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+    ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+    ['callable' => $admin_toolbar_exists ? 'toolbar_tools_menu_navigation_links' : 'toolbar_menu_navigation_links'],
+  ];
   $tree = $menu_tree->transform($tree, $manipulators);
   $element['administration_menu'] = $menu_tree->build($tree);
 

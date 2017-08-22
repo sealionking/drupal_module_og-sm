@@ -294,6 +294,9 @@ class SiteManager implements SiteManagerInterface {
    * {@inheritdoc}
    */
   public function getUserSites(AccountInterface $account) {
+    if ($account->hasPermission('administer group')) {
+      return $this->getAllSites();
+    }
     $groups = $this->membershipManager->getUserGroups($account);
     return $this->filterSitesFromGroups($groups);
   }
