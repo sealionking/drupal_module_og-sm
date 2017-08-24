@@ -69,11 +69,10 @@ class SiteMenuLink extends MenuLinkDefault {
    * {@inheritdoc}
    */
   public function getRouteParameters() {
+    $route_parameters = parent::getRouteParameters();
     $site = $this->siteManager->currentSite();
-    $route_parameters = [
-      'entity_type_id' => 'node',
-      'node' => $site ? $site->id() : 0,
-    ];
+    $route_parameters['entity_type_id'] = 'node';
+    $route_parameters['node'] = $site ? $site->id() : 0;
     $route = $this->routeProvider->getRouteByName($this->getRouteName());
     return array_intersect_key($route_parameters, array_flip($route->compile()->getPathVariables()));
   }

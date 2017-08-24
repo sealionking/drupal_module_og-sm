@@ -30,7 +30,7 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
   protected $siteManager;
 
   /**
-   * Constructs a PathProcessorAlias object.
+   * Constructs a SitePathProcessor object.
    *
    * @param \Drupal\og_sm_path\SitePathManagerInterface $site_path_manager
    *   The site path manager.

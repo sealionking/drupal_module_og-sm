@@ -5,10 +5,15 @@
  * Base module for the Organic Groups Sites functionality.
  */
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeTypeInterface;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\og\OgGroupAudienceHelper;
 use Drupal\og_sm\OgSm;
 use Drupal\og_sm\Event\SiteEvents;
 use Drupal\og_sm\Event\SiteTypeEvent;
@@ -145,4 +150,50 @@ function og_sm_node_type_delete(NodeTypeInterface $node_type) {
     $event = new SiteTypeEvent($node_type);
     \Drupal::service('event_dispatcher')->dispatch(SiteTypeEvents::REMOVE, $event);
   }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function og_sm_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  // Leave the field as is if it is already filled is.
+  /* @var \Drupal\Core\Field\FieldItemListInterface $items */
+  $items = $context['items'];
+  if (!$items->isEmpty()) {
+    return;
+  }
+
+  // Only intervene with audience fields.
+  if (!OgGroupAudienceHelper::isGroupAudienceField($items->getFieldDefinition())) {
+    return;
+  }
+
+  $site = OgSm::siteManager()->currentSite();
+  if ($site) {
+    // Prepopulate the audience field with the current site content.
+    $element['target_id'] = [
+      '#type' => 'hidden',
+      '#value' => $site->id(),
+    ];
+  }
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function og_sm_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  // Only intervene with audience fields.
+  if (!OgGroupAudienceHelper::isGroupAudienceField($field_definition)) {
+    return AccessResult::neutral();
+  }
+
+  $site = OgSm::siteManager()->currentSite();
+  // Don't intervene when we are not within site context.
+  if (!$site) {
+    return AccessResult::neutral();
+  }
+
+  // Hide the audience field when we have site context since it will be
+  // prefilled in og_sm_field_widget_form_alter() anyway.
+  return AccessResult::forbidden();
 }

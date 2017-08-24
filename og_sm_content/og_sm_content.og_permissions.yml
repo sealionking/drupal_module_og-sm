@@ -1,0 +1,11 @@
+access content overview:
+  title: 'Access content overview'
+  description: 'Get an overview of all Site content.'
+  'default roles':
+    - ADMINISTRATOR_ROLE
+
+access my content overview:
+  title: 'Access my content overview page'
+  description: 'Get an overview of all Site content created by the current user.'
+  'default roles':
+    - ADMINISTRATOR_ROLE

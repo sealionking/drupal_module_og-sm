@@ -1,5 +1,5 @@
 og_sm.site_edit:
-  path: 'group/{entity_type_id}/{node}/admin/structure/site-edit'
+  path: '/group/{entity_type_id}/{node}/admin/structure/site-edit'
   defaults:
     _title: 'Edit Site'
     _entity_form: 'node.edit'
