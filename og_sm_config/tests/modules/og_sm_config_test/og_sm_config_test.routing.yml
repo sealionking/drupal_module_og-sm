@@ -1,5 +1,5 @@
 og_sm.site_edit:
-  path: 'group/node/{group}/admin/basic-settings'
+  path: 'group/node/{node}/admin/basic-settings'
   defaults:
     _form: 'Drupal\og_sm_config_test\Form\BasicForm'
     _title: 'Basic site settings'
@@ -9,5 +9,5 @@ og_sm.site_edit:
     _og_entity_type_id: 'group'
     _admin_route: TRUE
     parameters:
-      group:
+      node:
         type: og_sm:site

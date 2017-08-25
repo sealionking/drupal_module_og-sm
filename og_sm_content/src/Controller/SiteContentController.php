@@ -3,6 +3,7 @@
 namespace Drupal\og_sm_content\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\node\NodeInterface;
 use Drupal\og\OgAccessInterface;
@@ -44,11 +45,14 @@ class SiteContentController extends ControllerBase {
    *   The site type manager service.
    * @param \Drupal\og\OgAccessInterface $og_access
    *   The OG access service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(RendererInterface $renderer, SiteTypeManagerInterface $site_type_manager, OgAccessInterface $og_access) {
+  public function __construct(RendererInterface $renderer, SiteTypeManagerInterface $site_type_manager, OgAccessInterface $og_access, EntityTypeManagerInterface $entity_type_manager) {
     $this->renderer = $renderer;
     $this->siteTypeManager = $site_type_manager;
     $this->ogAccess = $og_access;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -58,7 +62,8 @@ class SiteContentController extends ControllerBase {
     return new static(
       $container->get('renderer'),
       $container->get('og_sm.site_type_manager'),
-      $container->get('og.access')
+      $container->get('og.access'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -80,6 +85,9 @@ class SiteContentController extends ControllerBase {
   public function addPage(NodeInterface $node) {
     $build = [
       '#theme' => 'node_add_list__og_sm_site',
+      '#cache' => [
+        'tags' => $this->entityTypeManager->getDefinition('node_type')->getListCacheTags() + ['config:node_type_list'],
+      ],
     ];
 
     $content = [];

@@ -16,7 +16,7 @@ related Site node as context.
 
 
 ### Site Administration pages
-All Site Administration pages have a route like `/group/node/{group}/…`. This
+All Site Administration pages have a route like `/group/node/{node}/…`. This
 context provider will detect these paths and use the `{group}` to check if this
 is a Site node.
 

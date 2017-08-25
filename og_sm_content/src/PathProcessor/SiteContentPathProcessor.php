@@ -2,7 +2,6 @@
 
 namespace Drupal\og_sm_content\PathProcessor;
 
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\PathProcessor\OutboundPathProcessorInterface;
 use Drupal\Core\Render\BubbleableMetadata;
@@ -30,35 +29,24 @@ class SiteContentPathProcessor implements InboundPathProcessorInterface, Outboun
   protected $siteManager;
 
   /**
-   * The module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
    * Constructs a SiteContentPathProcessor object.
    *
    * @param \Drupal\og_sm_path\SitePathManagerInterface $site_path_manager
    *   The site path manager.
    * @param \Drupal\og_sm\SiteManagerInterface $site_manager
    *   The site manager.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler service.
    */
-  public function __construct(SitePathManagerInterface $site_path_manager, SiteManagerInterface $site_manager, ModuleHandlerInterface $module_handler) {
+  public function __construct(SitePathManagerInterface $site_path_manager, SiteManagerInterface $site_manager) {
     $this->sitePathManager = $site_path_manager;
     $this->siteManager = $site_manager;
-    $this->moduleHandler = $module_handler;
   }
 
   /**
    * {@inheritdoc}
    */
   public function processInbound($path, Request $request) {
-    // Support for og_sm_path module:
     // Translate an admin path without alias back to its original path.
-    if ($this->moduleHandler->moduleExists('og_sm_path') && preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
+    if (preg_match('#^([\w/_-]+)(/content.*)#', $path, $parts)) {
       $site = $this->sitePathManager->getSiteFromPath($parts[1]);
       if ($site) {
         $path = sprintf('/group/node/%d%s', $site->id(), $parts[2]);
@@ -72,10 +60,9 @@ class SiteContentPathProcessor implements InboundPathProcessorInterface, Outboun
    * {@inheritdoc}
    */
   public function processOutbound($path, &$options = [], Request $request = NULL, BubbleableMetadata $bubbleable_metadata = NULL) {
-    // Support for og_sm_path module:
     // Rewrite all outgoing site admin paths for paths that do not have an
     // alias.
-    if ($this->moduleHandler->moduleExists('og_sm_path') && preg_match('#^/group/node/([0-9]+)(/content.*)#', $path, $parts)) {
+    if (preg_match('#^/group/node/([0-9]+)(/content.*)#', $path, $parts)) {
       $site = $this->siteManager->load($parts[1]);
       if ($site) {
         $path = $this->sitePathManager->getPathFromSite($site) . $parts[2];

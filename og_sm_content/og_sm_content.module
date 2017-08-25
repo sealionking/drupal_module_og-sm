@@ -49,7 +49,7 @@ function og_sm_content_entity_field_access($operation, FieldDefinitionInterface 
 
   /* @var \Drupal\og\OgAccessInterface $og_access */
   $og_access = \Drupal::service('og.access');
-  if ($og_access->userAccess($site, 'administer site', $account)) {
+  if ($og_access->userAccess($site, 'administer site', $account)->isAllowed()) {
     return AccessResult::allowed();
   }
   return AccessResult::neutral();
@@ -84,4 +84,12 @@ function og_sm_content_preprocess_node_add_list(&$variables) {
     // node_add_list.
     $variables['types'][$type->id()]['url'] = $url;
   }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function og_sm_content_entity_type_alter(array &$entity_types) {
+  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  $entity_types['node']->setListBuilderClass('Drupal\og_sm_content\NodeListBuilder');
 }

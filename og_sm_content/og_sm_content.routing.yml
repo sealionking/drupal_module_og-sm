@@ -20,6 +20,7 @@ og_sm.my_site_content:
     _site_permission: 'access my content overview'
   options:
     _admin_route: TRUE
+    _filter_current_user: TRUE
     parameters:
       node:
         type: og_sm:site
@@ -47,5 +48,7 @@ og_sm.site_content.add:
   options:
     _node_operation_route: TRUE
     parameters:
+      node:
+        type: og_sm:site
       node_type:
         with_config_overrides: TRUE

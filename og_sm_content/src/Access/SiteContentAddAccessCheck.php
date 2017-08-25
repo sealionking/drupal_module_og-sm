@@ -58,8 +58,8 @@ class SiteContentAddAccessCheck implements AccessInterface {
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The currently logged in account.
-   * @param \Drupal\node\NodeInterface|int $node
-   *   The site node, can be either the ID or object.
+   * @param \Drupal\node\NodeInterface $node
+   *   The site node.
    * @param \Drupal\node\NodeTypeInterface $node_type
    *   (optional) The node type. If not specified, access is allowed if there
    *   exists at least one node type for which the user may create a node.
@@ -67,11 +67,7 @@ class SiteContentAddAccessCheck implements AccessInterface {
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  public function access(AccountInterface $account, $node, NodeTypeInterface $node_type = NULL) {
-    if (!$node instanceof NodeInterface) {
-      $node = $this->entityTypeManager->getStorage('node')->load($node);
-    }
-
+  public function access(AccountInterface $account, NodeInterface $node, NodeTypeInterface $node_type = NULL) {
     if ($node_type) {
       $access = $this->ogAccess->userAccess($node, "create {$node_type->id()} content", $account);
       if ($access->isAllowed()) {
