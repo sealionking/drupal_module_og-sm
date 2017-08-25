@@ -1,0 +1,3 @@
+og_sm_admin_menu:
+  class: Drupal\og_sm_admin_menu\Plugin\Menu\SiteMenuLink
+  deriver: Drupal\og_sm_admin_menu\Plugin\Derivative\SiteMenuLink

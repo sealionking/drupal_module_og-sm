@@ -1,0 +1,4 @@
+og_sm.site_switcher:
+  css:
+    theme:
+      css/site_switcher.css: {}
