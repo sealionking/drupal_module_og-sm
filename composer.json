@@ -1,0 +1,23 @@
+{
+    "name": "drupal/og_sm",
+    "type": "drupal-module",
+    "description": "Support to setup a platform supporting multiple (sub)sites using Organic Groups.",
+    "keywords": [
+        "Drupal",
+        "Digipolis",
+        "Organic Groups Site Manager"
+    ],
+    "license": "GPL-2.0+",
+    "homepage": "https://bitbucket.org/digipolisgent/drupal_module_og-sm",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Geert van Dort",
+            "email": "geert.vandort@digipolis.gent"
+        }
+    ],
+    "support": {
+        "issues": "https://digipolisgent.atlassian.net/secure/RapidBoard.jspa?rapidView=426",
+        "source": "https://bitbucket.org/digipolisgent/drupal_module_og-sm"
+    }
+}
