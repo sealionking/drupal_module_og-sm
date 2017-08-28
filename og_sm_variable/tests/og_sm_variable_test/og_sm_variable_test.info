@@ -1,8 +1,0 @@
-name = Site Variable
-description = "Site specific configuration variables."
-package = "Testing"
-core = 7.x
-hidden = TRUE
-
-dependencies[] = og_sm
-dependencies[] = og_sm_variable

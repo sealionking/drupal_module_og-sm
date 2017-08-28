@@ -1,9 +1,0 @@
-name = Site Administration Menu
-description = "Replaces the administrative menu with Site specific tasks."
-package = "Organic Groups Site Manager"
-core = 7.x
-
-dependencies[] = og_sm
-
-; Tests.
-files[] = tests/OgSmAdminMenuTestCase.test

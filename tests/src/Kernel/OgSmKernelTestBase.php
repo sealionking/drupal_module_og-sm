@@ -11,7 +11,7 @@ use Drupal\og_sm\Tests\SiteCreationTrait;
 /**
  * Base class to do kernel tests for OG Site Manager functionality.
  */
-class OgSmKernelTestBase extends KernelTestBase {
+abstract class OgSmKernelTestBase extends KernelTestBase {
 
   use UserCreationTrait;
   use SiteCreationTrait;
@@ -59,6 +59,17 @@ class OgSmKernelTestBase extends KernelTestBase {
       ->willReturn($group);
     // Force the site manager service to be recreated with the mock context
     // service.
+    $this->container->set('og_sm.site_manager', NULL);
+  }
+
+  /**
+   * Reset the Og Context.
+   */
+  protected function resetOgContext() {
+    $this->container->set('og.context', $this->getMock(OgContextInterface::class));
+    $this->container->get('og.context')
+      ->method('getGroup')
+      ->willReturn(NULL);
     $this->container->set('og_sm.site_manager', NULL);
   }
 

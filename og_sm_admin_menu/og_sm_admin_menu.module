@@ -5,392 +5,149 @@
  * Site Manager Administration module.
  */
 
-// Menu name.
-define('OG_SM_ADMIN_MENU_NAME', 'og-sm-admin-menu');
+use Drupal\og_sm\OgSm;
+use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_hook_info().
  */
 function og_sm_admin_menu_hook_info() {
-  $hooks = array(
-    'og_sm_admin_menu' => array(
+  return [
+    'og_sm_site_menu_links_discovered_alter' => [
       'group' => 'og_sm',
-    ),
-    'og_sm_admin_menu_alter' => array(
-      'group' => 'og_sm',
-    ),
-  );
-
-  return $hooks;
+    ],
+  ];
 }
 
 /**
- * Implements hook_admin_paths().
+ * Implements hook_local_tasks_alter().
  */
-function og_sm_admin_menu_admin_paths() {
-  $paths = array(
-    'group/*/*/admin' => TRUE,
-    'group/*/*/admin/*' => TRUE,
-  );
-  return $paths;
+function og_sm_admin_menu_local_tasks_alter(&$local_tasks) {
+  // We are taking over the admin route and don't want it to be a local task for
+  // site nodes.
+  unset($local_tasks['og.og_admin_routes:node.og_admin_routes']);
 }
 
 /**
- * Implements hook_menu().
+ * Implements hook_toolbar().
  */
-function og_sm_admin_menu_menu() {
-  $items = array();
+function og_sm_admin_menu_toolbar() {
+  $site_manager = OgSm::siteManager();
+  $links = [];
 
-  $file = 'og_sm_admin_menu.pages.inc';
+  $tab_title = t('Platform');
+  $tab_url = Url::fromRoute('<front>');
 
-  // Dummy item to use in dynamic menu items.
-  $items[OG_SM_ADMIN_MENU_NAME . '/%'] = array(
-    'title' => 'OG Site Admin placeholder',
-    'page callback' => 'og_sm_admin_menu_placeholder',
-    'page arguments' => array(1),
-    'access callback' => TRUE,
-    'file' => $file,
-  );
+  $current_site = $site_manager->currentSite();
+  if ($current_site) {
+    $links['platform'] = [
+      'title' => $tab_title,
+      'url' => $tab_url,
+    ];
 
-  // Site administration overview pages.
-  $items['group/%/%og_sm_site/admin'] = array(
-    'title callback' => 'og_sm_admin_menu_title',
-    'title arguments' => array('Administer @site_title', 2),
-    'type' => MENU_CALLBACK,
-    'page callback' => 'og_sm_admin_menu_overview',
-    'page arguments' => array(2),
-    'access callback' => 'og_sm_site_permission_access',
-    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
-    'file' => $file,
-  );
-  $items['group/%/%og_sm_site/admin/structure'] = array(
-    'title callback' => 'og_sm_admin_menu_title',
-    'title arguments' => array('Administer @site_title structure', 2),
-    'type' => MENU_CALLBACK,
-    'page callback' => 'og_sm_admin_menu_overview',
-    'page arguments' => array(2, 'structure'),
-    'access callback' => 'og_sm_site_permission_access',
-    'access arguments' => array(2, OG_SM_PERMISSION_SITE_ADMIN),
-    'file' => $file,
-  );
+    $tab_title = $current_site->label();
+    $tab_url = $site_manager->getSiteHomePage($current_site);
+  }
+
+  $switch_sites = $site_manager->getUserManageableSites();
+  if (count($switch_sites) < 2) {
+    return [];
+  }
+
+  foreach ($switch_sites as $site) {
+    if ($current_site && $current_site->id() === $site->id()) {
+      continue;
+    }
+
+    $links['site-' . $site->id()] = [
+      'title' => $site->label(),
+      'url' => $site_manager->getSiteHomePage($site),
+    ];
+  }
+
+  $items['site_switcher'] = [
+    '#type' => 'toolbar_item',
+    'tab' => [
+      '#type' => 'link',
+      '#title' => $tab_title,
+      '#url' => $tab_url,
+      '#attributes' => [
+        'title' => t('Return to site content'),
+        'class' => ['toolbar-site-switcher'],
+      ],
+      '#cache' => [
+        'contexts' => [
+          'og_group_context',
+          'user',
+        ],
+      ],
+    ],
+    'tray' => [
+      '#heading' => t('Site switcher'),
+      'site_switcher' => [
+        '#theme' => 'links__toolbar',
+        '#links' => $links,
+        '#attributes' => [
+          'class' => ['toolbar-menu'],
+        ],
+      ],
+    ],
+    '#attached' => [
+      'library' => [
+        'og_sm_admin_menu/og_sm.site_switcher',
+      ],
+    ],
+    '#weight' => 200,
+  ];
 
   return $items;
 }
 
 /**
- * Title callback for the overview pages.
+ * Implements hook_toolbar_alter().
+ */
+function og_sm_admin_menu_toolbar_alter(&$items) {
+  $items['administration']['tray']['toolbar_administration']['#pre_render'] = ['og_sm_admin_menu_prerender_toolbar_administration_tray'];
+  $items['administration']['#cache']['contexts'][] = 'og_group_context';
+}
+
+/**
+ * Renders the toolbar's site administration tray.
  *
- * @param string $title
- *   The Title to use.
- * @param object $site
- *   The Site Node ID to use to add the Site name to the title.
- *
- * @return string
- *   The personalized title.
- */
-function og_sm_admin_menu_title($title, $site) {
-  // @codingStandardsIgnoreStart
-  return t($title, array('@site_title' => $site->title));
-  // @codingStandardsIgnoreEnd
-}
-
-/**
- * Implements hook_theme().
- */
-function og_sm_admin_menu_theme($existing, $type, $theme, $path) {
-  $file_path = $path . '/templates';
-
-  return array(
-    'og_sm_admin_menu_overview_all' => array(
-      'variables' => array(
-        'left' => array(),
-        'right' => array(),
-      ),
-      'template' => 'og-sm-admin-menu-overview-all',
-      'path' => $file_path,
-    ),
-    'og_sm_admin_menu_overview_sub' => array(
-      'variables' => array(
-        'items' => array(),
-      ),
-      'template' => 'og-sm-admin-menu-overview-sub',
-      'path' => $file_path,
-    ),
-    'og_sm_admin_menu_overview_group' => array(
-      'variables' => array(
-        'title' => NULL,
-        'items' => array(),
-        'class' => NULL,
-      ),
-      'template' => 'og-sm-admin-menu-overview-group',
-      'path' => $file_path,
-    ),
-    'og_sm_admin_menu_overview_group_item' => array(
-      'variables' => array(
-        'url' => NULL,
-        'title' => NULL,
-        'description' => NULL,
-        'class' => NULL,
-      ),
-      'template' => 'og-sm-admin-menu-overview-group-item',
-      'path' => $file_path,
-    ),
-  );
-}
-
-/**
- * Create the admin menu(s) based on the implemented hooks.
- */
-function og_sm_admin_menu_rebuild() {
-  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
-  _og_sm_admin_menu_rebuild();
-}
-
-/**
- * Force the menu to be rebuild on the next time it is required.
- */
-function og_sm_admin_menu_needs_rebuild() {
-  $menu = menu_load(OG_SM_ADMIN_MENU_NAME);
-  if ($menu) {
-    menu_delete($menu);
-  }
-}
-
-/**
- * Get the menu structure as defined in the hooks.
+ * @param array $element
+ *   A renderable array.
  *
  * @return array
- *   The menu including the information from the menu_router table.
+ *   The updated renderable array.
  */
-function og_sm_admin_menu_items() {
-  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
-  return _og_sm_admin_menu_items();
-}
+function og_sm_admin_menu_prerender_toolbar_administration_tray(array $element) {
+  $site_manager = OgSm::siteManager();
 
-/**
- * Implements hook_translated_menu_link_alter().
- *
- * This will replace the dynamic menu placeholders with the actual values.
- */
-function og_sm_admin_menu_translated_menu_link_alter(&$item, $map) {
-  // Should we replace the path?
-  if (!isset($item['options']['og_sm_admin_menu_path'])) {
-    return;
+  $admin_toolbar_exists = \Drupal::moduleHandler()->moduleExists('admin_toolbar');
+
+  if (!$site_manager->currentSite()) {
+    // If there's no site context, render the toolbar as usual.
+    return $admin_toolbar_exists ? admin_toolbar_prerender_toolbar_administration_tray($element) : toolbar_prerender_toolbar_administration_tray($element);
   }
 
-  // Are we in a Site context?
-  $site = og_sm_current_site();
-  if (!$site) {
-    return;
-  }
+  // @todo: This can be simplified once https://www.drupal.org/node/1869638 has
+  // been implemented in core and the "admin_toolbar" module.
+  /* @var \Drupal\Core\Menu\MenuLinkTreeInterface $menu_tree */
+  $menu_tree = \Drupal::service('toolbar.menu_tree');
+  $parameters = new MenuTreeParameters();
+  // Depending on whether the 'admin_toolbar' module exists we should change the
+  // menu depth shown in the toolbar.
+  $max_depth = $admin_toolbar_exists ? 4 : 2;
+  $parameters->setMinDepth(2)->setMaxDepth($max_depth)->onlyEnabledLinks();
+  $tree = $menu_tree->load('og_sm_admin_menu', $parameters);
+  $manipulators = [
+    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+    ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+    ['callable' => $admin_toolbar_exists ? 'toolbar_tools_menu_navigation_links' : 'toolbar_menu_navigation_links'],
+  ];
+  $tree = $menu_tree->transform($tree, $manipulators);
+  $element['administration_menu'] = $menu_tree->build($tree);
 
-  // Create the actual Link.
-  $url = og_sm_admin_menu_router_path_from_admin_path($site, $item['options']['og_sm_admin_menu_path']);
-
-  // Update link.
-  $item['href'] = $item['link_path'] = url($url);
-  $item['router_path'] = $url;
-  $item['title'] = $item['link_title'];
-  $item['title_callback'] = 't';
-  if (!empty($item['options']['attributes']['title'])) {
-    $item['description'] = $item['options']['attributes']['title'];
-  }
-
-  // Localize link & description.
-  _menu_item_localize($item, $map);
-
-  // Load menu item and check access.
-  if ($menu_item = menu_get_item($url)) {
-    $item['access'] = $menu_item['access'];
-    return;
-  }
-
-  // Access fallback.
-  $item['access'] = FALSE;
-}
-
-/**
- * Helper to fill in the Site nid in an admin_path.
- *
- * This will replace [site:nid] by the nid of the Site.
- *
- * @param object $site
- *   The Site to get the nid from.
- * @param string $admin_path
- *   The admin path to fill in.
- *
- * @return string
- *   The router path.
- */
-function og_sm_admin_menu_router_path_from_admin_path($site, $admin_path) {
-  $admin_path = ltrim($admin_path, '/');
-  return preg_replace('/\[site:nid\]/', $site->nid, $admin_path);
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function og_sm_admin_menu_form_admin_menu_theme_settings_alter(&$form, &$form_state, $form_id) {
-  // Add the Site Administration menu as extra menu option.
-  $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.site'] = t('Site Administration menu');
-
-  // Add the Site switcher as extra menu option.
-  $form['plugins']['admin_menu_components']['#options']['og_sm_admin_menu.site_switcher'] = t('Site switcher');
-}
-
-/**
- * Implements hook_admin_menu_output_build().
- */
-function og_sm_admin_menu_admin_menu_output_build(&$content) {
-  // Replace the menu with the Site menu when in site context.
-  if (og_sm_current_site() && !empty($content['#components']['og_sm_admin_menu.site'])) {
-    $content['menu'] = og_sm_admin_menu_load_site_menu();
-  }
-
-  // Add the Site switcher menu to the administration menu.
-  if (!empty($content['#components']['og_sm_admin_menu.site_switcher'])) {
-    $content['site_switcher'] = og_sm_admin_menu_load_site_switcher();
-  }
-}
-
-/**
- * Load the Site Administration menu to show in the admin_menu bar.
- *
- * @return array
- *   The og_sm_admin menu structure.
- */
-function og_sm_admin_menu_load_site_menu() {
-  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
-
-  $menu_data = _og_sm_admin_menu_load_site_menu('menu');
-  $menu = admin_menu_links_menu($menu_data);
-
-  $menu['#theme'] = 'admin_menu_links';
-  $menu['#wrapper_attributes']['id'] = 'admin-menu-menu';
-  $menu['#weight'] = 0;
-
-  return $menu;
-}
-
-/**
- * Load the Site Switcher to show in the Administration menu.
- *
- * @return array
- *   The Site switcher menu item structure.
- */
-function og_sm_admin_menu_load_site_switcher() {
-  module_load_include('inc', 'og_sm_admin_menu', 'og_sm_admin_menu.menu');
-  return _og_sm_admin_menu_load_site_switcher();
-}
-
-/**
- * Implements hook_admin_menu_output_alter().
- */
-function og_sm_admin_menu_admin_menu_output_alter(&$content) {
-  $site = og_sm_current_site();
-
-  // Only if there is an active Site.
-  if (!$site || empty($content['#components']['og_sm_admin_menu.site'])) {
-    return;
-  }
-
-  // Clear out the empty item when showing Site menu.
-  if (!empty($content['responsive-menu']['admin/index'])) {
-    unset($content['responsive-menu']['admin/index']);
-  }
-
-  // Alter the home link to the homepage of the current Site.
-  if (!empty($content['icon'])) {
-    $content['icon']['icon']['#href'] = og_sm_site_homepage($site);
-  }
-  if (!empty($content['responsive-menu']['icon'])) {
-    $content['responsive-menu']['icon']['#href'] = og_sm_site_homepage($site);
-  }
-
-  // Alter the add content links.
-  if (!empty($content['menu']['node/add'])) {
-    $query = array('og_group_ref' => $site->nid);
-    $site_content_types = og_sm_content_get_types();
-
-    // Alter the node/add overview item.
-    $content['menu']['node/add']['#options']['query'] = $query;
-
-    // Alter the node/add/[node-type] items.
-    foreach ($content['menu']['node/add'] as $key => $item) {
-      // Get the content type name.
-      preg_match('#^node/add/(.*)#', $key, $matches);
-      if (empty($matches[1])) {
-        continue;
-      }
-      $node_type = preg_replace('/-/', '_', $matches[1]);
-
-      // Show only Site content type.
-      if (!isset($site_content_types[$node_type])) {
-        unset($content['menu']['node/add'][$key]);
-        continue;
-      }
-
-      // Alter the href or add query.
-      $content['menu']['node/add'][$key]['#options']['query'] = $query;
-    }
-  }
-
-  // Remove the shortcuts.
-  if (isset($content['shortcut'])) {
-    unset($content['shortcut']);
-  }
-}
-
-/**
- * Implements hook_admin_menu_cache_id_alter().
- */
-function og_sm_admin_menu_admin_menu_cache_id_alter(&$cid) {
-  $site = og_sm_current_site();
-  if ($site) {
-    $cid .= ':' . $site->nid;
-  }
-}
-
-/**
- * Implements hook_menu_alter().
- */
-function og_sm_admin_menu_menu_alter(&$items) {
-  // Mark the admin menu to be rebuild every time the menu system is rebuild.
-  og_sm_admin_menu_needs_rebuild();
-
-  // Remove the OG UI admin overview as it is replaced by this module.
-  if (isset($items['node/%/group'])) {
-    unset($items['node/%/group']);
-  }
-}
-
-/**
- * Implements hook_og_role_grant().
- */
-function og_sm_admin_menu_og_role_grant($entity_type, $gid, $uid, $rid) {
-  // Make sure that the admin_menu cache for this user is flushed when his roles
-  // change.
-  admin_menu_flush_caches($uid);
-}
-
-/**
- * Implements hook_og_role_revoke().
- */
-function og_sm_admin_menu_og_role_revoke($entity_type, $gid, $uid, $rid) {
-  // Make sure that the admin_menu cache for this user is flushed when his roles
-  // change.
-  admin_menu_flush_caches($uid);
-}
-
-/**
- * Implements hook_page_alter().
- */
-function og_sm_admin_menu_page_alter(&$page) {
-  // Add extra css IF admin menu is on the page.
-  if (empty($page['page_bottom']['admin_menu']['#attached']['css'])) {
-    return;
-  }
-
-  $file = drupal_get_path('module', 'og_sm_admin_menu') . '/css/og_sm_admin_menu.css';
-  $page['page_bottom']['admin_menu']['#attached']['css'][] = $file;
+  return $element;
 }
