@@ -35,13 +35,6 @@ class SiteManager implements SiteManagerInterface {
   protected $ogContext;
 
   /**
-   * The entity storage for node type entities.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
-   */
-  protected $nodeTypeStorage;
-
-  /**
    * The entity storage for node entities.
    *
    * @var \Drupal\node\NodeStorageInterface
@@ -104,7 +97,6 @@ class SiteManager implements SiteManagerInterface {
   public function __construct(SiteTypeManagerInterface $siteTypeManager, OgContextInterface $ogContext, EntityTypeManagerInterface $entityTypeManager, MembershipManagerInterface $membershipManager, EventDispatcherInterface $eventDispatcher, ModuleHandlerInterface $moduleHandler, AccountProxyInterface $accountProxy) {
     $this->siteTypeManager = $siteTypeManager;
     $this->ogContext = $ogContext;
-    $this->nodeTypeStorage = $entityTypeManager->getStorage('node_type');
     $this->nodeStorage = $entityTypeManager->getStorage('node');
     $this->membershipManager = $membershipManager;
     $this->eventDispatcher = $eventDispatcher;
@@ -116,11 +108,7 @@ class SiteManager implements SiteManagerInterface {
    * {@inheritdoc}
    */
   public function isSite(NodeInterface $node) {
-    $type = $this->nodeTypeStorage->load($node->getType());
-    if ($type instanceof NodeTypeInterface) {
-      return $this->siteTypeManager->isSiteType($type);
-    }
-    return FALSE;
+    return $this->siteTypeManager->isSiteTypeId($node->getType());
   }
 
   /**

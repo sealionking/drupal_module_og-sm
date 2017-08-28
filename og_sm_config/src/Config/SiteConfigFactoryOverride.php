@@ -12,7 +12,7 @@ use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\og_sm\Event\SiteEvent;
 use Drupal\og_sm\Event\SiteEvents;
-use Drupal\og_sm\SiteManagerInterface;
+use Drupal\og_sm\OgSm;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -56,26 +56,16 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
   protected $site;
 
   /**
-   * The site manager.
-   *
-   * @var \Drupal\og_sm\SiteManagerInterface
-   */
-  protected $siteManager;
-
-  /**
    * Constructs the LanguageConfigFactoryOverride object.
    *
    * @param \Drupal\Core\Config\StorageInterface $storage
    *   The configuration storage engine.
    * @param \Drupal\Core\Config\TypedConfigManagerInterface $typedConfig
    *   The typed configuration manager.
-   * @param \Drupal\og_sm\SiteManagerInterface $siteManager
-   *   The site manager.
    */
-  public function __construct(StorageInterface $storage, TypedConfigManagerInterface $typedConfig, SiteManagerInterface $siteManager) {
+  public function __construct(StorageInterface $storage, TypedConfigManagerInterface $typedConfig) {
     $this->baseStorage = $storage;
     $this->typedConfigManager = $typedConfig;
-    $this->siteManager = $siteManager;
   }
 
   /**
@@ -96,7 +86,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
    * {@inheritdoc}
    */
   public function addCollections(ConfigCollectionInfo $collectionInfo) {
-    foreach ($this->siteManager->getAllSites() as $site) {
+    foreach (OgSm::siteManager()->getAllSites() as $site) {
       $collectionInfo->addCollection($this->createConfigCollectionName($site), $this);
     }
   }
@@ -147,7 +137,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
   public function onConfigSave(ConfigCrudEvent $event) {
     $config = $event->getConfig();
     $name = $config->getName();
-    foreach ($this->siteManager->getAllSites() as $site) {
+    foreach (OgSm::siteManager()->getAllSites() as $site) {
       $config_override = $this->getOverride($site, $name);
       if (!$config_override->isNew()) {
         $this->filterOverride($config, $config_override);
@@ -161,7 +151,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
   public function onConfigDelete(ConfigCrudEvent $event) {
     $config = $event->getConfig();
     $name = $config->getName();
-    foreach ($this->siteManager->getAllSites() as $site) {
+    foreach (OgSm::siteManager()->getAllSites() as $site) {
       $config_override = $this->getOverride($site, $name);
       if (!$config_override->isNew()) {
         $config_override->delete();
@@ -176,7 +166,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
     $config = $event->getConfig();
     $name = $config->getName();
     $old_name = $event->getOldName();
-    foreach ($this->siteManager->getAllSites() as $site) {
+    foreach (OgSm::siteManager()->getAllSites() as $site) {
       $config_override = $this->getOverride($site, $old_name);
       if (!$config_override->isNew()) {
         $saved_config = $config_override->get();
@@ -197,7 +187,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
     if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
       return;
     }
-    $currentSite = $this->siteManager->currentSite();
+    $currentSite = OgSm::siteManager()->currentSite();
     if ($currentSite) {
       $this->setSite($currentSite);
     }
@@ -236,7 +226,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
    */
   public function createConfigObject($name, $collection = StorageInterface::DEFAULT_COLLECTION) {
     $siteId = $this->getSiteIdFromCollectionName($collection);
-    return $this->getOverride($this->siteManager->load($siteId), $name);
+    return $this->getOverride(OgSm::siteManager()->load($siteId), $name);
   }
 
   /**

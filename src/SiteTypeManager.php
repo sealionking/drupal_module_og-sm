@@ -52,6 +52,17 @@ class SiteTypeManager implements SiteTypeManagerInterface {
   /**
    * {@inheritdoc}
    */
+  public function isSiteTypeId($type_id) {
+    $type = $this->nodeTypeStorage->load($type_id);
+    if ($type instanceof NodeTypeInterface) {
+      return $this->isSiteType($type);
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isSiteType(NodeTypeInterface $type) {
     return $type->getThirdPartySetting('og_sm', static::SITE_TYPE_SETTING_KEY, FALSE);
   }

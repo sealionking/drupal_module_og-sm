@@ -1,7 +1,7 @@
 services:
   og_sm.config_factory_override:
     class: Drupal\og_sm_config\Config\SiteConfigFactoryOverride
-    arguments: ['@og_sm.config.storage', '@config.typed', '@og_sm.site_manager']
+    arguments: ['@og_sm.config.storage', '@config.typed']
     tags:
       - { name: config.factory.override, priority: -150 }
       - { name: event_subscriber }

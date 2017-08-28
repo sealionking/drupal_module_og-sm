@@ -15,6 +15,17 @@ interface SiteTypeManagerInterface {
   const SITE_TYPE_SETTING_KEY = 'og_sm_site_type';
 
   /**
+   * Check if a given node type id is a Site type.
+   *
+   * @param string $type_id.
+   *   The type id to check.
+   *
+   * @return bool
+   *   Is Site type.
+   */
+  public function isSiteTypeId($type_id);
+
+  /**
    * Check if a given node type is a Site type.
    *
    * @param \Drupal\node\NodeTypeInterface $type
