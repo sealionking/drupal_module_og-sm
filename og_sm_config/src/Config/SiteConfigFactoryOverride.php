@@ -123,7 +123,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
   /**
    * {@inheritdoc}
    */
-  public function getStorage($site) {
+  public function getStorage(NodeInterface$site) {
     $collectionName = $this->createConfigCollectionName($site);
     if (!isset($this->storages[$collectionName])) {
       $this->storages[$collectionName] = $this->baseStorage->createCollection($collectionName);
