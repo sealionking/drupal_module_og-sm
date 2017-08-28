@@ -29,22 +29,6 @@ Two new Site admin pages are provided by this module:
   data (author, published status, last update date).
 
 
-### Extend the Site admin menu
-This module extends the Site administration menu (see og_sm_admin_menu).
-
-It adds an item "Add content" to the menu. This is a link to the
-`[site-path]/content/add` page. The menu items contains a submenu with links to
-all the content creation forms for all content types the user has access to
-within the Site.
-
-
-### Extend the Site admin overview page
-This module adds two items to the "Content" block on the `[site-path]/admin`
-overview page:
-* Add content
-* Administer content
-
-
 
 ## Requirements
 * Organic Groups Site Manager

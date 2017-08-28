@@ -8,7 +8,7 @@ use Drupal\og\OgResolvedGroupCollectionInterface;
  * Tries to get the context based on the fact that we are on a site admin page.
  *
  * Will check if:
- * - The path starts with group/node/[nid]
+ * - The path starts with group/node/{node}
  * - If the group is a Site node type.
  *
  * @OgGroupResolver(
@@ -27,10 +27,10 @@ class AdminGroupResolver extends OgSmGroupResolverBase {
     if (!$route_object) {
       return;
     }
-    if (strpos($route_object->getPath(), '/group/node/{group}/') !== 0) {
+    if (strpos($route_object->getPath(), '/group/node/{node}/') !== 0) {
       return;
     }
-    $group = $this->routeMatch->getParameter('group');
+    $group = $this->routeMatch->getParameter('node');
 
     if ($this->siteManager->isSite($group)) {
       $collection->addGroup($group, ['url']);

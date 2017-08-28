@@ -1,5 +1,5 @@
 og_sm.site.structure:
-  path: 'group/{entity_type_id}/{node}/admin/structure'
+  path: '/group/{entity_type_id}/{node}/admin/structure'
   defaults:
     _controller: '\Drupal\og_sm_admin_menu\Controller\SiteAdminController::siteAdminMenuBlockPage'
     _title_callback: '\Drupal\og_sm_admin_menu\Controller\SiteAdminController::siteAdminMenuTitle'

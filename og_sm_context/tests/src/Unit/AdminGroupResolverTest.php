@@ -69,7 +69,7 @@ class AdminGroupResolverTest extends OgSmGroupResolverTestBase {
     }
 
     if ($route_object_id) {
-      $this->routeMatch->getParameter('group')
+      $this->routeMatch->getParameter('node')
         ->willReturn($this->testEntities[$route_object_id]);
     }
 
@@ -99,32 +99,32 @@ class AdminGroupResolverTest extends OgSmGroupResolverTestBase {
         NULL,
       ],
       [
-        '/group/node/{group}/admin',
+        '/group/node/{node}/admin',
         'group',
         NULL,
       ],
       [
-        '/group/node/{group}/admin',
+        '/group/node/{node}/admin',
         'site',
         'site',
       ],
       [
-        '/group/node/{group}/admin/config',
+        '/group/node/{node}/admin/config',
         'site',
         'site',
       ],
       [
-        '/group/node/{group}/admin',
+        '/group/node/{node}/admin',
         'site_content',
         NULL,
       ],
       [
-        '/group/node/{group}/admin/config',
+        '/group/node/{node}/admin/config',
         'site_content',
         NULL,
       ],
       [
-        '/group/node/{group}/admin',
+        '/group/node/{node}/admin',
         'non_group',
         NULL,
       ],

@@ -1,87 +1,33 @@
 <?php
+
 /**
  * @file
  * Site Manager (og_sm) related hooks.
  */
 
+use Drupal\og_sm\OgSm;
+
 /**
- * Implements hook_og_sm_admin_menu().
+ * Implements hook_og_sm_site_menu_links_discovered_alter().
  */
-function og_sm_content_og_sm_admin_menu() {
-  $items = array();
+function og_sm_content_og_sm_site_menu_links_discovered_alter(array &$links) {
+  $site_type_manager = OgSm::siteTypeManager();
 
-  // Administer content types.
-  $items['structure/content_types'] = array(
-    'title' => 'Content types',
-    'description' => 'Administer the content types for this Site.',
-    'href' => 'admin/structure/types',
-    'column' => 'left',
-    'weight' => 0,
-  );
+  $content_add_link = [
+    'route_name' => 'og_sm.site_content.add',
+    'menu_name' => 'og_sm_admin_menu',
+    'provider' => 'og_sm_content',
+    'parent' => 'og_sm.site_content.add_page',
+  ];
 
-  // Administer content.
-  $items['content'] = array(
-    'title' => 'Content',
-    'href' => 'admin/content',
-    'column' => 'left',
-    'weight' => -10,
-  );
-  $items['content/add'] = array(
-    'title' => 'Add content',
-    'description' => 'Add new content for this Site.',
-    'href' => 'content/add',
-    'exclude_menu' => TRUE,
-    'weight' => -10,
-  );
-  $items['content/overview'] = array(
-    'title' => 'Manage content',
-    'description' => 'Manage contents of this Site.',
-    'href' => 'admin/content',
-    'exclude_menu' => TRUE,
-    'weight' => -9,
-  );
-
-  // Make items translatable.
-  if (FALSE) {
-    t('Content types');
-    t('Administer the content types for this Site.');
-    t('Add content');
-    t('Overview of all content types that can be created.');
-    t('Manage content');
-    t('Manage contents of this Site.');
+  foreach ($site_type_manager->getContentTypes() as $site_type) {
+    $id = 'og.site_content.add.' . $site_type->id();
+    $links[$id] = [
+      'title' => $site_type->label(),
+      'id' => $id,
+      'route_parameters' => [
+        'node_type' => $site_type->id(),
+      ],
+    ] + $content_add_link;
   }
-
-  return $items;
-}
-
-/**
- * Implements hook_og_sm_content_type_info_alter().
- */
-function og_sm_content_og_sm_content_type_info_alter(&$type_info, $site) {
-  $key_base = 'og_sm_content_' . $type_info->type . '_';
-
-  $type_info->site_type = check_plain(
-    og_sm_variable_get($site->nid, $key_base . 'machine_name', $type_info->type)
-  );
-  $type_info->name = check_plain(
-    og_sm_variable_get($site->nid, $key_base . 'name', $type_info->name)
-  );
-  $type_info->name_plural = check_plain(
-    og_sm_variable_get($site->nid, $key_base . 'name_plural', $type_info->name)
-  );
-  $type_info->node_add_title = check_plain(
-    og_sm_variable_get($site->nid, $key_base . 'node_add_title', t('Create @name', array('@name' => $type_info->name)))
-  );
-}
-
-/**
- * Implements hook_og_sm_site_clone().
- */
-function og_sm_content_og_sm_site_clone($site_new, $site_original) {
-  // Copy the feature variables.
-  og_sm_variable_copy_from_to_by_prefix(
-    $site_original->nid,
-    $site_new->nid,
-    'og_sm_content_'
-  );
 }

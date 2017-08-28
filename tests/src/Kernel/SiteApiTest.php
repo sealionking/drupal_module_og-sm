@@ -169,7 +169,7 @@ class SiteApiTest extends OgSmKernelTestBase {
     $this->enableModules(['og_sm_test']);
     $site_manager = $this->container->get('og_sm.site_manager');
     $this->assertEquals(
-      Url::fromUserInput('/group/node/' . $site->id() . '/admin/site-edit')->toString(),
+      Url::fromUserInput('/group/node/' . $site->id() . '/admin/structure/site-edit')->toString(),
       $site_manager->getSiteHomePage($site)->toString(),
       'Modules can alter the Site path.'
     );
