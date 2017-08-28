@@ -17,6 +17,6 @@ services:
     tags:
       - { name: access_check, applies_to: _site_permission }
   og_sm_content.group_permission_event_subscriber:
-    class: Drupal\og_sm_content\EventSubscriber\GroupPermissionEventSubscriber
+    class: Drupal\og_sm\EventSubscriber\GroupPermissionEventSubscriber
     tags:
       - { name: event_subscriber }
