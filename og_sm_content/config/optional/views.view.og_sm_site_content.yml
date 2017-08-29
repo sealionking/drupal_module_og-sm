@@ -599,7 +599,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - og_role
         - url
         - url.query_args
         - user
@@ -884,7 +883,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - og_role
         - url
         - url.query_args
         - user
@@ -916,7 +914,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - og_role
         - url
         - url.query_args
         - user
