@@ -127,7 +127,10 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
   public static function getSubscribedEvents() {
     $events = parent::getSubscribedEvents();
     $events[KernelEvents::REQUEST][] = ['onKernelRequestSetSite'];
-    $events[SiteEvents::DELETE][] = ['onSiteDelete'];
+    // Set the priority of the delete event low, we only want to remove the
+    // config at the last possible moment so other modules can still use it
+    // during site cleanup.
+    $events[SiteEvents::DELETE][] = ['onSiteDelete', -255];
     return $events;
   }
 

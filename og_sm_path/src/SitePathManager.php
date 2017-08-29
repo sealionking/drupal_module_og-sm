@@ -137,6 +137,10 @@ class SitePathManager implements SitePathManagerInterface {
    */
   public function deleteSiteAliases(NodeInterface $site) {
     $path = $this->getPathFromSite($site);
+    if (!$path) {
+      return;
+    }
+
     $path = $this->connection->escapeLike($path) . '/%';
 
     $select = $this->connection->select(AliasStorage::TABLE);
