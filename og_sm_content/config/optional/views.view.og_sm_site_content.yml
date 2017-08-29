@@ -6,7 +6,7 @@ dependencies:
     - og
     - user
 id: og_sm_site_content
-label: Content
+label: Site content
 module: node
 description: 'Find and manage content.'
 tag: default
