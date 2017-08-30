@@ -239,6 +239,7 @@ class SiteConfigFactoryOverride extends ConfigFactoryOverrideBase implements Sit
     $metadata = new CacheableMetadata();
     if ($this->site) {
       $metadata->setCacheContexts(['og_group_context']);
+      $metadata->setCacheTags(['og_sm_config:' . $this->site->id() . ':' . $name]);
     }
     return $metadata;
   }
