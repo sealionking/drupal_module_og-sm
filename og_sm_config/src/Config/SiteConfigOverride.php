@@ -34,6 +34,13 @@ class SiteConfigOverride extends StorableConfigBase {
   /**
    * {@inheritdoc}
    */
+  public function getCacheTags() {
+    return Cache::mergeTags(['og_sm_config:' . $this->getSiteId() . ':' . $this->name], $this->cacheTags);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save($has_trusted_data = FALSE) {
     if (!$has_trusted_data) {
       foreach ($this->data as $key => $value) {
