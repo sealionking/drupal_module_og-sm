@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * API documentation about the og_sm module.
@@ -19,7 +20,7 @@
  * file. The recommended place is in the yourmodule.og_sm.inc file as it keeps
  * your .module file cleaner and makes the platform load less code by default.
  *
- * @param &$build
+ * @param array &$build
  *   A renderable array representing the entity content. The module may add
  *   elements to $build prior to rendering. The structure of $build is a
  *   renderable array as expected by drupal_render().
@@ -28,7 +29,7 @@
  * @param \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display
  *   The entity view display holding the display options configured for the
  *   entity components.
- * @param $view_mode
+ * @param string $view_mode
  *   The view mode the entity is rendered in.
  *
  * @see hook_node_view()

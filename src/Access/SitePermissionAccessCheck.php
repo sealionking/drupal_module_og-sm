@@ -3,12 +3,10 @@
 namespace Drupal\og_sm\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
-use Drupal\node\NodeTypeInterface;
 use Drupal\og\OgAccessInterface;
 use Drupal\og_sm\SiteManagerInterface;
 use Symfony\Component\Routing\Route;
@@ -49,6 +47,7 @@ class SitePermissionAccessCheck implements AccessInterface {
    * @param \Drupal\og\OgAccessInterface $og_access
    *   The OG access service.
    * @param \Drupal\og_sm\SiteManagerInterface $site_manager
+   *   The site manager service.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, OgAccessInterface $og_access, SiteManagerInterface $site_manager) {
     $this->entityTypeManager = $entity_type_manager;

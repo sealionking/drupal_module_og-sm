@@ -17,7 +17,7 @@ interface SiteTypeManagerInterface {
   /**
    * Check if a given node type id is a Site type.
    *
-   * @param string $type_id.
+   * @param string $type_id
    *   The type id to check.
    *
    * @return bool
@@ -65,7 +65,7 @@ interface SiteTypeManagerInterface {
   /**
    * Check if a given content type is a Site content type.
    *
-   * @param NodeTypeInterface $type
+   * @param \Drupal\node\NodeTypeInterface $type
    *   The content type to check.
    *
    * @return bool

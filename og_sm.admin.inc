@@ -45,7 +45,7 @@ function _og_sm_form_node_type_form_alter(array &$form, FormStateInterface $form
     '#states' => [
       'disabled' => [
         ':input[name="og_is_group"]' => ['checked' => FALSE],
-      ]
+      ],
     ],
   ];
   $form['#entity_builders'][] = 'og_sm_node_type_form_builder';
@@ -63,7 +63,7 @@ function _og_sm_form_node_type_form_alter(array &$form, FormStateInterface $form
  * @param array $form
  *   The complete form structure.
  */
-function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
+function og_sm_node_type_form_field_validate(array $element, FormStateInterface $form_state, array $form) {
   if ($form_state->getValue('og_sm_site_type') && !$form_state->getValue('og_is_group')) {
     $form_state->setError($element, t('A content type can only be a Site if it also a Group type.'));
   }
@@ -72,6 +72,8 @@ function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
 /**
  * Validation of the posted og_sm_site_type field value.
  *
+ * This will check if the node type is also a group type.
+ *
  * @param string $entity_type
  *   The entity type identifier.
  * @param \Drupal\node\NodeTypeInterface $type
@@ -79,10 +81,8 @@ function og_sm_node_type_form_field_validate($element, &$form_state, $form) {
  * @param array $form
  *   The complete form array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
- *   The current state of the form.
- *
- * This will check if the node type is also a group type.
+ *   The current state of the form.*
  */
-function og_sm_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+function og_sm_node_type_form_builder($entity_type, NodeTypeInterface $type, array &$form, FormStateInterface $form_state) {
   OgSm::setSiteType($type, $form_state->getValue('og_sm_site_type'));
 }

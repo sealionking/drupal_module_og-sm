@@ -73,6 +73,8 @@ class AdminMenuTest extends OgSmWebTestBase {
    * Test the og_sm_admin_menu_load_site_switcher() function.
    */
   public function testSiteSwitcher() {
+    global $base_path;
+
     // Create Sites.
     $site_type_manager = OgSm::siteTypeManager();
     $site_manager = OgSm::siteManager();
@@ -92,9 +94,9 @@ class AdminMenuTest extends OgSmWebTestBase {
     // As administrator outside Sites.
     $this->drupalLogin($administrator);
     $this->assertSiteSwitcherContains([
-      '/' => 'Platform',
-      '/node/' . $site1->id() => $site1->label(),
-      '/node/' . $site2->id() => $site2->label(),
+      $base_path . '/' => 'Platform',
+      $base_path . '/node/' . $site1->id() => $site1->label(),
+      $base_path . '/node/' . $site2->id() => $site2->label(),
     ], 'Administrator gets menu with all Sites, platform is current item.');
 
     // As administrator outside Sites.
@@ -105,9 +107,9 @@ class AdminMenuTest extends OgSmWebTestBase {
     $this->drupalLogin($administrator);
     $this->drupalGet($site_manager->getSiteHomePage($site1));
     $this->assertSiteSwitcherContains([
-      '/node/' . $site1->id() => $site1->label(),
-      '/' => 'Platform',
-      '/node/' . $site2->id() => $site2->label(),
+      $base_path . '/node/' . $site1->id() => $site1->label(),
+      $base_path . '/' => 'Platform',
+      $base_path . '/node/' . $site2->id() => $site2->label(),
     ], 'Administrator gets menu with all Sites, Site 1 is current item.');
 
     // As user 1 within Site 1.
@@ -119,9 +121,9 @@ class AdminMenuTest extends OgSmWebTestBase {
     $this->drupalLogin($userSite1And2Admin);
     $this->drupalGet($site_manager->getSiteHomePage($site1));
     $this->assertSiteSwitcherContains([
-      '/node/' . $site1->id() => $site1->label(),
-      '/' => 'Platform',
-      '/node/' . $site2->id() => $site2->label(),
+      $base_path . '/node/' . $site1->id() => $site1->label(),
+      $base_path . '/' => 'Platform',
+      $base_path . '/node/' . $site2->id() => $site2->label(),
     ], 'User 2 gets menu with all the Sites he has access to, Site 1 is current item.');
   }
 

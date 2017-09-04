@@ -110,6 +110,8 @@ trait SiteCreationTrait {
    *   (optional) Array of permissions for this user.
    * @param \Drupal\node\NodeInterface[] $groups
    *   (optional) Array of groups the node is member of.
+   * @param array $site_permissions
+   *   (optional) Array of groups permissions for this user's memberships.
    *
    * @return \Drupal\Core\Session\AccountInterface
    *   The user object.
@@ -141,7 +143,6 @@ trait SiteCreationTrait {
 
       $membership->save();
     }
-
 
     return $account;
   }

@@ -1,8 +1,8 @@
 <?php
 
 namespace Drupal\og_sm\Plugin\views\argument_validator;
+
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\node\NodeInterface;
 use Drupal\og_sm\SiteManagerInterface;
 use Drupal\views\Plugin\views\argument_validator\ArgumentValidatorPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;

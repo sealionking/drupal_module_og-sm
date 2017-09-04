@@ -133,7 +133,7 @@ class ChangeAccessTest extends OgSmKernelTestBase {
     // Create Sites.
     $site_type_manager = OgSm::siteTypeManager();
     $this->typeNotSite = $this->createGroupNodeType('not_site_type');
-    $this->typeIsSite  = $this->createGroupNodeType('is_site_type');
+    $this->typeIsSite = $this->createGroupNodeType('is_site_type');
     $site_type_manager->setIsSiteType($this->typeIsSite, TRUE);
     $this->typeIsSite->save();
     $this->siteNode = $this->createGroup(

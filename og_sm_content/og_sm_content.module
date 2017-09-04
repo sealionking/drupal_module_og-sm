@@ -90,6 +90,6 @@ function og_sm_content_preprocess_node_add_list(&$variables) {
  * Implements hook_entity_type_alter().
  */
 function og_sm_content_entity_type_alter(array &$entity_types) {
-  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
   $entity_types['node']->setListBuilderClass('Drupal\og_sm_content\NodeListBuilder');
 }
