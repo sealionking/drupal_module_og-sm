@@ -8,6 +8,11 @@ This module adds support to have Site specific routes.
 Modules can require to have Site-specific routes with Site specific 
 custom paths. This module provides the necessary events to provide those items.
 
+### OG Context provider for Site routes
+Context provider to detect the Group context based on the Site route
+
+Will check if:
+  - The site routes has a "og_sm_routing:site" parameter.
 
 
 ## Requirements
