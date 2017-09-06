@@ -78,8 +78,3 @@ public function alterRoutes(SiteRoutingEvent $event) {
   }
 }
 ```
-
-
-
-
-[link-hook-menu]: https://api.drupal.org/api/drupal/modules%21system%21system.api.php/function/hook_menu/7.x
