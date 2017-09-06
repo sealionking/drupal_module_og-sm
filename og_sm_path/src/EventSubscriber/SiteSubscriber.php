@@ -22,7 +22,7 @@ class SiteSubscriber implements EventSubscriberInterface {
   protected $sitePathManager;
 
   /**
-   * Constructs a PathProcessorAlias object.
+   * Constructs a SiteSubscriber object.
    *
    * @param \Drupal\og_sm_path\SitePathManagerInterface $site_path_manager
    *   The site path manager.
