@@ -89,6 +89,9 @@ class SiteRoutes implements EventSubscriberInterface {
     // site routes.
     foreach ($collection->all() as $route_name => $route) {
       $collection->remove($route_name);
+      $route->addDefaults([
+        'node' => $site,
+      ]);
       $collection->add('og_sm_site:' . $site->id() . ':' . $route_name, $route);
     }
 

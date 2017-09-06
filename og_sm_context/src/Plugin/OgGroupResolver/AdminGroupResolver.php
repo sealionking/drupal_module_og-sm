@@ -2,6 +2,7 @@
 
 namespace Drupal\og_sm_context\Plugin\OgGroupResolver;
 
+use Drupal\node\NodeInterface;
 use Drupal\og\OgResolvedGroupCollectionInterface;
 
 /**
@@ -27,12 +28,12 @@ class AdminGroupResolver extends OgSmGroupResolverBase {
     if (!$route_object) {
       return;
     }
-    if (strpos($route_object->getPath(), '/group/node/{node}/') !== 0) {
+    if (!preg_match('#^/group/node/({node}|[0-9]+)#', $route_object->getPath())) {
       return;
     }
     $group = $this->routeMatch->getParameter('node');
 
-    if ($this->siteManager->isSite($group)) {
+    if ($group instanceof NodeInterface && $this->siteManager->isSite($group)) {
       $collection->addGroup($group, ['url']);
       $this->stopPropagation();
     }

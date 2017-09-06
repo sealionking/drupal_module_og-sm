@@ -64,6 +64,21 @@ class SiteRoutingTest extends OgSmKernelTestBase {
   }
 
   /**
+   * Helper function that prefixes the site route name with the site id.
+   *
+   * @param string $route_name
+   *   The site route name.
+   * @param \Drupal\node\NodeInterface $site
+   *   The site node.
+   *
+   * @return string
+   *   The actual route name.
+   */
+  protected function getActualRouteName($route_name, $site) {
+    return 'og_sm_site:' . $site->id() . ':' . $route_name;
+  }
+
+  /**
    * Gets a site route.
    *
    * @param string $route_name
@@ -77,7 +92,8 @@ class SiteRoutingTest extends OgSmKernelTestBase {
   protected function getSiteRoute($route_name, $site) {
     /* @var \Drupal\Core\Routing\RouteProviderInterface $route_provider */
     $route_provider = $this->container->get('router.route_provider');
-    return $route_provider->getRouteByName('og_sm_site:' . $site->id() . ':' . $route_name);
+    $route_name = $this->getActualRouteName($route_name, $site);
+    return $route_provider->getRouteByName($route_name);
   }
 
   /**
@@ -90,7 +106,7 @@ class SiteRoutingTest extends OgSmKernelTestBase {
    * @param string $message
    *   Additional information about the test.
    */
-  public function assertSiteRouteExists($route_name, $site, $message = '') {
+  protected function assertSiteRouteExists($route_name, $site, $message = '') {
     $route = $this->getSiteRoute($route_name, $site);
     $this->assertNotEmpty($route, $message);
   }
@@ -105,7 +121,7 @@ class SiteRoutingTest extends OgSmKernelTestBase {
    * @param string $message
    *   Additional information about the test.
    */
-  public function assertSiteRouteNotExists($route_name, NodeInterface $site, $message = '') {
+  protected function assertSiteRouteNotExists($route_name, NodeInterface $site, $message = '') {
     try {
       $this->getSiteRoute($route_name, $site);
     }
