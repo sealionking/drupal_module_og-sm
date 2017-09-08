@@ -66,7 +66,25 @@ class SiteMenuLink extends DeriverBase implements ContainerDeriverInterface {
     );
   }
 
-  public function createDefinitionPerOgMenu($plugin_id, $plugin_definition) {
+  /**
+   * Helper function to create a menu_link per og-menu instance.
+   *
+   * This function will return an empty array when the og_menu module is not
+   * enabled.
+   *
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param array $plugin_definition
+   *   The plugin definition.
+   *
+   * @return array
+   *   An array of menu link definitions.
+   */
+  protected function createDefinitionPerOgMenu($plugin_id, array $plugin_definition) {
+    if (!$this->moduleHandler->moduleExists('og_menu')) {
+      return [];
+    }
+
     $links = [];
     $instances = $this->entityTypeManager->getStorage('ogmenu_instance')->loadByProperties([
       'type' => $plugin_definition['og_menu_name'],
