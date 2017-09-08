@@ -16,6 +16,7 @@ This module and its submodules adds functionality to support:
 * Support for Group types to become sites enabled (Site).
 * Support for Group Content types (Site Content).
 * Support for Group Users (Site Users).
+* Yml file discovery for site links.
 
 ### Included in og_sm_access module
 * Access to Site content based on the publication status of the Site they
@@ -232,6 +233,36 @@ Check if a user is member of the given site:
 ```php
 $is_member =  \Drupal::service('og_sm.site_manager')->userIsMemberOfSite($account, $site);
 ```
+
+### module_name.site_links.menu.yml
+The naming of the .yml file should be `module_name.site_links.menu.yml`
+
+The allowed parameters per menu item are the same as core's `module_name.links.menu.yml`
+file. Dynamic route parameters like the group's entity type (`{entity_type_id}`)
+and the site node (`{node}`) are automatically injected when needed.
+
+Example:
+
+```yml
+og_sm.site.admin:
+  title: 'Administer site'
+  route_name: entity.node.og_admin_routes
+  menu_name: og_sm_admin_menu
+og_sm.site.structure:
+  title: 'Structure'
+  route_name: og_sm.site.structure
+  parent: og_sm.site.admin
+  menu_name: og_sm_admin_menu
+  weight: 30
+  options:
+    attributes:
+      class:
+        - 'toolbar-icon-system-admin-structure'
+```
+
+### hook_og_sm_site_menu_links_discovered_alter(&$items)
+Alter the menu items as gathered using `module_name.site_links.menu.yml`.
+
 
 ## Events
 The og_sm module triggers multiple events to make it easier to alter

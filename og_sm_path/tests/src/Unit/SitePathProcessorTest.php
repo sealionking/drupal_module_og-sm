@@ -12,6 +12,7 @@ use Drupal\og_sm_path\PathProcessor\SitePathProcessor;
 use Drupal\og_sm_path\SitePathManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -113,6 +114,8 @@ class SitePathProcessorTest extends UnitTestCase {
     \Drupal::setContainer($container);
 
     $this->request = $this->prophesize(Request::class)->reveal();
+    $this->request->query = new ParameterBag();
+
     $this->bubbleableMetadata = $this->prophesize(BubbleableMetadata::class)->reveal();
 
     $this->siteManager->currentSite()->willReturn($this->testNodes[1]);

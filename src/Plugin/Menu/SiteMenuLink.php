@@ -1,17 +1,18 @@
 <?php
 
-namespace Drupal\og_sm_admin_menu\Plugin\Menu;
+namespace Drupal\og_sm\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 use Drupal\Core\Menu\StaticMenuLinkOverridesInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
+use Drupal\og\OgGroupAudienceHelperInterface;
 use Drupal\og_sm\SiteManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines site menu links.
  *
- * @see \Drupal\og_sm_admin_menu\Plugin\Derivative\SiteMenuLink
+ * @see \Drupal\og_sm\Plugin\Derivative\SiteMenuLink
  */
 class SiteMenuLink extends MenuLinkDefault {
 
@@ -28,6 +29,13 @@ class SiteMenuLink extends MenuLinkDefault {
    * @var \Drupal\Core\Routing\RouteProviderInterface
    */
   protected $routeProvider;
+
+  /**
+   * The entity type manager.
+   *
+   * @var
+   */
+  protected $entityTypeManager;
 
   /**
    * Constructs a new ViewsMenuLink.
@@ -75,6 +83,34 @@ class SiteMenuLink extends MenuLinkDefault {
     $route_parameters['node'] = $site ? $site->id() : 0;
     $route = $this->routeProvider->getRouteByName($this->getRouteName());
     return array_intersect_key($route_parameters, array_flip($route->compile()->getPathVariables()));
+  }
+
+  /**
+   * Gets the ogmenu_instance for the current og group.
+   *
+   * @return mixed The instance of the og menu or null if no instance is found.
+   */
+  protected function getOgMenuInstance($menu_type) {
+    $site = $this->siteManager->currentSite();
+    $instances = $this->entityTypeManager->getStorage('ogmenu_instance')->loadByProperties([
+      'type' => $menu_type,
+      OgGroupAudienceHelperInterface::DEFAULT_FIELD => $site->id(),
+    ]);
+    if ($instances) {
+      return array_pop($instances);
+    }
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMenuName() {
+    if (!isset($this->pluginDefinition['og_menu_name'])) {
+      return parent::getMenuName();
+    }
+
+
   }
 
 }
