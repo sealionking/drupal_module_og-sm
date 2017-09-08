@@ -34,11 +34,11 @@ class SiteManager implements SiteManagerInterface {
   protected $ogContext;
 
   /**
-   * The entity storage for node entities.
+   * The entity type manager.
    *
-   * @var \Drupal\node\NodeStorageInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $nodeStorage;
+  protected $entityTypeManager;
 
   /**
    * The membership manager.
@@ -96,11 +96,21 @@ class SiteManager implements SiteManagerInterface {
   public function __construct(SiteTypeManagerInterface $siteTypeManager, OgContextInterface $ogContext, EntityTypeManagerInterface $entityTypeManager, MembershipManagerInterface $membershipManager, EventDispatcherInterface $eventDispatcher, ModuleHandlerInterface $moduleHandler, AccountProxyInterface $accountProxy) {
     $this->siteTypeManager = $siteTypeManager;
     $this->ogContext = $ogContext;
-    $this->nodeStorage = $entityTypeManager->getStorage('node');
+    $this->entityTypeManager = $entityTypeManager;
     $this->membershipManager = $membershipManager;
     $this->eventDispatcher = $eventDispatcher;
     $this->moduleHandler = $moduleHandler;
     $this->accountProxy = $accountProxy;
+  }
+
+  /**
+   * Gets the node storage object.
+   *
+   * @return \Drupal\node\NodeStorageInterface
+   *   The node storage object.
+   */
+  protected function getNodeStorage() {
+    return $this->entityTypeManager->getStorage('node');
   }
 
   /**
@@ -126,7 +136,7 @@ class SiteManager implements SiteManagerInterface {
    * {@inheritdoc}
    */
   public function load($id) {
-    $site = $this->nodeStorage->load($id);
+    $site = $this->getNodeStorage()->load($id);
     if (!$site || !$this->isSite($site)) {
       return FALSE;
     }
@@ -208,7 +218,7 @@ class SiteManager implements SiteManagerInterface {
       return [];
     }
 
-    $query = $this->nodeStorage->getQuery()->condition('type', array_keys($siteTypes), 'IN');
+    $query = $this->getNodeStorage()->getQuery()->condition('type', array_keys($siteTypes), 'IN');
     return $query->execute();
   }
 
@@ -220,7 +230,7 @@ class SiteManager implements SiteManagerInterface {
     if (!$ids) {
       return [];
     }
-    return $this->nodeStorage->loadMultiple($ids);
+    return $this->getNodeStorage()->loadMultiple($ids);
   }
 
   /**
