@@ -29,6 +29,7 @@ function og_sm_hook_info() {
   $hooks = [
     'og_sm_site_view' => $group,
     'og_sm_site_homepage_alter' => $group,
+    'og_sm_site_menu_links_discovered_alter' => $group,
   ];
 
   return $hooks;

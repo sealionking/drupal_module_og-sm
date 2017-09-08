@@ -41,7 +41,7 @@ class RouteSubscriber extends RouteSubscriberBase {
       '_title_arguments' => [
         'title' => 'Administer @site_title',
       ],
-      'link_id' => 'og_sm_admin_menu:og_sm.site.admin',
+      'link_id' => 'og_sm:og_sm.site.admin',
     ]);
     $route->addRequirements([
       '_site_permission' => 'administer site',

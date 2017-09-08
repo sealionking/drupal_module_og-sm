@@ -70,7 +70,8 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
       $site = $this->sitePathManager->getSiteFromPath($parts[1]);
       if ($site) {
         $path = $parts[2];
-        $_GET['og_sm_context_site_id'] = $site->id();
+
+        $request->query->set('og_sm_context_site_id', $site->id());
       }
     }
     return $path;
