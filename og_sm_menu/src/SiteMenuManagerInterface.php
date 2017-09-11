@@ -20,10 +20,24 @@ interface SiteMenuManagerInterface {
   public function getCurrentMenu();
 
   /**
+   * Gets the menu that is linked to the passed site.
+   *
+   * @param \Drupal\node\NodeInterface $site
+   *   The site node.
+   *
+   * @return \Drupal\og_menu\OgMenuInstanceInterface|null
+   *   The og-menu instance, NULL if no menu was found for the passed site.
+   */
+  public function getMenuBySite(NodeInterface $site);
+
+  /**
    * Creates a site menu for the passed site.
    *
    * @param \Drupal\node\NodeInterface $site
    *   The site node.
+   *
+   * @return \Drupal\og_menu\OgMenuInstanceInterface|null
+   *   The og-menu instance, return NULL if the site already has a site menu.
    */
   public function createMenu(NodeInterface $site);
 

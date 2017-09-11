@@ -48,6 +48,13 @@ class SiteMenuManager implements SiteMenuManagerInterface {
       return NULL;
     }
 
+    return $this->getMenuBySite($site);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMenuBySite(NodeInterface $site) {
     $instances = $this->ogMenuInstanceStorage()->loadByProperties([
       'type' => SiteMenuManagerInterface::SITE_MENU_NAME,
       OgGroupAudienceHelperInterface::DEFAULT_FIELD => $site->id(),
@@ -59,16 +66,23 @@ class SiteMenuManager implements SiteMenuManagerInterface {
     return NULL;
   }
 
+
   /**
    * {@inheritdoc}
    */
   public function createMenu(NodeInterface $site) {
+    if ($this->getMenuBySite($site)) {
+      return NULL;
+    }
+
     $values = [
       'type' => SiteMenuManagerInterface::SITE_MENU_NAME,
       OgGroupAudienceHelperInterface::DEFAULT_FIELD => $site->id(),
     ];
     $og_menu_instance = $this->ogMenuInstanceStorage()->create($values);
     $og_menu_instance->save();
+
+    return $og_menu_instance;
   }
 
   /**
