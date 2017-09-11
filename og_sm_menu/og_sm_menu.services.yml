@@ -1,0 +1,4 @@
+services:
+  og_sm.site_menu_manager:
+    class: Drupal\og_sm_menu\SiteMenuManager
+    arguments: ['@entity_type.manager', '@og_sm.site_manager']
