@@ -27,7 +27,7 @@ class SiteMenuManager implements SiteMenuManagerInterface {
   protected $siteManager;
 
   /**
-   * Constructs an SiteMenuManager object.
+   * Constructs a SiteMenuManager object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager
