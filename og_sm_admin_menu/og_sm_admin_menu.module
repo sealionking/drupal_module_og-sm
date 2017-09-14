@@ -148,3 +148,15 @@ function og_sm_admin_menu_prerender_toolbar_administration_tray(array $element) 
 
   return $element;
 }
+
+/**
+ * Implements hook_preprocess_HOOK() for HTML document templates.
+ */
+function og_sm_admin_menu_preprocess_html(&$variables) {
+  // Make sure the root path is set to "admin" for group admin pages. This adds
+  // a "page-admin" class to the body tags which caused the "Back to home"
+  // to appear on admin pages.
+  if ($variables['root_path'] === 'group' && \Drupal::routeMatch()->getRouteObject()->getOption('_admin_route')) {
+    $variables['root_path'] = 'admin';
+  }
+}
