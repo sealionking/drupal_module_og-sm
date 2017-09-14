@@ -29,6 +29,7 @@ function og_sm_admin_menu_toolbar() {
   $tab_url = Url::fromRoute('<front>');
 
   $current_site = $site_manager->currentSite();
+  $tab_cache_tags = [];
   if ($current_site) {
     $links['platform'] = [
       'title' => $tab_title,
@@ -37,6 +38,7 @@ function og_sm_admin_menu_toolbar() {
 
     $tab_title = $current_site->label();
     $tab_url = $site_manager->getSiteHomePage($current_site);
+    $tab_cache_tags[] = 'node:' . $current_site->id();
   }
 
   $switch_sites = $site_manager->getUserManageableSites();
@@ -44,6 +46,7 @@ function og_sm_admin_menu_toolbar() {
     return [];
   }
 
+  $cache_tags = [];
   foreach ($switch_sites as $site) {
     if ($current_site && $current_site->id() === $site->id()) {
       continue;
@@ -53,6 +56,7 @@ function og_sm_admin_menu_toolbar() {
       'title' => $site->label(),
       'url' => $site_manager->getSiteHomePage($site),
     ];
+    $cache_tags[] = 'node:' . $site->id();
   }
 
   $items['site_switcher'] = [
@@ -70,6 +74,7 @@ function og_sm_admin_menu_toolbar() {
           'og_group_context',
           'user',
         ],
+        'tags' => $tab_cache_tags,
       ],
     ],
     'tray' => [
@@ -79,6 +84,9 @@ function og_sm_admin_menu_toolbar() {
         '#links' => $links,
         '#attributes' => [
           'class' => ['toolbar-menu'],
+        ],
+        '#cache' => [
+          'tags' => $cache_tags,
         ],
       ],
     ],
