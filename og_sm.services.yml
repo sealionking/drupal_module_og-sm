@@ -16,7 +16,7 @@ services:
     arguments: ['@entity_type.manager', '@og.access', '@og_sm.site_manager']
     tags:
       - { name: access_check, applies_to: _site_permission }
-  og_sm_content.group_permission_event_subscriber:
+  og_sm.group_permission_event_subscriber:
     class: Drupal\og_sm\EventSubscriber\GroupPermissionEventSubscriber
     tags:
       - { name: event_subscriber }
