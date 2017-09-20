@@ -8,16 +8,10 @@
         "Organic Groups Site Manager"
     ],
     "license": "GPL-2.0+",
-    "homepage": "https://bitbucket.org/digipolisgent/drupal_module_og-sm",
+    "homepage": "https://www.drupal.org/project/og_sm",
     "minimum-stability": "dev",
-    "authors": [
-        {
-            "name": "Geert van Dort",
-            "email": "geert.vandort@digipolis.gent"
-        }
-    ],
     "support": {
-        "issues": "https://digipolisgent.atlassian.net/secure/RapidBoard.jspa?rapidView=426",
-        "source": "https://bitbucket.org/digipolisgent/drupal_module_og-sm"
+        "issues": "https://github.com/digipolisgent/drupal_module_og-sm/issues",
+        "source": "https://github.com/digipolisgent/drupal_module_og-sm"
     }
 }
