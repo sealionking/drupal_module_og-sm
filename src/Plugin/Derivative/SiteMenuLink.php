@@ -112,12 +112,16 @@ class SiteMenuLink extends DeriverBase implements ContainerDeriverInterface {
 
     $links = [];
     foreach ($definitions as $plugin_id => $plugin_definition) {
+
       if (!empty($plugin_definition['parent'])) {
         $plugin_definition['parent'] = 'og_sm:' . $plugin_definition['parent'];
       }
 
       if (!empty($plugin_definition['og_menu_name'])) {
         $links += $this->createDefinitionPerOgMenu($plugin_id, $plugin_definition + $base_plugin_definition);
+      }
+
+      if (empty($plugin_definition['menu_name'])) {
         continue;
       }
 
