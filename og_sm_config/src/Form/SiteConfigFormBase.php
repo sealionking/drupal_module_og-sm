@@ -44,6 +44,24 @@ abstract class SiteConfigFormBase extends ConfigFormBase {
   }
 
   /**
+   * Retrieves a global configuration object.
+   *
+   * @param string $name
+   *   The name of the configuration object to retrieve. The name corresponds to
+   *   a configuration file. For @code \Drupal::config('book.admin') @endcode,
+   *   the config object returned will contain the contents of book.admin
+   *   configuration file.
+   *
+   * @return \Drupal\Core\Config\Config|\Drupal\Core\Config\ImmutableConfig
+   *   An editable configuration object if the given name is listed in the
+   *   getEditableConfigNames() method or an immutable configuration object if
+   *   not.
+   */
+  protected function getGlobalConfig($name) {
+    return parent::config($name);
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function config($name) {
