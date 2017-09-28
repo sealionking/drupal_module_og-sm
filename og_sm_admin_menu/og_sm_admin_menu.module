@@ -42,7 +42,7 @@ function og_sm_admin_menu_toolbar() {
   }
 
   $switch_sites = $site_manager->getUserManageableSites();
-  if (count($switch_sites) < 2) {
+  if (count($switch_sites) < 1) {
     return [];
   }
 
