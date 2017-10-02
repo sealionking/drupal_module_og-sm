@@ -7,7 +7,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\YamlDiscovery;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
-use Drupal\og_menu\Entity\OgMenu;
 use Drupal\og_sm\SiteManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
