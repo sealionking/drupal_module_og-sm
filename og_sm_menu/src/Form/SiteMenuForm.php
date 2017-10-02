@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Url;
 use Drupal\og_menu\OgMenuInstanceInterface;
 use Drupal\og_sm_menu\SiteMenuManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -83,7 +84,15 @@ class SiteMenuForm extends FormBase {
       foreach ($form['links'][$key]['operations']["#links"] as &$operation) {
         /* @var \Drupal\Core\Url $url */
         $url = $operation['url'];
-        $url->setOption('query', ['og_sm_context_site_id' => $menu->getGroup()->id()]);
+        $site = $menu->getGroup();
+
+        if ($url->getRouteName() === 'menu_ui.link_edit') {
+          $route_parameters = $url->getRouteParameters() + ['node' => $site->id()];
+          $operation['url'] = Url::fromRoute('og_sm.site_menu.edit_link', $route_parameters);
+        }
+        else {
+          $url->setRouteParameter('og_sm_context_site_id', $site->id());
+        }
       }
     }
 
