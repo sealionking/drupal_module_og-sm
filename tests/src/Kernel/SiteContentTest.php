@@ -31,9 +31,9 @@ class SiteContentTest extends OgSmKernelTestBase {
     $site_manager = OgSm::siteManager();
 
     // Create group content.
-    $this->assertEquals([], $site_manager->getSitesFromContent($content_no_groups));
-    $this->assertEquals([], $site_manager->getSitesFromContent($content_with_groups));
-    $this->assertFalse($site_manager->getSiteFromContent($content_with_groups));
+    $this->assertEquals([], $site_manager->getSitesFromEntity($content_no_groups));
+    $this->assertEquals([], $site_manager->getSitesFromEntity($content_with_groups));
+    $this->assertFalse($site_manager->getSiteFromEntity($content_with_groups));
     $this->assertFalse($site_manager->isSiteContent($content_with_groups));
     $this->assertFalse($site_manager->contentBelongsToSite($content_with_groups, $group1));
 
@@ -42,11 +42,11 @@ class SiteContentTest extends OgSmKernelTestBase {
     $type_group->save();
 
     // Get all sites a node belongs to.
-    $sites = $site_manager->getSitesFromContent($content_with_groups);
+    $sites = $site_manager->getSitesFromEntity($content_with_groups);
     $this->assertCount(2, $sites);
 
     // Get a site (first membership).
-    $site = $site_manager->getSiteFromContent($content_with_groups);
+    $site = $site_manager->getSiteFromEntity($content_with_groups);
     $this->assertEquals($group1->id(), $site->id());
 
     // Content should be Site content.

@@ -1,489 +1,61 @@
 <?php
+
 /**
  * @file
  * Site taxonomy support.
  */
 
-/**
- * Global permissions.
- */
-define('OG_SM_TAXONOMY_PERM_ALL', 'edit all site taxonomies');
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\og_sm\OgSm;
+use Drupal\og_sm_taxonomy\Form\TermDeleteForm;
+use Drupal\og_sm_taxonomy\Form\VocabularyResetForm;
+use Drupal\og_sm_taxonomy\FormAlter\TermFormAlter;
+use Drupal\og_sm_taxonomy\FormAlter\TermOverviewFormAlter;
 
 /**
- * OG permissions.
+ * Implements hook_entity_type_alter().
  */
-define('OG_SM_TAXONOMY_OG_PERM_ALL', 'edit all taxonomy terms');
-define('OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT', 'edit terms in %s');
-define('OG_SM_TAXONOMY_OG_PERM_VOCAB_DELETE', 'delete terms in %s');
-
-/**
- * Implements hook_permission().
- */
-function og_sm_taxonomy_permission() {
-  $items = array();
-
-  $items[OG_SM_TAXONOMY_PERM_ALL] = array(
-    'title' => t('Edit all taxonomy terms'),
-    'description' => t('Edit the taxonomy terms of all Sites.'),
-  );
-
-  return $items;
+function og_sm_taxonomy_entity_type_alter(array &$entity_types) {
+  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  $entity_types['taxonomy_vocabulary']->setFormClass('reset', VocabularyResetForm::class);
+  $entity_types['taxonomy_term']->setFormClass('delete', TermDeleteForm::class);
 }
 
 /**
- * Implements hook_og_permission().
+ * Implements hook_ENTITY_TYPE_access() for taxonomy_vocabulary entities.
  */
-function og_sm_taxonomy_og_permission() {
-  $items = array();
-
-  $items[OG_SM_TAXONOMY_OG_PERM_ALL] = array(
-    'title' => t('Administer taxonomy'),
-    'description' => t('Manage all taxonomy terms.'),
-  );
-
-  $vocabularies = og_sm_taxonomy_get_vocabularies();
-  foreach ($vocabularies as $vocabulary) {
-    $perm_edit = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, $vocabulary->machine_name);
-    $perm_delete = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_DELETE, $vocabulary->machine_name);
-
-    $items[$perm_edit] = array(
-      'title' => t(
-        'Edit terms in %name',
-        array('%name' => $vocabulary->machine_name)
-      ),
-      'description' => t(
-        'Edit all terms for the %name vocabulary.',
-        array('%name' => $vocabulary->name)
-      ),
-    );
-    $items[$perm_delete] = array(
-      'title' => t(
-        'Delete terms in %name',
-        array('%name' => $vocabulary->machine_name)
-      ),
-      'description' => t(
-        'Delete all terms for the %name vocabulary.',
-        array('%name' => $vocabulary->name)
-      ),
-    );
+function og_sm_taxonomy_taxonomy_vocabulary_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if ($operation !== 'access taxonomy overview') {
+    return AccessResult::neutral();
   }
 
-  return $items;
-}
-
-/**
- * Implements hook_menu().
- */
-function og_sm_taxonomy_menu() {
-  $items = array();
-
-  // OG SM Taxonomy file.
-  $file_admin = 'og_sm_taxonomy.admin.inc';
-
-  // Taxonomy module file.
-  $file_taxonomy_path = drupal_get_path('module', 'taxonomy');
-  $file_taxonomy_file = 'taxonomy.admin.inc';
-
-  $items['group/%/%og_sm_site/admin/taxonomy'] = array(
-    'title' => 'Administer taxonomy',
-    'page callback' => 'og_sm_taxonomy_admin_overview',
-    'page arguments' => array(2),
-    'access callback' => 'og_sm_taxonomy_admin_vocabulary_overview_access',
-    'access arguments' => array(2),
-    'file' => $file_admin,
-  );
-  $items['group/%/%og_sm_site/admin/taxonomy/%taxonomy_vocabulary_machine_name'] = array(
-    'title callback' => 'entity_label',
-    'title arguments' => array('taxonomy_vocabulary', 5),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('taxonomy_overview_terms', 5),
-    'access callback' => 'og_sm_taxonomy_admin_vocabulary_access',
-    'access arguments' => array(2, 5),
-    'file' => $file_taxonomy_file,
-    'file path' => $file_taxonomy_path,
-  );
-
-  $items['group/%/%og_sm_site/admin/taxonomy/%taxonomy_vocabulary_machine_name/add'] = array(
-    'title' => 'Add term',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('taxonomy_form_term', array(), 5),
-    'access callback' => 'og_sm_taxonomy_admin_vocabulary_access',
-    'access arguments' => array(2, 5),
-    'type' => MENU_LOCAL_ACTION,
-    'file' => 'taxonomy.admin.inc',
-    'file path' => $file_taxonomy_path,
-  );
-
-  return $items;
-}
-
-/**
- * Implements hook_menu_alter().
- */
-function og_sm_taxonomy_menu_alter(&$items) {
-  // Add support to hide not-published Site content.
-  if (module_exists('og_sm_access')) {
-    $items['taxonomy/term/%taxonomy_term']['access callback'] = 'og_sm_taxonomy_term_view_access';
-    $items['taxonomy/term/%taxonomy_term']['access arguments'] = array(2);
-  }
-
-  // Edit access based on the extra permissions.
-  $items['taxonomy/term/%taxonomy_term/edit']['access callback'] = 'og_sm_taxonomy_term_edit_access';
-}
-
-/**
- * Access callback for the taxonomy term page.
- *
- * @param object $term
- *   The taxonomy term object.
- * @param object $account
- *   Optional account to validate the access for.
- *
- * @return bool
- *   Has access.
- */
-function og_sm_taxonomy_term_view_access($term, $account = NULL) {
-  // Check if the term has a site.
-  $site = og_sm_taxonomy_term_get_site($term);
+  $site_manager = OgSm::siteManager();
+  $site = $site_manager->currentSite();
   if (!$site) {
-    return user_access('access content', $account);
+    return AccessResult::neutral();
   }
 
-  return og_sm_access_site_nid_callback($site->nid, $account);
-}
+  /* @var \Drupal\og\OgAccessInterface $og_access */
+  $og_access = \Drupal::service('og.access');
 
-/**
- * Access callback to check access to the taxonomy administration overview.
- *
- * @param object $site
- *   The Site to validate the access for.
- * @param object $account
- *   The account to validate the access for.
- *
- * @return bool
- *   Access TRUE/FALSE.
- */
-function og_sm_taxonomy_admin_vocabulary_overview_access($site, $account = NULL) {
-  if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
-    return TRUE;
-  }
-
-  if (og_sm_site_permission_access($site, OG_SM_TAXONOMY_OG_PERM_ALL, $account)) {
-    return TRUE;
-  }
-
-  // Check access to edit one of the vocabularies.
-  $vocabularies = array_keys(og_sm_taxonomy_get_vocabularies());
-  foreach ($vocabularies as $vocabulary) {
-    $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, $vocabulary);
-    if (og_sm_site_permission_access($site, $perm, $account)) {
-      return TRUE;
+  $term_permissions = [
+    "create {$entity->id()} taxonomy_term",
+    "update any {$entity->id()} taxonomy_term",
+    "update own {$entity->id()} taxonomy_term",
+    "delete any {$entity->id()} taxonomy_term",
+    "delete own {$entity->id()} taxonomy_term",
+  ];
+  foreach ($term_permissions as $term_permission) {
+    if ($og_access->userAccess($site, $term_permission, $account)->isAllowed()) {
+      return AccessResult::allowed();
     }
   }
 
-  return FALSE;
-}
-
-/**
- * Access callback to check access to one taxonomy administration vocabulary.
- *
- * @param object $site
- *   The Site to validate the access for.
- * @param object $vocabulary
- *   The vocabulary to check the access for.
- * @param object $account
- *   The account to validate the access for.
- *
- * @return bool
- *   Access TRUE/FALSE.
- */
-function og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account = NULL) {
-  if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
-    return TRUE;
-  }
-
-  if (og_sm_site_permission_access($site, OG_SM_TAXONOMY_OG_PERM_ALL, $account)) {
-    return TRUE;
-  }
-
-  // Vocabulary specific.
-  $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_EDIT, $vocabulary->machine_name);
-  if (og_sm_site_permission_access($site, $perm, $account)) {
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
-/**
- * Access callback to check access to edit taxonomy terms.
- *
- * @param object $term
- *   The term to edit.
- * @param object $account
- *   Optional account to validate the access for.
- *
- * @return bool
- *   Has access.
- */
-function og_sm_taxonomy_term_edit_access($term, $account = NULL) {
-  $site = og_sm_taxonomy_term_get_site($term);
-  if (!$site) {
-    return taxonomy_term_edit_access($term);
-  }
-
-  $vocabulary = taxonomy_vocabulary_load($term->vid);
-  return og_sm_taxonomy_admin_vocabulary_access($site, $vocabulary, $account);
-}
-
-/**
- * Access callback to check access to delete taxonomy terms.
- *
- * @param object $term
- *   The term to edit.
- * @param object $account
- *   Optional account to validate the access for.
- *
- * @return bool
- *   Has access.
- */
-function og_sm_taxonomy_term_delete_access($term, $account = NULL) {
-  $vocabulary = taxonomy_vocabulary_load($term->vid);
-
-  // If not belongs to Site, use global permissions.
-  $site = og_sm_taxonomy_term_get_site($term);
-  if (!$site) {
-    return user_access('delete terms in ' . $vocabulary->vid) || user_access('administer taxonomy');
-  }
-
-  // Has all Sites permission?
-  if (user_access(OG_SM_TAXONOMY_PERM_ALL, $account)) {
-    return TRUE;
-  }
-
-  // Has administrator permissions?
-  if (og_sm_site_permission_access($site, OG_SM_TAXONOMY_OG_PERM_ALL, $account)) {
-    return TRUE;
-  }
-
-  // Vocabulary specific delete permission?
-  $perm = sprintf(OG_SM_TAXONOMY_OG_PERM_VOCAB_DELETE, $vocabulary->machine_name);
-  if (og_sm_site_permission_access($site, $perm, $account)) {
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
-/**
- * Get a list of vocabulary names that have the OG group audience field.
- *
- * @return array
- *   Vocabulary names (labels) keyed by their machine name.
- */
-function og_sm_taxonomy_get_vocabulary_names() {
-  $vocabularies = &drupal_static(__FUNCTION__, array());
-  if (!$vocabularies) {
-    $bundles = og_get_all_group_content_bundle();
-    if (!empty($bundles['taxonomy_term'])) {
-      $vocabularies = $bundles['taxonomy_term'];
-    }
-  }
-
-  return $vocabularies;
-}
-
-/**
- * Get all vocabulary objects that have the OG group audience field.
- *
- * @return array
- *   Vocabulary objects keyed by their machine name.
- */
-function og_sm_taxonomy_get_vocabularies() {
-  $vocabularies = &drupal_static(__FUNCTION__, array());
-  if (!$vocabularies) {
-    $names = array_keys(og_sm_taxonomy_get_vocabulary_names());
-    foreach ($names as $name) {
-      $vocabularies[$name] = taxonomy_vocabulary_machine_name_load($name);
-    }
-  }
-
-  return $vocabularies;
-}
-
-/**
- * Check if a given taxonomy vocabulary has the OG group audience field.
- *
- * @param string $name
- *   The vocabulary name.
- *
- * @return bool
- *   Is an OG vocabulary.
- */
-function og_sm_taxonomy_is_vocabulary($name) {
-  $names = og_sm_taxonomy_get_vocabulary_names();
-  return array_key_exists($name, $names);
-}
-
-/**
- * Get all the Sites a taxonomy term belongs to.
- *
- * @param object $term
- *   The term to get the Sites for.
- *
- * @return array
- *   All Site nodes keyed by their nid.
- */
-function og_sm_taxonomy_term_get_sites($term) {
-  $groups = og_get_entity_groups('taxonomy_term', $term);
-  return _og_sm_filter_sites_from_groups($groups);
-}
-
-/**
- * Get the Site object the taxonomy term belongs to.
- *
- * If a term belongs to multiple Sites, only the first will be returned.
- *
- * @param object $term
- *   The term to get the Sites for.
- *
- * @return object|FALSE
- *   The site node (if any).
- */
-function og_sm_taxonomy_term_get_site($term) {
-  $sites = og_sm_taxonomy_term_get_sites($term);
-  if (empty($sites)) {
-    return FALSE;
-  }
-
-  return reset($sites);
-}
-
-/**
- * Check if a term is used within at least one Site.
- *
- * @param object $term
- *   The Term object.
- *
- * @return bool
- *   Is used within a Site.
- */
-function og_sm_taxonomy_term_is_site_term($term) {
-  return (bool) og_sm_taxonomy_term_get_site($term);
-}
-
-/**
- * Check if a Term is a member of the given Site.
- *
- * @param object $term
- *   The Term object.
- * @param object $site
- *   The Site object.
- *
- * @return bool
- *   Is a Site member.
- */
-function og_sm_taxonomy_term_is_site_member($term, $site) {
-  $sites = og_sm_taxonomy_term_get_sites($term);
-  return !empty($sites[$site->nid]);
-}
-
-/**
- * Load all vocabulary term id's associated to the given Site.
- *
- * @param object $vocabulary
- *   The Vocabulary object.
- * @param object $site
- *   The Site object.
- *
- * @return array
- *   Array of term id's.
- */
-function og_sm_taxonomy_get_vocabulary_term_ids_by_site($vocabulary, $site) {
-  $query = db_select('og_membership', 'ogm');
-  $query->join('taxonomy_term_data', 'ttd', 'ogm.etid = ttd.tid');
-  $query->fields('ttd', array('tid'))
-    ->condition('ogm.entity_type', 'taxonomy_term')
-    ->condition('ogm.gid', $site->nid)
-    ->condition('ttd.vid', $vocabulary->vid);
-
-  return $query->execute()->fetchCol();
-}
-
-/**
- * Load all vocabulary term objects associated to the given Site.
- *
- * @param object $vocabulary
- *   The Vocabulary object.
- * @param object $site
- *   The Site object.
- *
- * @return array
- *   Array of term objects.
- */
-function og_sm_taxonomy_get_vocabulary_terms_by_site($vocabulary, $site) {
-  $tids = og_sm_taxonomy_get_vocabulary_term_ids_by_site($vocabulary, $site);
-  return taxonomy_term_load_multiple($tids);
-}
-
-/**
- * Fetches an array vocabularies referenced in an array query conditions.
- *
- * This helper function will loop recursively through the conditions and return
- * an array of referenced vocabularies.
- *
- * @param array $table_aliases
- *   An array of taxonomy table aliases.
- * @param array $conditions
- *   An array of query conditions.
- * @param array $vocabularies
- *   (optional) An array of vocabulary objects.
- *
- * @return array
- *   An array of vocabulary objects.
- */
-function og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases, $conditions, $vocabularies = array()) {
-  foreach ($conditions as $condition) {
-    if (empty($condition['field'])) {
-      continue;
-    }
-
-    // If the condition field implements the QueryConditionInterface it means
-    // this condition contains several child conditions. In that case we need
-    // loop through those to find the referenced vocabularies.
-    if ($condition['field'] instanceof QueryConditionInterface) {
-      $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases, $condition['field']->conditions(), $vocabularies);
-      continue;
-    }
-
-    if (!is_string($condition['field']) || empty($condition['value'])) {
-      continue;
-    }
-    // Check if the condition field is either a vid or a machine name. If so
-    // load the vocabularies and add them to the vocabularies array.
-    $field_parts = explode('.', $condition['field']);
-    if (!count($field_parts) === 2) {
-      continue;
-    }
-
-    if (!in_array($field_parts[0], $table_aliases)) {
-      continue;
-    }
-
-    switch ($field_parts[1]) {
-      case 'vid':
-        $vids = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
-        $vocabularies += taxonomy_vocabulary_load_multiple($vids);
-        break;
-
-      case 'machine_name':
-        $machine_names = is_array($condition['value']) ? $condition['value'] : array($condition['value']);
-        $vocabularies += taxonomy_vocabulary_load_multiple(NULL, array('machine_name' => $machine_names));
-        break;
-    }
-  }
-
-  return $vocabularies;
+  return AccessResult::neutral();
 }
 
 /**
@@ -491,17 +63,17 @@ function og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases, $condit
  *
  * Filters the term query by the current Site (if any).
  */
-function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) {
+function og_sm_taxonomy_query_term_access_alter(AlterableInterface $query) {
   // Only alter when in a Site context.
-  $site = og_sm_current_site();
+  $site = OgSm::siteManager()->currentSite();
   if (!$site) {
     return;
   }
 
   // Get the taxonomy_term_data and taxonomy_vocabulary alias.
-  $table_aliases = array();
+  $table_aliases = [];
   $tables = $query->getTables();
-  $original_tables = array('taxonomy_term_data', 'taxonomy_vocabulary');
+  $original_tables = ['taxonomy_term_data', 'taxonomy_term_field_data'];
   foreach ($tables as $info) {
     if (!in_array($info['table'], $original_tables)) {
       continue;
@@ -510,27 +82,24 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
   }
 
   // Make sure the taxonomy_term_data table is in the query.
-  if (!isset($table_aliases['taxonomy_term_data'])) {
+  if (empty($table_aliases)) {
     return;
   }
+  $table_alias = reset($table_aliases);
+
+  /* @var \Drupal\og_sm_taxonomy\SiteTaxonomyManagerInterface $site_taxonomy_manager */
+  $site_taxonomy_manager = \Drupal::service('og_sm_taxonomy.site_manager');
 
   // Get the vocabularies from the query conditions.
-  $vocabularies = og_sm_taxonomy_get_vocabularies_from_conditions($table_aliases, $query->conditions());
+  $vocabularies = $site_taxonomy_manager->getSiteVocabulariesFromConditions($table_aliases, $query->conditions());
   foreach ($vocabularies as $vocabulary) {
     // Only when the vocabulary is a Site vocabulary.
-    if (!og_sm_taxonomy_is_vocabulary($vocabulary->machine_name)) {
+    if (!$site_taxonomy_manager->isSiteVocabulary($vocabulary->id())) {
       continue;
     }
 
-    // Filter by the Site membership.
-    // @todo: This join should include a vid or vocabulary machine name
-    // condition since a condition can have both non-site vocabularies and
-    // site vocabularies.
-    $query->join('og_membership', 'ogm', 'ogm.etid = ' . $table_aliases['taxonomy_term_data'] . '.tid');
-    $query->condition('ogm.entity_type', 'taxonomy_term');
-    $query->condition('ogm.group_type', 'node');
-    $query->condition('ogm.gid', $site->nid);
-    $query->condition('ogm.state', 1);
+    $query->join('taxonomy_term__og_audience', 'og_audience', 'og_audience.entity_id = ' . $table_alias . '.tid');
+    $query->condition('og_audience.og_audience_target_id', $site->id());
     return;
   }
 }
@@ -542,110 +111,8 @@ function og_sm_taxonomy_query_term_access_alter(QueryAlterableInterface $query) 
  *
  * @see taxonomy_overview_terms()
  */
-function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, &$form_state, $form_id) {
-  form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
-
-  // If alphabetically term order confirmation form is shown: make sure that the
-  // links point to the proper location (e.g. when used in Site context).
-  _og_sm_taxonomy_form_taxonomy_overview_terms_alter_order($form);
-
-  // When not in a site context, add the site names to the terms.
-  _og_sm_taxonomy_form_taxonomy_overview_terms_alter_site_names($form);
-
-  // When no items make sure that the inline-create category link points to the
-  // proper URL (when site context is enabled.
-  _og_sm_taxonomy_form_taxonomy_overview_terms_alter_empty_text($form);
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * Alters the form to edit a single term.
- *
- * @see taxonomy_form_term()
- */
-function og_sm_taxonomy_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) {
-  $term = $form_state['term'];
-
-  // Only for add forms.
-  if (empty($term->tid)) {
-    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
-    _og_sm_taxonomy_form_taxonomy_form_term_alter_add($form, $form_state);
-  }
-
-  // Only for edit forms and when term belongs to a Site.
-  if (!empty($term->tid) && og_sm_taxonomy_term_is_site_term($term)) {
-    form_load_include($form_state, 'inc', 'og_sm_taxonomy', 'og_sm_taxonomy.form_alter');
-    _og_sm_taxonomy_form_taxonomy_form_term_alter_delete($form, $form_state);
-  }
-}
-
-/**
- * Implements hook_og_context_negotiation_info().
- *
- * Add context negotiation info based on the path alias.
- */
-function og_sm_taxonomy_og_context_negotiation_info() {
-  $providers = array();
-
-  $providers['og_sm_taxonomy_term'] = array(
-    'name' => t('Site Taxonomy Terms'),
-    'description' => t('Determine Site context based on the fact that a Term belongs to a Site.'),
-    'callback' => 'og_sm_taxonomy_og_context_handler_term',
-  );
-
-  return $providers;
-}
-
-/**
- * Tries to get the context based on the fact that we are on a Site term page.
- *
- * @return array|NULL
- *   Contexts grouped by the entity type.
- *
- * @see og_sm_context_negotiation_info
- */
-function og_sm_taxonomy_og_context_handler_term() {
-  // Get the content term from the path.
-  $path = current_path();
-  preg_match('#^taxonomy/term/([0-9]+)#', $path, $parts);
-  if (empty($parts[1])) {
-    return NULL;
-  }
-
-  // Is the term Site Content?
-  $site_nids = _og_sm_taxonomy_get_site_nids_by_tid($parts[1]);
-  if ($site_nids) {
-    return array('node' => $site_nids);
-  }
-
-  return NULL;
-}
-
-/**
- * Helper function to load the Site node ID's by the Term ID.
- *
- * Will only return the Site node ID's if the membership is active
- * AND if the node type is one of the Site types.
- *
- * @param int $tid
- *   The Term id.
- *
- * @return array
- *   Array of Site NID's the term belongs to.
- */
-function _og_sm_taxonomy_get_site_nids_by_tid($tid) {
-  $query = db_select('og_membership', 'ogm')
-    ->fields('ogm', array('gid'))
-    ->condition('ogm.type', OG_MEMBERSHIP_TYPE_DEFAULT)
-    ->condition('ogm.etid', $tid)
-    ->condition('ogm.entity_type', 'taxonomy_term')
-    ->condition('ogm.group_type', 'node')
-    ->condition('ogm.state', 1);
-
-  /* @var $query SelectQuery */
-  $query->join('node', 'n', 'ogm.gid = n.nid');
-  $query->condition('n.type', og_sm_get_site_types());
-
-  return $query->execute()->fetchCol();
+function og_sm_taxonomy_form_taxonomy_overview_terms_alter(&$form, FormStateInterface $form_state) {
+  \Drupal::classResolver()
+    ->getInstanceFromDefinition(TermOverviewFormAlter::class)
+    ->formAlter($form, $form_state);
 }

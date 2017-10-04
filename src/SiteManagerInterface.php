@@ -2,7 +2,9 @@
 
 namespace Drupal\og_sm;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
 /**
@@ -120,8 +122,21 @@ interface SiteManagerInterface {
    *
    * @return \Drupal\node\NodeInterface[]
    *   All Site nodes keyed by their nid.
+   *
+   * @deprecated Use ::getSitesFromEntity() instead.
    */
   public function getSitesFromContent(NodeInterface $node);
+
+  /**
+   * Get all the Sites a content entity belongs to.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The site content entity.
+   *
+   * @return \Drupal\node\NodeInterface[]
+   *   All Site nodes keyed by their nid.
+   */
+  public function getSitesFromEntity(EntityInterface $entity);
 
   /**
    * Get the Site object the Site content node belongs to.
@@ -134,32 +149,60 @@ interface SiteManagerInterface {
    *
    * @return \Drupal\node\NodeInterface|false
    *   The site node (if any).
+   *
+   * @deprecated Use ::getSiteFromEntity() instead.
    */
   public function getSiteFromContent(NodeInterface $node);
 
   /**
-   * Check if a given node is content within a Site.
+   * Get the Site object the Site content entity belongs to.
    *
-   * @param \Drupal\node\NodeInterface $node
-   *   The node to check.
+   * If the entity belongs to multiple Sites, only the first will be returned.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The site content entity.
+   *
+   * @return \Drupal\node\NodeInterface|false
+   *   The site node (if any).
+   */
+  public function getSiteFromEntity(EntityInterface $entity);
+
+  /**
+   * Check if a given entity is content within a Site.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to check.
    *
    * @return bool
    *   Is Site content.
    */
-  public function isSiteContent(NodeInterface $node);
+  public function isSiteContent(EntityInterface $entity);
 
   /**
-   * Check if a given node belongs of the given Site.
+   * Check if a given entity belongs of the given Site.
    *
-   * @param \Drupal\node\NodeInterface $node
-   *   The node to check.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to check.
    * @param \Drupal\node\NodeInterface $site
    *   The site node.
    *
    * @return bool
    *   Is Site member.
    */
-  public function contentBelongsToSite(NodeInterface $node, NodeInterface $site);
+  public function contentBelongsToSite(EntityInterface $entity, NodeInterface $site);
+
+  /**
+   * Gets content entities based on a site and entity type.
+   *
+   * @param \Drupal\node\NodeInterface $site
+   *   The site node.
+   * @param string $entity_type_id
+   *   The entity type.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface[]
+   *   An array of content entities belonging to the passed site.
+   */
+  public function getEntitiesBySite(NodeInterface $site, $entity_type_id);
 
   /**
    * Get all the sites a User belongs to.
