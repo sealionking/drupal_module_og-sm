@@ -25,7 +25,7 @@ function og_sm_path_token_info() {
   return [
     'tokens' => [
       'node' => $entity_tokens,
-      'taxonomy_term' => $entity_tokens,
+      'term' => $entity_tokens,
     ],
   ];
 }
@@ -38,8 +38,8 @@ function og_sm_path_tokens($type, $tokens, array $data, array $options, Bubbleab
 
   switch ($type) {
     case 'node':
-    case 'taxonomy_term':
-      $replacements = _og_sm_path_tokens_entity($tokens, $data, $options, $bubbleable_metadata);
+    case 'term':
+      $replacements = _og_sm_path_tokens_entity($tokens, $data[$type], $options, $bubbleable_metadata);
       break;
   }
 
