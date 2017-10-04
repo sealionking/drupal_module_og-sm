@@ -19,10 +19,7 @@ class SiteMenuLinkEditForm extends MenuLinkEditForm {
    *   The site node.
    */
   public function buildForm(array $form, FormStateInterface $form_state, MenuLinkInterface $menu_link_plugin = NULL, NodeInterface $node = NULL) {
-    $form['site'] = [
-      '#type' => 'value',
-      '#value' => $node ? $node->id() : NULL,
-    ];
+    $form_state->set('site', $node);
     return parent::buildForm($form, $form_state, $menu_link_plugin);
   }
 
@@ -32,10 +29,14 @@ class SiteMenuLinkEditForm extends MenuLinkEditForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    $form_state->setRedirect(
-      'og_sm.site_menu',
-      ['node' => $form_state->getValue('site')]
-    );
+    /* @var \Drupal\node\NodeInterface $site */
+    $site = $form_state->get('site');
+    if ($site) {
+      $form_state->setRedirect(
+        'og_sm.site_menu',
+        ['node' => $site->id()]
+      );
+    }
   }
 
 }
