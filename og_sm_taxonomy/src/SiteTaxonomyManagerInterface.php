@@ -2,6 +2,9 @@
 
 namespace Drupal\og_sm_taxonomy;
 
+use Drupal\node\NodeInterface;
+use Drupal\taxonomy\VocabularyInterface;
+
 /**
  * Interface for site taxonomy manager classes.
  */
@@ -51,5 +54,15 @@ interface SiteTaxonomyManagerInterface {
    *   Whether or not this is a site vocabulary.
    */
   public function isSiteVocabulary($name);
+
+  /**
+   * Resets the weight for all site terms for a given vocabulary.
+   *
+   * @param \Drupal\node\NodeInterface $site
+   *   The site for which the terms should be reset.
+   * @param \Drupal\taxonomy\VocabularyInterface $vocabulary
+   *   The vocabulary for which the terms should be reset.
+   */
+  public function resetTermWeights(NodeInterface $site, VocabularyInterface $vocabulary);
 
 }

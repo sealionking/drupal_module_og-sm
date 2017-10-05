@@ -2,9 +2,12 @@
 
 namespace Drupal\og_sm_taxonomy;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\node\NodeInterface;
 use Drupal\og\GroupTypeManager;
+use Drupal\taxonomy\VocabularyInterface;
 
 /**
  * A manager to keep track of which taxonomy terms are og_sm Site enabled.
@@ -26,16 +29,26 @@ class SiteTaxonomyManager implements SiteTaxonomyManagerInterface {
   protected $entityTypeManager;
 
   /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
    * Constructs a SiteTaxonomyManager object.
    *
    * @param \Drupal\og\GroupTypeManager $group_type_manager
    *   The group type manager.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
    */
-  public function __construct(GroupTypeManager $group_type_manager, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(GroupTypeManager $group_type_manager, EntityTypeManagerInterface $entity_type_manager, Connection $database) {
     $this->groupTypeManager = $group_type_manager;
     $this->entityTypeManager = $entity_type_manager;
+    $this->database = $database;
   }
 
   /**
@@ -115,6 +128,29 @@ class SiteTaxonomyManager implements SiteTaxonomyManagerInterface {
   public function isSiteVocabulary($name) {
     $names = $this->getSiteVocabularyNames();
     return array_key_exists($name, $names);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function resetTermWeights(NodeInterface $site, VocabularyInterface $vocabulary) {
+    // Custom query to order only the terms of the current Site.
+    // \Drupal\Core\Database\Query\Update does not support joins :(.
+    $query = <<<EOT
+    UPDATE
+      {taxonomy_term_field_data} td
+      JOIN {taxonomy_term__og_audience} audience ON (td.tid = audience.entity_id)
+    SET
+      td.`weight` = 0
+    WHERE
+      td.vid = :vid
+      AND audience.og_audience_target_id = :site_id
+EOT;
+
+    $this->database->query($query, [
+      ':vid' => $vocabulary->id(),
+      ':site_id' => $site->id(),
+    ]);
   }
 
 }

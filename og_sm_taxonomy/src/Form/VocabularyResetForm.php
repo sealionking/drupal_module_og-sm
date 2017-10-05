@@ -2,11 +2,11 @@
 
 namespace Drupal\og_sm_taxonomy\Form;
 
-use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\og_sm\SiteManagerInterface;
+use Drupal\og_sm_taxonomy\SiteTaxonomyManagerInterface;
 use Drupal\taxonomy\Form\VocabularyResetForm as VocabularyResetFormBase;
 use Drupal\taxonomy\TermStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,22 +24,24 @@ class VocabularyResetForm extends VocabularyResetFormBase {
   protected $siteManager;
 
   /**
-   * The database connection.
+   * The site taxonomy manager.
    *
-   * @var \Drupal\Core\Database\Connection
+   * @var \Drupal\og_sm_taxonomy\SiteTaxonomyManagerInterface
    */
-  protected $database;
+  protected $siteTaxonomyManager;
 
   /**
    * Constructs a new VocabularyResetForm object.
    *
-   * @param \Drupal\taxonomy\TermStorageInterface $term_storage
-   *   The term storage.
+   * @param \Drupal\og_sm\SiteManagerInterface $site_manager
+   *   The site manager.
+   * @param \Drupal\og_sm_taxonomy\SiteTaxonomyManagerInterface $site_taxonomy_manager
+   *   The site taxonomy manager.
    */
-  public function __construct(TermStorageInterface $term_storage, SiteManagerInterface $site_manager, Connection $database) {
+  public function __construct(TermStorageInterface $term_storage, SiteManagerInterface $site_manager, SiteTaxonomyManagerInterface $site_taxonomy_manager) {
     parent::__construct($term_storage);
     $this->siteManager = $site_manager;
-    $this->database = $database;
+    $this->siteTaxonomyManager = $site_taxonomy_manager;
   }
 
   /**
@@ -49,7 +51,7 @@ class VocabularyResetForm extends VocabularyResetFormBase {
     return new static(
       $container->get('entity.manager')->getStorage('taxonomy_term'),
       $container->get('og_sm.site_manager'),
-      $container->get('database')
+      $container->get('og_sm_taxonomy.site_manager')
     );
   }
 
@@ -99,23 +101,7 @@ class VocabularyResetForm extends VocabularyResetFormBase {
     $form_state->cleanValues();
     $this->entity = $this->buildEntity($form, $form_state);
 
-    // Custom query to order only the terms of the current Site.
-    // \Drupal\Core\Database\Query\Update does not support joins :(.
-    $query = <<<EOT
-    UPDATE
-      {taxonomy_term_field_data} td
-      JOIN {taxonomy_term__og_audience} audience ON (td.tid = audience.entity_id)
-    SET
-      td.`weight` = 0
-    WHERE
-      td.vid = :vid
-      AND audience.og_audience_target_id = :gid
-EOT;
-
-    $this->database->query($query, [
-      ':vid' => $this->getEntity()->id(),
-      ':gid' => $site->id(),
-    ]);
+    $this->siteTaxonomyManager->resetTermWeights($site, $this->entity);
 
     drupal_set_message($this->t('Reset vocabulary %name to alphabetical order.', ['%name' => $this->entity->label()]));
     $this->logger('taxonomy')->notice('Reset vocabulary %name to alphabetical order.', ['%name' => $this->entity->label()]);

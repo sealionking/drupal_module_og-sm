@@ -1,7 +1,7 @@
 services:
   og_sm_taxonomy.site_manager:
     class: Drupal\og_sm_taxonomy\SiteTaxonomyManager
-    arguments: ['@og.group_type_manager', '@entity_type.manager']
+    arguments: ['@og.group_type_manager', '@entity_type.manager', '@database']
   og_sm_taxonomy.site_event_subscriber:
     class: Drupal\og_sm_taxonomy\EventSubscriber\SiteEventSubscriber
     arguments: ['@og_sm.site_manager']
