@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\og_sm\SiteManagerInterface;
 use Drupal\og_sm_context\Plugin\OgGroupResolver\QueryParamGroupResolver;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -55,9 +56,15 @@ class TermOverviewFormAlter implements ContainerInjectionInterface {
    *   The form state object.
    */
   public function formAlter(array &$form, FormStateInterface $form_state) {
-    $this->addSiteTitles($form);
-    $this->alterEmptyText($form, $form_state);
-    $this->alterAlphabeticalSubmitHandler($form, $form_state);
+    $site = $this->siteManager->currentSite();
+
+    if ($site) {
+      $this->alterEmptyText($form, $form_state, $site);
+      $this->alterAlphabeticalSubmitHandler($form, $form_state, $site);
+    }
+    else {
+      $this->addSiteTitles($form);
+    }
   }
 
   /**
@@ -67,11 +74,6 @@ class TermOverviewFormAlter implements ContainerInjectionInterface {
    *   The form structure.
    */
   public function addSiteTitles(array &$form) {
-    // Only when not within a Site context.
-    if ($this->siteManager->currentSite()) {
-      return;
-    }
-
     foreach (Element::children($form['terms']) as $key) {
       if (!preg_match('/^tid\:[0-9]+/', $key)) {
         continue;
@@ -97,28 +99,22 @@ class TermOverviewFormAlter implements ContainerInjectionInterface {
    *   The form structure.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
+   * @param \Drupal\node\NodeInterface $site
+   *   The site node.
    */
-  public function alterEmptyText(array &$form, FormStateInterface $form_state) {
+  public function alterEmptyText(array &$form, FormStateInterface $form_state, NodeInterface $site) {
     // Only when there is an empty text element.
     if (empty($form['terms']['#empty'])) {
       return;
     }
-
-    // Only within a Site context.
-    $site = $this->siteManager->currentSite();
-    if (!$site) {
-      return;
-    }
     /* @var \Drupal\taxonomy\VocabularyInterface $vocabulary */
     $vocabulary = $form_state->get(['taxonomy', 'vocabulary']);
-    $form['terms']['#empty'] = $this->t(
-      'No terms available. <a href=":link">Add term</a>.', [
-        ':link' => Url::fromRoute('og_sm_taxonomy.vocabulary.term_add', [
-          'node' => $site->id(),
-          'taxonomy_vocabulary' => $vocabulary->id(),
-        ])->toString(),
-      ]
-    );
+    $add_term_link = Url::fromRoute('og_sm_taxonomy.vocabulary.term_add', [
+      'node' => $site->id(),
+      'taxonomy_vocabulary' => $vocabulary->id(),
+    ])->toString();
+
+    $form['terms']['#empty'] = $this->t('No terms available. <a href=":link">Add term</a>.', [':link' => $add_term_link]);
   }
 
   /**
@@ -128,15 +124,12 @@ class TermOverviewFormAlter implements ContainerInjectionInterface {
    *   The form structure.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
+   * @param \Drupal\node\NodeInterface $site
+   *   The site node.
    *
    * @see og_sm_taxonomy_form_taxonomy_overview_terms_alter()
    */
-  public function alterAlphabeticalSubmitHandler(&$form, FormStateInterface $form_state) {
-    // Only when not within a Site context.
-    $site = $this->siteManager->currentSite();
-    if (!$site) {
-      return;
-    }
+  public function alterAlphabeticalSubmitHandler(&$form, FormStateInterface $form_state, NodeInterface $site) {
     $form_state->set('site', $site);
 
     // Custom submit handler.

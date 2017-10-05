@@ -13,7 +13,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\og_sm\OgSm;
 use Drupal\og_sm_taxonomy\Form\TermDeleteForm;
 use Drupal\og_sm_taxonomy\Form\VocabularyResetForm;
-use Drupal\og_sm_taxonomy\FormAlter\TermFormAlter;
 use Drupal\og_sm_taxonomy\FormAlter\TermOverviewFormAlter;
 
 /**

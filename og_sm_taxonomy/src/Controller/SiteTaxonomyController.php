@@ -62,6 +62,7 @@ class SiteTaxonomyController extends ControllerBase {
     ];
 
     foreach ($this->siteTaxonomyManager->getSiteVocabularies() as $vocabulary) {
+      $row = [];
       $row['label'] = $vocabulary->label();
       $row['description'] = $vocabulary->getDescription();
       $row['operations']['data'] = [

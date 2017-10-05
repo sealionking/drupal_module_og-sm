@@ -8,7 +8,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
 use Drupal\og\OgAccessInterface;
 use Drupal\og_sm_taxonomy\SiteTaxonomyManagerInterface;
-use Drupal\taxonomy\VocabularyInterface;
 
 /**
  * Determines access to for taxonomy operations within site context.
