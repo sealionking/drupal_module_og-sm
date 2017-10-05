@@ -22,3 +22,17 @@ og_sm.site_menu.add_link:
     parameters:
       node:
         type: og_sm:site
+og_sm.site_menu.edit_link:
+  path: 'group/node/{node}/admin/structure/menu/link/{menu_link_plugin}/edit'
+  defaults:
+    _form: 'Drupal\og_sm_menu\Form\SiteMenuLinkEditForm'
+    _title: 'Edit menu link'
+  options:
+    _admin_route: TRUE
+    parameters:
+      node:
+        type: og_sm:site
+      menu_link_plugin:
+        type: menu_link_plugin
+  requirements:
+    _permission: 'administer menu'

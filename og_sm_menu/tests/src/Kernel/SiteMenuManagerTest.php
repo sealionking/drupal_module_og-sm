@@ -2,12 +2,7 @@
 
 namespace Drupal\Tests\og_sm_menu\Kernel;
 
-use Drupal\Core\Url;
-use Drupal\og\Entity\OgRole;
-use Drupal\og\Og;
-use Drupal\og\OgContextInterface;
 use Drupal\og_sm\OgSm;
-use Drupal\og_sm\SiteManagerInterface;
 use Drupal\Tests\og_sm\Kernel\OgSmKernelTestBase;
 
 /**
@@ -66,6 +61,5 @@ class SiteMenuManagerTest extends OgSmKernelTestBase {
 
     $this->assertEquals($site1_menu, $site_menu_manager->getCurrentMenu());
   }
-
 
 }
