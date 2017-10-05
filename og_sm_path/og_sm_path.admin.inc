@@ -146,6 +146,9 @@ function _og_sm_path_form_pathauto_patterns_form_alter(array &$form, FormStateIn
     }
   }
 
+  if (!$default_bundle) {
+    return;
+  }
   $node_type = NodeType::load($default_bundle);
   if (!OgSm::siteTypeManager()->isSiteType($node_type)) {
     return;
