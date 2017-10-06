@@ -50,10 +50,10 @@ abstract class OgSmGroupResolverTestBase extends OgGroupResolverTestBase {
           }
 
         }
-        $this->siteManager->getSiteFromContent($entity)->willReturn(reset($sites));
+        $this->siteManager->getSiteFromEntity($entity)->willReturn(reset($sites));
       }
       else {
-        $this->siteManager->getSiteFromContent($entity)->willReturn(FALSE);
+        $this->siteManager->getSiteFromEntity($entity)->willReturn(FALSE);
       }
     }
   }

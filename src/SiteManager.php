@@ -2,6 +2,7 @@
 
 namespace Drupal\og_sm;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -256,6 +257,13 @@ class SiteManager implements SiteManagerInterface {
    * {@inheritdoc}
    */
   public function getSitesFromContent(NodeInterface $node) {
+    return $this->getSitesFromEntity($node);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSitesFromEntity(EntityInterface $node) {
     $groups = $this->membershipManager->getGroups($node);
     return $this->filterSitesFromGroups($groups);
   }
@@ -264,7 +272,14 @@ class SiteManager implements SiteManagerInterface {
    * {@inheritdoc}
    */
   public function getSiteFromContent(NodeInterface $node) {
-    $sites = $this->getSitesFromContent($node);
+    return $this->getSiteFromEntity($node);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSiteFromEntity(EntityInterface $entity) {
+    $sites = $this->getSitesFromEntity($entity);
 
     if (empty($sites)) {
       return FALSE;
@@ -275,16 +290,32 @@ class SiteManager implements SiteManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function isSiteContent(NodeInterface $node) {
-    return (bool) $this->getSiteFromContent($node);
+  public function isSiteContent(EntityInterface $entity) {
+    return (bool) $this->getSiteFromEntity($entity);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function contentBelongsToSite(NodeInterface $node, NodeInterface $site) {
-    $sites = $this->getSitesFromContent($node);
+  public function contentBelongsToSite(EntityInterface $entity, NodeInterface $site) {
+    $sites = $this->getSitesFromEntity($entity);
     return !empty($sites[$site->id()]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntitiesBySite(NodeInterface $site, $entity_type_id) {
+    if (!$this->isSite($site)) {
+      return [];
+    }
+
+    $entity_ids = $this->membershipManager->getGroupContentIds($site, [$entity_type_id]);
+    if (empty($entity_ids[$entity_type_id])) {
+      return [];
+    }
+
+    return $this->entityTypeManager->getStorage($entity_type_id)->loadMultiple($entity_ids[$entity_type_id]);
   }
 
   /**

@@ -231,7 +231,7 @@ class SiteContentTest extends OgSmWebTestBase {
     ], 'Save');
     $site2_node = $this->getNodeByTitle('test site 2 content by admin');
     // Verify that the newly created node is linked to site 2.
-    $this->assertEquals($this->site2->id(), $site_manager->getSiteFromContent($site2_node)->id());
+    $this->assertEquals($this->site2->id(), $site_manager->getSiteFromEntity($site2_node)->id());
 
     $this->drupalPostForm($site1_path . '/content/add', [
       'title[0][value]' => 'test site 1 content by admin',

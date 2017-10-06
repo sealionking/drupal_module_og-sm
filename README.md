@@ -199,26 +199,26 @@ $is_site_content_type = \Drupal::service('og_sm.site_type_manager')->isSiteConte
 Helper methods to get the Site (if any) of a given content item (node) belongs
 to.
 
-Get all the Site nodes a node belongs to.
+Get all the Site nodes a content entity belongs to.
 ```php
-$sites = \Drupal::service('og_sm.site_manager')->getSitesFromContent($node);
+$sites = \Drupal::service('og_sm.site_manager')->getSitesFromEntity($entity);
 ```
 
-Get the Site node object from a given node object.
-If a node belongs to multiple Sites only the first Site will be returned.
+Get the Site node object from a given site content entity object.
+If a entity belongs to multiple Sites only the first Site will be returned.
 
 ```php
-$site = \Drupal::service('og_sm.site_manager')->getSiteFromContent($node);
+$site = \Drupal::service('og_sm.site_manager')->getSiteFromEntity($entitiy);
 ```
 
-Check if the given node belongs to a Site:
+Check if the given entity belongs to a Site:
 ```php
-$is_site_content = \Drupal::service('og_sm.site_manager')->isSiteContent($node);
+$is_site_content = \Drupal::service('og_sm.site_manager')->isSiteContent($entitiy);
 ```
 
-Check if the given node belongs to a given Site:
+Check if the given entity belongs to a given Site:
 ```php
-$is_member = \Drupal::service('og_sm.site_manager')->contentBelongsToSite($node, $site);
+$is_member = \Drupal::service('og_sm.site_manager')->contentBelongsToSite($entitiy, $site);
 ```
 
 ### Check if user is member of a Site

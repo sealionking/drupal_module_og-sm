@@ -32,7 +32,7 @@ class NodeGroupResolver extends OgSmGroupResolverBase {
       $collection->addGroup($node, ['url']);
       $this->stopPropagation();
     }
-    elseif ($site = $this->siteManager->getSiteFromContent($node)) {
+    elseif ($site = $this->siteManager->getSiteFromEntity($node)) {
       $collection->addGroup($site, ['url']);
       $this->stopPropagation();
     }
