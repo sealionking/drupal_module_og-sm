@@ -2,22 +2,23 @@
 
 namespace Drupal\og_sm_context\Plugin\OgGroupResolver;
 
+use Drupal\node\NodeInterface;
 use Drupal\og\OgResolvedGroupCollectionInterface;
 
 /**
- * Tries to get the context based on the fact that we are on a site admin page.
+ * Tries to get the context based on the fact that we are on a group path.
  *
  * Will check if:
  * - The path starts with group/node/{node}
  * - If the group is a Site node type.
  *
  * @OgGroupResolver(
- *   id = "og_sm_context_admin",
- *   label = "Site Administration",
- *   description = @Translation("Determine Site context based on the fact that we are on a Site administration page.")
+ *   id = "og_sm_context_group_path",
+ *   label = "Site Path",
+ *   description = @Translation("Determine Site context based on the fact that we are on a group path.")
  * )
  */
-class AdminGroupResolver extends OgSmGroupResolverBase {
+class GroupPathGroupResolver extends OgSmGroupResolverBase {
 
   /**
    * {@inheritdoc}
@@ -32,7 +33,11 @@ class AdminGroupResolver extends OgSmGroupResolverBase {
     }
     $group = $this->routeMatch->getParameter('node');
 
-    if ($this->siteManager->isSite($group)) {
+    if (!$group instanceof NodeInterface) {
+      $group = $this->siteManager->load($group);
+    }
+
+    if ($group instanceof NodeInterface && $this->siteManager->isSite($group)) {
       $collection->addGroup($group, ['url']);
       $this->stopPropagation();
     }
