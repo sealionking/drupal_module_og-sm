@@ -60,7 +60,10 @@ class Site extends ArgumentValidatorPluginBase implements ContainerFactoryPlugin
    * {@inheritdoc}
    */
   public function validateArgument($argument) {
-    return (bool) $this->siteManager->load($argument);
+    if ($argument) {
+      return (bool) $this->siteManager->load($argument);
+    }
+    return FALSE;
   }
 
 }
