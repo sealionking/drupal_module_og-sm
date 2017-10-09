@@ -97,8 +97,8 @@ function _og_sm_path_tokens_site_path(EntityInterface $entity, $sanitize) {
   $site_manager = OgSm::siteManager();
 
   $site = FALSE;
-  if ($entity instanceof NodeInterface) {
-    $site = $site_manager->isSite($entity);
+  if ($entity instanceof NodeInterface && $site_manager->isSite($entity)) {
+    $site = $entity;
   }
   if (!$site) {
     $site = $site_manager->getSiteFromEntity($entity);
