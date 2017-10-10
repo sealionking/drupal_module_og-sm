@@ -28,7 +28,7 @@ og_sm_taxonomy.vocabulary.term_add:
     _controller: '\Drupal\taxonomy\Controller\TaxonomyController::addForm'
     _title: 'Add term'
   requirements:
-    _entity_create_access: 'taxonomy_term'
+    _entity_create_access: 'taxonomy_term:{taxonomy_vocabulary}'
   options:
     _admin_route: TRUE
     parameters:
