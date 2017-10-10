@@ -74,7 +74,7 @@ function og_sm_taxonomy_query_term_access_alter(AlterableInterface $query) {
   $tables = $query->getTables();
   $original_tables = ['taxonomy_term_data', 'taxonomy_term_field_data'];
   foreach ($tables as $info) {
-    if (!in_array($info['table'], $original_tables)) {
+    if (isset($table_aliases[$info['table']]) || !in_array($info['table'], $original_tables)) {
       continue;
     }
     $table_aliases[$info['table']] = $info['alias'];
