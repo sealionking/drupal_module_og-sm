@@ -98,7 +98,7 @@ class SiteTaxonomyManager implements SiteTaxonomyManagerInterface {
       // Check if the condition field is either a vid or a machine name. If so
       // load the vocabularies and add them to the vocabularies array.
       $field_parts = explode('.', $condition['field']);
-      if (!count($field_parts) === 2) {
+      if (count($field_parts) !== 2) {
         continue;
       }
 
