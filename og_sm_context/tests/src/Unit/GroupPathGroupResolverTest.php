@@ -3,26 +3,26 @@
 namespace Drupal\Tests\og_sm_context\Unit;
 
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\og_sm_context\Plugin\OgGroupResolver\AdminGroupResolver;
+use Drupal\og_sm_context\Plugin\OgGroupResolver\GroupPathGroupResolver;
 use Symfony\Component\Routing\Route;
 
 /**
- * Tests the AdminGroupResolver plugin.
+ * Tests the GroupPathGroupResolver plugin.
  *
  * @group og_sm
- * @coversDefaultClass \Drupal\og_sm_context\Plugin\OgGroupResolver\AdminGroupResolver
+ * @coversDefaultClass \Drupal\og_sm_context\Plugin\OgGroupResolver\GroupPathGroupResolver
  */
-class AdminGroupResolverTest extends OgSmGroupResolverTestBase {
+class GroupPathGroupResolverTest extends OgSmGroupResolverTestBase {
 
   /**
    * {@inheritdoc}
    */
-  protected $className = AdminGroupResolver::class;
+  protected $className = GroupPathGroupResolver::class;
 
   /**
    * {@inheritdoc}
    */
-  protected $pluginId = 'og_sm_context_admin';
+  protected $pluginId = 'og_sm_context_group_path';
 
   /**
    * The route match object.
