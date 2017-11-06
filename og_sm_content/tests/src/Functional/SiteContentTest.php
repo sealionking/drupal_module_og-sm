@@ -102,7 +102,7 @@ class SiteContentTest extends OgSmWebTestBase {
     ]);
 
     $this->config('og.settings')
-      ->set('group_resolvers', ['og_sm_context_node', 'og_sm_context_admin'])
+      ->set('group_resolvers', ['og_sm_context_node', 'og_sm_context_group_path'])
       ->save();
   }
 
