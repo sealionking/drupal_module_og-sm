@@ -25,24 +25,43 @@ function og_sm_admin_menu_toolbar() {
   $site_manager = OgSm::siteManager();
   $links = [];
 
-  $tab_title = t('Platform');
-  $tab_url = Url::fromRoute('<front>');
+  $main_tab = NULL;
+  $platform_url = Url::fromRoute('<front>');
+  $platform_access = FALSE;
+  // Check if we are allowed to the platform, if so set the platform URL as our
+  // main tab.
+  if (\Drupal::pathValidator()->isValid($platform_url->toString())) {
+    $platform_access = TRUE;
+    $main_tab = [
+      'title' => t('Platform'),
+      'url' => $platform_url,
+    ];
+  }
 
   $current_site = $site_manager->currentSite();
   $tab_cache_tags = [];
+  // If we are currently within site context, the main tab should be the site,
+  // if the main tab was previously set it should be added to the links array.
   if ($current_site) {
-    $links['platform'] = [
-      'title' => $tab_title,
-      'url' => $tab_url,
-    ];
+    if ($main_tab) {
+      $links['platform'] = $main_tab;
+    }
 
-    $tab_title = $current_site->label();
-    $tab_url = $site_manager->getSiteHomePage($current_site);
+    $main_tab = [
+      'title' => $current_site->label(),
+      'url' => $site_manager->getSiteHomePage($current_site),
+    ];
     $tab_cache_tags[] = 'node:' . $current_site->id();
   }
 
+  // If we don't have access to the platform, and we are outside of site context
+  // don't show the site switcher.
+  if (!$main_tab) {
+    return [];
+  }
+
   $switch_sites = $site_manager->getUserManageableSites();
-  if (count($switch_sites) < 1) {
+  if (!$platform_access && count($switch_sites) < 2) {
     return [];
   }
 
@@ -63,8 +82,8 @@ function og_sm_admin_menu_toolbar() {
     '#type' => 'toolbar_item',
     'tab' => [
       '#type' => 'link',
-      '#title' => $tab_title,
-      '#url' => $tab_url,
+      '#title' => $main_tab['title'],
+      '#url' => $main_tab['url'],
       '#attributes' => [
         'title' => t('Return to site content'),
         'class' => ['toolbar-site-switcher'],
