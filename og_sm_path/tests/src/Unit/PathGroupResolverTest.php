@@ -81,7 +81,7 @@ class PathGroupResolverTest extends OgSmGroupResolverTestBase {
    * @dataProvider resolveProvider
    */
   public function testResolve($path = NULL, $expected_added_group = NULL) {
-    $this->request->getRequestUri()->willReturn($path);
+    $this->request->getPathInfo()->willReturn($path);
     $this->mightRetrieveSite($expected_added_group);
   }
 
