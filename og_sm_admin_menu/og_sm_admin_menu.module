@@ -30,7 +30,7 @@ function og_sm_admin_menu_toolbar() {
   $platform_access = FALSE;
   // Check if we are allowed to the platform, if so set the platform URL as our
   // main tab.
-  if (\Drupal::pathValidator()->isValid($platform_url->toString())) {
+  if (\Drupal::pathValidator()->isValid($platform_url->getInternalPath())) {
     $platform_access = TRUE;
     $main_tab = [
       'title' => t('Platform'),

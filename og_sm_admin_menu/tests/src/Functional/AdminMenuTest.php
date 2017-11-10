@@ -23,7 +23,7 @@ class AdminMenuTest extends OgSmWebTestBase {
   /**
    * Test the site administration menu.
    */
-  public function atestSiteAdminMenu() {
+  public function testSiteAdminMenu() {
     $site_type_manager = OgSm::siteTypeManager();
     $site_manager = OgSm::siteManager();
 
