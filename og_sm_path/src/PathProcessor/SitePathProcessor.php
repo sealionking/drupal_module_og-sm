@@ -100,7 +100,11 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
     // path alias. Note: this will affect links outside a Site as well. We can
     // have links outside a Site context with a destination that is in a Site.
     if (isset($options['query']['destination'])) {
-      $destination = trim($options['query']['destination'], '/');
+      $base_path = $request ? $request->getBasePath() . '/' : '/';
+      $destination = $options['query']['destination'];
+      if (strpos($destination, $base_path) === 0) {
+        $destination = substr($destination, strlen($base_path));
+      }
       $parts = parse_url($destination);
       $alias = Url::fromUserInput('/' . $parts['path']);
       if (!empty($parts['query'])) {
