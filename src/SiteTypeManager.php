@@ -103,6 +103,10 @@ class SiteTypeManager implements SiteTypeManagerInterface {
     $sort = $items = [];
     foreach ($typeIds as $typeId) {
       $type = $this->nodeTypeStorage->load($typeId);
+      if (!$type) {
+        continue;
+      }
+
       $sort[$type->label()] = $type->id();
       $items[$type->id()] = $type;
     }
