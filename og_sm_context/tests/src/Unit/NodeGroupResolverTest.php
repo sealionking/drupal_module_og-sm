@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\og_sm_context\Unit;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\og_sm_context\Plugin\OgGroupResolver\NodeGroupResolver;
 use Symfony\Component\Routing\Route;
@@ -32,11 +33,19 @@ class NodeGroupResolverTest extends OgSmGroupResolverTestBase {
   protected $routeMatch;
 
   /**
+   * The entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\Prophecy\Prophecy\ObjectProphecy
+   */
+  protected $entityTypeManager;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
     $this->routeMatch = $this->prophesize(RouteMatchInterface::class);
+    $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
   }
 
   /**
@@ -83,6 +92,7 @@ class NodeGroupResolverTest extends OgSmGroupResolverTestBase {
     return [
       $this->routeMatch->reveal(),
       $this->siteManager->reveal(),
+      $this->entityTypeManager->reveal()
     ];
   }
 

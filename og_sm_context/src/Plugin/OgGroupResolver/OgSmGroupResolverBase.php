@@ -28,7 +28,7 @@ abstract class OgSmGroupResolverBase extends OgGroupResolverBase implements Cont
   protected $siteManager;
 
   /**
-   * Constructs a AdminGroupResolver.
+   * Constructs a OgSmGroupResolverBase instance.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
