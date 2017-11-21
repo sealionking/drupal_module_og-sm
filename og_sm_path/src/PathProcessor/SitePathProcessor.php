@@ -105,6 +105,7 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
       if (strpos($destination, $base_path) === 0) {
         $destination = substr($destination, strlen($base_path));
       }
+      $destination = ltrim($destination, '/');
       $parts = parse_url($destination);
       $alias = Url::fromUserInput('/' . $parts['path']);
       if (!empty($parts['query'])) {
