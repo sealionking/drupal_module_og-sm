@@ -343,8 +343,17 @@ class SiteManager implements SiteManagerInterface {
    * {@inheritdoc}
    */
   public function userIsMemberOfSite(AccountInterface $account, NodeInterface $site) {
-    $sites = $this->getUserSites($account);
-    return !empty($sites[$site->id()]);
+    return (bool) $this->getUserMembership($account, $site);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getUserMembership(AccountInterface $account, NodeInterface $site) {
+    if (!$this->isSite($site)) {
+      return NULL;
+    }
+    return $this->membershipManager->getMembership($site, $account);
   }
 
 }

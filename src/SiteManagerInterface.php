@@ -239,4 +239,17 @@ interface SiteManagerInterface {
    */
   public function userIsMemberOfSite(AccountInterface $account, NodeInterface $site);
 
+  /**
+   * Gets a user's membership to a site.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user object.
+   * @param \Drupal\node\NodeInterface $site
+   *   The Site node object.
+   *
+   * @return \Drupal\og\OgMembershipInterface
+   *   Is membership entity.
+   */
+  public function getUserMembership(AccountInterface $account, NodeInterface $site);
+
 }

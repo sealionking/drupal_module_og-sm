@@ -8,7 +8,7 @@ use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Config\TypedConfigManagerInterface;
 
 /**
- * Defines language configuration overrides.
+ * Defines site configuration overrides.
  */
 class SiteConfigOverride extends StorableConfigBase {
 
