@@ -5,6 +5,8 @@
  * Site Manager Administration module.
  */
 
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Template\Attribute;
 use Drupal\og_sm\OgSm;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Url;
@@ -177,5 +179,15 @@ function og_sm_admin_menu_preprocess_html(&$variables) {
   // to appear on admin pages.
   if ($variables['root_path'] === 'group' && \Drupal::routeMatch()->getRouteObject()->getOption('_admin_route')) {
     $variables['root_path'] = 'admin';
+  }
+
+  // Alter the toolbar's #access key to also include the og permission when in
+  // site context.
+  $toolbar_access = og_sm_site_user_access('access toolbar');
+  if ($toolbar_access) {
+    $variables['page_top']['toolbar']['#access'] = $toolbar_access;
+    $variables['page_top']['toolbar']['#cache']['contexts'][] = 'og_group_context';
+    $variables['attributes'] = new Attribute($variables['attributes']);
+    $variables['attributes']->addClass(['toolbar-tray-open', 'toolbar-horizontal', 'toolbar-fixed', 'toolbar-loading']);
   }
 }

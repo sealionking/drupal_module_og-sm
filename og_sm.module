@@ -198,3 +198,29 @@ function og_sm_entity_field_access($operation, FieldDefinitionInterface $field_d
   // prefilled in og_sm_field_widget_form_alter() anyway.
   return AccessResult::forbidden();
 }
+
+/**
+ * Helper function that checks whether an account has a certain site permission.
+ *
+ * @param string $operation
+ *   The entity operation being checked for.
+ * @param \Drupal\Core\Session\AccountInterface $account
+ *   (optional) The user to check. Defaults to the current user.
+ *
+ * @return bool
+ *   TRUE if the user has the site permission.
+ */
+function og_sm_site_user_access($operation, AccountInterface $account = NULL) {
+  if (!isset($account)) {
+    $account = \Drupal::currentUser()->getAccount();
+  }
+
+  $site = OgSm::siteManager()->currentSite();
+  if (!$site) {
+    return FALSE;
+  }
+
+  /* @var \Drupal\og\OgAccess $og_access */
+  $og_access = \Drupal::service('og.access');
+  return $og_access->userAccess($site, $operation, $account)->isAllowed();
+}

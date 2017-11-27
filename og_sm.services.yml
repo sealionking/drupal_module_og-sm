@@ -18,5 +18,6 @@ services:
       - { name: access_check, applies_to: _site_permission }
   og_sm.group_permission_event_subscriber:
     class: Drupal\og_sm\EventSubscriber\GroupPermissionEventSubscriber
+    arguments: ['@string_translation']
     tags:
       - { name: event_subscriber }

@@ -58,6 +58,25 @@ function og_sm_taxonomy_taxonomy_vocabulary_access(EntityInterface $entity, $ope
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_create_access() for 'taxonomy_term'.
+ */
+function og_sm_taxonomy_taxonomy_term_create_access(AccountInterface $account, $context, $entity_bundle) {
+  $site_manager = OgSm::siteManager();
+  $site = $site_manager->currentSite();
+  if (!$site) {
+    return AccessResult::neutral();
+  }
+
+  /* @var \Drupal\og\OgAccessInterface $og_access */
+  $og_access = \Drupal::service('og.access');
+  if ($og_access->userAccess($site, "create $entity_bundle taxonomy_term", $account)->isAllowed()) {
+    return AccessResult::allowed();
+  }
+
+  return AccessResult::neutral();
+}
+
+/**
  * Implements hook_query_TAG_alter().
  *
  * Filters the term query by the current Site (if any).
