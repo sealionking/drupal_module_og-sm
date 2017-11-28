@@ -56,6 +56,10 @@ class RouteSubscriber extends RouteSubscriberBase {
     ]);
 
     $collection->add('entity.node.og_admin_routes', $route);
+
+    $collection
+      ->get('toolbar.subtrees')
+      ->setRequirement('_custom_access', '\Drupal\og_sm_admin_menu\Controller\ToolbarController::checkSubTreeAccess');
   }
 
   /**

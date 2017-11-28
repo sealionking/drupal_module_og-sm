@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\og_sm\EventSubscriber;
+namespace Drupal\og_sm_admin_menu\EventSubscriber;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
@@ -47,17 +47,8 @@ class GroupPermissionEventSubscriber implements EventSubscriberInterface, Contai
   public function provideDefaultOgPermissions(PermissionEventInterface $event) {
     $event->setPermission(
       new GroupPermission([
-        'name' => 'administer site',
-        'title' => $this->t('Administer Site'),
-        'description' => $this->t('View the Site administration pages.'),
-        'default roles' => [OgRoleInterface::ADMINISTRATOR],
-      ])
-    );
-    $event->setPermission(
-      new GroupPermission([
-        'name' => 'view the administration theme',
-        'title' => $this->t('View the administration theme'),
-        'description' => $this->t('This is only used when the site is configured to use a separate administration theme on the Appearance page.'),
+        'name' => 'access toolbar',
+        'title' => $this->t('Use the administration toolbar'),
         'default roles' => [OgRoleInterface::ADMINISTRATOR],
       ])
     );
