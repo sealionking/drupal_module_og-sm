@@ -2,13 +2,8 @@
 
 namespace Drupal\og_sm_path\EventSubscriber;
 
-use Drupal\og_sm\Event\SiteEvent;
-use Drupal\og_sm\Event\SiteEvents;
 use Drupal\og_sm_path\Event\AjaxPathEvent;
 use Drupal\og_sm_path\Event\AjaxPathEvents;
-use Drupal\og_sm_path\Event\SitePathEvent;
-use Drupal\og_sm_path\Event\SitePathEvents;
-use Drupal\og_sm_path\SitePathManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
