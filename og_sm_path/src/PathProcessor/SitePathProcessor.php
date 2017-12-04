@@ -7,7 +7,10 @@ use Drupal\Core\PathProcessor\OutboundPathProcessorInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
 use Drupal\og_sm\SiteManagerInterface;
+use Drupal\og_sm_path\Event\AjaxPathEvent;
+use Drupal\og_sm_path\Event\AjaxPathEvents;
 use Drupal\og_sm_path\SitePathManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -30,16 +33,33 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
   protected $siteManager;
 
   /**
+   * The event dispatcher.
+   *
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   */
+  protected $eventDispatcher;
+
+  /**
+   * An array of ajax paths.
+   *
+   * @var string[]
+   */
+  protected $ajaxPaths;
+
+  /**
    * Constructs a SitePathProcessor object.
    *
    * @param \Drupal\og_sm_path\SitePathManagerInterface $site_path_manager
    *   The site path manager.
    * @param \Drupal\og_sm\SiteManagerInterface $site_manager
    *   The site manager.
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   *   The event dispatcher.
    */
-  public function __construct(SitePathManagerInterface $site_path_manager, SiteManagerInterface $site_manager) {
+  public function __construct(SitePathManagerInterface $site_path_manager, SiteManagerInterface $site_manager, EventDispatcherInterface $event_dispatcher) {
     $this->sitePathManager = $site_path_manager;
     $this->siteManager = $site_manager;
+    $this->eventDispatcher = $event_dispatcher;
   }
 
   /**
@@ -49,9 +69,14 @@ class SitePathProcessor implements InboundPathProcessorInterface, OutboundPathPr
    *   An array of ajax paths.
    */
   protected function ajaxPaths() {
-    return [
-      '/entity_reference_autocomplete/.*/.*/.*',
-    ];
+    if ($this->ajaxPaths !== NULL) {
+      return $this->ajaxPaths;
+    }
+
+    $event = new AjaxPathEvent();
+    $this->eventDispatcher->dispatch(AjaxPathEvents::COLLECT, $event);
+    $this->ajaxPaths = $event->getAjaxPaths();
+    return $this->ajaxPaths;
   }
 
   /**

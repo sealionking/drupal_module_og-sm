@@ -7,7 +7,7 @@ services:
       tags:
         - { name: path_processor_inbound }
         - { name: path_processor_outbound }
-      arguments: ['@og_sm.path.site_path_manager', '@og_sm.site_manager']
+      arguments: ['@og_sm.path.site_path_manager', '@og_sm.site_manager', '@event_dispatcher']
    og_sm.path.site_subscriber:
       class: Drupal\og_sm_path\EventSubscriber\SiteSubscriber
       tags:
@@ -18,3 +18,7 @@ services:
       tags:
         - { name: event_subscriber }
       arguments: ['@entity_type.manager']
+   og_sm.path.event_subscriber:
+      class: Drupal\og_sm_path\EventSubscriber\EventSubscriber
+      tags:
+        - { name: event_subscriber }
