@@ -26,6 +26,7 @@ abstract class OgSmKernelTestBase extends KernelTestBase {
     'og_sm',
     'system',
     'user',
+    'options',
   ];
 
   /**

@@ -8,10 +8,12 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Utility\UnroutedUrlAssemblerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\og_sm\SiteManagerInterface;
+use Drupal\og_sm_path\EventSubscriber\EventSubscriber;
 use Drupal\og_sm_path\PathProcessor\SitePathProcessor;
 use Drupal\og_sm_path\SitePathManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -67,12 +69,21 @@ class SitePathProcessorTest extends UnitTestCase {
   protected $testNodes;
 
   /**
+   * The event dispatcher.
+   *
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface|\Prophecy\Prophecy\ObjectProphecy[]
+   */
+  protected $eventDispatcher;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
     $this->sitePathManager = $this->prophesize(SitePathManagerInterface::class);
     $this->siteManager = $this->prophesize(SiteManagerInterface::class);
+    $this->eventDispatcher = new EventDispatcher();
+    $this->eventDispatcher->addSubscriber(new EventSubscriber());
 
     /* @var \Drupal\Core\Utility\UnroutedUrlAssemblerInterface|\Prophecy\Prophecy\ObjectProphecy $unrouted_url_assembler */
     // We need to mock the unrouted_url_assembler service to allow the
@@ -121,7 +132,7 @@ class SitePathProcessorTest extends UnitTestCase {
     $this->siteManager->currentSite()->willReturn($this->testNodes[1]);
     $this->siteManager->load(Argument::any())->willReturn(FALSE);
 
-    $this->sitePathProcessor = new SitePathProcessor($this->sitePathManager->reveal(), $this->siteManager->reveal());
+    $this->sitePathProcessor = new SitePathProcessor($this->sitePathManager->reveal(), $this->siteManager->reveal(), $this->eventDispatcher);
   }
 
   /**

@@ -2,6 +2,7 @@
 
 namespace Drupal\og_sm\Access;
 
+use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
@@ -56,6 +57,47 @@ class SitePermissionAccessCheck implements AccessInterface {
   }
 
   /**
+   * Creates an allowed access result if the permissions are present, neutral otherwise.
+   *
+   * @param \Drupal\node\NodeInterface $site
+   *   The site node.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account for which to check permissions.
+   * @param array $permissions
+   *   The permissions to check.
+   * @param string $conjunction
+   *   (optional) 'AND' if all permissions are required, 'OR' in case just one.
+   *   Defaults to 'AND'
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   If the account has the permissions, isAllowed() will be TRUE, otherwise
+   *   isNeutral() will be TRUE.
+   */
+  protected function allowedIfHasPermissions(NodeInterface $site, AccountInterface $account, array $permissions, $conjunction = 'AND') {
+    $access = FALSE;
+
+    if ($conjunction === 'AND' && !empty($permissions)) {
+      $access = TRUE;
+      foreach ($permissions as $permission) {
+        if (!$this->ogAccess->userAccess($site, $permission, $account)->isAllowed()) {
+          $access = FALSE;
+          break;
+        }
+      }
+    }
+    else {
+      foreach ($permissions as $permission) {
+        if ($this->ogAccess->userAccess($site, $permission, $account)->isAllowed()) {
+          $access = TRUE;
+          break;
+        }
+      }
+    }
+
+    return AccessResult::allowedIf($access);
+  }
+
+  /**
    * Checks access to the node add page for the node type.
    *
    * @param \Symfony\Component\Routing\Route $route
@@ -70,8 +112,17 @@ class SitePermissionAccessCheck implements AccessInterface {
    */
   public function access(Route $route, AccountInterface $account, NodeInterface $node) {
     if ($this->siteManager->isSite($node)) {
-      $operation = $route->getRequirement('_site_permission');
-      return $this->ogAccess->userAccess($node, $operation, $account);
+      $permission = $route->getRequirement('_site_permission');
+
+      // Allow to conjunct the permissions with OR ('+') or AND (',').
+      $split = explode(',', $permission);
+      if (count($split) > 1) {
+        return $this->allowedIfHasPermissions($node, $account, $split, 'AND');
+      }
+      else {
+        $split = explode('+', $permission);
+        return $this->allowedIfHasPermissions($node, $account, $split, 'OR');
+      }
     }
     return AccessResult::neutral();
   }
