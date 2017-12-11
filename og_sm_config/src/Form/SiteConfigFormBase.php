@@ -21,6 +21,13 @@ abstract class SiteConfigFormBase extends ConfigFormBase {
   protected $configFactoryOverride;
 
   /**
+   * The site manager.
+   *
+   * @var \Drupal\og_sm\SiteManagerInterface
+   */
+  protected $siteManager;
+
+  /**
    * The current site.
    *
    * @var \Drupal\node\NodeInterface
@@ -39,7 +46,8 @@ abstract class SiteConfigFormBase extends ConfigFormBase {
    */
   public function __construct(ConfigFactoryInterface $configFactory, SiteConfigFactoryOverrideInterface $configFactoryOverride, SiteManagerInterface $siteManager) {
     parent::__construct($configFactory);
-    $this->currentSite = $siteManager->currentSite();
+    $this->siteManager = $siteManager;
+    $this->currentSite = $this->siteManager->currentSite();
     $this->configFactoryOverride = $configFactoryOverride;
   }
 
