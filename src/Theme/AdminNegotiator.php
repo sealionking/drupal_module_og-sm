@@ -61,12 +61,16 @@ class AdminNegotiator extends AdminNegotiatorBase {
       return TRUE;
     }
 
+    if (!$this->adminContext->isAdminRoute($route_match->getRouteObject())) {
+      return FALSE;
+    }
+
     $site = $this->siteManager->currentSite();
     if (!$site) {
       return FALSE;
     }
 
-    return $this->ogAccess->userAccess($site, 'view the administration theme', $this->user)->isAllowed() && $this->adminContext->isAdminRoute($route_match->getRouteObject());
+    return $this->ogAccess->userAccess($site, 'view the administration theme', $this->user)->isAllowed();
   }
 
 }
