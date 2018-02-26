@@ -1,11 +1,11 @@
 # Changelog
 All Notable changes to **Organic Groups Site Manager** module suite.
 
-## [Unreleased]
+## [8.x-1.0]
 ### Updated
-- DMOGSM-116: Ported the helper functions, permissions and routes of the og_sm base module.
+- First stable release of Drupal 8 port.
 
 
 
 
-[Unreleased]: https://bitbucket.org/digipolisgent/drupal_module_og-sm/branches/compare/8.x-1.x-dev%0D7.x-1.x-dev
+[8.x-1.0]: https://github.com/digipolisgent/drupal_module_og-sm/tree/8.x-1.0
