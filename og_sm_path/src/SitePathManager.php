@@ -69,6 +69,14 @@ class SitePathManager implements SitePathManagerInterface {
    */
   protected $invalidator;
 
+
+  /**
+   * Key value array where the key is the path and the value the site node.
+   *
+   * @var \Drupal\node\NodeInterface[]
+   */
+  protected $sitesByPath = [];
+
   /**
    * Constructs a SitePathManager object.
    *
@@ -124,11 +132,17 @@ class SitePathManager implements SitePathManagerInterface {
    * {@inheritdoc}
    */
   public function getSiteFromPath($path) {
+    // If the site for this path is already known, return it.
+    if (isset($this->sitesByPath[$path])) {
+      return $this->sitesByPath[$path];
+    }
     foreach ($this->siteManager->getAllSites() as $site) {
       if ($this->getPathFromSite($site) === $path) {
+        $this->sitesByPath[$path] = $site;
         return $site;
       }
     }
+    $this->sitesByPath[$path] = FALSE;
     return FALSE;
   }
 
