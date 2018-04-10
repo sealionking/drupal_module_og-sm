@@ -108,7 +108,7 @@ install:
 
 before_script:
   - drupal-ti before_script
-  - drush en og_sm_config og_sm_context og_sm_menu og_sm_path og_sm_routing og_sm_admin_menu og_sm_content -y
+  - cd drupal && drush en og_sm_config og_sm_context og_sm_menu og_sm_path og_sm_routing og_sm_admin_menu og_sm_content -y
 
 script:
   - drupal-ti script
