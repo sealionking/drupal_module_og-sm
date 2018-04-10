@@ -7,8 +7,11 @@
 #   https://github.com/sonnym/travis-ci-drupal-module-example
 
 language: php
-
 sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 php:
   - 5.6
@@ -83,7 +86,7 @@ env:
 
   matrix:
     # [[[ SELECT ANY OR MORE OPTIONS ]]]
-    - DRUPAL_TI_RUNNERS="phpunit"
+    #- DRUPAL_TI_RUNNERS="phpunit"
     - DRUPAL_TI_RUNNERS="simpletest"
     #- DRUPAL_TI_RUNNERS="behat"
     #- DRUPAL_TI_RUNNERS="phpunit simpletest behat"
