@@ -10,6 +10,7 @@ use Drupal\Tests\og_sm\Functional\OgSmWebTestBase;
  * Tests Site Path node form settings.
  *
  * @group og_sm
+ * @requires module pathauto
  */
 class SitePathFormTest extends OgSmWebTestBase {
 
