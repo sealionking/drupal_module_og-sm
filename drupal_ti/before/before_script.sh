@@ -14,4 +14,4 @@ drupal_ti_ensure_drupal
 cd "$DRUPAL_TI_DRUPAL_DIR"
 
 # Enable submodules
-drush --yes og_sm_access og_sm_admin_menu og_sm_breadcrumb og_sm_comment og_sm_config og_sm_content og_sm_context og_sm_dashboard og_sm_feature og_sm_menu og_sm_path og_sm_routing og_sm_site_clone og_sm_taxonomy og_sm_theme og_sm_user og_sm_user_create
+drush --yes en og_sm_access og_sm_admin_menu og_sm_breadcrumb og_sm_comment og_sm_config og_sm_content og_sm_context og_sm_dashboard og_sm_feature og_sm_menu og_sm_path og_sm_routing og_sm_site_clone og_sm_taxonomy og_sm_theme og_sm_user og_sm_user_create
