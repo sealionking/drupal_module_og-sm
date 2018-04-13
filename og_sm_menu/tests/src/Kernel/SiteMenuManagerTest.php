@@ -9,7 +9,6 @@ use Drupal\Tests\og_sm\Kernel\OgSmKernelTestBase;
  * Tests the site menu manager service.
  *
  * @group og_sm
- * @requires module og_menu
  */
 class SiteMenuManagerTest extends OgSmKernelTestBase {
 
