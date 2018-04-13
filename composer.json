@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "drupal/og": "^1.x"
+        "drupal/og": "^1.0"
     },
     "require-dev": {
         "drupal/og_menu": "^1.0-alpha3",
