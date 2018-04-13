@@ -51,8 +51,8 @@ before_script:
   - composer install --working-dir="$DRUPAL_DIR"
 
   # Install og sm sub module dependencies.
-  - composer require drupal/og_menu
-  - composer require drupal/pathauto
+  - composer require drupal/og_menu --working-dir="$DRUPAL_DIR"
+  - composer require drupal/pathauto --working-dir="$DRUPAL_DIR"
 
   # Start a web server on port 8888 in the background.
   - nohup php -S localhost:8888 --docroot "$DRUPAL_DIR" > /dev/null 2>&1 &
