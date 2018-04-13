@@ -13,5 +13,18 @@
     "support": {
         "issues": "https://github.com/digipolisgent/drupal_module_og-sm/issues",
         "source": "https://github.com/digipolisgent/drupal_module_og-sm"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "drupal/og": "1.x"
+    },
+    "require-dev": {
+        "drupal/og_menu": "^1.0@alpha",
+        "drupal/pathauto": "^1.0"
     }
 }
