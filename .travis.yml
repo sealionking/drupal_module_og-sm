@@ -46,11 +46,6 @@ before_script:
   # Remember the Drupal installation path.
   - export DRUPAL_DIR="$(pwd)/drupal"
 
-  # Install og sm (sub) module dependencies.
-  - composer require drupal/og --working-dir="$DRUPAL_DIR" --no-install
-  - composer require drupal/og_menu --working-dir="$DRUPAL_DIR" --no-install
-  - composer require drupal/pathauto --working-dir="$DRUPAL_DIR" --no-install
-
   # Install Composer dependencies for core. Skip this for the coding standards test.
   - composer install --working-dir="$DRUPAL_DIR"
 
