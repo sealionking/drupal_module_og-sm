@@ -107,7 +107,7 @@ install:
   - drupal-ti install
 
 before_script:
-  - echo pwd
+  - pwd
   - drupal-ti --include drupal_ti/before/before_script.sh
   - drupal-ti before_script
 
