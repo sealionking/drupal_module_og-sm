@@ -64,7 +64,7 @@ before_script:
   - export SIMPLETEST_BASE_URL=http://localhost:8888
 
   # Export database variable for kernel tests.
-  - export SIMPLETEST_DB=mysql://root:@127.0.0.1/maps
+  - export SIMPLETEST_DB=mysql://root:@127.0.0.1/drupal
 
 script:
   - ln -s "$MODULE_DIR" "$DRUPAL_DIR/modules/og_sm"
