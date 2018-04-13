@@ -21,6 +21,9 @@
             "url": "https://packages.drupal.org/8"
         }
     ],
+    "require": {
+        "drupal/og": "^1.x"
+    },
     "require-dev": {
         "drupal/og_menu": "^1.0-alpha3",
         "drupal/pathauto": "^1.1"
