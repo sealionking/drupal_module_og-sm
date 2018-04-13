@@ -6,7 +6,6 @@ php:
   - 7
 
 env:
-  - TEST_SUITE=8.4.x
   - TEST_SUITE=8.5.x
   - TEST_SUITE=8.6.x
 
@@ -51,6 +50,7 @@ before_script:
   - composer install --working-dir="$DRUPAL_DIR"
 
   # Install og sm sub module dependencies.
+  - composer require drupal/og --working-dir="$DRUPAL_DIR"
   - composer require drupal/og_menu --working-dir="$DRUPAL_DIR"
   - composer require drupal/pathauto --working-dir="$DRUPAL_DIR"
 
