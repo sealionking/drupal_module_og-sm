@@ -110,6 +110,10 @@ class SitePathManager implements SitePathManagerInterface {
    * {@inheritdoc}
    */
   public function getPathFromSite(NodeInterface $site) {
+    $site_path = $site->site_path;
+    if (!empty($site_path)) {
+      return $site_path;
+    }
     $config = $this->configFactoryOverride->getOverride($site, 'site_settings');
     return $config->get('path');
   }

@@ -57,7 +57,7 @@ function og_sm_path_site_alias_update_content_process(NodeInterface $site, array
   // Rebuild the path alias for the node.
   $tags = [];
   foreach ($site_content as $node) {
-    pathauto_entity_update($node);
+    \Drupal::service('pathauto.generator')->updateEntityAlias($node, 'update');
     $context['sandbox']['progress']++;
     $tags[] = 'node:' . $node->id();
     $context['sandbox']['last_id'] = $node->id();
