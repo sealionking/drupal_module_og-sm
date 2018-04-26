@@ -18,6 +18,10 @@ body.adminimal-menu #admin-menu #admin-menu-wrapper .dropdown li li.separated {
 #admin-menu-site-switcher li.admin-menu-toolbar-category > ul > li {
   width: 100%;
 }
+body.adminimal-menu #admin-menu #admin-menu-site-switcher.dropdown ul.dropdown {
+  max-height: 90vh;
+  overflow: auto;
+}
 body.adminimal-menu #admin-menu #admin-menu-site-switcher.dropdown li:hover {
   background: #ff9933 !important;
 }
