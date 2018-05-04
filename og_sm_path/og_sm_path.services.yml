@@ -22,3 +22,6 @@ services:
       class: Drupal\og_sm_path\EventSubscriber\EventSubscriber
       tags:
         - { name: event_subscriber }
+   og_sm.path.user_toolbar_link_builder:
+      class: Drupal\og_sm_path\UserToolbarLinkBuilder
+      arguments: ['@current_user', '@og_sm.site_manager']

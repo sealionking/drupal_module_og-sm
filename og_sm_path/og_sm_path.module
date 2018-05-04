@@ -63,19 +63,10 @@ function og_sm_path_entity_extra_field_info() {
  * Implements hook_toolbar_alter().
  */
 function og_sm_path_toolbar_alter(&$items) {
-  // Only if there is an active Site.
-  $site = OgSm::siteManager()->currentSite();
-  if (!$site) {
-    return;
-  }
-
-  // Make sure that the destination of the logout link stays within the current
-  // Site.
-  if (isset($items['user']['tray']['user_links']['#links']['logout'])) {
-    /* @var \Drupal\Core\Url $logout_url */
-    $logout_url = &$items['user']['tray']['user_links']['#links']['logout']['url'];
-    $logout_url->setOption('query', [
-      'destination' => '/node/' . $site->id(),
-    ]);
+  if (isset($items['user']['tray']['user_links']['#lazy_builder'])) {
+    $items['user']['tray']['user_links']['#lazy_builder'] = [
+      'og_sm.path.user_toolbar_link_builder:renderToolbarLinks',
+      [],
+    ];
   }
 }
